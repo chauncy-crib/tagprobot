@@ -16,8 +16,11 @@ var EMPTY_TILE = 0,
     RED_TEAM = 1,
     BLUE_TEAM = 2,
     RED_FLAG = 3,
+    TAKEN_RED_FLAG = 3.1,
     BLUE_FLAG = 4,
+    TAKEN_BLUE_FLAG = 4.1,
     YELLOW_FLAG = 16,
+    TAKEN_YELLOW_FLAG = 16.1,
     RED_ENDZONE = 17,
     BLUE_ENDZONE = 18;
 
@@ -79,30 +82,81 @@ function script() {
     };
 
     /*
-     * Returns the position (in pixels) of the flag.
+     * Returns the position (in pixels) of the specified flag station.
      *
-     * findFlag: a string, one of either: 'ally_flag', 'enemy_flag',
+     * searching_for: a string, one of either: 'ally_flag', 'enemy_flag',
      *     or 'neutral_flag'.
      */
-    function findFlag(searching_for) {
+    function findFlagStation(searching_for) {
+        var looking_for_red_flag = 0,
+            looking_for_blue_flag = 0,
+            looking_for_neutral_flag = 0;
+
+        looking_for_red_flag = (searching_for === 'ally_flag' && self.team === RED_TEAM) ||
+            (searching_for === 'enemy_flag' && self.team === BLUE_TEAM);
+        looking_for_blue_flag = (searching_for === 'ally_flag' && self.team === BLUE_TEAM) ||
+            (searching_for === 'enemy_flag' && self.team === RED_TEAM);
+        looking_for_yellow_flag = (searching_for === 'neutral_flag');
+
         for (var x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
             for (var y = 0; y < yl; y++) {
                 switch (Math.floor(tagpro.map[x][y])) {
-                    case RED_FLAG:    // Red flag found on tile
-                        if ((searching_for === 'ally_flag' && self.team === RED_TEAM) || (searching_for === 'enemy_flag' && self.team === BLUE_TEAM)) {
-                            return {x: x * 40, y: y * 40};
-                        }
-                        break;
-                    case BLUE_FLAG:    // Blue flag found on tile
-                        if ((searching_for === 'ally_flag' && self.team === BLUE_TEAM) || (searching_for === 'enemy_flag' && self.team === RED_TEAM)) {
-                            return {x: x * 40, y: y * 40};
-                        }
-                        break;
-                    case YELLOW_FLAG:    // Yellow flag found on tile
-                        if (searching_for === 'neutral_flag') {
-                            return {x: x * 40, y: y * 40};
-                        }
-                        break;
+                case RED_FLAG:    // Red flag found on tile
+                    if (looking_for_red_flag) {
+                        return {x: x * 40, y: y * 40};
+                    }
+                    break;
+                case BLUE_FLAG:    // Blue flag found on tile
+                    if (looking_for_blue_flag) {
+                        return {x: x * 40, y: y * 40};
+                    }
+                    break;
+                case YELLOW_FLAG:    // Yellow flag found on tile
+                    if (looking_for_yellow_flag) {
+                        return {x: x * 40, y: y * 40};
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    
+    /*
+     * Returns the position (in pixels) of the specified taken flag.
+     *
+     * searching_for: a string, one of either: 'ally_flag', 'enemy_flag',
+     *     or 'neutral_flag'.
+     */
+    function findTakenFlag(searching_for) {
+        var looking_for_red_flag = 0,
+            looking_for_blue_flag = 0,
+            looking_for_neutral_flag = 0;
+
+        looking_for_red_flag = (searching_for === 'ally_flag' && self.team === RED_TEAM) ||
+            (searching_for === 'enemy_flag' && self.team === BLUE_TEAM);
+        looking_for_blue_flag = (searching_for === 'ally_flag' && self.team === BLUE_TEAM) ||
+            (searching_for === 'enemy_flag' && self.team === RED_TEAM);
+        looking_for_yellow_flag = (searching_for === 'neutral_flag');
+
+        for (var x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
+            for (var y = 0; y < yl; y++) {
+                switch (Math.floor(tagpro.map[x][y])) {
+                case TAKEN_RED_FLAG:    // Red flag found on tile
+                    if (looking_for_red_flag) {
+                        return {x: x * 40, y: y * 40};
+                    }
+                    break;
+                case TAKEN_BLUE_FLAG:    // Blue flag found on tile
+                    if (looking_for_blue_flag) {
+                        return {x: x * 40, y: y * 40};
+                    }
+                    break;
+                case TAKEN_YELLOW_FLAG:    // Yellow flag found on tile
+                    if (looking_for_yellow_flag) {
+                        return {x: x * 40, y: y * 40};
+                    }
+                    break;
                 }
             }
         }
@@ -150,10 +204,12 @@ function script() {
 
     // Returns the position of the endzone you should return a the flag to.
     function getEmptyTiles() {
-        var empty_tiles = [][],
-            xl = tagpro.map.length,
-            yl = tagpro.map[0].length;
+        var xl = tagpro.map.length,
+            yl = tagpro.map[0].length,
+            empty_tiles = [];
+
         for (var x = 0; x < xl; x++) {
+            empty_tiles[x] = new Array(yl);
             for (var y = 0; y < yl; y++) {
                 if (Math.floor(tagpro.map[x][y]) == EMPTY_TILE) {
                     empty_tiles[x][y] = 1;
@@ -163,6 +219,8 @@ function script() {
                 }
             }
         }
+        console.log(empty_tiles);
+        return empty_tiles;
     }
     
     /*
@@ -178,32 +236,34 @@ function script() {
         
         var seek = {},
             goal = null,
-            flag = null;
+            flag = null,
+            enemy = enemyFC();
 
-        // If the bot has the flag
+        // If the bot has the flag, go to the endzone
         if (self.flag) {
             goal = findEndzone();
-            seek.x = goal.x - (self.x + self.vx);
-            seek.y = goal.y - (self.y + self.vy);
-        // If an enemy player in view has the flag
-        } else if (enemyFC()) {
-            seek.x = (enemy.x + enemy.vx) - (self.x + self.vx);
-            seek.y = (enemy.y + enemy.vy) - (self.y + self.vy);
-        } else {
-            // If ally flag taken, chase ally flag
-            if (allyFlagTaken()) {
-                flag = findFlag('ally_flag');
-            // If ally flag not taken, sit on enemy's flag return location
-            } else {
-                flag = findFlag('enemy_flag');
-            }
-            // If goal has not been defined, go to the neutral flag
-            if (!goal) {
-                flag = findFlag('neutral_flag');
-            }
-            seek.x = flag.x - (self.x + self.vx);
-            seek.y = flag.y - (self.y + self.vy);
+            console.log("I have the flag. Seeking endzone!");
         }
+        // If an enemy player in view has the flag, chase
+        else if (enemy) {
+            goal = enemy;
+            goal.x = enemy.x + enemy.vx;
+            goal.y = enemy.y + enemy.vy;
+            console.log("I see an enemy with the flag. Chasing!");
+        }
+        // If ally flag taken, go to the enemy flag station
+        else if (allyFlagTaken()) {
+            goal = findFlagStation('enemy_flag');
+            console.log("Ally flag is taken. Chasing enemy with flag!");
+        }
+        // Default state
+        else {
+            goal = findFlagStation('ally_flag');
+            console.log("I don't know what to do. Going to ally flag station!");
+        }
+        
+        seek.x = goal.x - (self.x + self.vx);
+        seek.y = goal.y - (self.y + self.vy);
         move(seek);
     }
     main();
