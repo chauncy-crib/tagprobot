@@ -12,7 +12,8 @@
 // ==/UserScript==
 
 // Define global constants
-var RED_TEAM = 1,
+var EMPTY_TILE = 0,
+    RED_TEAM = 1,
     BLUE_TEAM = 2,
     RED_FLAG = 3,
     BLUE_FLAG = 4,
@@ -76,9 +77,13 @@ function script() {
         tagpro.players[this.player.id].vy = this.m_linearVelocity.y * 55;
         return this.m_linearVelocity;
     };
-    
-    // Returns the position (in pixels) of the flag.
-    // Color is a string, one of either: 'red', 'blue', or 'yellow'.
+
+    /*
+     * Returns the position (in pixels) of the flag.
+     *
+     * findFlag: a string, one of either: 'ally_flag', 'enemy_flag',
+     *     or 'neutral_flag'.
+     */
     function findFlag(searching_for) {
         for (var x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
             for (var y = 0; y < yl; y++) {
@@ -142,6 +147,23 @@ function script() {
     function allyFlagTaken() {
         return (self.team === RED_TEAM && tagpro.ui.redFlagTaken) || (self.team === BLUE_TEAM && tagpro.ui.blueFlagTaken);
     }
+
+    // Returns the position of the endzone you should return a the flag to.
+    function getEmptyTiles() {
+        var empty_tiles = [][],
+            xl = tagpro.map.length,
+            yl = tagpro.map[0].length;
+        for (var x = 0; x < xl; x++) {
+            for (var y = 0; y < yl; y++) {
+                if (Math.floor(tagpro.map[x][y]) == EMPTY_TILE) {
+                    empty_tiles[x][y] = 1;
+                }
+                else {
+                    empty_tiles[x][y] = 0;
+                }
+            }
+        }
+    }
     
     /*
      * The logic/flowchart.
@@ -156,14 +178,15 @@ function script() {
         
         var seek = {},
             goal = null,
-            enemy = enemyFC(),
             flag = null;
-        
+
+        // If the bot has the flag
         if (self.flag) {
             goal = findEndzone();
             seek.x = goal.x - (self.x + self.vx);
             seek.y = goal.y - (self.y + self.vy);
-        } else if (enemy) {
+        // If an enemy player in view has the flag
+        } else if (enemyFC()) {
             seek.x = (enemy.x + enemy.vx) - (self.x + self.vx);
             seek.y = (enemy.y + enemy.vy) - (self.y + self.vy);
         } else {
