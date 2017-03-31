@@ -322,7 +322,7 @@ function script() {
                 }
             }
         }
-        console.log(empty_tiles);
+        // console.log(empty_tiles);
         return empty_tiles;
     }
   
@@ -347,10 +347,11 @@ function script() {
                 message: chatMessage,
                 toAll: 0
             });
-        lastMessage = new Date();
-     } else if (timeDiff >= 0) {
-        setTimeout(chat, limit - timeDiff, chatMessage)
-     }
+            lastMessage = new Date();
+        } else if (timeDiff >= 0) {
+            setTimeout(chat, limit - timeDiff, chatMessage)
+        }
+    }
 
     /*
      * The logic/flowchart.
@@ -388,8 +389,8 @@ function script() {
         // If the bot has the flag, go to the endzone
         if (self.flag) {
             var chaser = enemyC();
-            // Really bad jukes
-            if (!(chaser == null)) {
+            // Really bad jukes !!!!! DISABLED FOR NOW
+            if (false) {
                 goal = chaser;
                 goal.x = 2*(self.x + self.vx) - (chaser.x + chaser.vx);
                 goal.y = 2*(self.y + self.vy) - (chaser.y + chaser.vy);
@@ -431,8 +432,22 @@ function script() {
             console.log("I don't know what to do. Going to ally flag station!");
         }
 
-        seek.x = goal.x - (self.x + self.vx);
-        seek.y = goal.y - (self.y + self.vy);
+        // Version for attempting path-planning
+        var gridPosition = { x: Math.floor(self.x / 40), y: Math.floor(self.y / 40) };
+        var gridTarget = { x: Math.floor(goal.x / 40), y: Math.floor(goal.y / 40) };
+        var nearGoal = getTarget(gridPosition.x, gridPosition.y,
+                                 gridTarget.x, gridTarget.y,
+                                 getTraversableTiles());
+        nearGoal.x = nearGoal.x * 40;
+        nearGoal.y = nearGoal.y * 40;
+
+        seek.x = nearGoal.x - (self.x + self.vx);
+        seek.y = nearGoal.y - (self.y + self.vy);
+
+
+        // Version for not attempting path-planning
+        // seek.x = goal.x - (self.x + self.vx);
+        // seek.y = goal.y - (self.y + self.vy);
         if (AUTONOMOUS){
             move(seek);
         }
