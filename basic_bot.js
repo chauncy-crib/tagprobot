@@ -35,7 +35,7 @@ var EMPTY_TILE = 0,
 function waitForId(fn) {
     // Don't execute the function until tagpro.playerId has been assigned.
     if (!tagpro || !tagpro.playerId) {
-        return setTimeout(function() {
+        return setTimeout(function () {
             waitForId(fn);
         }, 100);
     } else {
@@ -95,7 +95,7 @@ function script() {
 
     // Overriding this function to get a more accurate velocity of players.
     // Velocity is saved in player.vx and vy.
-    Box2D.Dynamics.b2Body.prototype.GetLinearVelocity = function() {
+    Box2D.Dynamics.b2Body.prototype.GetLinearVelocity = function () {
         tagpro.players[this.player.id].vx = this.m_linearVelocity.x * 55;
         tagpro.players[this.player.id].vy = this.m_linearVelocity.y * 55;
         return this.m_linearVelocity;
@@ -157,28 +157,28 @@ function script() {
 
         return findTile(target_flag);
     }
-    
+
     // Returns the position of the endzone you should return a the flag to.
     // TODO: return closest endzone tile instead of first
     function findEndzone() {
         return (self.team == BLUE_TEAM ? findTile(BLUE_ENDZONE) : findTile(RED_ENDZONE));
     }
-    
+
     // Returns the enemy FC if in view.
     function enemyFC() {
         for (var id in tagpro.players) {
             if (!tagpro.players.hasOwnProperty(id))
                 continue;
-            
+
             var player = tagpro.players[id];
-            
+
             if (player.team === self.team || player.dead || !player.draw)
                 continue;
             if (player.flag)
                 return player;
         }
     }
-    
+
     // Returns whether or not ally team's flag is taken
     function allyFlagTaken() {
         return (self.team === RED_TEAM && tagpro.ui.redFlagTaken) || (self.team === BLUE_TEAM && tagpro.ui.blueFlagTaken);
@@ -204,7 +204,7 @@ function script() {
         console.log(empty_tiles);
         return empty_tiles;
     }
-    
+
     /*
      * The logic/flowchart.
      *   If team flag is home, sit on flag.
@@ -215,7 +215,7 @@ function script() {
      */
     function main() {
         requestAnimationFrame(main);
-        
+
         var seek = {},
             goal = null,
             flag = null,
@@ -256,16 +256,17 @@ function script() {
             goal = findFlagStation('ally_flag');
             console.log("I don't know what to do. Going to ally flag station!");
         }
-        
+
         seek.x = goal.x - (self.x + self.vx);
         seek.y = goal.y - (self.y + self.vy);
         move(seek);
     }
+
     main();
 }
 
 // Initialize the script when tagpro is ready, and additionally wait
 // for the playerId property to be assigned.
-tagpro.ready(function() {
+tagpro.ready(function () {
     waitForId(script);
 });
