@@ -1,5 +1,5 @@
 # tagprobot
-First, let's aim to compete in the single-flag map "Command Center". Tentative competition date is 26 February, 2017.
+First, let's aim to compete in the single-flag map "Command Center". Tentative competition date is in two weeks.
 Command Center: http://i.imgur.com/aBaFYDB.png  
 Command Center Testing Map: http://maps.jukejuice.com/maptest/3307/ca
 
