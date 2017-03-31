@@ -33,7 +33,7 @@ var EMPTY_TILE = 0,
  * This function will execute the provided function after tagpro.playerId
  * has been assigned.
  */
-funcion waitForId(fn) {
+function waitForId(fn) {
     // Don't execute the function until tagpro.playerId has been assigned.
     if (!tagpro || !tagpro.playerId) {
         return setTimeout(function () {
