@@ -11,7 +11,6 @@
 // @require       https://raw.githubusercontent.com/bgrins/javascript-astar/master/astar.js
 // @license       2015
 // ==/UserScript==
-var flag = true;
 // Define global constants
 var EMPTY_TILE = 0,
     RED_TEAM = 1,
