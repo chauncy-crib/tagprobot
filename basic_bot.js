@@ -8,6 +8,7 @@
 // @include       http://*.newcompte.fr:*
 // @author        Cflakes, snaps_, altodyte, shanek21, davidabrahams, billmwong
 // @namespace     http://www.reddit.com/user/snaps_
+// @require       https://raw.githubusercontent.com/bgrins/javascript-astar/master/astar.js
 // @license       2015
 // ==/UserScript==
 
@@ -324,23 +325,32 @@ function script() {
         console.log(empty_tiles);
         return empty_tiles;
     }
-
+  
+    var getTarget = function (my_x, my_y, target_x, target_y, grid) {
+        if (my_x===target_x && my_y===target_y) return {x: my_x, y:my_y};
+        var graph = new Graph(grid, {diagonal: true});
+        var start = graph.grid[my_y][my_x];
+        var end = graph.grid[target_y][target_x];
+        var shortest_path = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
+        var next = shortest_path[1];
+        return {x: next.x, y: next.y};
+    };
+  
     // Stole this function to send chat messages
     var lastMessage = 0;
     function chat(chatMessage) {
-      var limit = 500 + 10;
-      var now = new Date();
-      var timeDiff = now - lastMessage;
-      if (timeDiff > limit) {
-          tagpro.socket.emit("chat", {
-            message: chatMessage,
-            toAll: 0
-          });
-          lastMessage = new Date();
-      } else if (timeDiff >= 0) {
-          setTimeout(chat, limit - timeDiff, chatMessage)
-      }
-    }
+        var limit = 500 + 10;
+        var now = new Date();
+        var timeDiff = now - lastMessage;
+        if (timeDiff > limit) {
+            tagpro.socket.emit("chat", {
+                message: chatMessage,
+                toAll: 0
+            });
+        lastMessage = new Date();
+     } else if (timeDiff >= 0) {
+        setTimeout(chat, limit - timeDiff, chatMessage)
+     }
 
     /*
      * The logic/flowchart.
@@ -430,7 +440,6 @@ function script() {
 
     main();
 }
-
 // Initialize the script when tagpro is ready, and additionally wait
 // for the playerId property to be assigned.
 tagpro.ready(function () {
