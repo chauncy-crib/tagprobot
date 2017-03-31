@@ -206,6 +206,16 @@ function script() {
         return empty_tiles;
     }
 
+    var getTarget = function (my_x, my_y, target_x, target_y, grid) {
+        if (my_x===target_x && my_y===target_y) return {x: my_x, y:my_y};
+        var graph = new Graph(grid, {diagonal: true});
+        var start = graph.grid[my_y][my_x];
+        var end = graph.grid[target_y][target_x];
+        var shortest_path = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
+        var next = shortest_path[1];
+        return {x: next.x, y: next.y};
+    };
+
     /*
      * The logic/flowchart.
      *   If team flag is home, sit on flag.
@@ -265,16 +275,6 @@ function script() {
 
     main();
 }
-
-var getTarget = function (my_x, my_y, target_x, target_y, grid) {
-	if (my_x===target_x && my_y===target_y) return {x: my_x, y:my_y};
-	var graph = new Graph(grid, {diagonal: true});
-	var start = graph.grid[my_y][my_x];
-	var end = graph.grid[target_y][target_x];
-	var shortest_path = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
-	var next = shortest_path[1];
-	return {x: next.x, y: next.y};
-};
 // Initialize the script when tagpro is ready, and additionally wait
 // for the playerId property to be assigned.
 tagpro.ready(function () {
