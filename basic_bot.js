@@ -11,7 +11,6 @@
 // @require       https://raw.githubusercontent.com/bgrins/javascript-astar/master/astar.js
 // @license       2015
 // ==/UserScript==
-
 // Define global constants
 var EMPTY_TILE = 0,
     RED_TEAM = 1,
@@ -269,6 +268,8 @@ function script() {
             case tileTypes.YELLOW_FLAG_TAKEN:
             case tileTypes.RED_ENDZONE:
             case tileTypes.BLUE_ENDZONE:
+            case 'blueball':
+            case 'redball':
                 return true;
             case tileTypes.EMPTY_SPACE:
             case tileTypes.SQUARE_WALL:
@@ -323,13 +324,16 @@ function script() {
     }
   
     var getTarget = function (my_x, my_y, target_x, target_y, grid) {
-        if (my_x===target_x && my_y===target_y) return {x: my_x, y:my_y};
+        // TODO: handle edge cases regarding target and current position
+        mypos = {x: my_x, y: my_y};
         var graph = new Graph(grid, {diagonal: true});
-        var start = graph.grid[my_y][my_x];
-        var end = graph.grid[target_y][target_x];
+        var start = graph.grid[my_x][my_y];
+        var end = graph.grid[target_x][target_y];
         var shortest_path = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
-        var next = shortest_path[1];
-        return {x: next.x, y: next.y};
+        // var shortest_path = astar.search(graph, start, end);
+        var next = shortest_path[0];
+        res = {x: next.x, y: next.y};
+        return res;
     };
   
     // Stole this function to send chat messages
@@ -429,7 +433,7 @@ function script() {
         }
 
         // Version for attempting path-planning
-        var gridPosition = { x: Math.floor(self.x / 40), y: Math.floor(self.y / 40) };
+        var gridPosition = { x: Math.floor((self.x+20) / 40), y: Math.floor((self.y+20) / 40) };
         var gridTarget = { x: Math.floor(goal.x / 40), y: Math.floor(goal.y / 40) };
         var nearGoal = getTarget(gridPosition.x, gridPosition.y,
                                  gridTarget.x, gridTarget.y,
