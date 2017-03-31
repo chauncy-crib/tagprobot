@@ -26,7 +26,7 @@ var EMPTY_TILE = 0,
     ENEMY_FLAG = null,
     TAKEN_ENEMY_FLAG = null,
     ALLY_FLAG = null,
-    TAKEN_ALLY_FLAG;
+    TAKEN_ALLY_FLAG = null;
 
 /*
  * This function will execute the provided function after tagpro.playerId
@@ -53,7 +53,6 @@ function script() {
      * This function sets global variables with information about what
      * flag we want and those important ideological things.
      */
-
     function getDesiredFlag() {
         if (findApproxTile(YELLOW_FLAG) == null) {
             ENEMY_FLAG = (self.team === BLUE_TEAM ? RED_FLAG : BLUE_FLAG);
@@ -238,6 +237,19 @@ function script() {
         else if (allyFlagTaken()) {
             goal = findFlagStation('enemy_flag');
             console.log("Ally flag is taken. Chasing enemy with flag!");
+        }
+        // If neutral flag game
+        else if (ENEMY_FLAG === YELLOW_FLAG) {
+            if (tagpro.ui.yellowFlagTakenByBlue) {
+                goal = findApproxTile(BLUE_ENDZONE);
+                console.log("Blue has the flag. Headed towards the Blue Endzone.");
+            } else if (tagpro.ui.yellowFlagTakenByRed) {
+                goal = findApproxTile(RED_ENDZONE);
+                console.log("Red has the flag. Headed towards the Red Endzone.");
+            } else {
+                goal = findFlagStation('ally_flag');
+                console.log("I don't know what to do. Going to central flag station!");
+            }
         }
         // Default state
         else {
