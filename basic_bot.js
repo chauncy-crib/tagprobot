@@ -179,6 +179,20 @@ function script() {
         }
     }
 
+    // Returns an enemy chaser if in view
+    function enemyC() {
+        for (var id in tagpro.players) {
+            if (!tagpro.players.hasOwnProperty(id))
+                continue;
+
+            var player = tagpro.players[id];
+
+            if (player.team === self.team || player.dead || !player.draw)
+                continue;
+            return player;
+        }
+    }
+
     // Returns whether or not ally team's flag is taken
     function allyFlagTaken() {
         return (self.team === RED_TEAM && tagpro.ui.redFlagTaken) || (self.team === BLUE_TEAM && tagpro.ui.blueFlagTaken);
@@ -223,8 +237,18 @@ function script() {
 
         // If the bot has the flag, go to the endzone
         if (self.flag) {
-            goal = findEndzone();
-            console.log("I have the flag. Seeking endzone!");
+            var chaser = enemyC();
+            // Really bad jukes
+            if (!(chaser == null)) {
+                goal = chaser;
+                goal.x = 2*(self.x + self.vx) - (chaser.x + chaser.vx);
+                goal.y = 2*(self.y + self.vy) - (chaser.y + chaser.vy);
+                console.log("I have the flag. Fleeing enemy!");
+            // Really bad caps
+            } else {
+                goal = findEndzone();
+                console.log("I have the flag. Seeking endzone!");
+            }
         }
         // If an enemy player in view has the flag, chase
         else if (enemy) {
