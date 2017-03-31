@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name          TagPro Example Bot
+// @name          Chauncy TagProbot
 // @description   Limited example bot for TagPro.
 // @version       0.1
 // @grant         none
 // @include       http://tagpro-maptest.koalabeast.com:*
 // @include       http://tangent.jukejuice.com:*
 // @include       http://*.newcompte.fr:*
-// @author        Cflakes, snaps_
+// @author        Cflakes, snaps_, altodyte, shanek21, davidabrahams, billmwong
 // @namespace     http://www.reddit.com/user/snaps_
 // @license       2015
 // ==/UserScript==
@@ -22,7 +22,11 @@ var EMPTY_TILE = 0,
     YELLOW_FLAG = 16,
     TAKEN_YELLOW_FLAG = 16.1,
     RED_ENDZONE = 17,
-    BLUE_ENDZONE = 18;
+    BLUE_ENDZONE = 18,
+    ENEMY_FLAG = null,
+    TAKEN_ENEMY_FLAG = null,
+    ALLY_FLAG = null,
+    TAKEN_ALLY_FLAG;
 
 /*
  * This function will execute the provided function after tagpro.playerId
@@ -45,9 +49,26 @@ function waitForId(fn) {
 // We define everything relevant to our bot inside this function.
 function script() {
 
+    /*
+     * This function sets global variables with information about what
+     * flag we want and those important ideological things.
+     */
+
+    function getDesiredFlag() {
+        if (findApproxTile(YELLOW_FLAG) == null) {
+            ENEMY_FLAG = (self.team === BLUE_TEAM ? RED_FLAG : BLUE_FLAG);
+            ALLY_FLAG = (self.team === BLUE_TEAM ? BLUE_FLAG : RED_FLAG);
+        } else {
+            ENEMY_FLAG = YELLOW_FLAG;
+            ALLY_FLAG = YELLOW_FLAG;
+        }
+    }
+
     // Assign our own player object to `self` for readability.
     var self = tagpro.players[tagpro.playerId];
-    
+    // Set global variables
+    getDesiredFlag();
+
     // Sends key events to move to a destination.
     function move(destination) {
         if (destination.x > 1) {
@@ -60,7 +81,7 @@ function script() {
             tagpro.sendKeyPress("right", true);
             tagpro.sendKeyPress("left", true);
         }
-        
+
         if (destination.y > 1) {
             tagpro.sendKeyPress("up", true);
             tagpro.sendKeyPress("down", false);
@@ -72,7 +93,7 @@ function script() {
             tagpro.sendKeyPress("down", true);
         }
     }
-    
+
     // Overriding this function to get a more accurate velocity of players.
     // Velocity is saved in player.vx and vy.
     Box2D.Dynamics.b2Body.prototype.GetLinearVelocity = function() {
@@ -82,104 +103,66 @@ function script() {
     };
 
     /*
-     * Returns the position (in pixels) of the specified flag station.
-     *
-     * searching_for: a string, one of either: 'ally_flag', 'enemy_flag',
-     *     or 'neutral_flag'.
+     * Returns the position (in pixels x,y and grid positions xg, yg
+     * of first of the specified tile type to appear starting in the
+     * top left corner and moving in a page-reading fashion.
      */
-    function findFlagStation(searching_for) {
-        var looking_for_red_flag = 0,
-            looking_for_blue_flag = 0,
-            looking_for_neutral_flag = 0;
 
-        looking_for_red_flag = (searching_for === 'ally_flag' && self.team === RED_TEAM) ||
-            (searching_for === 'enemy_flag' && self.team === BLUE_TEAM);
-        looking_for_blue_flag = (searching_for === 'ally_flag' && self.team === BLUE_TEAM) ||
-            (searching_for === 'enemy_flag' && self.team === RED_TEAM);
-        looking_for_yellow_flag = (searching_for === 'neutral_flag');
-
+    function findTile(target_tile) {
         for (var x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
             for (var y = 0; y < yl; y++) {
-                switch (Math.floor(tagpro.map[x][y])) {
-                case RED_FLAG:    // Red flag found on tile
-                    if (looking_for_red_flag) {
-                        return {x: x * 40, y: y * 40};
-                    }
-                    break;
-                case BLUE_FLAG:    // Blue flag found on tile
-                    if (looking_for_blue_flag) {
-                        return {x: x * 40, y: y * 40};
-                    }
-                    break;
-                case YELLOW_FLAG:    // Yellow flag found on tile
-                    if (looking_for_yellow_flag) {
-                        return {x: x * 40, y: y * 40};
-                    }
-                    break;
+                if (tagpro.map[x][y] === target_tile) {
+                    return {x: x * 40, y: y * 40, xg: x, yg: y};
                 }
             }
         }
+        console.error("Unable to find tile: " + target_tile);
     }
 
-    
+    function findApproxTile(target_tile) {
+        return findTile(Math.floor(target_tile));
+    }
+
+    /*
+     * Returns the position (in pixels) of the specified flag station.
+     *
+     * searching_for: a string, one of either: 'ally_flag', 'enemy_flag'
+     */
+    function findFlagStation(searching_for) {
+        var target_flag = null;
+        if (searching_for === 'ally_flag') {
+            target_flag = ALLY_FLAG;
+        } else if (searching_for === 'enemy_flag') {
+            target_flag = ENEMY_FLAG;
+        } else {
+            console.error("Flag station description does not exist: " + searching_for);
+        }
+
+        return findTile(target_flag);
+    }
+
     /*
      * Returns the position (in pixels) of the specified taken flag.
      *
-     * searching_for: a string, one of either: 'ally_flag', 'enemy_flag',
-     *     or 'neutral_flag'.
+     * searching_for: a string, one of either: 'ally_flag', 'enemy_flag'
      */
     function findTakenFlag(searching_for) {
-        var looking_for_red_flag = 0,
-            looking_for_blue_flag = 0,
-            looking_for_neutral_flag = 0;
-
-        looking_for_red_flag = (searching_for === 'ally_flag' && self.team === RED_TEAM) ||
-            (searching_for === 'enemy_flag' && self.team === BLUE_TEAM);
-        looking_for_blue_flag = (searching_for === 'ally_flag' && self.team === BLUE_TEAM) ||
-            (searching_for === 'enemy_flag' && self.team === RED_TEAM);
-        looking_for_yellow_flag = (searching_for === 'neutral_flag');
-
-        for (var x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
-            for (var y = 0; y < yl; y++) {
-                switch (Math.floor(tagpro.map[x][y])) {
-                case TAKEN_RED_FLAG:    // Red flag found on tile
-                    if (looking_for_red_flag) {
-                        return {x: x * 40, y: y * 40};
-                    }
-                    break;
-                case TAKEN_BLUE_FLAG:    // Blue flag found on tile
-                    if (looking_for_blue_flag) {
-                        return {x: x * 40, y: y * 40};
-                    }
-                    break;
-                case TAKEN_YELLOW_FLAG:    // Yellow flag found on tile
-                    if (looking_for_yellow_flag) {
-                        return {x: x * 40, y: y * 40};
-                    }
-                    break;
-                }
-            }
+        var target_flag = null;
+        if (searching_for === 'ally_flag') {
+            target_flag = TAKEN_ALLY_FLAG;
+        } else if (searching_for === 'enemy_flag') {
+            target_flag = TAKEN_ENEMY_FLAG;
+        } else {
+            console.error("Flag station description does not exist: " + searching_for);
         }
+
+        return findTile(target_flag);
     }
     
     // Returns the position of the endzone you should return a the flag to.
+    // TODO: return closest endzone tile instead of first
     function findEndzone() {
-        for (var x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
-            for (var y = 0; y < yl; y++) {
-                switch (Math.floor(tagpro.map[x][y])) {
-                    case RED_ENDZONE:    // Red endzone found on tile
-                        if (self.team === RED_TEAM) {
-                            return {x: x * 40, y: y * 40};
-                        }
-                        break;
-                    case BLUE_ENDZONE:    // Blue endzone found on tile
-                        if (self.team === BLUE_TEAM) {
-                            return {x: x * 40, y: y * 40};
-                        }
-                        break;
-                }
-            }
-        }
+        return (self.team == BLUE_TEAM ? findTile(BLUE_ENDZONE) : findTile(RED_ENDZONE));
     }
     
     // Returns the enemy FC if in view.
@@ -202,7 +185,7 @@ function script() {
         return (self.team === RED_TEAM && tagpro.ui.redFlagTaken) || (self.team === BLUE_TEAM && tagpro.ui.blueFlagTaken);
     }
 
-    // Returns the position of the endzone you should return a the flag to.
+    // Returns a 2D array of traversable (1) and impassable (0) tiles.
     function getEmptyTiles() {
         var xl = tagpro.map.length,
             yl = tagpro.map[0].length,
@@ -274,4 +257,3 @@ function script() {
 tagpro.ready(function() {
     waitForId(script);
 });
-
