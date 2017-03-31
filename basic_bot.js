@@ -251,7 +251,7 @@ function script() {
                 console.log("I don't know what to do. Going to central flag station!");
             }
         }
-        // Default state
+        // If two-flag game (presumed, not tested)
         else {
             goal = findFlagStation('ally_flag');
             console.log("I don't know what to do. Going to ally flag station!");
