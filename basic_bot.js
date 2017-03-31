@@ -342,6 +342,15 @@ function script() {
           setTimeout(chat, limit - timeDiff, chatMessage)
       }
     }
+    var getTarget = function (my_x, my_y, target_x, target_y, grid) {
+        if (my_x===target_x && my_y===target_y) return {x: my_x, y:my_y};
+        var graph = new Graph(grid, {diagonal: true});
+        var start = graph.grid[my_y][my_x];
+        var end = graph.grid[target_y][target_x];
+        var shortest_path = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
+        var next = shortest_path[1];
+        return {x: next.x, y: next.y};
+    };
 
     /*
      * The logic/flowchart.
@@ -431,20 +440,8 @@ function script() {
 
     main();
 }
-
 // Initialize the script when tagpro is ready, and additionally wait
 // for the playerId property to be assigned.
 tagpro.ready(function () {
     waitForId(script);
 });
-
-var graph = new Graph([
-    [1,1,1,1],
-    [0,1,1,0],
-    [0,0,1,1]
-]);
-var start = graph.grid[0][0];
-var end = graph.grid[1][2];
-var result = astar.search(graph, start, end);
-console.log(start);
-console.log("RESULT", result);
