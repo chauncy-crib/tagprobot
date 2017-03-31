@@ -11,7 +11,7 @@
 // @require       https://raw.githubusercontent.com/bgrins/javascript-astar/master/astar.js
 // @license       2015
 // ==/UserScript==
-
+var flag = true;
 // Define global constants
 var EMPTY_TILE = 0,
     RED_TEAM = 1,
@@ -269,6 +269,8 @@ function script() {
             case tileTypes.YELLOW_FLAG_TAKEN:
             case tileTypes.RED_ENDZONE:
             case tileTypes.BLUE_ENDZONE:
+            case 'blueball':
+            case 'redball':
                 return true;
             case tileTypes.EMPTY_SPACE:
             case tileTypes.SQUARE_WALL:
@@ -323,13 +325,44 @@ function script() {
     }
   
     var getTarget = function (my_x, my_y, target_x, target_y, grid) {
+        // console.log(flag);
+        if (flag) {
+            console.log("GET TARGET", my_x, my_y, target_x, target_y, grid);
+            console.table(grid);
+        }
+        target_x = my_x - 4;
+        target_y = my_y - 4;
+        mypos = {x: my_x, y: my_y};
         if (my_x===target_x && my_y===target_y) return {x: my_x, y:my_y};
-        var graph = new Graph(grid, {diagonal: true});
-        var start = graph.grid[my_y][my_x];
-        var end = graph.grid[target_y][target_x];
-        var shortest_path = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
-        var next = shortest_path[1];
-        return {x: next.x, y: next.y};
+        var graph = new Graph(grid, {diagonal: false});
+        var start = graph.grid[my_x][my_y];
+        var end = graph.grid[target_x][target_y];
+        // var shortest_path = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
+        var shortest_path = astar.search(graph, start, end);
+        if (shortest_path == null) {
+            console.log("NO PATH FOUND TO OBJECTIVE");
+            return mypos;
+        }
+        var next = shortest_path[0];
+        if (flag) console.log(shortest_path, next);
+        flag = false;
+        res = {x: next.x, y: next.y};
+        console.log("MY POS", mypos);
+        console.log("Target pos", res);
+        console.log("Path", shortest_path);
+        width = 2;
+        xyarr = [];
+        for (i = -width; i<=width; i++) {
+            xyarr.push([])
+            for (j = -width; j<=width; j++) {
+                grid_cell = graph.grid[my_x+j][my_y+i]
+                xyarr[xyarr.length-1].push([grid_cell.x, grid_cell.y, grid_cell.weight].toString())
+                // console.log(grid_cell);
+            }
+        }
+        console.table(xyarr)
+        // console.log(res, shortest_path);
+        return res;
     };
   
     // Stole this function to send chat messages
@@ -429,7 +462,7 @@ function script() {
         }
 
         // Version for attempting path-planning
-        var gridPosition = { x: Math.floor(self.x / 40), y: Math.floor(self.y / 40) };
+        var gridPosition = { x: Math.floor((self.x+20) / 40), y: Math.floor((self.y+20) / 40) };
         var gridTarget = { x: Math.floor(goal.x / 40), y: Math.floor(goal.y / 40) };
         var nearGoal = getTarget(gridPosition.x, gridPosition.y,
                                  gridTarget.x, gridTarget.y,
