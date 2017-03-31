@@ -26,7 +26,8 @@ var EMPTY_TILE = 0,
     ENEMY_FLAG = null,
     TAKEN_ENEMY_FLAG = null,
     ALLY_FLAG = null,
-    TAKEN_ALLY_FLAG = null;
+    TAKEN_ALLY_FLAG = null,
+    AUTONOMOUS = true;
 
 var tileTypes = {
     EMPTY_SPACE: 0,
@@ -164,7 +165,7 @@ function script() {
     }
 
     /*
-     * Returns the position (in pixels) of the specified flag station.
+     * Returns the position (in pixels) of the specified flag station, even if empty.
      *
      * searching_for: a string, one of either: 'ally_flag', 'enemy_flag'
      */
@@ -178,7 +179,7 @@ function script() {
             console.error("Flag station description does not exist: " + searching_for);
         }
 
-        return findTile(target_flag);
+        return findApproxTile(target_flag);
     }
 
     /*
@@ -324,6 +325,23 @@ function script() {
         return empty_tiles;
     }
 
+    // Stole this function to send chat messages
+    var lastMessage = 0;
+    function chat(chatMessage) {
+      var limit = 500 + 10;
+      var now = new Date();
+      var timeDiff = now - lastMessage;
+      if (timeDiff > limit) {
+          tagpro.socket.emit("chat", {
+            message: chatMessage,
+            toAll: 0
+          });
+          lastMessage = new Date();
+      } else if (timeDiff >= 0) {
+          setTimeout(chat, limit - timeDiff, chatMessage)
+      }
+    }
+
     /*
      * The logic/flowchart.
      *   If team flag is home, sit on flag.
@@ -333,6 +351,23 @@ function script() {
      * Note: There is NO pathfinding.
      */
     function main() {
+        // Handle keypress and related events for manual/auto toggle
+        window.onkeydown = function(event) {
+            if (event.keyCode === 81) {
+                AUTONOMOUS = !AUTONOMOUS;
+                tagpro.sendKeyPress("up", true);
+                tagpro.sendKeyPress("down", true);
+                tagpro.sendKeyPress("left", true);
+                tagpro.sendKeyPress("right", true);
+                if (AUTONOMOUS) {
+                    chat("Autonomy Mode updated: now AUTONOMOUS!");
+                } else {
+                    chat("Autonomy Mode updated: now MANUAL!");
+                }
+                setTimeout(function() { console.log("Autonomy status: " + AUTONOMOUS); }, 200);
+            }
+        };
+
         requestAnimationFrame(main);
 
         var seek = {},
@@ -388,7 +423,9 @@ function script() {
 
         seek.x = goal.x - (self.x + self.vx);
         seek.y = goal.y - (self.y + self.vy);
-        move(seek);
+        if (AUTONOMOUS){
+            move(seek);
+        }
     }
 
     main();
