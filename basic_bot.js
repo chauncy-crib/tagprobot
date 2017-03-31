@@ -325,43 +325,15 @@ function script() {
     }
   
     var getTarget = function (my_x, my_y, target_x, target_y, grid) {
-        // console.log(flag);
-        if (flag) {
-            console.log("GET TARGET", my_x, my_y, target_x, target_y, grid);
-            console.table(grid);
-        }
-        target_x = my_x - 4;
-        target_y = my_y - 4;
+        // TODO: handle edge cases regarding target and current position
         mypos = {x: my_x, y: my_y};
-        if (my_x===target_x && my_y===target_y) return {x: my_x, y:my_y};
-        var graph = new Graph(grid, {diagonal: false});
+        var graph = new Graph(grid, {diagonal: true});
         var start = graph.grid[my_x][my_y];
         var end = graph.grid[target_x][target_y];
-        // var shortest_path = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
-        var shortest_path = astar.search(graph, start, end);
-        if (shortest_path == null) {
-            console.log("NO PATH FOUND TO OBJECTIVE");
-            return mypos;
-        }
+        var shortest_path = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
+        // var shortest_path = astar.search(graph, start, end);
         var next = shortest_path[0];
-        if (flag) console.log(shortest_path, next);
-        flag = false;
         res = {x: next.x, y: next.y};
-        console.log("MY POS", mypos);
-        console.log("Target pos", res);
-        console.log("Path", shortest_path);
-        width = 2;
-        xyarr = [];
-        for (i = -width; i<=width; i++) {
-            xyarr.push([])
-            for (j = -width; j<=width; j++) {
-                grid_cell = graph.grid[my_x+j][my_y+i]
-                xyarr[xyarr.length-1].push([grid_cell.x, grid_cell.y, grid_cell.weight].toString())
-                // console.log(grid_cell);
-            }
-        }
-        console.table(xyarr)
-        // console.log(res, shortest_path);
         return res;
     };
   
