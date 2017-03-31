@@ -8,6 +8,7 @@
 // @include       http://*.newcompte.fr:*
 // @author        Cflakes, snaps_, altodyte, shanek21, davidabrahams, billmwong
 // @namespace     http://www.reddit.com/user/snaps_
+// @require       https://raw.githubusercontent.com/bgrins/javascript-astar/master/astar.js
 // @license       2015
 // ==/UserScript==
 
@@ -436,3 +437,14 @@ function script() {
 tagpro.ready(function () {
     waitForId(script);
 });
+
+var graph = new Graph([
+    [1,1,1,1],
+    [0,1,1,0],
+    [0,0,1,1]
+]);
+var start = graph.grid[0][0];
+var end = graph.grid[1][2];
+var result = astar.search(graph, start, end);
+console.log(start);
+console.log("RESULT", result);
