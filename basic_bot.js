@@ -315,11 +315,7 @@ function script() {
         for (var x = 0; x < xl; x++) {
             empty_tiles[x] = new Array(yl);
             for (var y = 0; y < yl; y++) {
-                if (isTraversable(tagpro.map[x][y])) {
-                    empty_tiles[x][y] = 1;
-                } else {
-                    empty_tiles[x][y] = 0;
-                }
+                empty_tiles[x][y] = isTraversable(tagpro.map[x][y]) ? 1 : 0;
             }
         }
         console.log(empty_tiles);
