@@ -1,3 +1,4 @@
 # Vim files
 *.swp
 
+.tern-project
