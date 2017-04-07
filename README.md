@@ -35,3 +35,5 @@ https://www.reddit.com/r/TagPro/comments/3ii5xq/userscript_live_map_editor_and_p
  - Machine learning? https://www.reddit.com/r/tagprobots/comments/5ptfrg/dataset_of_1900_tagpro_replays_from_the/
  
 ## Goal 4: ???
+
+## Goal 5: Profit
