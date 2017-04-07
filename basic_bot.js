@@ -12,10 +12,6 @@
 // @license       2015
 // ==/UserScript==
 // Define global constants
-
-/* global tagpro Box2D astar Graph*/
-
-/* eslint-disable one-var, no-unused-vars*/
 var EMPTY_TILE = 0,
   RED_TEAM = 1,
   BLUE_TEAM = 2,
@@ -32,7 +28,6 @@ var EMPTY_TILE = 0,
   ALLY_FLAG = null,
   TAKEN_ALLY_FLAG = null,
   AUTONOMOUS = true;
-/* eslint-enable one-var, no-unused-vars*/
 
 var tileTypes = {
   EMPTY_SPACE: 0,
@@ -82,10 +77,9 @@ var tileTypes = {
 function waitForId(fn) {
     // Don't execute the function until tagpro.playerId has been assigned.
   if (!tagpro || !tagpro.playerId) {
-    setTimeout(function wait() {
+    return setTimeout(function () {
       waitForId(fn);
     }, 100);
-    return;
   }
         // Only run the script if we are not spectating.
   if (!tagpro.spectator) {
@@ -100,7 +94,7 @@ function script() {
      * flag we want and those important ideological things.
      */
   function getDesiredFlag() {
-    if (findApproxTile(YELLOW_FLAG) === null) {
+    if (findApproxTile(YELLOW_FLAG) == null) {
       ENEMY_FLAG = (self.team === BLUE_TEAM ? RED_FLAG : BLUE_FLAG);
       ALLY_FLAG = (self.team === BLUE_TEAM ? BLUE_FLAG : RED_FLAG);
     } else {
@@ -141,7 +135,7 @@ function script() {
 
     // Overriding this function to get a more accurate velocity of players.
     // Velocity is saved in player.vx and vy.
-  Box2D.Dynamics.b2Body.prototype.GetLinearVelocity = function accurateVelocity() {
+  Box2D.Dynamics.b2Body.prototype.GetLinearVelocity = function () {
     tagpro.players[this.player.id].vx = this.m_linearVelocity.x * 55;
     tagpro.players[this.player.id].vy = this.m_linearVelocity.y * 55;
     return this.m_linearVelocity;
@@ -153,70 +147,68 @@ function script() {
      * top left corner and moving in a page-reading fashion.
      */
 
-  function findTile(targetTile) {
+  function findTile(target_tile) {
     for (var x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
       for (var y = 0; y < yl; y++) {
-        if (tagpro.map[x][y] === targetTile) {
+        if (tagpro.map[x][y] === target_tile) {
           return {x: x * 40, y: y * 40, xg: x, yg: y};
         }
       }
     }
-    console.error('Unable to find tile: ' + targetTile);
-    return {};
+    console.error('Unable to find tile: ' + target_tile);
   }
 
-  function findApproxTile(targetTile) {
+  function findApproxTile(target_tile) {
     for (var x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
       for (var y = 0; y < yl; y++) {
-        if (Math.floor(tagpro.map[x][y]) === Math.floor(targetTile)) {
+        if (Math.floor(tagpro.map[x][y]) === Math.floor(target_tile)) {
           return {x: x * 40, y: y * 40, xg: x, yg: y};
         }
       }
     }
-    console.error('Unable to find tile: ' + targetTile);
-    return {};
+    console.error("Unable to find tile: " + target_tile);
   }
 
     /*
      * Returns the position (in pixels) of the specified flag station, even if empty.
      *
-     * searchingFor: a string, one of either: 'ally_flag', 'enemy_flag'
+     * searching_for: a string, one of either: 'ally_flag', 'enemy_flag'
      */
-  function findFlagStation(searchingFor) {
-    var targetFlag = null;
-    if (searchingFor === 'ally_flag') {
-      targetFlag = ALLY_FLAG;
-    } else if (searchingFor === 'enemy_flag') {
-      targetFlag = ENEMY_FLAG;
+  function findFlagStation(searching_for) {
+    var target_flag = null;
+    if (searching_for === 'ally_flag') {
+      target_flag = ALLY_FLAG;
+    } else if (searching_for === 'enemy_flag') {
+      target_flag = ENEMY_FLAG;
     } else {
-      console.error('Flag station description does not exist: ' + searchingFor);
+      console.error('Flag station description does not exist: ' + searching_for);
     }
 
-    return findApproxTile(targetFlag);
+    return findApproxTile(target_flag);
   }
 
     /*
      * Returns the position (in pixels) of the specified taken flag.
      *
-     * searchingFor: a string, one of either: 'ally_flag', 'enemy_flag'
+     * searching_for: a string, one of either: 'ally_flag', 'enemy_flag'
      */
-  function findTakenFlag(searchingFor) {
-    var targetFlag = null;
-    if (searchingFor === 'ally_flag') {
-      targetFlag = TAKEN_ALLY_FLAG;
-    } else if (searchingFor === 'enemy_flag') {
-      targetFlag = TAKEN_ENEMY_FLAG;
+  function findTakenFlag(searching_for) {
+    var target_flag = null;
+    if (searching_for === 'ally_flag') {
+      target_flag = TAKEN_ALLY_FLAG;
+    } else if (searching_for === 'enemy_flag') {
+      target_flag = TAKEN_ENEMY_FLAG;
     } else {
-      console.error('Flag station description does not exist: ' + searchingFor);
+      console.error('Flag station description does not exist: ' + searching_for);
     }
 
-    return findTile(targetFlag);
+    return findTile(target_flag);
   }
 
     // Returns the position of the endzone you should return a the flag to.
     // TODO: return closest endzone tile instead of first
   function findEndzone() {
-    return (self.team === BLUE_TEAM ? findTile(BLUE_ENDZONE) : findTile(RED_ENDZONE));
+    return (self.team == BLUE_TEAM ? findTile(BLUE_ENDZONE) : findTile(RED_ENDZONE));
   }
 
     // Returns the enemy FC if in view.
@@ -317,32 +309,33 @@ function script() {
      * tile.
      */
   function getTraversableTiles() {
-    var xl = tagpro.map.length;
-    var yl = tagpro.map[0].length;
-    var emptyTiles = [];
+    var xl = tagpro.map.length,
+      yl = tagpro.map[0].length,
+      empty_tiles = [];
 
     for (var x = 0; x < xl; x++) {
-      emptyTiles[x] = new Array(yl);
+      empty_tiles[x] = new Array(yl);
       for (var y = 0; y < yl; y++) {
-        emptyTiles[x][y] = isTraversable(tagpro.map[x][y]) ? 1 : 0;
+        empty_tiles[x][y] = isTraversable(tagpro.map[x][y]) ? 1 : 0;
       }
     }
-    return emptyTiles;
+    return empty_tiles;
   }
 
-  var getTarget = function (myX, myY, targetX, targetY, grid) {
+  var getTarget = function (my_x, my_y, target_x, target_y, grid) {
         // TODO: handle edge cases regarding target and current position
+    mypos = {x: my_x, y: my_y};
     var graph = new Graph(grid, {diagonal: true});
-    var start = graph.grid[myX][myY];
-    var end = graph.grid[targetX][targetY];
-    var shortestPath = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
-        // var shortestPath = astar.search(graph, start, end);
-    var next = shortestPath[0];
-    var res = {x: next.x, y: next.y};
+    var start = graph.grid[my_x][my_y];
+    var end = graph.grid[target_x][target_y];
+    var shortest_path = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
+        // var shortest_path = astar.search(graph, start, end);
+    var next = shortest_path[0];
+    res = {x: next.x, y: next.y};
     return res;
   };
-
-  // Stole this function to send chat messages
+  
+    // Stole this function to send chat messages
   var lastMessage = 0;
   function chat(chatMessage) {
     var limit = 500 + 10;
@@ -387,10 +380,10 @@ function script() {
 
     requestAnimationFrame(main);
 
-    var seek = {};
-    var goal = null;
-    var flag = null;
-    var enemy = enemyFC();
+    var seek = {},
+      goal = null,
+      flag = null,
+      enemy = enemyFC();
 
         // If the bot has the flag, go to the endzone
     if (self.flag) {
@@ -406,15 +399,21 @@ function script() {
         goal = findEndzone();
         console.log('I have the flag. Seeking endzone!');
       }
-    } else if (enemy) { // If an enemy player in view has the flag, chase
+    }
+        // If an enemy player in view has the flag, chase
+    else if (enemy) {
       goal = enemy;
       goal.x = enemy.x + enemy.vx;
       goal.y = enemy.y + enemy.vy;
       console.log('I see an enemy with the flag. Chasing!');
-    } else if (allyFlagTaken()) { // If ally flag taken, go to the enemy flag station
+    }
+        // If ally flag taken, go to the enemy flag station
+    else if (allyFlagTaken()) {
       goal = findFlagStation('enemy_flag');
       console.log('Ally flag is taken. Chasing enemy with flag!');
-    } else if (ENEMY_FLAG === YELLOW_FLAG) { // If neutral flag game
+    }
+        // If neutral flag game
+    else if (ENEMY_FLAG === YELLOW_FLAG) {
       if (tagpro.ui.yellowFlagTakenByBlue) {
         goal = findApproxTile(BLUE_ENDZONE);
         console.log('Blue has the flag. Headed towards the Blue Endzone.');
@@ -425,7 +424,9 @@ function script() {
         goal = findFlagStation('ally_flag');
         console.log("I don't know what to do. Going to central flag station!");
       }
-    } else { // If two-flag game (presumed, not tested)
+    }
+        // If two-flag game (presumed, not tested)
+    else {
       goal = findFlagStation('ally_flag');
       console.log("I don't know what to do. Going to ally flag station!");
     }
