@@ -319,8 +319,6 @@ function script() {
         empty_tiles[x][y] = isTraversable(tagpro.map[x][y]) ? 1 : 0;
       }
     }
-<<<<<<< HEAD
-        // console.log(empty_tiles);
     return empty_tiles;
   }
 
@@ -336,20 +334,7 @@ function script() {
     res = {x: next.x, y: next.y};
     return res;
   };
-
-=======
   
-    var getTarget = function (my_x, my_y, target_x, target_y, grid) {
-        if (my_x===target_x && my_y===target_y) return {x: my_x, y:my_y};
-        var graph = new Graph(grid, {diagonal: true});
-        var start = graph.grid[my_y][my_x];
-        var end = graph.grid[target_y][target_x];
-        var shortest_path = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
-        var next = shortest_path[1] || shortest_path[0];
-        return {x: next.x, y: next.y};
-    };
-  
->>>>>>> find approx tile was not behaving as described; fixed
     // Stole this function to send chat messages
   var lastMessage = 0;
   function chat(chatMessage) {
@@ -447,18 +432,11 @@ function script() {
     }
 
         // Version for attempting path-planning
-<<<<<<< HEAD
     var gridPosition = { x: Math.floor((self.x + 20) / 40), y: Math.floor((self.y + 20) / 40) };
     var gridTarget = { x: Math.floor(goal.x / 40), y: Math.floor(goal.y / 40) };
     var nearGoal = getTarget(gridPosition.x, gridPosition.y,
-                                 gridTarget.x, gridTarget.y,
-=======
-        var gridPosition = { x: Math.floor(self.x / 40), y: Math.floor(self.y / 40) };
-        var gridTarget = { x: Math.floor(goal.x / 40), y: Math.floor(goal.y / 40) };
-        var nearGoal = getTarget(gridPosition.y, gridPosition.x,
-                                 gridTarget.y, gridTarget.x,
->>>>>>> find approx tile was not behaving as described; fixed
-                                 getTraversableTiles());
+                             gridTarget.x, gridTarget.y,
+                             getTraversableTiles());
     nearGoal.x = nearGoal.x * 40;
     nearGoal.y = nearGoal.y * 40;
 
