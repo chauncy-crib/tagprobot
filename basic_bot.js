@@ -81,14 +81,14 @@ var tileTypes = {
  * has been assigned.
  */
 function waitForId(fn) {
-    // Don't execute the function until tagpro.playerId has been assigned.
+  // Don't execute the function until tagpro.playerId has been assigned.
   if (!tagpro || !tagpro.playerId) {
     setTimeout(function wait() {
       waitForId(fn);
     }, 100);
     return;
   }
-        // Only run the script if we are not spectating.
+  // Only run the script if we are not spectating.
   if (!tagpro.spectator) {
     fn();
   }
@@ -96,10 +96,10 @@ function waitForId(fn) {
 
 // We define everything relevant to our bot inside this function.
 function script() {
-    /*
-     * This function sets global variables with information about what
-     * flag we want and those important ideological things.
-     */
+  /*
+   * This function sets global variables with information about what
+   * flag we want and those important ideological things.
+   */
   function getDesiredFlag() {
     if (findApproxTile(YELLOW_FLAG) === null) {
       ENEMY_FLAG = (self.team === BLUE_TEAM ? RED_FLAG : BLUE_FLAG);
@@ -110,12 +110,12 @@ function script() {
     }
   }
 
-    // Assign our own player object to `self` for readability.
+  // Assign our own player object to `self` for readability.
   var self = tagpro.players[tagpro.playerId];
-    // Set global variables
+  // Set global variables
   getDesiredFlag();
 
-    // Sends key events to move to a destination.
+  // Sends key events to move to a destination.
   function move(destination) {
     if (destination.x > 1) {
       tagpro.sendKeyPress('left', true);
@@ -140,19 +140,19 @@ function script() {
     }
   }
 
-    // Overriding this function to get a more accurate velocity of players.
-    // Velocity is saved in player.vx and vy.
+  // Overriding this function to get a more accurate velocity of players.
+  // Velocity is saved in player.vx and vy.
   Box2D.Dynamics.b2Body.prototype.GetLinearVelocity = function accurateVelocity() {
     tagpro.players[this.player.id].vx = this.m_linearVelocity.x * 55;
     tagpro.players[this.player.id].vy = this.m_linearVelocity.y * 55;
     return this.m_linearVelocity;
   };
 
-    /*
-     * Returns the position (in pixels x,y and grid positions xg, yg
-     * of first of the specified tile type to appear starting in the
-     * top left corner and moving in a page-reading fashion.
-     */
+  /*
+   * Returns the position (in pixels x,y and grid positions xg, yg
+   * of first of the specified tile type to appear starting in the
+   * top left corner and moving in a page-reading fashion.
+   */
 
   function findTile(targetTile) {
     for (var x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
@@ -178,11 +178,11 @@ function script() {
     return {};
   }
 
-    /*
-     * Returns the position (in pixels) of the specified flag station, even if empty.
-     *
-     * searchingFor: a string, one of either: 'ally_flag', 'enemy_flag'
-     */
+  /*
+   * Returns the position (in pixels) of the specified flag station, even if empty.
+   *
+   * searchingFor: a string, one of either: 'ally_flag', 'enemy_flag'
+   */
   function findFlagStation(searchingFor) {
     var targetFlag = null;
     if (searchingFor === 'ally_flag') {
@@ -196,11 +196,11 @@ function script() {
     return findApproxTile(targetFlag);
   }
 
-    /*
-     * Returns the position (in pixels) of the specified taken flag.
-     *
-     * searchingFor: a string, one of either: 'ally_flag', 'enemy_flag'
-     */
+  /*
+   * Returns the position (in pixels) of the specified taken flag.
+   *
+   * searchingFor: a string, one of either: 'ally_flag', 'enemy_flag'
+   */
   function findTakenFlag(searchingFor) {
     var targetFlag = null;
     if (searchingFor === 'ally_flag') {
@@ -214,13 +214,13 @@ function script() {
     return findTile(targetFlag);
   }
 
-    // Returns the position of the endzone you should return a the flag to.
-    // TODO: return closest endzone tile instead of first
+  // Returns the position of the endzone you should return a the flag to.
+  // TODO: return closest endzone tile instead of first
   function findEndzone() {
     return (self.team === BLUE_TEAM ? findTile(BLUE_ENDZONE) : findTile(RED_ENDZONE));
   }
 
-    // Returns the enemy FC if in view.
+  // Returns the enemy FC if in view.
   function enemyFC() {
     for (var id in tagpro.players) {
       if (!tagpro.players.hasOwnProperty(id))        {continue;}
@@ -232,7 +232,7 @@ function script() {
     }
   }
 
-    // Returns an enemy chaser if in view
+  // Returns an enemy chaser if in view
   function enemyC() {
     for (var id in tagpro.players) {
       if (!tagpro.players.hasOwnProperty(id))        {continue;}
@@ -244,79 +244,79 @@ function script() {
     }
   }
 
-    // Returns whether or not ally team's flag is taken
+  // Returns whether or not ally team's flag is taken
   function allyFlagTaken() {
     return (self.team === RED_TEAM && tagpro.ui.redFlagTaken) || (self.team === BLUE_TEAM && tagpro.ui.blueFlagTaken);
   }
 
-    /*
-     * Returns true if tileID is traversable without consequences.
-     *
-     * Traversable includes: regular floor, all flags, inactive speedpad,
-     *   inactive gate, friendly gate, inactive bomb, teamtiles, inactive
-     *   portal, endzones
-     * Untraversable includes: empty space, walls, active speedpad, any
-     *   powerup, spike, button, enemy/green gate, bomb, active portal
-     */
+  /*
+   * Returns true if tileID is traversable without consequences.
+   *
+   * Traversable includes: regular floor, all flags, inactive speedpad,
+   *   inactive gate, friendly gate, inactive bomb, teamtiles, inactive
+   *   portal, endzones
+   * Untraversable includes: empty space, walls, active speedpad, any
+   *   powerup, spike, button, enemy/green gate, bomb, active portal
+   */
   function isTraversable(tileID) {
     switch (tileID) {
-    case tileTypes.REGULAR_FLOOR:
-    case tileTypes.RED_FLAG:
-    case tileTypes.RED_FLAG_TAKEN:
-    case tileTypes.BLUE_FLAG:
-    case tileTypes.BLUE_FLAG_TAKEN:
-    case tileTypes.SPEEDPAD_INACTIVE:
-    case tileTypes.INACTIVE_GATE:
-    case tileTypes.INACTIVE_BOMB:
-    case tileTypes.RED_TEAMTILE:
-    case tileTypes.BLUE_TEAMTILE:
-    case tileTypes.INACTIVE_PORTAL:
-    case tileTypes.SPEEDPAD_RED_INACTIVE:
-    case tileTypes.SPEEDPAD_BLUE_INACTIVE:
-    case tileTypes.YELLOW_FLAG:
-    case tileTypes.YELLOW_FLAG_TAKEN:
-    case tileTypes.RED_ENDZONE:
-    case tileTypes.BLUE_ENDZONE:
-    case 'blueball':
-    case 'redball':
-      return true;
-    case tileTypes.EMPTY_SPACE:
-    case tileTypes.SQUARE_WALL:
-    case tileTypes.ANGLE_WALL_1:
-    case tileTypes.ANGLE_WALL_2:
-    case tileTypes.ANGLE_WALL_3:
-    case tileTypes.ANGLE_WALL_4:
-    case tileTypes.SPEEDPAD_ACTIVE:
-    case tileTypes.POWERUP_SUBGROUP:
-    case tileTypes.JUKEJUICE:
-    case tileTypes.ROLLING_BOMB:
-    case tileTypes.TAGPRO:
-    case tileTypes.MAX_SPEED:
-    case tileTypes.SPIKE:
-    case tileTypes.BUTTON:
-    case tileTypes.GREEN_GATE:
-    case tileTypes.BOMB:
-    case tileTypes.ACTIVE_PORTAL:
-    case tileTypes.SPEEDPAD_RED_ACTIVE:
-    case tileTypes.SPEEDPAD_BLUE_ACTIVE:
-      return false;
-    case tileTypes.RED_GATE:
-      return self.team === RED_TEAM;
-    case tileTypes.BLUE_GATE:
-      return self.team === BLUE_TEAM;
-    default:
-      return false;
+      case tileTypes.REGULAR_FLOOR:
+      case tileTypes.RED_FLAG:
+      case tileTypes.RED_FLAG_TAKEN:
+      case tileTypes.BLUE_FLAG:
+      case tileTypes.BLUE_FLAG_TAKEN:
+      case tileTypes.SPEEDPAD_INACTIVE:
+      case tileTypes.INACTIVE_GATE:
+      case tileTypes.INACTIVE_BOMB:
+      case tileTypes.RED_TEAMTILE:
+      case tileTypes.BLUE_TEAMTILE:
+      case tileTypes.INACTIVE_PORTAL:
+      case tileTypes.SPEEDPAD_RED_INACTIVE:
+      case tileTypes.SPEEDPAD_BLUE_INACTIVE:
+      case tileTypes.YELLOW_FLAG:
+      case tileTypes.YELLOW_FLAG_TAKEN:
+      case tileTypes.RED_ENDZONE:
+      case tileTypes.BLUE_ENDZONE:
+      case 'blueball':
+      case 'redball':
+        return true;
+      case tileTypes.EMPTY_SPACE:
+      case tileTypes.SQUARE_WALL:
+      case tileTypes.ANGLE_WALL_1:
+      case tileTypes.ANGLE_WALL_2:
+      case tileTypes.ANGLE_WALL_3:
+      case tileTypes.ANGLE_WALL_4:
+      case tileTypes.SPEEDPAD_ACTIVE:
+      case tileTypes.POWERUP_SUBGROUP:
+      case tileTypes.JUKEJUICE:
+      case tileTypes.ROLLING_BOMB:
+      case tileTypes.TAGPRO:
+      case tileTypes.MAX_SPEED:
+      case tileTypes.SPIKE:
+      case tileTypes.BUTTON:
+      case tileTypes.GREEN_GATE:
+      case tileTypes.BOMB:
+      case tileTypes.ACTIVE_PORTAL:
+      case tileTypes.SPEEDPAD_RED_ACTIVE:
+      case tileTypes.SPEEDPAD_BLUE_ACTIVE:
+        return false;
+      case tileTypes.RED_GATE:
+        return self.team === RED_TEAM;
+      case tileTypes.BLUE_GATE:
+        return self.team === BLUE_TEAM;
+      default:
+        return false;
     }
   }
 
-    /*
-     * Returns a 2D array of traversable (1) and blocked (0) tiles.
-     *
-     * The 2D array is an array of the columns in the game. empty_tiles[0] is
-     * the left-most column. Each column array is an array of the tiles in
-     * that column, with 1s and 0s.  empty_tiles[0][0] is the upper-left corner
-     * tile.
-     */
+  /*
+   * Returns a 2D array of traversable (1) and blocked (0) tiles.
+   *
+   * The 2D array is an array of the columns in the game. empty_tiles[0] is
+   * the left-most column. Each column array is an array of the tiles in
+   * that column, with 1s and 0s.  empty_tiles[0][0] is the upper-left corner
+   * tile.
+   */
   function getTraversableTiles() {
     var xl = tagpro.map.length;
     var yl = tagpro.map[0].length;
@@ -332,12 +332,12 @@ function script() {
   }
 
   var getTarget = function (myX, myY, targetX, targetY, grid) {
-        // TODO: handle edge cases regarding target and current position
+    // TODO: handle edge cases regarding target and current position
     var graph = new Graph(grid, {diagonal: true});
     var start = graph.grid[myX][myY];
     var end = graph.grid[targetX][targetY];
     var shortestPath = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
-        // var shortestPath = astar.search(graph, start, end);
+    // var shortestPath = astar.search(graph, start, end);
     var next = shortestPath[0];
     var res = {x: next.x, y: next.y};
     return res;
@@ -360,16 +360,16 @@ function script() {
     }
   }
 
-    /*
-     * The logic/flowchart.
-     *   If team flag is home, sit on flag.
-     *   If team flag is gone, go to enemy team flag.
-     *   If an enemy FC is spotted at any time, chase.
-     *
-     * Note: There is NO pathfinding.
-     */
+  /*
+   * The logic/flowchart.
+   *   If team flag is home, sit on flag.
+   *   If team flag is gone, go to enemy team flag.
+   *   If an enemy FC is spotted at any time, chase.
+   *
+   * Note: There is NO pathfinding.
+   */
   function main() {
-        // Handle keypress and related events for manual/auto toggle
+    // Handle keypress and related events for manual/auto toggle
     window.onkeydown = function (event) {
       if (event.keyCode === 81) {
         AUTONOMOUS = !AUTONOMOUS;
@@ -393,16 +393,16 @@ function script() {
     var flag = null;
     var enemy = enemyFC();
 
-        // If the bot has the flag, go to the endzone
+    // If the bot has the flag, go to the endzone
     if (self.flag) {
       var chaser = enemyC();
-            // Really bad jukes !!!!! DISABLED FOR NOW
+      // Really bad jukes !!!!! DISABLED FOR NOW
       if (false) {
         goal = chaser;
         goal.x = 2 * (self.x + self.vx) - (chaser.x + chaser.vx);
         goal.y = 2 * (self.y + self.vy) - (chaser.y + chaser.vy);
         console.log('I have the flag. Fleeing enemy!');
-            // Really bad caps
+        // Really bad caps
       } else {
         goal = findEndzone();
         console.log('I have the flag. Seeking endzone!');
@@ -431,12 +431,12 @@ function script() {
       console.log("I don't know what to do. Going to ally flag station!");
     }
 
-        // Version for attempting path-planning
+    // Version for attempting path-planning
     var gridPosition = { x: Math.floor((self.x + 20) / 40), y: Math.floor((self.y + 20) / 40) };
     var gridTarget = { x: Math.floor(goal.x / 40), y: Math.floor(goal.y / 40) };
     var nearGoal = getTarget(gridPosition.x, gridPosition.y,
-                             gridTarget.x, gridTarget.y,
-                             getTraversableTiles());
+      gridTarget.x, gridTarget.y,
+      getTraversableTiles());
     nearGoal.x = nearGoal.x * 40;
     nearGoal.y = nearGoal.y * 40;
 
@@ -444,9 +444,9 @@ function script() {
     seek.y = nearGoal.y - (self.y + self.vy);
 
 
-        // Version for not attempting path-planning
-        // seek.x = goal.x - (self.x + self.vx);
-        // seek.y = goal.y - (self.y + self.vy);
+    // Version for not attempting path-planning
+    // seek.x = goal.x - (self.x + self.vx);
+    // seek.y = goal.y - (self.y + self.vy);
     if (AUTONOMOUS) {
       move(seek);
     }
