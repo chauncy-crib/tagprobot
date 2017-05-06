@@ -154,10 +154,11 @@ function script() {
 
   // Sends key events to move to a destination.
   function move(destination) {
-    if (destination.x > 1) {
+    var deadband = 4;
+    if (destination.x > deadband) {
       tagpro.sendKeyPress('left', true);
       tagpro.sendKeyPress('right', false);
-    } else if (destination.x < -1) {
+    } else if (destination.x < -deadband) {
       tagpro.sendKeyPress('right', true);
       tagpro.sendKeyPress('left', false);
     } else {
@@ -165,10 +166,10 @@ function script() {
       tagpro.sendKeyPress('left', true);
     }
 
-    if (destination.y > 1) {
+    if (destination.y > deadband) {
       tagpro.sendKeyPress('up', true);
       tagpro.sendKeyPress('down', false);
-    } else if (destination.y < -1) {
+    } else if (destination.y < -deadband) {
       tagpro.sendKeyPress('down', true);
       tagpro.sendKeyPress('up', false);
     } else {
@@ -329,17 +330,41 @@ function script() {
     return emptyTiles;
   }
 
-  const getTarget = (myX, myY, targetX, targetY, grid) => {
+  function getTarget(myX, myY, targetX, targetY, grid) {
     // TODO: handle edge cases regarding target and current position
-    const graph = new Graph(grid, { diagonal: true });
+    // var graph = new Graph(grid, {diagonal: true});
+    const graph = new Graph(grid);
     const start = graph.grid[myX][myY];
     const end = graph.grid[targetX][targetY];
-    const shortestPath = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
-    // var shortestPath = astar.search(graph, start, end);
-    const next = shortestPath[0];
+    // var shortestPath = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
+    const shortestPath = astar.search(graph, start, end);
+
+    // Find the furthest cell in the direction of the next cell
+    let winner = 0;
+    let j = 0;
+    if (shortestPath.length > 1) {
+      const dx = shortestPath[0].x - myX;
+      const dy = shortestPath[0].y - myY;
+      for (let i = 0; i < shortestPath.length; i++) {
+        const ndx = shortestPath[i].x - myX;
+        if (dx === ndx) {
+          winner += 1;
+        } else {
+          break;
+        }
+      }
+      for (; j < winner; j++) {
+        const ndy = shortestPath[j].y - myY;
+        if (dy !== ndy) {
+          winner = j;
+          break;
+        }
+      }
+    }
+    const next = shortestPath[j];
     const res = { x: next.x, y: next.y };
     return res;
-  };
+  }
 
   // Stole this function to send chat messages
   let lastMessage = 0;
