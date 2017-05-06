@@ -15,7 +15,8 @@
 
 /* global tagpro Box2D astar Graph*/
 
-/* eslint-disable one-var, no-unused-vars, no-console*/
+/* eslint-disable no-console*/
+/* eslint-disable one-var, no-unused-vars*/
 var EMPTY_TILE = 0,
   RED_TEAM = 1,
   BLUE_TEAM = 2,
