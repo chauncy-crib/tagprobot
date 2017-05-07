@@ -76,6 +76,8 @@ var tileTypes = {
   BLUE_ENDZONE: 18
 };
 
+var PIXEL_PER_TILE = 40
+
 /*
  * This function will execute the provided function after tagpro.playerId
  * has been assigned.
@@ -158,7 +160,7 @@ function script() {
     for (var x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
       for (var y = 0; y < yl; y++) {
         if (tagpro.map[x][y] === targetTile) {
-          return {x: x * 40, y: y * 40, xg: x, yg: y};
+          return {x: x * PIXEL_PER_TILE, y: y * PIXEL_PER_TILE, xg: x, yg: y};
         }
       }
     }
@@ -170,7 +172,7 @@ function script() {
     for (var x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
       for (var y = 0; y < yl; y++) {
         if (Math.floor(tagpro.map[x][y]) === Math.floor(targetTile)) {
-          return {x: x * 40, y: y * 40, xg: x, yg: y};
+          return {x: x * PIXEL_PER_TILE, y: y * PIXEL_PER_TILE, xg: x, yg: y};
         }
       }
     }
@@ -260,52 +262,52 @@ function script() {
    */
   function isTraversable(tileID) {
     switch (tileID) {
-      case tileTypes.REGULAR_FLOOR:
-      case tileTypes.RED_FLAG:
-      case tileTypes.RED_FLAG_TAKEN:
-      case tileTypes.BLUE_FLAG:
-      case tileTypes.BLUE_FLAG_TAKEN:
-      case tileTypes.SPEEDPAD_INACTIVE:
-      case tileTypes.INACTIVE_GATE:
-      case tileTypes.INACTIVE_BOMB:
-      case tileTypes.RED_TEAMTILE:
-      case tileTypes.BLUE_TEAMTILE:
-      case tileTypes.INACTIVE_PORTAL:
-      case tileTypes.SPEEDPAD_RED_INACTIVE:
-      case tileTypes.SPEEDPAD_BLUE_INACTIVE:
-      case tileTypes.YELLOW_FLAG:
-      case tileTypes.YELLOW_FLAG_TAKEN:
-      case tileTypes.RED_ENDZONE:
-      case tileTypes.BLUE_ENDZONE:
-      case 'blueball':
-      case 'redball':
-        return true;
-      case tileTypes.EMPTY_SPACE:
-      case tileTypes.SQUARE_WALL:
-      case tileTypes.ANGLE_WALL_1:
-      case tileTypes.ANGLE_WALL_2:
-      case tileTypes.ANGLE_WALL_3:
-      case tileTypes.ANGLE_WALL_4:
-      case tileTypes.SPEEDPAD_ACTIVE:
-      case tileTypes.POWERUP_SUBGROUP:
-      case tileTypes.JUKEJUICE:
-      case tileTypes.ROLLING_BOMB:
-      case tileTypes.TAGPRO:
-      case tileTypes.MAX_SPEED:
-      case tileTypes.SPIKE:
-      case tileTypes.BUTTON:
-      case tileTypes.GREEN_GATE:
-      case tileTypes.BOMB:
-      case tileTypes.ACTIVE_PORTAL:
-      case tileTypes.SPEEDPAD_RED_ACTIVE:
-      case tileTypes.SPEEDPAD_BLUE_ACTIVE:
-        return false;
-      case tileTypes.RED_GATE:
-        return self.team === RED_TEAM;
-      case tileTypes.BLUE_GATE:
-        return self.team === BLUE_TEAM;
-      default:
-        return false;
+    case tileTypes.REGULAR_FLOOR:
+    case tileTypes.RED_FLAG:
+    case tileTypes.RED_FLAG_TAKEN:
+    case tileTypes.BLUE_FLAG:
+    case tileTypes.BLUE_FLAG_TAKEN:
+    case tileTypes.SPEEDPAD_INACTIVE:
+    case tileTypes.INACTIVE_GATE:
+    case tileTypes.INACTIVE_BOMB:
+    case tileTypes.RED_TEAMTILE:
+    case tileTypes.BLUE_TEAMTILE:
+    case tileTypes.INACTIVE_PORTAL:
+    case tileTypes.SPEEDPAD_RED_INACTIVE:
+    case tileTypes.SPEEDPAD_BLUE_INACTIVE:
+    case tileTypes.YELLOW_FLAG:
+    case tileTypes.YELLOW_FLAG_TAKEN:
+    case tileTypes.RED_ENDZONE:
+    case tileTypes.BLUE_ENDZONE:
+    case 'blueball':
+    case 'redball':
+      return true;
+    case tileTypes.EMPTY_SPACE:
+    case tileTypes.SQUARE_WALL:
+    case tileTypes.ANGLE_WALL_1:
+    case tileTypes.ANGLE_WALL_2:
+    case tileTypes.ANGLE_WALL_3:
+    case tileTypes.ANGLE_WALL_4:
+    case tileTypes.SPEEDPAD_ACTIVE:
+    case tileTypes.POWERUP_SUBGROUP:
+    case tileTypes.JUKEJUICE:
+    case tileTypes.ROLLING_BOMB:
+    case tileTypes.TAGPRO:
+    case tileTypes.MAX_SPEED:
+    case tileTypes.SPIKE:
+    case tileTypes.BUTTON:
+    case tileTypes.GREEN_GATE:
+    case tileTypes.BOMB:
+    case tileTypes.ACTIVE_PORTAL:
+    case tileTypes.SPEEDPAD_RED_ACTIVE:
+    case tileTypes.SPEEDPAD_BLUE_ACTIVE:
+      return false;
+    case tileTypes.RED_GATE:
+      return self.team === RED_TEAM;
+    case tileTypes.BLUE_GATE:
+      return self.team === BLUE_TEAM;
+    default:
+      return false;
     }
   }
 
@@ -432,13 +434,15 @@ function script() {
     }
 
     // Version for attempting path-planning
-    var gridPosition = { x: Math.floor((self.x + 20) / 40), y: Math.floor((self.y + 20) / 40) };
-    var gridTarget = { x: Math.floor(goal.x / 40), y: Math.floor(goal.y / 40) };
+    var gridPosition = { x: Math.floor((self.x + 20) / PIXEL_PER_TILE), y: Math.floor((self.y + 20)
+        / PIXEL_PER_TILE) };
+    var gridTarget = { x: Math.floor(goal.x / PIXEL_PER_TILE),
+      y: Math.floor(goal.y / PIXEL_PER_TILE) };
     var nearGoal = getTarget(gridPosition.x, gridPosition.y,
       gridTarget.x, gridTarget.y,
       getTraversableTiles());
-    nearGoal.x = nearGoal.x * 40;
-    nearGoal.y = nearGoal.y * 40;
+    nearGoal.x = nearGoal.x * PIXEL_PER_TILE;
+    nearGoal.y = nearGoal.y * PIXEL_PER_TILE;
 
     seek.x = nearGoal.x - (self.x + self.vx);
     seek.y = nearGoal.y - (self.y + self.vy);
