@@ -468,7 +468,7 @@ function script() {
     }
 
     // Version for attempting path-planning
-    var gridPosition = { x: Math.floor((self.x + 20) / PIXEL_PER_TILE), y: Math.floor((self.y + 20)
+    var gridPosition = { x: Math.floor((self.x + (PIXEL_PER_TILE / 2)) / PIXEL_PER_TILE), y: Math.floor((self.y + (PIXEL_PER_TILE / 2))
         / PIXEL_PER_TILE) };
     var gridTarget = { x: Math.floor(goal.x / PIXEL_PER_TILE),
       y: Math.floor(goal.y / PIXEL_PER_TILE) };
