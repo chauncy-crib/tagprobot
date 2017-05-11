@@ -76,7 +76,7 @@ var tileTypes = {
   BLUE_ENDZONE: 18
 };
 
-var PIXEL_PER_TILE = 40
+var PIXEL_PER_TILE = 40;
 
 /*
  * This function will execute the provided function after tagpro.playerId
@@ -253,28 +253,28 @@ function script() {
 
   /* Returns a 2d "gridTile" array of traversible (1) and blocked (0) cells inside a tile.
    *
-   * isTraversable: if this tile is traversable
+   * tileTraverse: if this tile is traversable
    * cpt: number of cells per tile
    * objRadius: radius of untraversable object in pixels
    */
-  function fillGridTile(isTraversable, cpt, objRadius) {
-    var gridTile = []
+  function fillGridTile(tileTraverse, cpt, objRadius) {
+    var gridTile = [];
     // Start with all traversable
-    for (var i=0; i<cpt;i++) {
+    for (var i = 0; i < cpt; i++) {
       gridTile[i] = new Array(cpt);
-      for (var j=0; j<cpt;j++) {
+      for (var j = 0; j < cpt; j++) {
         gridTile[i][j] = 1;
       }
     }
 
-    if (!isTraversable) {
+    if (!tileTraverse) {
       var midCell = (cpt - 1.0) / 2.0
-      for (var i=0; i<cpt;i++) {
-        for (var j=0; j<cpt;j++) {
-          var xDiff = Math.max(Math.abs(i-midCell) - 0.5, 0);
-          var yDiff = Math.max(Math.abs(j-midCell) - 0.5, 0);
-          var cellDist = Math.sqrt(xDiff*xDiff + yDiff*yDiff);
-          var pixelDist = cellDist*(40/cpt)
+      for (var i = 0; i < cpt; i++) {
+        for (var j = 0; j < cpt; j++) {
+          var xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
+          var yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
+          var cellDist = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+          var pixelDist = cellDist * (40 / cpt);
           if (pixelDist <= objRadius) {
             // This cell touches the object, is not traversable
             gridTile[i][j] = 0;
