@@ -251,13 +251,13 @@ function script() {
     return (self.team === RED_TEAM && tagpro.ui.redFlagTaken) || (self.team === BLUE_TEAM && tagpro.ui.blueFlagTaken);
   }
 
-  /* Returns a 2d "gridTile" array of traversible (1) and blocked (0) cells inside a tile.
+  /* Returns a 2d cell array of traversible (1) and blocked (0) cells inside a tile.
    *
    * tileTraverse: if this tile is traversable
    * cpt: number of cells per tile
    * objRadius: radius of untraversable object in pixels
    */
-  function fillGridTile(tileTraverse, cpt, objRadius) {
+  function traversableCellsInTile(tileTraverse, cpt, objRadius) {
     var gridTile = [];
     // Start with all traversable
     for (var i = 0; i < cpt; i++) {
@@ -268,7 +268,7 @@ function script() {
     }
 
     if (!tileTraverse) {
-      var midCell = (cpt - 1.0) / 2.0
+      var midCell = (cpt - 1.0) / 2.0;
       for (var i = 0; i < cpt; i++) {
         for (var j = 0; j < cpt; j++) {
           var xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
@@ -346,28 +346,46 @@ function script() {
   }
 
   /*
-   * Returns a 2D array of traversable (1) and blocked (0) tiles.
-   *
+   * Returns a 2D array of traversable (1) and blocked (0) tiles. Size of return grid is
+   * map.length * cpt
+   * 
    * The 2D array is an array of the columns in the game. empty_tiles[0] is
    * the left-most column. Each column array is an array of the tiles in
    * that column, with 1s and 0s.  empty_tiles[0][0] is the upper-left corner
    * tile.
+   *
+   * cpt: number of cells per tile
    */
-  function getTraversableTiles() {
+  function getTraversableTiles(cpt) {
     var xl = tagpro.map.length;
     var yl = tagpro.map[0].length;
     var emptyTiles = [];
 
+    for (var x = 0; x < xl * cpt; x++) {
+      emptyTiles[x] = new Array(yl * cpt);
+    }
     for (var x = 0; x < xl; x++) {
-      emptyTiles[x] = new Array(yl);
       for (var y = 0; y < yl; y++) {
-        emptyTiles[x][y] = isTraversable(tagpro.map[x][y]) ? 1 : 0;
+        var objRadius = 40; // TODO: Set radius to be correct value for each cell object
+        fillGridWithSubgrid(emptyTiles, traversableCellsInTile(tagpro.map[x][y], cpt, objRadius),
+                            x * cpt, y * cpt);
       }
     }
     return emptyTiles;
   }
 
-  var getTarget = function (myX, myY, targetX, targetY, grid) {
+  /*
+   * place all values from smallGrid into bigGrid. Align the upper left corner at x, y
+   */
+  function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
+    for (var i = 0; i < smallGrid.length; i++) {
+      for (var j = 0; j < smallGrid[0].length; j++) {
+        bigGrid[i + x][j + y] = smallGrid[i][j];
+      }
+    }
+  }
+
+  function getTarget(myX, myY, targetX, targetY, grid) {
     // TODO: handle edge cases regarding target and current position
     var graph = new Graph(grid, {diagonal: true});
     var start = graph.grid[myX][myY];
@@ -377,7 +395,7 @@ function script() {
     var next = shortestPath[0];
     var res = {x: next.x, y: next.y};
     return res;
-  };
+  }
 
   // Stole this function to send chat messages
   var lastMessage = 0;
@@ -460,11 +478,11 @@ function script() {
         console.log('Red has the flag. Headed towards the Red Endzone.');
       } else {
         goal = findFlagStation('ally_flag');
-        console.log("I don't know what to do. Going to central flag station!");
+        console.log('I don\'t know what to do. Going to central flag station!');
       }
     } else { // If two-flag game (presumed, not tested)
       goal = findFlagStation('ally_flag');
-      console.log("I don't know what to do. Going to ally flag station!");
+      console.log('I don\'t know what to do. Going to ally flag station!');
     }
 
     // Version for attempting path-planning
