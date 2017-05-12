@@ -35,6 +35,8 @@ var EMPTY_TILE = 0,
   AUTONOMOUS = true;
 /* eslint-enable one-var, no-unused-vars*/
 
+var cells;
+
 var tileTypes = {
   EMPTY_SPACE: 0,
   SQUARE_WALL: 1,
@@ -260,17 +262,19 @@ function script() {
   function traversableCellsInTile(tileTraverse, cpt, objRadius) {
     var gridTile = [];
     // Start with all traversable
-    for (var i = 0; i < cpt; i++) {
+    var i;
+    var j;
+    for (i = 0; i < cpt; i++) {
       gridTile[i] = new Array(cpt);
-      for (var j = 0; j < cpt; j++) {
+      for (j = 0; j < cpt; j++) {
         gridTile[i][j] = 1;
       }
     }
 
     if (!tileTraverse) {
       var midCell = (cpt - 1.0) / 2.0;
-      for (var i = 0; i < cpt; i++) {
-        for (var j = 0; j < cpt; j++) {
+      for (i = 0; i < cpt; i++) {
+        for (j = 0; j < cpt; j++) {
           var xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
           var yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
           var cellDist = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
@@ -348,7 +352,7 @@ function script() {
   /*
    * Returns a 2D array of traversable (1) and blocked (0) tiles. Size of return grid is
    * map.length * cpt
-   * 
+   *
    * The 2D array is an array of the columns in the game. empty_tiles[0] is
    * the left-most column. Each column array is an array of the tiles in
    * that column, with 1s and 0s.  empty_tiles[0][0] is the upper-left corner
@@ -360,17 +364,18 @@ function script() {
     var xl = tagpro.map.length;
     var yl = tagpro.map[0].length;
     var emptyTiles = [];
-
-    for (var x = 0; x < xl * cpt; x++) {
+    var x;
+    for (x = 0; x < xl * cpt; x++) {
       emptyTiles[x] = new Array(yl * cpt);
     }
-    for (var x = 0; x < xl; x++) {
+    for (x = 0; x < xl; x++) {
       for (var y = 0; y < yl; y++) {
         var objRadius = 40; // TODO: Set radius to be correct value for each cell object
-        fillGridWithSubgrid(emptyTiles, traversableCellsInTile(tagpro.map[x][y], cpt, objRadius),
+        fillGridWithSubgrid(emptyTiles, traversableCellsInTile(isTraversable(tagpro.map[x][y]), cpt, objRadius),
                             x * cpt, y * cpt);
       }
     }
+    cells = emptyTiles;
     return emptyTiles;
   }
 
@@ -446,7 +451,7 @@ function script() {
     var goal = null;
     var flag = null;
     var enemy = enemyFC();
-
+    var cpt = 5; // How many cells we use per tile
     // If the bot has the flag, go to the endzone
     if (self.flag) {
       var chaser = enemyC();
@@ -485,19 +490,27 @@ function script() {
       console.log('I don\'t know what to do. Going to ally flag station!');
     }
 
+    // TODO: seek to center pixel of target, instead of the center of the tile the
+    // target is on
+
     // Version for attempting path-planning
-    var gridPosition = { x: Math.floor((self.x + (PIXEL_PER_TILE / 2)) / PIXEL_PER_TILE), y: Math.floor((self.y + (PIXEL_PER_TILE / 2))
-        / PIXEL_PER_TILE) };
-    var gridTarget = { x: Math.floor(goal.x / PIXEL_PER_TILE),
-      y: Math.floor(goal.y / PIXEL_PER_TILE) };
+    // store gridPosition in cells by doing pixels * (cells/tiles) * (tiles/pixels)
+    var gridPosition = {
+      x: Math.floor((self.x + (PIXEL_PER_TILE / 2)) * cpt / PIXEL_PER_TILE),
+      y: Math.floor((self.y + (PIXEL_PER_TILE / 2)) * cpt / PIXEL_PER_TILE)
+    };
+
+    var gridTarget = {
+      x: Math.floor((goal.x + (PIXEL_PER_TILE / 2)) * cpt / PIXEL_PER_TILE),
+      y: Math.floor((goal.y + (PIXEL_PER_TILE / 2)) * cpt / PIXEL_PER_TILE)
+    };
+
     var nearGoal = getTarget(gridPosition.x, gridPosition.y,
       gridTarget.x, gridTarget.y,
       getTraversableTiles());
-    nearGoal.x = nearGoal.x * PIXEL_PER_TILE;
-    nearGoal.y = nearGoal.y * PIXEL_PER_TILE;
 
-    seek.x = nearGoal.x - (self.x + self.vx);
-    seek.y = nearGoal.y - (self.y + self.vy);
+    seek.x = nearGoal.x - self.x;
+    seek.y = nearGoal.y - self.y;
 
 
     // Version for not attempting path-planning
