@@ -79,7 +79,7 @@ var tileTypes = {
 };
 
 var PIXEL_PER_TILE = 40;
-
+var cpt = 5;
 /*
  * This function will execute the provided function after tagpro.playerId
  * has been assigned.
@@ -507,7 +507,7 @@ function script() {
 
     var nearGoal = getTarget(gridPosition.x, gridPosition.y,
       gridTarget.x, gridTarget.y,
-      getTraversableTiles());
+      getTraversableTiles(cpt));
 
     seek.x = nearGoal.x - self.x;
     seek.y = nearGoal.y - self.y;
