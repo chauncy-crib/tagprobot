@@ -35,6 +35,8 @@ var EMPTY_TILE = 0,
   AUTONOMOUS = true;
 /* eslint-enable one-var, no-unused-vars*/
 
+var cells;
+
 var tileTypes = {
   EMPTY_SPACE: 0,
   SQUARE_WALL: 1,
@@ -76,8 +78,8 @@ var tileTypes = {
   BLUE_ENDZONE: 18
 };
 
-var PIXEL_PER_TILE = 40
-
+var PIXEL_PER_TILE = 40;
+var cpt = 5;
 /*
  * This function will execute the provided function after tagpro.playerId
  * has been assigned.
@@ -251,6 +253,42 @@ function script() {
     return (self.team === RED_TEAM && tagpro.ui.redFlagTaken) || (self.team === BLUE_TEAM && tagpro.ui.blueFlagTaken);
   }
 
+  /* Returns a 2d cell array of traversible (1) and blocked (0) cells inside a tile.
+   *
+   * tileTraverse: if this tile is traversable
+   * cpt: number of cells per tile
+   * objRadius: radius of untraversable object in pixels
+   */
+  function traversableCellsInTile(tileTraverse, cpt, objRadius) {
+    var gridTile = [];
+    // Start with all traversable
+    var i;
+    var j;
+    for (i = 0; i < cpt; i++) {
+      gridTile[i] = new Array(cpt);
+      for (j = 0; j < cpt; j++) {
+        gridTile[i][j] = 1;
+      }
+    }
+
+    if (!tileTraverse) {
+      var midCell = (cpt - 1.0) / 2.0;
+      for (i = 0; i < cpt; i++) {
+        for (j = 0; j < cpt; j++) {
+          var xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
+          var yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
+          var cellDist = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+          var pixelDist = cellDist * (40 / cpt);
+          if (pixelDist <= objRadius) {
+            // This cell touches the object, is not traversable
+            gridTile[i][j] = 0;
+          }
+        }
+      }
+    }
+    return gridTile;
+  }
+
   /*
    * Returns true if tileID is traversable without consequences.
    *
@@ -312,28 +350,47 @@ function script() {
   }
 
   /*
-   * Returns a 2D array of traversable (1) and blocked (0) tiles.
+   * Returns a 2D array of traversable (1) and blocked (0) tiles. Size of return grid is
+   * map.length * cpt
    *
    * The 2D array is an array of the columns in the game. empty_tiles[0] is
    * the left-most column. Each column array is an array of the tiles in
    * that column, with 1s and 0s.  empty_tiles[0][0] is the upper-left corner
    * tile.
+   *
+   * cpt: number of cells per tile
    */
-  function getTraversableTiles() {
+  function getTraversableTiles(cpt) {
     var xl = tagpro.map.length;
     var yl = tagpro.map[0].length;
     var emptyTiles = [];
-
-    for (var x = 0; x < xl; x++) {
-      emptyTiles[x] = new Array(yl);
+    var x;
+    for (x = 0; x < xl * cpt; x++) {
+      emptyTiles[x] = new Array(yl * cpt);
+    }
+    for (x = 0; x < xl; x++) {
       for (var y = 0; y < yl; y++) {
-        emptyTiles[x][y] = isTraversable(tagpro.map[x][y]) ? 1 : 0;
+        var objRadius = 40; // TODO: Set radius to be correct value for each cell object
+        fillGridWithSubgrid(emptyTiles, traversableCellsInTile(isTraversable(tagpro.map[x][y]), cpt, objRadius),
+                            x * cpt, y * cpt);
       }
     }
+    cells = emptyTiles;
     return emptyTiles;
   }
 
-  var getTarget = function (myX, myY, targetX, targetY, grid) {
+  /*
+   * place all values from smallGrid into bigGrid. Align the upper left corner at x, y
+   */
+  function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
+    for (var i = 0; i < smallGrid.length; i++) {
+      for (var j = 0; j < smallGrid[0].length; j++) {
+        bigGrid[i + x][j + y] = smallGrid[i][j];
+      }
+    }
+  }
+
+  function getTarget(myX, myY, targetX, targetY, grid) {
     // TODO: handle edge cases regarding target and current position
     var graph = new Graph(grid, {diagonal: true});
     var start = graph.grid[myX][myY];
@@ -343,7 +400,7 @@ function script() {
     var next = shortestPath[0];
     var res = {x: next.x, y: next.y};
     return res;
-  };
+  }
 
   // Stole this function to send chat messages
   var lastMessage = 0;
@@ -394,7 +451,7 @@ function script() {
     var goal = null;
     var flag = null;
     var enemy = enemyFC();
-
+    var cpt = 5; // How many cells we use per tile
     // If the bot has the flag, go to the endzone
     if (self.flag) {
       var chaser = enemyC();
@@ -426,26 +483,34 @@ function script() {
         console.log('Red has the flag. Headed towards the Red Endzone.');
       } else {
         goal = findFlagStation('ally_flag');
-        console.log("I don't know what to do. Going to central flag station!");
+        console.log('I don\'t know what to do. Going to central flag station!');
       }
     } else { // If two-flag game (presumed, not tested)
       goal = findFlagStation('ally_flag');
-      console.log("I don't know what to do. Going to ally flag station!");
+      console.log('I don\'t know what to do. Going to ally flag station!');
     }
 
+    // TODO: seek to center pixel of target, instead of the center of the tile the
+    // target is on
+
     // Version for attempting path-planning
-    var gridPosition = { x: Math.floor((self.x + 20) / PIXEL_PER_TILE), y: Math.floor((self.y + 20)
-        / PIXEL_PER_TILE) };
-    var gridTarget = { x: Math.floor(goal.x / PIXEL_PER_TILE),
-      y: Math.floor(goal.y / PIXEL_PER_TILE) };
+    // store gridPosition in cells by doing pixels * (cells/tiles) * (tiles/pixels)
+    var gridPosition = {
+      x: Math.floor((self.x + (PIXEL_PER_TILE / 2)) * cpt / PIXEL_PER_TILE),
+      y: Math.floor((self.y + (PIXEL_PER_TILE / 2)) * cpt / PIXEL_PER_TILE)
+    };
+
+    var gridTarget = {
+      x: Math.floor((goal.x + (PIXEL_PER_TILE / 2)) * cpt / PIXEL_PER_TILE),
+      y: Math.floor((goal.y + (PIXEL_PER_TILE / 2)) * cpt / PIXEL_PER_TILE)
+    };
+
     var nearGoal = getTarget(gridPosition.x, gridPosition.y,
       gridTarget.x, gridTarget.y,
-      getTraversableTiles());
-    nearGoal.x = nearGoal.x * PIXEL_PER_TILE;
-    nearGoal.y = nearGoal.y * PIXEL_PER_TILE;
+      getTraversableTiles(cpt));
 
-    seek.x = nearGoal.x - (self.x + self.vx);
-    seek.y = nearGoal.y - (self.y + self.vy);
+    seek.x = nearGoal.x - self.x;
+    seek.y = nearGoal.y - self.y;
 
 
     // Version for not attempting path-planning
