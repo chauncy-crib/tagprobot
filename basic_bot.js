@@ -76,7 +76,38 @@ var tileTypes = {
   BLUE_ENDZONE: 18
 };
 
-var PIXEL_PER_TILE = 40
+var PIXEL_PER_TILE = 40;
+
+// Preset logging levels that control whether or not a message prints to
+// the console.
+var INFO = 0,
+  WARN = 1,
+  ERROR = 2;
+
+// The current logging level. Logs with a logging level greater than or equal
+// to this value will be printed to the console.
+var CURR_LOG_LEVEL = INFO;
+
+/*
+ * This function will print message to console if the given log_level is
+ * greater than or equal to the CURR_LOG_LEVEL.
+ */
+function LOG(log_level, message) {
+  if (log_level >= CURR_LOG_LEVEL) {
+    switch (log_level) {
+      case INFO:
+        message = "INFO: " + message;
+        break;
+      case WARN:
+        message = "WARN: " + message;
+        break;
+      case ERROR:
+        message = "ERROR: " + message;
+        break;
+    }
+    console.log(message);
+  }
+}
 
 /*
  * This function will execute the provided function after tagpro.playerId
@@ -164,7 +195,7 @@ function script() {
         }
       }
     }
-    console.error('Unable to find tile: ' + targetTile);
+    LOG(ERROR, 'Unable to find tile: ' + targetTile);
     return {};
   }
 
@@ -176,7 +207,7 @@ function script() {
         }
       }
     }
-    console.error('Unable to find tile: ' + targetTile);
+    LOG(ERROR, 'Unable to find tile: ' + targetTile);
     return {};
   }
 
@@ -192,7 +223,7 @@ function script() {
     } else if (searchingFor === 'enemy_flag') {
       targetFlag = ENEMY_FLAG;
     } else {
-      console.error('Flag station description does not exist: ' + searchingFor);
+      LOG(ERROR, 'Flag station description does not exist: ' + searchingFor);
     }
 
     return findApproxTile(targetFlag);
@@ -210,7 +241,7 @@ function script() {
     } else if (searchingFor === 'enemy_flag') {
       targetFlag = TAKEN_ENEMY_FLAG;
     } else {
-      console.error('Flag station description does not exist: ' + searchingFor);
+      LOG(ERROR, 'Flag station description does not exist: ' + searchingFor);
     }
 
     return findTile(targetFlag);
@@ -384,7 +415,7 @@ function script() {
         } else {
           chat('Autonomy Mode updated: now MANUAL!');
         }
-        setTimeout(function () { console.log('Autonomy status: ' + AUTONOMOUS); }, 200);
+        setTimeout(function () { LOG(INFO, 'Autonomy status: ' + AUTONOMOUS); }, 200);
       }
     };
 
@@ -403,34 +434,35 @@ function script() {
         goal = chaser;
         goal.x = 2 * (self.x + self.vx) - (chaser.x + chaser.vx);
         goal.y = 2 * (self.y + self.vy) - (chaser.y + chaser.vy);
-        console.log('I have the flag. Fleeing enemy!');
+        LOG(INFO, 'I have the flag. Fleeing enemy!');
         // Really bad caps
       } else {
         goal = findEndzone();
-        console.log('I have the flag. Seeking endzone!');
+        LOG(INFO, 'I have the flag. Seeking endzone!');
       }
     } else if (enemy) { // If an enemy player in view has the flag, chase
       goal = enemy;
       goal.x = enemy.x + enemy.vx;
       goal.y = enemy.y + enemy.vy;
-      console.log('I see an enemy with the flag. Chasing!');
+      LOG(INFO, 'I see an enemy with the flag. Chasing!');
     } else if (allyFlagTaken()) { // If ally flag taken, go to the enemy flag station
       goal = findFlagStation('enemy_flag');
-      console.log('Ally flag is taken. Chasing enemy with flag!');
+      LOG(INFO, 'Ally flag is taken. Chasing enemy with flag!');
     } else if (ENEMY_FLAG === YELLOW_FLAG) { // If neutral flag game
       if (tagpro.ui.yellowFlagTakenByBlue) {
         goal = findApproxTile(BLUE_ENDZONE);
-        console.log('Blue has the flag. Headed towards the Blue Endzone.');
+        LOG(INFO, 'Blue has the flag. Headed towards the Blue Endzone.');
       } else if (tagpro.ui.yellowFlagTakenByRed) {
         goal = findApproxTile(RED_ENDZONE);
-        console.log('Red has the flag. Headed towards the Red Endzone.');
+        LOG(INFO, 'Red has the flag. Headed towards the Red Endzone.');
       } else {
         goal = findFlagStation('ally_flag');
-        console.log("I don't know what to do. Going to central flag station!");
+        LOG(INFO, "I don't know what to do. Going to central flag " +
+            "station!");
       }
     } else { // If two-flag game (presumed, not tested)
       goal = findFlagStation('ally_flag');
-      console.log("I don't know what to do. Going to ally flag station!");
+      LOG(INFO, "I don't know what to do. Going to ally flag station!");
     }
 
     // Version for attempting path-planning
