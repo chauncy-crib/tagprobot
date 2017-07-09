@@ -154,6 +154,7 @@ function script() {
 
   // Sends key events to move to a destination.
   function move(destination) {
+    // TODO: address deadband variable with a comment
     var deadband = 4;
     if (destination.x > deadband) {
       tagpro.sendKeyPress('left', true);
