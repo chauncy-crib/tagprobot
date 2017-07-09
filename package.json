@@ -2,7 +2,6 @@
   "name": "tagprobot",
   "version": "1.0.0",
   "description": "",
-  "main": "basic_bot.js",
   "scripts": {
     "start": "http-server",
     "build": "webpack --watch"
