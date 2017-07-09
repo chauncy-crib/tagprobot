@@ -11,13 +11,16 @@
 // @require       https://raw.githubusercontent.com/bgrins/javascript-astar/master/astar.js
 // @license       2015
 // ==/UserScript==
+
+import _ from 'lodash';
+
 // Define global constants
 
 /* global tagpro Box2D astar Graph*/
 
 /* eslint-disable no-console*/
 /* eslint-disable one-var, no-unused-vars*/
-let EMPTY_TILE = 0,
+const EMPTY_TILE = 0,
   RED_TEAM = 1,
   BLUE_TEAM = 2,
   RED_FLAG = 3,
@@ -28,10 +31,11 @@ let EMPTY_TILE = 0,
   TAKEN_YELLOW_FLAG = 16.1,
   RED_ENDZONE = 17,
   BLUE_ENDZONE = 18,
-  ENEMY_FLAG = null,
   TAKEN_ENEMY_FLAG = null,
+  TAKEN_ALLY_FLAG = null;
+
+let ENEMY_FLAG = null,
   ALLY_FLAG = null,
-  TAKEN_ALLY_FLAG = null,
   AUTONOMOUS = true;
 /* eslint-enable one-var, no-unused-vars*/
 
@@ -98,6 +102,39 @@ function waitForId(fn) {
 
 // We define everything relevant to our bot inside this function.
 function script() {
+  // Assign our own player object to `self` for readability.
+  const self = tagpro.players[tagpro.playerId];
+
+  /*
+   * Returns the position (in pixels x,y and grid positions xg, yg
+   * of first of the specified tile type to appear starting in the
+   * top left corner and moving in a page-reading fashion.
+   */
+
+  function findTile(targetTile) {
+    for (let x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
+      for (let y = 0; y < yl; y++) {
+        if (tagpro.map[x][y] === targetTile) {
+          return { x: x * PIXEL_PER_TILE, y: y * PIXEL_PER_TILE, xg: x, yg: y };
+        }
+      }
+    }
+    console.error(`Unable to find tile: ${targetTile}`);
+    return {};
+  }
+
+  function findApproxTile(targetTile) {
+    for (let x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
+      for (let y = 0; y < yl; y++) {
+        if (Math.floor(tagpro.map[x][y]) === Math.floor(targetTile)) {
+          return { x: x * PIXEL_PER_TILE, y: y * PIXEL_PER_TILE, xg: x, yg: y };
+        }
+      }
+    }
+    console.error(`Unable to find tile: ${targetTile}`);
+    return {};
+  }
+
   /*
    * This function sets global variables with information about what
    * flag we want and those important ideological things.
@@ -112,8 +149,6 @@ function script() {
     }
   }
 
-  // Assign our own player object to `self` for readability.
-  var self = tagpro.players[tagpro.playerId];
   // Set global variables
   getDesiredFlag();
 
@@ -151,36 +186,6 @@ function script() {
   };
 
   /*
-   * Returns the position (in pixels x,y and grid positions xg, yg
-   * of first of the specified tile type to appear starting in the
-   * top left corner and moving in a page-reading fashion.
-   */
-
-  function findTile(targetTile) {
-    for (let x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
-      for (let y = 0; y < yl; y++) {
-        if (tagpro.map[x][y] === targetTile) {
-          return { x: x * PIXEL_PER_TILE, y: y * PIXEL_PER_TILE, xg: x, yg: y };
-        }
-      }
-    }
-    console.error(`Unable to find tile: ${targetTile}`);
-    return {};
-  }
-
-  function findApproxTile(targetTile) {
-    for (let x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
-      for (let y = 0; y < yl; y++) {
-        if (Math.floor(tagpro.map[x][y]) === Math.floor(targetTile)) {
-          return { x: x * PIXEL_PER_TILE, y: y * PIXEL_PER_TILE, xg: x, yg: y };
-        }
-      }
-    }
-    console.error(`Unable to find tile: ${targetTile}`);
-    return {};
-  }
-
-  /*
    * Returns the position (in pixels) of the specified flag station, even if empty.
    *
    * searchingFor: a string, one of either: 'ally_flag', 'enemy_flag'
@@ -203,7 +208,7 @@ function script() {
    *
    * searchingFor: a string, one of either: 'ally_flag', 'enemy_flag'
    */
-  function findTakenFlag(searchingFor) {
+  function findTakenFlag(searchingFor) { // eslint-disable-line no-unused-vars
     let targetFlag = null;
     if (searchingFor === 'ally_flag') {
       targetFlag = TAKEN_ALLY_FLAG;
@@ -224,31 +229,22 @@ function script() {
 
   // Returns the enemy FC if in view.
   function enemyFC() {
-    for (const id in tagpro.players) {
-      if (!tagpro.players.hasOwnProperty(id)) { continue; }
-
-      const player = tagpro.players[id];
-
-      if (player.team === self.team || player.dead || !player.draw) { continue; }
-      if (player.flag) { return player; }
-    }
+    return _.find(tagpro.players, player => (
+      player.flag && player.team !== self.team && !player.dead && player.draw
+    ));
   }
 
   // Returns an enemy chaser if in view
   function enemyC() {
-    for (const id in tagpro.players) {
-      if (!tagpro.players.hasOwnProperty(id)) { continue; }
-
-      const player = tagpro.players[id];
-
-      if (player.team === self.team || player.dead || !player.draw) { continue; }
-      return player;
-    }
+    return _.find(tagpro.players, player => (
+      player.team !== self.team && !player.dead && player.draw
+    ));
   }
 
   // Returns whether or not ally team's flag is taken
   function allyFlagTaken() {
-    return (self.team === RED_TEAM && tagpro.ui.redFlagTaken) || (self.team === BLUE_TEAM && tagpro.ui.blueFlagTaken);
+    return (self.team === RED_TEAM && tagpro.ui.redFlagTaken)
+      || (self.team === BLUE_TEAM && tagpro.ui.blueFlagTaken);
   }
 
   /*
@@ -333,7 +329,7 @@ function script() {
     return emptyTiles;
   }
 
-  const getTarget = function (myX, myY, targetX, targetY, grid) {
+  const getTarget = (myX, myY, targetX, targetY, grid) => {
     // TODO: handle edge cases regarding target and current position
     const graph = new Graph(grid, { diagonal: true });
     const start = graph.grid[myX][myY];
@@ -372,7 +368,7 @@ function script() {
    */
   function main() {
     // Handle keypress and related events for manual/auto toggle
-    window.onkeydown = function (event) {
+    window.onkeydown = event => {
       if (event.keyCode === 81) {
         AUTONOMOUS = !AUTONOMOUS;
         tagpro.sendKeyPress('up', true);
@@ -392,17 +388,16 @@ function script() {
 
     const seek = {};
     let goal = null;
-    const flag = null;
     const enemy = enemyFC();
 
     // If the bot has the flag, go to the endzone
     if (self.flag) {
       const chaser = enemyC();
       // Really bad jukes !!!!! DISABLED FOR NOW
-      if (false) {
+      if (false) { // eslint-disable-line no-constant-condition
         goal = chaser;
-        goal.x = 2 * (self.x + self.vx) - (chaser.x + chaser.vx);
-        goal.y = 2 * (self.y + self.vy) - (chaser.y + chaser.vy);
+        goal.x = (2 * (self.x + self.vx)) - (chaser.x + chaser.vx);
+        goal.y = (2 * (self.y + self.vy)) - (chaser.y + chaser.vy);
         console.log('I have the flag. Fleeing enemy!');
         // Really bad caps
       } else {
@@ -434,9 +429,10 @@ function script() {
     }
 
     // Version for attempting path-planning
-    const gridPosition = { x: Math.floor((self.x + 20) / PIXEL_PER_TILE),
-      y: Math.floor((self.y + 20)
-        / PIXEL_PER_TILE) };
+    const gridPosition = {
+      x: Math.floor((self.x + 20) / PIXEL_PER_TILE),
+      y: Math.floor((self.y + 20) / PIXEL_PER_TILE),
+    };
     const gridTarget = { x: Math.floor(goal.x / PIXEL_PER_TILE),
       y: Math.floor(goal.y / PIXEL_PER_TILE) };
     const nearGoal = getTarget(gridPosition.x, gridPosition.y,
