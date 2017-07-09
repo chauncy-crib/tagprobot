@@ -1,1 +1,7 @@
-{"extends": "eslint-config-airbnb-es5"}
+{
+  "extends": "eslint-config-airbnb",
+  "rules": {
+    "jsx-a11y/href-no-hash": "off",
+    "jsx-a11y/anchor-is-valid": ["warn", { "aspects": ["invalidHref"] }],
+  }
+}
