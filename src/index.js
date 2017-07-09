@@ -17,7 +17,7 @@
 
 /* eslint-disable no-console*/
 /* eslint-disable one-var, no-unused-vars*/
-var EMPTY_TILE = 0,
+let EMPTY_TILE = 0,
   RED_TEAM = 1,
   BLUE_TEAM = 2,
   RED_FLAG = 3,
@@ -35,7 +35,7 @@ var EMPTY_TILE = 0,
   AUTONOMOUS = true;
 /* eslint-enable one-var, no-unused-vars*/
 
-var tileTypes = {
+const tileTypes = {
   EMPTY_SPACE: 0,
   SQUARE_WALL: 1,
   ANGLE_WALL_1: 1.1,
@@ -73,10 +73,10 @@ var tileTypes = {
   YELLOW_FLAG: 16,
   YELLOW_FLAG_TAKEN: 16.1,
   RED_ENDZONE: 17,
-  BLUE_ENDZONE: 18
+  BLUE_ENDZONE: 18,
 };
 
-var PIXEL_PER_TILE = 40
+const PIXEL_PER_TILE = 40;
 
 /*
  * This function will execute the provided function after tagpro.playerId
@@ -85,7 +85,7 @@ var PIXEL_PER_TILE = 40
 function waitForId(fn) {
   // Don't execute the function until tagpro.playerId has been assigned.
   if (!tagpro || !tagpro.playerId) {
-    setTimeout(function wait() {
+    setTimeout(() => {
       waitForId(fn);
     }, 100);
     return;
@@ -157,26 +157,26 @@ function script() {
    */
 
   function findTile(targetTile) {
-    for (var x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
-      for (var y = 0; y < yl; y++) {
+    for (let x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
+      for (let y = 0; y < yl; y++) {
         if (tagpro.map[x][y] === targetTile) {
-          return {x: x * PIXEL_PER_TILE, y: y * PIXEL_PER_TILE, xg: x, yg: y};
+          return { x: x * PIXEL_PER_TILE, y: y * PIXEL_PER_TILE, xg: x, yg: y };
         }
       }
     }
-    console.error('Unable to find tile: ' + targetTile);
+    console.error(`Unable to find tile: ${targetTile}`);
     return {};
   }
 
   function findApproxTile(targetTile) {
-    for (var x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
-      for (var y = 0; y < yl; y++) {
+    for (let x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
+      for (let y = 0; y < yl; y++) {
         if (Math.floor(tagpro.map[x][y]) === Math.floor(targetTile)) {
-          return {x: x * PIXEL_PER_TILE, y: y * PIXEL_PER_TILE, xg: x, yg: y};
+          return { x: x * PIXEL_PER_TILE, y: y * PIXEL_PER_TILE, xg: x, yg: y };
         }
       }
     }
-    console.error('Unable to find tile: ' + targetTile);
+    console.error(`Unable to find tile: ${targetTile}`);
     return {};
   }
 
@@ -186,13 +186,13 @@ function script() {
    * searchingFor: a string, one of either: 'ally_flag', 'enemy_flag'
    */
   function findFlagStation(searchingFor) {
-    var targetFlag = null;
+    let targetFlag = null;
     if (searchingFor === 'ally_flag') {
       targetFlag = ALLY_FLAG;
     } else if (searchingFor === 'enemy_flag') {
       targetFlag = ENEMY_FLAG;
     } else {
-      console.error('Flag station description does not exist: ' + searchingFor);
+      console.error(`Flag station description does not exist: ${searchingFor}`);
     }
 
     return findApproxTile(targetFlag);
@@ -204,13 +204,13 @@ function script() {
    * searchingFor: a string, one of either: 'ally_flag', 'enemy_flag'
    */
   function findTakenFlag(searchingFor) {
-    var targetFlag = null;
+    let targetFlag = null;
     if (searchingFor === 'ally_flag') {
       targetFlag = TAKEN_ALLY_FLAG;
     } else if (searchingFor === 'enemy_flag') {
       targetFlag = TAKEN_ENEMY_FLAG;
     } else {
-      console.error('Flag station description does not exist: ' + searchingFor);
+      console.error(`Flag station description does not exist: ${searchingFor}`);
     }
 
     return findTile(targetFlag);
@@ -224,24 +224,24 @@ function script() {
 
   // Returns the enemy FC if in view.
   function enemyFC() {
-    for (var id in tagpro.players) {
-      if (!tagpro.players.hasOwnProperty(id))        {continue;}
+    for (const id in tagpro.players) {
+      if (!tagpro.players.hasOwnProperty(id)) { continue; }
 
-      var player = tagpro.players[id];
+      const player = tagpro.players[id];
 
-      if (player.team === self.team || player.dead || !player.draw)        {continue;}
-      if (player.flag)        {return player;}
+      if (player.team === self.team || player.dead || !player.draw) { continue; }
+      if (player.flag) { return player; }
     }
   }
 
   // Returns an enemy chaser if in view
   function enemyC() {
-    for (var id in tagpro.players) {
-      if (!tagpro.players.hasOwnProperty(id))        {continue;}
+    for (const id in tagpro.players) {
+      if (!tagpro.players.hasOwnProperty(id)) { continue; }
 
-      var player = tagpro.players[id];
+      const player = tagpro.players[id];
 
-      if (player.team === self.team || player.dead || !player.draw)        {continue;}
+      if (player.team === self.team || player.dead || !player.draw) { continue; }
       return player;
     }
   }
@@ -262,52 +262,52 @@ function script() {
    */
   function isTraversable(tileID) {
     switch (tileID) {
-    case tileTypes.REGULAR_FLOOR:
-    case tileTypes.RED_FLAG:
-    case tileTypes.RED_FLAG_TAKEN:
-    case tileTypes.BLUE_FLAG:
-    case tileTypes.BLUE_FLAG_TAKEN:
-    case tileTypes.SPEEDPAD_INACTIVE:
-    case tileTypes.INACTIVE_GATE:
-    case tileTypes.INACTIVE_BOMB:
-    case tileTypes.RED_TEAMTILE:
-    case tileTypes.BLUE_TEAMTILE:
-    case tileTypes.INACTIVE_PORTAL:
-    case tileTypes.SPEEDPAD_RED_INACTIVE:
-    case tileTypes.SPEEDPAD_BLUE_INACTIVE:
-    case tileTypes.YELLOW_FLAG:
-    case tileTypes.YELLOW_FLAG_TAKEN:
-    case tileTypes.RED_ENDZONE:
-    case tileTypes.BLUE_ENDZONE:
-    case 'blueball':
-    case 'redball':
-      return true;
-    case tileTypes.EMPTY_SPACE:
-    case tileTypes.SQUARE_WALL:
-    case tileTypes.ANGLE_WALL_1:
-    case tileTypes.ANGLE_WALL_2:
-    case tileTypes.ANGLE_WALL_3:
-    case tileTypes.ANGLE_WALL_4:
-    case tileTypes.SPEEDPAD_ACTIVE:
-    case tileTypes.POWERUP_SUBGROUP:
-    case tileTypes.JUKEJUICE:
-    case tileTypes.ROLLING_BOMB:
-    case tileTypes.TAGPRO:
-    case tileTypes.MAX_SPEED:
-    case tileTypes.SPIKE:
-    case tileTypes.BUTTON:
-    case tileTypes.GREEN_GATE:
-    case tileTypes.BOMB:
-    case tileTypes.ACTIVE_PORTAL:
-    case tileTypes.SPEEDPAD_RED_ACTIVE:
-    case tileTypes.SPEEDPAD_BLUE_ACTIVE:
-      return false;
-    case tileTypes.RED_GATE:
-      return self.team === RED_TEAM;
-    case tileTypes.BLUE_GATE:
-      return self.team === BLUE_TEAM;
-    default:
-      return false;
+      case tileTypes.REGULAR_FLOOR:
+      case tileTypes.RED_FLAG:
+      case tileTypes.RED_FLAG_TAKEN:
+      case tileTypes.BLUE_FLAG:
+      case tileTypes.BLUE_FLAG_TAKEN:
+      case tileTypes.SPEEDPAD_INACTIVE:
+      case tileTypes.INACTIVE_GATE:
+      case tileTypes.INACTIVE_BOMB:
+      case tileTypes.RED_TEAMTILE:
+      case tileTypes.BLUE_TEAMTILE:
+      case tileTypes.INACTIVE_PORTAL:
+      case tileTypes.SPEEDPAD_RED_INACTIVE:
+      case tileTypes.SPEEDPAD_BLUE_INACTIVE:
+      case tileTypes.YELLOW_FLAG:
+      case tileTypes.YELLOW_FLAG_TAKEN:
+      case tileTypes.RED_ENDZONE:
+      case tileTypes.BLUE_ENDZONE:
+      case 'blueball':
+      case 'redball':
+        return true;
+      case tileTypes.EMPTY_SPACE:
+      case tileTypes.SQUARE_WALL:
+      case tileTypes.ANGLE_WALL_1:
+      case tileTypes.ANGLE_WALL_2:
+      case tileTypes.ANGLE_WALL_3:
+      case tileTypes.ANGLE_WALL_4:
+      case tileTypes.SPEEDPAD_ACTIVE:
+      case tileTypes.POWERUP_SUBGROUP:
+      case tileTypes.JUKEJUICE:
+      case tileTypes.ROLLING_BOMB:
+      case tileTypes.TAGPRO:
+      case tileTypes.MAX_SPEED:
+      case tileTypes.SPIKE:
+      case tileTypes.BUTTON:
+      case tileTypes.GREEN_GATE:
+      case tileTypes.BOMB:
+      case tileTypes.ACTIVE_PORTAL:
+      case tileTypes.SPEEDPAD_RED_ACTIVE:
+      case tileTypes.SPEEDPAD_BLUE_ACTIVE:
+        return false;
+      case tileTypes.RED_GATE:
+        return self.team === RED_TEAM;
+      case tileTypes.BLUE_GATE:
+        return self.team === BLUE_TEAM;
+      default:
+        return false;
     }
   }
 
@@ -320,41 +320,41 @@ function script() {
    * tile.
    */
   function getTraversableTiles() {
-    var xl = tagpro.map.length;
-    var yl = tagpro.map[0].length;
-    var emptyTiles = [];
+    const xl = tagpro.map.length;
+    const yl = tagpro.map[0].length;
+    const emptyTiles = [];
 
-    for (var x = 0; x < xl; x++) {
+    for (let x = 0; x < xl; x++) {
       emptyTiles[x] = new Array(yl);
-      for (var y = 0; y < yl; y++) {
+      for (let y = 0; y < yl; y++) {
         emptyTiles[x][y] = isTraversable(tagpro.map[x][y]) ? 1 : 0;
       }
     }
     return emptyTiles;
   }
 
-  var getTarget = function (myX, myY, targetX, targetY, grid) {
+  const getTarget = function (myX, myY, targetX, targetY, grid) {
     // TODO: handle edge cases regarding target and current position
-    var graph = new Graph(grid, {diagonal: true});
-    var start = graph.grid[myX][myY];
-    var end = graph.grid[targetX][targetY];
-    var shortestPath = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
+    const graph = new Graph(grid, { diagonal: true });
+    const start = graph.grid[myX][myY];
+    const end = graph.grid[targetX][targetY];
+    const shortestPath = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
     // var shortestPath = astar.search(graph, start, end);
-    var next = shortestPath[0];
-    var res = {x: next.x, y: next.y};
+    const next = shortestPath[0];
+    const res = { x: next.x, y: next.y };
     return res;
   };
 
   // Stole this function to send chat messages
-  var lastMessage = 0;
+  let lastMessage = 0;
   function chat(chatMessage) {
-    var limit = 500 + 10;
-    var now = new Date();
-    var timeDiff = now - lastMessage;
+    const limit = 500 + 10;
+    const now = new Date();
+    const timeDiff = now - lastMessage;
     if (timeDiff > limit) {
       tagpro.socket.emit('chat', {
         message: chatMessage,
-        toAll: 0
+        toAll: 0,
       });
       lastMessage = new Date();
     } else if (timeDiff >= 0) {
@@ -384,20 +384,20 @@ function script() {
         } else {
           chat('Autonomy Mode updated: now MANUAL!');
         }
-        setTimeout(function () { console.log('Autonomy status: ' + AUTONOMOUS); }, 200);
+        setTimeout(() => { console.log(`Autonomy status: ${AUTONOMOUS}`); }, 200);
       }
     };
 
     requestAnimationFrame(main);
 
-    var seek = {};
-    var goal = null;
-    var flag = null;
-    var enemy = enemyFC();
+    const seek = {};
+    let goal = null;
+    const flag = null;
+    const enemy = enemyFC();
 
     // If the bot has the flag, go to the endzone
     if (self.flag) {
-      var chaser = enemyC();
+      const chaser = enemyC();
       // Really bad jukes !!!!! DISABLED FOR NOW
       if (false) {
         goal = chaser;
@@ -434,15 +434,16 @@ function script() {
     }
 
     // Version for attempting path-planning
-    var gridPosition = { x: Math.floor((self.x + 20) / PIXEL_PER_TILE), y: Math.floor((self.y + 20)
+    const gridPosition = { x: Math.floor((self.x + 20) / PIXEL_PER_TILE),
+      y: Math.floor((self.y + 20)
         / PIXEL_PER_TILE) };
-    var gridTarget = { x: Math.floor(goal.x / PIXEL_PER_TILE),
+    const gridTarget = { x: Math.floor(goal.x / PIXEL_PER_TILE),
       y: Math.floor(goal.y / PIXEL_PER_TILE) };
-    var nearGoal = getTarget(gridPosition.x, gridPosition.y,
+    const nearGoal = getTarget(gridPosition.x, gridPosition.y,
       gridTarget.x, gridTarget.y,
       getTraversableTiles());
-    nearGoal.x = nearGoal.x * PIXEL_PER_TILE;
-    nearGoal.y = nearGoal.y * PIXEL_PER_TILE;
+    nearGoal.x *= PIXEL_PER_TILE;
+    nearGoal.y *= PIXEL_PER_TILE;
 
     seek.x = nearGoal.x - (self.x + self.vx);
     seek.y = nearGoal.y - (self.y + self.vy);
@@ -460,6 +461,6 @@ function script() {
 }
 // Initialize the script when tagpro is ready, and additionally wait
 // for the playerId property to be assigned.
-tagpro.ready(function () {
+tagpro.ready(() => {
   waitForId(script);
 });
