@@ -4,7 +4,7 @@
 ```sh
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
 ```
-2. Install node using NVM: `nvm install node`
+2. Restart your bash session and install node using NVM: `nvm install node`
 3. In this directory, install the node packages, including webpack: `npm install`
 
 ## Running the App
