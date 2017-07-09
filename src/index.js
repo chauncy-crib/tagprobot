@@ -330,14 +330,21 @@ function script() {
     return emptyTiles;
   }
 
+  /*
+   * takes in current location and target location (eg, the location of the flag) and the map
+   * represented as a grid of 1 and 0, where 1s are traversable and 0s are not. Uses A* to calculate
+   * the best path
+   */
   function getTarget(myX, myY, targetX, targetY, grid) {
     // TODO: handle edge cases regarding target and current position
-    // var graph = new Graph(grid, {diagonal: true});
-    const graph = new Graph(grid);
+    // diagonal is true if we consider diagonal steps on the grid
+    const diagonal = false;
+    const graph = new Graph(grid, { diagonal });
     const start = graph.grid[myX][myY];
     const end = graph.grid[targetX][targetY];
-    // var shortestPath = astar.search(graph, start, end, { heuristic: astar.heuristics.diagonal });
-    const shortestPath = astar.search(graph, start, end);
+    // calculate shortest path list
+    const shortestPath = astar.search(graph, start, end,
+      { heuristic: diagonal ? astar.heuristics.diagonal : astar.heuristics.manhattan });
 
     // Find the furthest cell in the direction of the next cell
     let winner = 0;
