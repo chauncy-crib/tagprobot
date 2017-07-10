@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "start": "http-server",
-    "build": "webpack --watch"
+    "test": "eslint tests/*.js && node_modules/.bin/babel-tape-runner tests/*.js",
+    "build": "npm test && webpack --watch"
   },
   "repository": {
     "type": "git",

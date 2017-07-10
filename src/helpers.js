@@ -1,5 +1,5 @@
 
-const tileTypes = {
+export const tileTypes = {
   EMPTY_SPACE: 0,
   SQUARE_WALL: 1,
   ANGLE_WALL_1: 1.1,
@@ -41,7 +41,7 @@ const tileTypes = {
 };
 
 /* eslint-disable one-var, no-unused-vars*/
-const EMPTY_TILE = 0,
+export const EMPTY_TILE = 0,
   RED_TEAM = 1,
   BLUE_TEAM = 2,
   RED_FLAG = 3,
