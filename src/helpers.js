@@ -66,7 +66,7 @@ const EMPTY_TILE = 0,
  * Untraversable includes: empty space, walls, active speedpad, any
  *   powerup, spike, button, enemy/green gate, bomb, active portal
  */
-export function isTraversable(tileID) {
+export function isTraversable(tileID, me) {
   switch (tileID) {
     case tileTypes.REGULAR_FLOOR:
     case tileTypes.RED_FLAG:
@@ -109,9 +109,9 @@ export function isTraversable(tileID) {
     case tileTypes.SPEEDPAD_BLUE_ACTIVE:
       return false;
     case tileTypes.RED_GATE:
-      return self.team === RED_TEAM;
+      return me.team === RED_TEAM;
     case tileTypes.BLUE_GATE:
-      return self.team === BLUE_TEAM;
+      return me.team === BLUE_TEAM;
     default:
       return false;
   }
@@ -126,7 +126,7 @@ export function isTraversable(tileID) {
  * that column, with 1s and 0s.  empty_tiles[0][0] is the upper-left corner
  * tile.
  */
-export function getTraversableTiles(tagproMap) {
+export function getTraversableTiles(tagproMap, me) {
   const xl = tagproMap.length;
   const yl = tagproMap[0].length;
   const emptyTiles = [];
@@ -134,7 +134,7 @@ export function getTraversableTiles(tagproMap) {
   for (let x = 0; x < xl; x++) {
     emptyTiles[x] = new Array(yl);
     for (let y = 0; y < yl; y++) {
-      emptyTiles[x][y] = isTraversable(tagproMap[x][y]) ? 1 : 0;
+      emptyTiles[x][y] = isTraversable(tagproMap[x][y], me) ? 1 : 0;
     }
   }
   return emptyTiles;
