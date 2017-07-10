@@ -7,6 +7,9 @@ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | b
 2. Restart your bash session and install node using NVM: `nvm install node`
 3. In this directory, install the node packages, including webpack: `npm install`
 
+## Testing the App
+- Run `npm test`. This will lint your test files, and then run them.
+
 ## Running the App
 - Run `npm run build`.  This will start webpack, which will "watch" the files in `src/` and will update the bundle automatically.  This will also run eslint whenever your code changes so you can see if the linter fails.
 - To test your code, make sure webpack is running and copy-paste the code in `public/bundle.js` into tampermonkey.
