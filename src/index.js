@@ -63,7 +63,7 @@ function waitForId(fn) {
 // We define everything relevant to our bot inside this function.
 function script() {
   // Assign our own player object to `self` for readability.
-  const self = tagpro.players[tagpro.playerId];
+  const me = tagpro.players[tagpro.playerId];
 
   /*
    * Returns the position (in pixels x,y and grid positions xg, yg
@@ -101,8 +101,8 @@ function script() {
    */
   function getDesiredFlag() {
     if (findApproxTile(YELLOW_FLAG) === null) {
-      ENEMY_FLAG = (self.team === BLUE_TEAM ? RED_FLAG : BLUE_FLAG);
-      ALLY_FLAG = (self.team === BLUE_TEAM ? BLUE_FLAG : RED_FLAG);
+      ENEMY_FLAG = (me.team === BLUE_TEAM ? RED_FLAG : BLUE_FLAG);
+      ALLY_FLAG = (me.team === BLUE_TEAM ? BLUE_FLAG : RED_FLAG);
     } else {
       ENEMY_FLAG = YELLOW_FLAG;
       ALLY_FLAG = YELLOW_FLAG;
@@ -186,27 +186,27 @@ function script() {
   // Returns the position of the endzone you should return a the flag to.
   // TODO: return closest endzone tile instead of first
   function findEndzone() {
-    return (self.team === BLUE_TEAM ? findTile(BLUE_ENDZONE) : findTile(RED_ENDZONE));
+    return (me.team === BLUE_TEAM ? findTile(BLUE_ENDZONE) : findTile(RED_ENDZONE));
   }
 
   // Returns the enemy FC if in view.
   function enemyFC() {
     return _.find(tagpro.players, player => (
-      player.flag && player.team !== self.team && !player.dead && player.draw
+      player.flag && player.team !== me.team && !player.dead && player.draw
     ));
   }
 
   // Returns an enemy chaser if in view
   function enemyC() {
     return _.find(tagpro.players, player => (
-      player.team !== self.team && !player.dead && player.draw
+      player.team !== me.team && !player.dead && player.draw
     ));
   }
 
   // Returns whether or not ally team's flag is taken
   function allyFlagTaken() {
-    return (self.team === RED_TEAM && tagpro.ui.redFlagTaken)
-      || (self.team === BLUE_TEAM && tagpro.ui.blueFlagTaken);
+    return (me.team === RED_TEAM && tagpro.ui.redFlagTaken)
+      || (me.team === BLUE_TEAM && tagpro.ui.blueFlagTaken);
   }
 
   /*
@@ -248,6 +248,7 @@ function script() {
       }
     }
     const next = shortestPath[j];
+    // TODO: this seems to throw null pointer when bot doesn't know where the center flag is.
     const res = { x: next.x, y: next.y };
     return res;
   }
@@ -302,13 +303,13 @@ function script() {
     const enemy = enemyFC();
 
     // If the bot has the flag, go to the endzone
-    if (self.flag) {
+    if (me.flag) {
       const chaser = enemyC();
       // Really bad jukes !!!!! DISABLED FOR NOW
       if (false) { // eslint-disable-line no-constant-condition
         goal = chaser;
-        goal.x = (2 * (self.x + self.vx)) - (chaser.x + chaser.vx);
-        goal.y = (2 * (self.y + self.vy)) - (chaser.y + chaser.vy);
+        goal.x = (2 * (me.x + me.vx)) - (chaser.x + chaser.vx);
+        goal.y = (2 * (me.y + me.vy)) - (chaser.y + chaser.vy);
         console.log('I have the flag. Fleeing enemy!');
         // Really bad caps
       } else {
@@ -341,19 +342,19 @@ function script() {
 
     // Version for attempting path-planning
     const gridPosition = {
-      x: Math.floor((self.x + 20) / PIXEL_PER_TILE),
-      y: Math.floor((self.y + 20) / PIXEL_PER_TILE),
+      x: Math.floor((me.x + 20) / PIXEL_PER_TILE),
+      y: Math.floor((me.y + 20) / PIXEL_PER_TILE),
     };
     const gridTarget = { x: Math.floor(goal.x / PIXEL_PER_TILE),
       y: Math.floor(goal.y / PIXEL_PER_TILE) };
     const nearGoal = getTarget(gridPosition.x, gridPosition.y,
       gridTarget.x, gridTarget.y,
-      getTraversableTiles());
+      getTraversableTiles(tagpro.map, me));
     nearGoal.x *= PIXEL_PER_TILE;
     nearGoal.y *= PIXEL_PER_TILE;
 
-    seek.x = nearGoal.x - (self.x + self.vx);
-    seek.y = nearGoal.y - (self.y + self.vy);
+    seek.x = nearGoal.x - (me.x + me.vx);
+    seek.y = nearGoal.y - (me.y + me.vy);
 
 
     // Version for not attempting path-planning
