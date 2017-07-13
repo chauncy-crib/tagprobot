@@ -1,6 +1,5 @@
 var path = require('path');
 
-var webpackIf = require('webpack-if');
 var TapWebpackPlugin = require('tap-webpack-plugin');
 var APP_DIR = path.resolve(__dirname, 'src/');
 var TEST_DIR = path.resolve(__dirname, 'tests/');
