@@ -11,6 +11,10 @@ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | b
 - Run `npm run build`.  This will start webpack, which will "watch" the files in `src/` and will update the bundle automatically.  This will also run eslint whenever your code changes so you can see if the linter fails.
 - To test your code, make sure webpack is running and copy-paste the code in `public/bundle.js` into tampermonkey.
 
+## Current bot control logic
+
+![](resources/fsm.png)
+
 # Possible Development Strategy
 First, let's aim to compete in the single-flag map "Command Center". Tentative competition date is in two weeks.
 Command Center: http://i.imgur.com/aBaFYDB.png  
