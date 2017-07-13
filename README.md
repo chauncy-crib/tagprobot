@@ -18,8 +18,7 @@ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | b
 
 ![](resources/fsm.png)
 
-[Editable link (Note that this doesn't also update this
-README)](https://docs.google.com/drawings/d/1dATBh8-rJaJgQ8SCulkl_3XUK_18F7JSp6zsTquQ4uQ/edit)
+[Edittable link (Note that this doesn't also update this README)](https://docs.google.com/drawings/d/1dATBh8-rJaJgQ8SCulkl_3XUK_18F7JSp6zsTquQ4uQ/edit)
 
 # Possible Development Strategy
 First, let's aim to compete in the single-flag map "Command Center". Tentative competition date is in two weeks.
