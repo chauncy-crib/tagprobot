@@ -117,6 +117,8 @@ export function isTraversable(tileID, me) {
   }
 }
 
+/* eslint no-param-reassign: ["error", { "ignorePropertyModificationsFor": ["bigGrid"] }] */
+
 /*
  * place all values from smallGrid into bigGrid. Align the upper left corner at x, y
  */
@@ -153,7 +155,7 @@ export function traversableCellsInTile(tileTraverse, cpt, objRadius) {
       for (j = 0; j < cpt; j++) {
         const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
         const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
-        const cellDist = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+        const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
         const pixelDist = cellDist * (40 / cpt);
         if (pixelDist <= objRadius) {
           // This cell touches the object, is not traversable
@@ -188,10 +190,10 @@ function getTraversableTiles(cpt) {
   for (x = 0; x < xl; x++) {
     for (let y = 0; y < yl; y++) {
       const objRadius = 40; // TODO: Set radius to be correct value for each cell object
-      fillGridWithSubgrid(emptyTiles, traversableCellsInTile(isTraversable(tagpro.map[x][y]), cpt, objRadius),
-        x * cpt, y * cpt);
+      fillGridWithSubgrid(emptyTiles, traversableCellsInTile(isTraversable(tagpro.map[x][y]), cpt,
+        objRadius), x * cpt, y * cpt);
     }
   }
-  cells = emptyTiles;
+  // cells = emptyTiles; // TODO: not sure what this is for
   return emptyTiles;
 }
