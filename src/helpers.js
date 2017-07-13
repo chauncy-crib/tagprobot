@@ -1,4 +1,6 @@
 
+const PIXEL_PER_TILE = 40;
+
 export const tileTypes = {
   EMPTY_SPACE: 0,
   SQUARE_WALL: 1,
@@ -156,7 +158,7 @@ export function traversableCellsInTile(tileTraverse, cpt, objRadius) {
         const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
         const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
         const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
-        const pixelDist = cellDist * (40 / cpt);
+        const pixelDist = cellDist * (PIXEL_PER_TILE / cpt);
         if (pixelDist <= objRadius) {
           // This cell touches the object, is not traversable
           gridTile[i][j] = 0;
@@ -167,6 +169,8 @@ export function traversableCellsInTile(tileTraverse, cpt, objRadius) {
   return gridTile;
 }
 
+
+/* eslint-disable one-var, no-unused-vars*/ // TODO: remove this
 
 /*
  * Returns a 2D array of traversable (1) and blocked (0) tiles. Size of return grid is
@@ -179,9 +183,9 @@ export function traversableCellsInTile(tileTraverse, cpt, objRadius) {
  *
  * cpt: number of cells per tile
  */
-function getTraversableTiles(cpt) {
-  const xl = tagpro.map.length;
-  const yl = tagpro.map[0].length;
+export function getTraversableTiles(cpt, map) {
+  const xl = map.length;
+  const yl = map[0].length;
   const emptyTiles = [];
   let x;
   for (x = 0; x < xl * cpt; x++) {
@@ -190,7 +194,7 @@ function getTraversableTiles(cpt) {
   for (x = 0; x < xl; x++) {
     for (let y = 0; y < yl; y++) {
       const objRadius = 40; // TODO: Set radius to be correct value for each cell object
-      fillGridWithSubgrid(emptyTiles, traversableCellsInTile(isTraversable(tagpro.map[x][y]), cpt,
+      fillGridWithSubgrid(emptyTiles, traversableCellsInTile(isTraversable(map[x][y]), cpt,
         objRadius), x * cpt, y * cpt);
     }
   }
