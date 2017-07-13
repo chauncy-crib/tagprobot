@@ -121,8 +121,8 @@ export function isTraversable(tileID, me) {
  * place all values from smallGrid into bigGrid. Align the upper left corner at x, y
  */
 function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
-  for (var i = 0; i < smallGrid.length; i++) {
-    for (var j = 0; j < smallGrid[0].length; j++) {
+  for (let i = 0; i < smallGrid.length; i++) {
+    for (let j = 0; j < smallGrid[0].length; j++) {
       bigGrid[i + x][j + y] = smallGrid[i][j];
     }
   }
@@ -136,10 +136,10 @@ function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
  * objRadius: radius of untraversable object in pixels
  */
 export function traversableCellsInTile(tileTraverse, cpt, objRadius) {
-  var gridTile = [];
+  const gridTile = [];
   // Start with all traversable
-  var i;
-  var j;
+  let i;
+  let j;
   for (i = 0; i < cpt; i++) {
     gridTile[i] = new Array(cpt);
     for (j = 0; j < cpt; j++) {
@@ -148,13 +148,13 @@ export function traversableCellsInTile(tileTraverse, cpt, objRadius) {
   }
 
   if (!tileTraverse) {
-    var midCell = (cpt - 1.0) / 2.0;
+    const midCell = (cpt - 1.0) / 2.0;
     for (i = 0; i < cpt; i++) {
       for (j = 0; j < cpt; j++) {
-        var xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
-        var yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
-        var cellDist = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
-        var pixelDist = cellDist * (40 / cpt);
+        const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
+        const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
+        const cellDist = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+        const pixelDist = cellDist * (40 / cpt);
         if (pixelDist <= objRadius) {
           // This cell touches the object, is not traversable
           gridTile[i][j] = 0;
@@ -178,18 +178,18 @@ export function traversableCellsInTile(tileTraverse, cpt, objRadius) {
  * cpt: number of cells per tile
  */
 function getTraversableTiles(cpt) {
-  var xl = tagpro.map.length;
-  var yl = tagpro.map[0].length;
-  var emptyTiles = [];
-  var x;
+  const xl = tagpro.map.length;
+  const yl = tagpro.map[0].length;
+  const emptyTiles = [];
+  let x;
   for (x = 0; x < xl * cpt; x++) {
     emptyTiles[x] = new Array(yl * cpt);
   }
   for (x = 0; x < xl; x++) {
-    for (var y = 0; y < yl; y++) {
-      var objRadius = 40; // TODO: Set radius to be correct value for each cell object
+    for (let y = 0; y < yl; y++) {
+      const objRadius = 40; // TODO: Set radius to be correct value for each cell object
       fillGridWithSubgrid(emptyTiles, traversableCellsInTile(isTraversable(tagpro.map[x][y]), cpt, objRadius),
-                          x * cpt, y * cpt);
+        x * cpt, y * cpt);
     }
   }
   cells = emptyTiles;
