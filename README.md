@@ -25,8 +25,7 @@ README)](https://docs.google.com/drawings/d/18z9lRNxtATF4BkE7FFKQNEzWvFpPLd7EQOY
 
 ![](resources/fsm.png)
 
-[Editable link (Note that this doesn't also update this
-README)](https://docs.google.com/drawings/d/1dATBh8-rJaJgQ8SCulkl_3XUK_18F7JSp6zsTquQ4uQ/edit)
+[Edittable link (Note that this doesn't also update this README)](https://docs.google.com/drawings/d/1dATBh8-rJaJgQ8SCulkl_3XUK_18F7JSp6zsTquQ4uQ/edit)
 
 # Possible Development Strategy
 First, let's aim to compete in the single-flag map "Command Center". Tentative competition date is in two weeks.
