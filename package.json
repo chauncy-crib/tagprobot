@@ -5,7 +5,8 @@
   "scripts": {
     "start": "http-server",
     "test": "eslint tests/*.js && node_modules/.bin/babel-tape-runner tests/*.js",
-    "build": "webpack --watch"
+    "build": "webpack --watch --env.test=false",
+    "build:test": "webpack --watch --env.test=true"
   },
   "repository": {
     "type": "git",
