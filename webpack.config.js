@@ -1,38 +1,40 @@
 var path = require('path');
 
-var TapWebpackPlugin = require('tap-webpack-plugin')
+var webpackIf = require('webpack-if');
+var TapWebpackPlugin = require('tap-webpack-plugin');
 var APP_DIR = path.resolve(__dirname, 'src/');
 var TEST_DIR = path.resolve(__dirname, 'tests/');
 
-module.exports = [
-  // test bundle configuration 
-  {
-    entry: TEST_DIR + '/test.js',
-    target: 'node',
-    output: {
-      filename: 'test.js',
-      path: path.resolve(__dirname, 'public')
-    },
-    module: {
-      loaders: [
-        // Eslint loader
-        {
-          // Make sure we lint before we transform code
-          enforce: "pre",
-          // Only test js files
-          test: [/\.js$/],
-          // Only include files in the client directory (so we don't compile our node modules or server side code)
-          include: TEST_DIR,
-          loader: 'eslint-loader',
-        }
+module.exports = function(env) {
+  exports = [];
+  if (env.test == 'true') {
+    exports.push({
+      entry: TEST_DIR + '/test.js',
+      target: 'node',
+      output: {
+        filename: 'test.js',
+        path: path.resolve(__dirname, 'public')
+      },
+      module: {
+        loaders: [
+          // Eslint loader
+          {
+            // Make sure we lint before we transform code
+            enforce: "pre",
+            // Only test js files
+            test: [/\.js$/],
+            // Only include files in the client directory (so we don't compile our node modules or server side code)
+            include: TEST_DIR,
+            loader: 'eslint-loader',
+          }
+        ]
+      },
+      plugins: [
+        new TapWebpackPlugin()
       ]
-    },
-    plugins: [
-      new TapWebpackPlugin()
-    ]
-  },
-  // main app config
-  {
+    });
+  }
+  exports.push({
     entry: APP_DIR + '/index.js',
     output: {
       filename: 'bundle.js',
@@ -76,5 +78,6 @@ module.exports = [
       // Resolve these file types
       extensions: ['.js', '.jsx', 'css']
     }
-  },
-];
+  });
+  return exports;
+};
