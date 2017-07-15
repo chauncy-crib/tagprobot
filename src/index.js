@@ -13,7 +13,7 @@
 // ==/UserScript==
 
 import _ from 'lodash';
-import { getTraversableTiles } from './helpers';
+import { getTraversableCells } from './helpers';
 
 // Define global constants
 
@@ -349,7 +349,7 @@ function script() {
       y: Math.floor(goal.y / PIXEL_PER_TILE) };
     const nearGoal = getTarget(gridPosition.x, gridPosition.y,
       gridTarget.x, gridTarget.y,
-      getTraversableTiles(tagpro.map, me));
+      getTraversableCells(1, tagpro.map, me));
     nearGoal.x *= PIXEL_PER_TILE;
     nearGoal.y *= PIXEL_PER_TILE;
 
