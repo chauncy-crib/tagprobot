@@ -122,6 +122,7 @@ test('test getTraversableCells', t => {
     [0, 1, 1],
     [1, 0, 1],
     [1, 0, 0],
+  ];
   t.same(helpers.getTraversableCells(cpt, map, me), expected);
 
   cpt = 2;
