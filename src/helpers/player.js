@@ -2,26 +2,27 @@ import _ from 'lodash';
 
 import { teams, tileTypes } from '../constants';
 
-let myTeam;
+let me;
 
-/*
- * Sets the team for this helper file.
- * team: an int, either teams.RED or teams.BLUE
- */
-export function setTeam(team) {
-  myTeam = team;
+// Sets up the "me" player for this helper file.
+export function setupMe() {
+  me = tagpro.players[tagpro.playerId];
+}
+
+export function getMe() {
+  return me;
 }
 
 export function amBlue() {
-  return myTeam === teams.BLUE;
+  return me.team === teams.BLUE;
 }
 
 export function amRed() {
-  return myTeam === teams.RED;
+  return me.team === teams.RED;
 }
 
 function isOnMyTeam(player) {
-  return player.team === myTeam;
+  return player.team === me.team;
 }
 
 // Returns the enemy FC if in view.
