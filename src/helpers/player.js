@@ -7,6 +7,11 @@ export function setupMe() {
   me = tagpro.players[tagpro.playerId];
 }
 
+// For testing purposes.  Sets me.team to RED
+export function mockMe() {
+  me = { team: teams.RED };
+}
+
 export function getMe() {
   return me;
 }
