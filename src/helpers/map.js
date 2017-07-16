@@ -1,5 +1,5 @@
 import { tileTypes, PIXELS_PER_TILE } from '../constants';
-import { amBlue } from './player';
+import { amBlue, amRed } from './player';
 
 /*
  * Returns true if tileID is traversable without consequences.
@@ -53,7 +53,7 @@ export function isTraversable(tileID) {
     case tileTypes.SPEEDPAD_BLUE_ACTIVE:
       return false;
     case tileTypes.RED_GATE:
-      return !amBlue();
+      return amRed();
     case tileTypes.BLUE_GATE:
       return amBlue();
     default:
