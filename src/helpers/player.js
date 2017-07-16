@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import { teams, tileTypes } from '../constants';
 
 let me;
@@ -21,27 +19,8 @@ export function amRed() {
   return me.team === teams.RED;
 }
 
-function isOnMyTeam(player) {
+export function isOnMyTeam(player) {
   return player.team === me.team;
-}
-
-// Returns the enemy FC if in view.
-export function getEnemyFC() {
-  return _.find(tagpro.players, player => (
-    !isOnMyTeam(player) &&
-    player.flag &&
-    !player.dead &&
-    player.draw
-  ));
-}
-
-// Returns an enemy if in view
-export function getEnemy() {
-  return _.find(tagpro.players, player => (
-    !isOnMyTeam(player) &&
-    !player.dead &&
-    player.draw
-  ));
 }
 
 export function getMyEndzoneTile() {
