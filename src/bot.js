@@ -13,21 +13,21 @@ import getTarget from './helpers/path';
 import { move } from './utils';
 
 /*
- * The logic/flowchart.
- *   If team flag is home, sit on flag.
- *   If team flag is gone, go to enemy team flag.
- *   If an enemy FC is spotted at any time, chase.
- *
- * Note: There is NO pathfinding.
+ * The logic/flowchart to get where our goal is.
+ *   If I have the flag, go to my endzone.
+ *   If an enemy in view has the flag, chase him.
+ *   If the enemy team has the flag but I can't see them, go to their endzone.
+ *   If we have the flag, go to our endzone.
+ *   Else, go to the flag station.
  */
 function getGoal() {
   let goal;
   const me = getMe();
   // If the bot has the flag, go to the endzone
   if (me.flag) {
-    // Really bad jukes !!!!! DISABLED FOR NOW
-    if (false) { // eslint-disable-line no-constant-condition
-      const chaser = findEnemy();
+    const chaser = findEnemy();
+    if (false && chaser) { // eslint-disable-line no-constant-condition
+      // Really bad jukes !!!!! DISABLED FOR NOW
       goal = chaser;
       goal.x = (2 * (me.x + me.vx)) - (chaser.x + chaser.vx);
       goal.y = (2 * (me.y + me.vy)) - (chaser.y + chaser.vy);
