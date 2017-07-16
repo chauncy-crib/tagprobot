@@ -26,17 +26,15 @@ function getGoal() {
   // If the bot has the flag, go to the endzone
   if (me.flag) {
     const chaser = findEnemy();
-    if (false && chaser) { // eslint-disable-line no-constant-condition
-      // Really bad jukes !!!!! DISABLED FOR NOW
-      goal = chaser;
-      goal.x = (2 * (me.x + me.vx)) - (chaser.x + chaser.vx);
-      goal.y = (2 * (me.y + me.vy)) - (chaser.y + chaser.vy);
-      console.log('I have the flag. Fleeing enemy!');
-      // Really bad caps
-    } else {
-      goal = findMyEndzone();
-      console.log('I have the flag. Seeking endzone!');
-    }
+    // really bad jukes! TODO: either remove or integrate this
+    // if (chaser) {
+    //   goal = chaser;
+    //   goal.x = (2 * (me.x + me.vx)) - (chaser.x + chaser.vx);
+    //   goal.y = (2 * (me.y + me.vy)) - (chaser.y + chaser.vy);
+    //   console.log('I have the flag. Fleeing enemy!');
+    // }
+    goal = findMyEndzone();
+    console.log('I have the flag. Seeking endzone!');
   } else {
     const enemyFC = findEnemyFC();
     if (enemyFC) { // If an enemy player in view has the flag, chase
