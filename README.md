@@ -16,14 +16,14 @@ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | b
 
 ## Terminology
 
-![](resources/terminology.png)
+<img src="resources/terminology.png" width="500">
 
 [Editable link (Note that this doesn't also update this
 README)](https://docs.google.com/drawings/d/18z9lRNxtATF4BkE7FFKQNEzWvFpPLd7EQOYPj2sTDok/edit)
 
 ## Current bot control logic
 
-![](resources/fsm.png)
+<img src="resources/fsm.png" height="650">
 
 [Edittable link (Note that this doesn't also update this README)](https://docs.google.com/drawings/d/1dATBh8-rJaJgQ8SCulkl_3XUK_18F7JSp6zsTquQ4uQ/edit)
 
