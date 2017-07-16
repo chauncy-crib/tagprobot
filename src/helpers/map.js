@@ -1,63 +1,5 @@
-
-const PIXELS_PER_TILE = 40;
-
-export const tileTypes = {
-  EMPTY_SPACE: 0,
-  SQUARE_WALL: 1,
-  ANGLE_WALL_1: 1.1,
-  ANGLE_WALL_2: 1.2,
-  ANGLE_WALL_3: 1.3,
-  ANGLE_WALL_4: 1.4,
-  REGULAR_FLOOR: 2,
-  RED_FLAG: 3,
-  RED_FLAG_TAKEN: 3.1,
-  BLUE_FLAG: 4,
-  BLUE_FLAG_TAKEN: 4.1,
-  SPEEDPAD_ACTIVE: 5,
-  SPEEDPAD_INACTIVE: 5.1,
-  POWERUP_SUBGROUP: 6,
-  JUKEJUICE: 6.1,
-  ROLLING_BOMB: 6.2,
-  TAGPRO: 6.3,
-  MAX_SPEED: 6.4,
-  SPIKE: 7,
-  BUTTON: 8,
-  INACTIVE_GATE: 9,
-  GREEN_GATE: 9.1,
-  RED_GATE: 9.2,
-  BLUE_GATE: 9.3,
-  BOMB: 10,
-  INACTIVE_BOMB: 10.1,
-  RED_TEAMTILE: 11,
-  BLUE_TEAMTILE: 12,
-  ACTIVE_PORTAL: 13,
-  INACTIVE_PORTAL: 13.1,
-  SPEEDPAD_RED_ACTIVE: 14,
-  SPEEDPAD_RED_INACTIVE: 14.1,
-  SPEEDPAD_BLUE_ACTIVE: 15,
-  SPEEDPAD_BLUE_INACTIVE: 15.1,
-  YELLOW_FLAG: 16,
-  YELLOW_FLAG_TAKEN: 16.1,
-  RED_ENDZONE: 17,
-  BLUE_ENDZONE: 18,
-};
-
-/* eslint-disable one-var, no-unused-vars*/
-export const EMPTY_TILE = 0,
-  RED_TEAM = 1,
-  BLUE_TEAM = 2,
-  RED_FLAG = 3,
-  TAKEN_RED_FLAG = 3.1,
-  BLUE_FLAG = 4,
-  TAKEN_BLUE_FLAG = 4.1,
-  YELLOW_FLAG = 16,
-  TAKEN_YELLOW_FLAG = 16.1,
-  RED_ENDZONE = 17,
-  BLUE_ENDZONE = 18,
-  TAKEN_ENEMY_FLAG = null,
-  TAKEN_ALLY_FLAG = null;
-/* eslint-enable one-var, no-unused-vars*/
-
+import { tileTypes, PIXELS_PER_TILE } from '../constants';
+import { amBlue } from './player';
 
 /*
  * Returns true if tileID is traversable without consequences.
@@ -68,7 +10,7 @@ export const EMPTY_TILE = 0,
  * Untraversable includes: empty space, walls, active speedpad, any
  *   powerup, spike, button, enemy/green gate, bomb, active portal
  */
-export function isTraversable(tileID, me) {
+export function isTraversable(tileID) {
   switch (tileID) {
     case tileTypes.REGULAR_FLOOR:
     case tileTypes.RED_FLAG:
@@ -111,16 +53,15 @@ export function isTraversable(tileID, me) {
     case tileTypes.SPEEDPAD_BLUE_ACTIVE:
       return false;
     case tileTypes.RED_GATE:
-      return me.team === RED_TEAM;
+      return !amBlue();
     case tileTypes.BLUE_GATE:
-      return me.team === BLUE_TEAM;
+      return amBlue();
     default:
       return false;
   }
 }
 
 /* eslint no-param-reassign: ["error", { "ignorePropertyModificationsFor": ["bigGrid"] }] */
-
 /*
  * place all values from smallGrid into bigGrid. Align the upper left corner at x, y
  */
@@ -185,9 +126,8 @@ export function traversableCellsInTile(tileIsTraversable, cpt, objRadius) {
  *
  * cpt: number of cells per tile
  * map: 2D array representing the Tagpro map
- * me: reference to the TagproBot
  */
-export function getTraversableCells(cpt, map, me) {
+export function getTraversableCells(cpt, map) {
   const xl = map.length;
   const yl = map[0].length;
   const emptyCells = [];
@@ -201,9 +141,46 @@ export function getTraversableCells(cpt, map, me) {
       // the furthest distance from the center of a tile to its corner, in pixels. This guarantees that if the tile
       // has anything non-tranversable in it (wall, ball, spike, corner wall), the entire tile is marked as non-traversable
       const objRadius = 29;
-      fillGridWithSubgrid(emptyCells, traversableCellsInTile(isTraversable(map[x][y], me),
-        cpt, objRadius), x * cpt, y * cpt);
+      fillGridWithSubgrid(
+        emptyCells,
+        traversableCellsInTile(
+          isTraversable(map[x][y]),
+          cpt,
+          objRadius
+        ),
+        x * cpt,
+        y * cpt
+      );
     }
   }
   return emptyCells;
+}
+
+/*
+ * Returns the position (in pixels x,y and grid positions xg, yg
+ * of first of the specified tile type to appear starting in the
+ * top left corner and moving in a page-reading fashion.
+ */
+export function findTile(targetTile) {
+  for (let x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
+    for (let y = 0; y < yl; y++) {
+      if (tagpro.map[x][y] === targetTile) {
+        return { x: x * PIXELS_PER_TILE, y: y * PIXELS_PER_TILE, xg: x, yg: y };
+      }
+    }
+  }
+  console.error(`Unable to find tile: ${targetTile}`);
+  return {};
+}
+
+export function findApproxTile(targetTile) {
+  for (let x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
+    for (let y = 0; y < yl; y++) {
+      if (Math.floor(tagpro.map[x][y]) === Math.floor(targetTile)) {
+        return { x: x * PIXELS_PER_TILE, y: y * PIXELS_PER_TILE, xg: x, yg: y };
+      }
+    }
+  }
+  console.error(`Unable to find tile: ${targetTile}`);
+  return {};
 }
