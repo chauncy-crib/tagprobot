@@ -15,7 +15,7 @@
 import { PIXELS_PER_TILE, tileTypes } from './constants';
 import { getTraversableCells, findApproxTile } from './helpers/map';
 import { findMyEndzone, findFlagStation } from './helpers/gameState';
-import { setTeam, getEnemy, getEnemyFC } from './helpers/player';
+import { setupMe, getMe, getEnemy, getEnemyFC } from './helpers/player';
 import getTarget from './helpers/path';
 import move from './utils/movement';
 import chat from './utils/chat';
@@ -60,8 +60,8 @@ function waitForId(fn) {
 // We define everything relevant to our bot inside this function.
 function script() {
   // Assign our own player object to `me` for readability.
-  const me = tagpro.players[tagpro.playerId];
-  setTeam(me.team);
+  setupMe();
+  const me = getMe();
 
   // Overriding this function to get a more accurate velocity of players.
   // Velocity is saved in player.vx and vy.
