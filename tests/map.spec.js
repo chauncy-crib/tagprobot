@@ -167,3 +167,23 @@ test('test getTraversableCells', t => {
 
   t.same(map.getTraversableCells(cpt, smallMap), expected);
 });
+
+test('test multiplyCorrespondingElementsAndSum', t => {
+  t.plan(1);
+
+  const m1 = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+  ];
+
+  const m2 = [
+    [9, 8, 7],
+    [6, 5, 4],
+    [3, 2, 1],
+  ];
+
+  const expected = 165;
+
+  t.same(helpers.multiplyCorrespondingElementsAndSum(m1, m2), expected);
+});
