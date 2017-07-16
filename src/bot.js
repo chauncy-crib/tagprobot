@@ -1,7 +1,12 @@
 import { PIXELS_PER_TILE, tileTypes } from './constants';
 import { getTraversableCells, findApproxTile } from './helpers/map';
-import { findMyEndzone, findFlagStation } from './helpers/gameState';
-import { getMe, getEnemy, getEnemyFC } from './helpers/player';
+import {
+  findMyEndzone,
+  findFlagStation,
+  findEnemy,
+  findEnemyFC,
+} from './helpers/finders';
+import { getMe } from './helpers/player';
 import getTarget from './helpers/path';
 import { move } from './utils';
 
@@ -20,7 +25,7 @@ function getGoal() {
   if (me.flag) {
     // Really bad jukes !!!!! DISABLED FOR NOW
     if (false) { // eslint-disable-line no-constant-condition
-      const chaser = getEnemy();
+      const chaser = findEnemy();
       goal = chaser;
       goal.x = (2 * (me.x + me.vx)) - (chaser.x + chaser.vx);
       goal.y = (2 * (me.y + me.vy)) - (chaser.y + chaser.vy);
@@ -31,7 +36,7 @@ function getGoal() {
       console.log('I have the flag. Seeking endzone!');
     }
   } else {
-    const enemyFC = getEnemyFC();
+    const enemyFC = findEnemyFC();
     if (enemyFC) { // If an enemy player in view has the flag, chase
       goal = enemyFC;
       goal.x = enemyFC.x + enemyFC.vx;
