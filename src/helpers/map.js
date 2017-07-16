@@ -183,6 +183,29 @@ export function findTile(tiles) {
   }
   console.error(`Unable to find tile: ${tiles}`);
   return {};
+}
+
+
+/*
+ * Initializes and returns a 2D array with the specified width, height, and
+ * default value.
+ *
+ * width: the width of the initialized 2D array
+ * height: the height of the initialized 2D array
+ * defaultVal: the value to give each element in the initialized 2D array
+ */
+export function init2dArray(width, height, defaultVal = 0) {
+  const matrix = [];
+
+  for (let x = 0; x < width; x++) {
+    matrix[x] = new Array(height);
+    for (let y = 0; y < height; y++) {
+      matrix[x][y] = defaultVal;
+    }
+  }
+
+  return matrix;
+}
 
 
 /*

@@ -168,6 +168,32 @@ test('test getTraversableCells', t => {
   t.same(map.getTraversableCells(cpt, smallMap), expected);
 });
 
+test('test init2dArray', t => {
+  t.plan(2);
+
+  let width = 5;
+  let height = 3;
+  let defaultVal = 1;
+  let expected = [
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 1],
+  ];
+  t.same(helpers.init2dArray(width, height, defaultVal), expected);
+
+  width = 3;
+  height = 3;
+  defaultVal = 55;
+  expected = [
+    [55, 55, 55],
+    [55, 55, 55],
+    [55, 55, 55],
+  ];
+  t.same(helpers.init2dArray(width, height, defaultVal), expected);
+});
+
 test('test multiplyCorrespondingElementsAndSum', t => {
   t.plan(1);
 
