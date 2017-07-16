@@ -1,5 +1,7 @@
+import _ from 'lodash';
+
 import { tileTypes } from '../constants';
-import { getMyEndzoneTile } from './player';
+import { getMyEndzoneTile, isOnMyTeam } from './player';
 import { findTile, findApproxTile } from './map';
 
 // Returns the position of the endzone you should return a the flag to.
@@ -13,4 +15,23 @@ export function findMyEndzone() {
  */
 export function findFlagStation() {
   return findApproxTile(tileTypes.YELLOW_FLAG);
+}
+
+// Returns the enemy FC if in view.
+export function findEnemyFC() {
+  return _.find(tagpro.players, player => (
+    !isOnMyTeam(player) &&
+    player.flag &&
+    !player.dead &&
+    player.draw
+  ));
+}
+
+// Returns an enemy if in view
+export function findEnemy() {
+  return _.find(tagpro.players, player => (
+    !isOnMyTeam(player) &&
+    !player.dead &&
+    player.draw
+  ));
 }
