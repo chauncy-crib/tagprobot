@@ -6,7 +6,14 @@
   "rules": {
     "jsx-a11y/href-no-hash": "off",
     "jsx-a11y/anchor-is-valid": ["warn", { "aspects": ["invalidHref"] }],
+    "no-console": "off",
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "arrow-parens": ["error", "as-needed"],
+  },
+  "globals": {
+    "tagpro": false,
+    "Box2D": false,
+    "astar": false,
+    "Graph": false,
   }
 }
