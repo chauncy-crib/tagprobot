@@ -1,6 +1,7 @@
 import { tileTypes, PIXELS_PER_TILE } from '../constants';
 import { amBlue, amRed } from './player';
 
+
 /*
  * Returns true if tileID is traversable without consequences.
  *
@@ -60,6 +61,7 @@ export function isTraversable(tileID) {
       return false;
   }
 }
+
 
 /* eslint no-param-reassign: ["error", { "ignorePropertyModificationsFor": ["bigGrid"] }] */
 /*
@@ -157,6 +159,7 @@ export function getTraversableCells(cpt, map) {
   return emptyCells;
 }
 
+
 /*
  * Returns the position (in pixels x,y and grid positions xg, yg
  * of first of the specified tile types to appear starting in the
@@ -180,4 +183,29 @@ export function findTile(tiles) {
   }
   console.error(`Unable to find tile: ${tiles}`);
   return {};
+
+
+/*
+ * Returns the sum of all corresponding elements from two matrices being
+ * multiplied together. For example:
+ *   a = 1 2   b = 4 1
+ *       3 4       2 3
+ *   multiplyCorrespondingElementsAndSum(a, b)
+ *   (1*4) + (2*1) + (3*2) + (4*3) = 21
+ *
+ * m1: the first matrix
+ * m2: the second matrix (of the same dimensions as m1)
+ */
+export function multiplyCorrespondingElementsAndSum(m1, m2) {
+  const mWidth = m1.length;
+  const mHeight = m1[0].length;
+  let sum = 0;
+
+  for (let x = 0; x < mWidth; x++) {
+    for (let y = 0; y < mHeight; y++) {
+      sum += m1[x][y] * m2[x][y];
+    }
+  }
+
+  return sum;
 }
