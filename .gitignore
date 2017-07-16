@@ -1,5 +1,7 @@
 # Vim files
 *.swp
 
+.tern-project
+
 node_modules/
 public/bundle.js
