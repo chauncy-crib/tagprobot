@@ -122,9 +122,6 @@ test('test getTraversableCells', t => {
     [0, 1, 1],
     [1, 0, 1],
     [1, 0, 0],
-  ];
-
-  // do the assertion
   t.same(helpers.getTraversableCells(cpt, map, me), expected);
 
   cpt = 2;
@@ -136,8 +133,6 @@ test('test getTraversableCells', t => {
     [1, 1, 0, 0, 0, 0],
     [1, 1, 0, 0, 0, 0],
   ];
-
-  // do the assertion
   t.same(helpers.getTraversableCells(cpt, map, me), expected);
 
   cpt = 10;
@@ -157,6 +152,5 @@ test('test getTraversableCells', t => {
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
   ];
 
-  // do the assertion
   t.same(helpers.getTraversableCells(cpt, smallMap, me), expected);
 });
