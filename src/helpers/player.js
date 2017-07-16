@@ -1,7 +1,6 @@
 import _ from 'lodash';
 
 import { teams, tileTypes } from '../constants';
-// import { findTile } from './mapHelpers';
 
 let myTeam;
 
@@ -15,6 +14,10 @@ export function setTeam(team) {
 
 export function amBlue() {
   return myTeam === teams.BLUE;
+}
+
+export function amRed() {
+  return myTeam === teams.RED;
 }
 
 function isOnMyTeam(player) {
