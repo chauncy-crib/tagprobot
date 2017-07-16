@@ -3,6 +3,7 @@ import * as map from '../src/helpers/map';
 import { tileTypes, teams } from '../src/constants';
 import { mockMe } from '../src/helpers/player';
 
+
 test('test fillGridWithSubgrid', t => {
   t.plan(2);
   let grid = [
@@ -168,6 +169,7 @@ test('test getTraversableCells', t => {
   t.same(map.getTraversableCells(cpt, smallMap), expected);
 });
 
+
 test('test init2dArray', t => {
   t.plan(2);
 
@@ -193,6 +195,7 @@ test('test init2dArray', t => {
   ];
   t.same(helpers.init2dArray(width, height, defaultVal), expected);
 });
+
 
 test('test multiplyCorrespondingElementsAndSum', t => {
   t.plan(1);
