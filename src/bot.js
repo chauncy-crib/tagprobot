@@ -73,22 +73,22 @@ function getSeek() {
     x: Math.floor(goal.x / PIXELS_PER_TILE),
     y: Math.floor(goal.y / PIXELS_PER_TILE),
   };
-  const nearGoal = getTarget(
+  const seekToward = getTarget(
     gridPosition.x,
     gridPosition.y,
     gridTarget.x,
     gridTarget.y,
     getTraversableCells(1, tagpro.map),
   );
-  nearGoal.x *= PIXELS_PER_TILE;
-  nearGoal.y *= PIXELS_PER_TILE;
+  seekToward.x *= PIXELS_PER_TILE;
+  seekToward.y *= PIXELS_PER_TILE;
 
   // Version for not attempting path-planning
   // seek.x = goal.x - (self.x + self.vx);
   // seek.y = goal.y - (self.y + self.vy);
   return {
-    x: nearGoal.x - (me.x + me.vx),
-    y: nearGoal.y - (me.y + me.vy),
+    x: seekToward.x - (me.x + me.vx),
+    y: seekToward.y - (me.y + me.vy),
   };
 }
 
