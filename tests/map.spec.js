@@ -1,6 +1,7 @@
-/* eslint-disable no-unused-vars  */
 import test from 'tape';
-import * as helpers from '../src/helpers';
+import * as map from '../src/helpers/map';
+import { tileTypes } from '../src/constants';
+import { mockMe } from '../src/helpers/player';
 
 test('test fillGridWithSubgrid', t => {
   t.plan(2);
@@ -19,7 +20,7 @@ test('test fillGridWithSubgrid', t => {
     [1, 1, 1],
     [1, 1, 1],
   ];
-  helpers.fillGridWithSubgrid(grid, subgrid, 0, 0);
+  map.fillGridWithSubgrid(grid, subgrid, 0, 0);
   t.same(grid, expected);
 
   grid = [
@@ -39,7 +40,7 @@ test('test fillGridWithSubgrid', t => {
     [1, 1, 1, 0],
     [1, 1, 1, 0],
   ];
-  helpers.fillGridWithSubgrid(grid, subgrid, 1, 0);
+  map.fillGridWithSubgrid(grid, subgrid, 1, 0);
   t.same(grid, expected);
 });
 
@@ -51,7 +52,7 @@ test('test traversableCellsInTile', t => {
     [1, 1, 1, 1],
     [1, 1, 1, 1],
   ];
-  t.same(helpers.traversableCellsInTile(true, 4, 14), expected);
+  t.same(map.traversableCellsInTile(true, 4, 14), expected);
 
   expected = [
     [1, 0, 0, 1],
@@ -59,7 +60,7 @@ test('test traversableCellsInTile', t => {
     [0, 0, 0, 0],
     [1, 0, 0, 1],
   ];
-  t.same(helpers.traversableCellsInTile(false, 4, 14), expected);
+  t.same(map.traversableCellsInTile(false, 4, 14), expected);
 
   expected = [
     [0, 0, 0, 0],
@@ -67,7 +68,7 @@ test('test traversableCellsInTile', t => {
     [0, 0, 0, 0],
     [0, 0, 0, 0],
   ];
-  t.same(helpers.traversableCellsInTile(false, 4, 15), expected);
+  t.same(map.traversableCellsInTile(false, 4, 15), expected);
 
   expected = [
     [1, 1, 1, 1, 1, 1],
@@ -77,7 +78,7 @@ test('test traversableCellsInTile', t => {
     [1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1],
   ];
-  t.same(helpers.traversableCellsInTile(false, 6, 1), expected);
+  t.same(map.traversableCellsInTile(false, 6, 1), expected);
 
   expected = [
     [1, 1, 0, 0, 1, 1],
@@ -87,7 +88,7 @@ test('test traversableCellsInTile', t => {
     [1, 0, 0, 0, 0, 1],
     [1, 1, 0, 0, 1, 1],
   ];
-  t.same(helpers.traversableCellsInTile(false, 6, 14), expected);
+  t.same(map.traversableCellsInTile(false, 6, 14), expected);
 });
 
 
@@ -95,21 +96,21 @@ test('test getTraversableCells', t => {
   t.plan(3);
 
   // create a dummy map from bombs, spikes, gates, and regular tiles
-  const bomb = helpers.tileTypes.BOMB;
-  const spike = helpers.tileTypes.SPIKE;
-  const redgate = helpers.tileTypes.RED_GATE;
-  const bluegate = helpers.tileTypes.BLUE_GATE;
-  const blank = helpers.tileTypes.REGULAR_FLOOR;
+  const bomb = tileTypes.BOMB;
+  const spike = tileTypes.SPIKE;
+  const redgate = tileTypes.RED_GATE;
+  const bluegate = tileTypes.BLUE_GATE;
+  const blank = tileTypes.REGULAR_FLOOR;
 
   // initialize current player as red
-  const me = { team: helpers.RED_TEAM };
+  mockMe();
 
   // define the number of cells per tile
   let cpt = 1;
 
   /* eslint-disable no-multi-spaces */
   /* eslint-disable array-bracket-spacing */
-  const map = [
+  const mockMap = [
     [bomb,    blank,    redgate],
     [redgate, bluegate, blank  ],
     [blank,   spike,    bomb   ],
@@ -123,7 +124,7 @@ test('test getTraversableCells', t => {
     [1, 0, 1],
     [1, 0, 0],
   ];
-  t.same(helpers.getTraversableCells(cpt, map, me), expected);
+  t.same(map.getTraversableCells(cpt, mockMap), expected);
 
   cpt = 2;
   expected = [
@@ -134,7 +135,7 @@ test('test getTraversableCells', t => {
     [1, 1, 0, 0, 0, 0],
     [1, 1, 0, 0, 0, 0],
   ];
-  t.same(helpers.getTraversableCells(cpt, map, me), expected);
+  t.same(map.getTraversableCells(cpt, mockMap), expected);
 
   cpt = 10;
   const smallMap = [[bomb, bluegate]];
@@ -153,5 +154,5 @@ test('test getTraversableCells', t => {
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
   ];
 
-  t.same(helpers.getTraversableCells(cpt, smallMap, me), expected);
+  t.same(map.getTraversableCells(cpt, smallMap), expected);
 });
