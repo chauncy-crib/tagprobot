@@ -14,6 +14,13 @@ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | b
 - Run `npm run build`.  This will start webpack, which will "watch" the files in `src/` and will update the bundle automatically.  This will also run eslint whenever your code changes so you can see if the linter fails. It will also automatically run unit tests whenever you save a file it is watching.
 - To test your code, make sure webpack is running and copy-paste the code in `public/bundle.js` into tampermonkey.
 
+## Terminology
+
+![](resources/terminology.png)
+
+[Editable link (Note that this doesn't also update this
+README)](https://docs.google.com/drawings/d/18z9lRNxtATF4BkE7FFKQNEzWvFpPLd7EQOYPj2sTDok/edit)
+
 ## Current bot control logic
 
 ![](resources/fsm.png)
