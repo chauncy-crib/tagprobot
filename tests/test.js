@@ -92,8 +92,7 @@ test('test traversableCellsInTile', t => {
 
 
 test('test getTraversableCells', t => {
-  // plan to do one assert
-  t.plan(2);
+  t.plan(3);
 
   // create a dummy map from bombs, spikes, gates, and regular tiles
   const bomb = helpers.tileTypes.BOMB;
@@ -128,11 +127,7 @@ test('test getTraversableCells', t => {
   // do the assertion
   t.same(helpers.getTraversableCells(cpt, map, me), expected);
 
-
-  // define the number of cells per tile
   cpt = 2;
-
-  // this is what we expect the function to return
   expected = [
     [0, 0, 1, 1, 1, 1],
     [0, 0, 1, 1, 1, 1],
@@ -144,4 +139,24 @@ test('test getTraversableCells', t => {
 
   // do the assertion
   t.same(helpers.getTraversableCells(cpt, map, me), expected);
+
+  cpt = 10;
+  const smallMap = [[bomb, bluegate]];
+  // For an object with radius 20, the only "traversable" cells
+  // are at the very corners
+  expected = [
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  ];
+
+  // do the assertion
+  t.same(helpers.getTraversableCells(cpt, smallMap, me), expected);
 });

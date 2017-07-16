@@ -197,7 +197,7 @@ export function getTraversableCells(cpt, map, me) {
   }
   for (x = 0; x < xl; x++) {
     for (let y = 0; y < yl; y++) {
-      const objRadius = 40; // TODO: Set radius to be correct value for each cell object
+      const objRadius = 20; // TODO: Set radius to be correct value for each cell object
       fillGridWithSubgrid(emptyCells, traversableCellsInTile(isTraversable(map[x][y], me),
         cpt, objRadius), x * cpt, y * cpt);
     }
