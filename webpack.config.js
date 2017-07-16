@@ -1,4 +1,5 @@
 var path = require('path');
+var glob = require("glob");
 
 var TapWebpackPlugin = require('tap-webpack-plugin');
 var APP_DIR = path.resolve(__dirname, 'src/');
@@ -8,12 +9,8 @@ module.exports = function(env) {
   exports = [];
   if (env.test == 'true') {
     exports.push({
-      entry: TEST_DIR + '/test.js',
+      entry: glob.sync(TEST_DIR + "/**/*.js"),
       target: 'node',
-      output: {
-        filename: 'test.js',
-        path: path.resolve(__dirname, 'public')
-      },
       module: {
         loaders: [
           // Eslint loader
