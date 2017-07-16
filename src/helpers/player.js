@@ -27,6 +27,10 @@ export function getMyEndzoneTile() {
   return amBlue() ? tileTypes.BLUE_ENDZONE : tileTypes.RED_ENDZONE;
 }
 
+export function getEnemyEndzoneTile() {
+  return amBlue() ? tileTypes.RED_ENDZONE : tileTypes.BLUE_ENDZONE;
+}
+
 // Returns whether or not ally team's flag is taken
 export function isAllyFlagTaken() {
   return amBlue() ? tagpro.ui.blueFlagTaken : tagpro.ui.redFlagTaken;

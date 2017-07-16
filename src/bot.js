@@ -1,11 +1,13 @@
-import { PIXELS_PER_TILE, tileTypes } from './constants';
-import { getTraversableCells, findApproxTile } from './helpers/map';
+import { PIXELS_PER_TILE } from './constants';
+import { getTraversableCells } from './helpers/map';
 import {
   findMyEndzone,
+  findEnemyEndzone,
   findFlagStation,
   findEnemy,
   findEnemyFC,
 } from './helpers/finders';
+import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe } from './helpers/player';
 import getTarget from './helpers/path';
 import { move } from './utils';
@@ -42,12 +44,12 @@ function getGoal() {
       goal.x = enemyFC.x + enemyFC.vx;
       goal.y = enemyFC.y + enemyFC.vy;
       console.log('I see an enemy with the flag. Chasing!');
-    } else if (tagpro.ui.yellowFlagTakenByBlue) {
-      goal = findApproxTile(tileTypes.BLUE_ENDZONE);
-      console.log('Blue has the flag. Headed towards the Blue Endzone.');
-    } else if (tagpro.ui.yellowFlagTakenByRed) {
-      goal = findApproxTile(tileTypes.RED_ENDZONE);
-      console.log('Red has the flag. Headed towards the Red Endzone.');
+    } else if (enemyTeamHasFlag()) {
+      goal = findEnemyEndzone();
+      console.log('Enemy has the flag. Headed towards the Enemy Endzone.');
+    } else if (myTeamHasFlag()) {
+      goal = findMyEndzone();
+      console.log('We have the flag. Headed towards our Endzone.');
     } else {
       goal = findFlagStation();
       console.log("I don't know what to do. Going to central flag station!");
