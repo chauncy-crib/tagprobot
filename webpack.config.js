@@ -11,6 +11,10 @@ module.exports = function(env) {
     exports.push({
       entry: glob.sync(TEST_DIR + "/**/*.js"),
       target: 'node',
+      output: {
+        filename: 'test.js',
+        path: path.resolve(__dirname, 'public')
+      },
       module: {
         loaders: [
           // Eslint loader
