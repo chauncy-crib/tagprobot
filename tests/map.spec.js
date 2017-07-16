@@ -45,6 +45,27 @@ test('test fillGridWithSubgrid', t => {
   t.same(grid, expected);
 });
 
+test('test addBufferTo2dArray', t => {
+  t.plan(1);
+
+  const matrix = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+  ];
+  const bufferSize = 2;
+  const expected = [
+    [1, 1, 1, 2, 3, 3, 3],
+    [1, 1, 1, 2, 3, 3, 3],
+    [1, 1, 1, 2, 3, 3, 3],
+    [4, 4, 4, 5, 6, 6, 6],
+    [7, 7, 7, 8, 9, 9, 9],
+    [7, 7, 7, 8, 9, 9, 9],
+    [7, 7, 7, 8, 9, 9, 9],
+  ];
+  t.same(helpers.addBufferTo2dArray(matrix, bufferSize), expected);
+});
+
 test('test traversableCellsInTile', t => {
   t.plan(5);
   let expected = [
