@@ -1,6 +1,6 @@
 import test from 'tape';
 import * as map from '../src/helpers/map';
-import { tileTypes } from '../src/constants';
+import { tileTypes, teams } from '../src/constants';
 import { mockMe } from '../src/helpers/player';
 
 test('test fillGridWithSubgrid', t => {
@@ -93,7 +93,7 @@ test('test traversableCellsInTile', t => {
 
 
 test('test getTraversableCells', t => {
-  t.plan(3);
+  t.plan(4);
 
   // create a dummy map from bombs, spikes, gates, and regular tiles
   const bomb = tileTypes.BOMB;
@@ -102,8 +102,8 @@ test('test getTraversableCells', t => {
   const bluegate = tileTypes.BLUE_GATE;
   const blank = tileTypes.REGULAR_FLOOR;
 
-  // initialize current player as red
-  mockMe();
+  // initialize current player as blue
+  mockMe(teams.BLUE);
 
   // define the number of cells per tile
   let cpt = 1;
@@ -120,6 +120,16 @@ test('test getTraversableCells', t => {
 
   // this is what we expect the function to return
   let expected = [
+    [0, 1, 0],
+    [0, 1, 1],
+    [1, 0, 0],
+  ];
+  t.same(map.getTraversableCells(cpt, mockMap), expected);
+
+
+  // initialize current player as red
+  mockMe(teams.RED);
+  expected = [
     [0, 1, 1],
     [1, 0, 1],
     [1, 0, 0],
