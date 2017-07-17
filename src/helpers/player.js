@@ -7,11 +7,6 @@ export function setupMe() {
   me = tagpro.players[tagpro.playerId];
 }
 
-// For testing purposes.  Sets me.team to RED
-export function mockMe() {
-  me = { team: teams.RED };
-}
-
 export function getMe() {
   return me;
 }
@@ -39,4 +34,9 @@ export function getEnemyEndzoneTile() {
 // Returns whether or not ally team's flag is taken
 export function isAllyFlagTaken() {
   return amBlue() ? tagpro.ui.blueFlagTaken : tagpro.ui.redFlagTaken;
+}
+
+// For testing purposes.  Sets me.team to input color
+export function mockMe(color) {
+  me = { team: color };
 }
