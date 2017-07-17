@@ -67,6 +67,47 @@ test('test addBufferTo2dArray', t => {
   t.same(map.addBufferTo2dArray(matrix, bufSize, bufVal), expected);
 });
 
+test('test getSubarrayFrom2dArray', t => {
+  t.plan(2);
+
+  let array = [
+    [1, 2, 3, 4],
+    [5, 6, 7, 8],
+    [9, 0, 1, 2],
+    [3, 4, 5, 6],
+  ];
+  let xCenter = 2;
+  let yCenter = 2;
+  let width = 3;
+  let height = 3;
+  let expected = [
+    [6, 7, 8],
+    [0, 1, 2],
+    [4, 5, 6],
+  ];
+  t.same(map.getSubarrayFrom2dArray(array, xCenter, yCenter, width, height), expected);
+
+  array = [
+    [1, 2, 3, 4, 5, 6],
+    [7, 8, 9, 0, 1, 2],
+    [3, 4, 5, 6, 7, 8],
+    [9, 0, 1, 2, 3, 4],
+    [5, 6, 7, 8, 9, 0],
+  ];
+  xCenter = 2;
+  yCenter = 1;
+  width = 5;
+  height = 3;
+  expected = [
+    [1, 2, 3],
+    [7, 8, 9],
+    [3, 4, 5],
+    [9, 0, 1],
+    [5, 6, 7],
+  ];
+  t.same(map.getSubarrayFrom2dArray(array, xCenter, yCenter, width, height), expected);
+});
+
 test('test traversableCellsInTile', t => {
   t.plan(5);
   let expected = [
