@@ -194,7 +194,7 @@ export function findTile(tiles) {
  * height: the height of the initialized 2D array
  * defaultVal: the value to give each element in the initialized 2D array
  */
-export function init2dArray(width, height, defaultVal = 0) {
+export function init2dArray(width, height, defaultVal) {
   const matrix = [];
 
   for (let x = 0; x < width; x++) {
@@ -265,7 +265,7 @@ export function addBufferTo2dArray(m, bufSize) {
   const mWithBufHeight = mHeight + (bufSize * 2);
 
   // Create a grid with matrix's values and a bufSize perimeter of zeros
-  const mWithBuf = init2dArray(mWithBufWidth, mWithBufHeight);
+  const mWithBuf = init2dArray(mWithBufWidth, mWithBufHeight, 0);
 
   // Add the buffer
   for (let x = 0; x < mWithBufWidth; x++) {
