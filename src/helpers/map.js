@@ -262,3 +262,31 @@ export function addBufferTo2dArray(m, bufSize, bufVal) {
   return mWithBuf;
 }
 
+
+/*
+ * Returns a specified section from a 2D array.
+ *
+ * array: the 2D array to get the subarray from
+ * xCenter: the x index of the center of the subarray
+ * yCenter: the y index of the center of the subarray
+ * width: the width of the subarray (must be an odd number)
+ * height: the height of the subarray (must be an odd number)
+ */
+export function getSubarrayFrom2dArray(array, xCenter, yCenter, width, height) {
+  const halfWidth = (width - 1) / 2;
+  const halfHeight = (height - 1) / 2;
+  const leftEdge = xCenter - halfWidth;
+  const rightEdge = xCenter + halfWidth;
+  const topEdge = yCenter - halfHeight;
+  const botEdge = yCenter + halfHeight;
+
+  const initVal = 0;
+  const subarray = init2dArray(width, height, initVal);
+  for (let x = leftEdge; x <= rightEdge; x++) {
+    for (let y = topEdge; y <= botEdge; y++) {
+      subarray[x - leftEdge][y - topEdge] = array[x][y];
+    }
+  }
+
+  return subarray;
+}
