@@ -63,7 +63,7 @@ test('test addBufferTo2dArray', t => {
     [7, 7, 7, 8, 9, 9, 9],
     [7, 7, 7, 8, 9, 9, 9],
   ];
-  t.same(helpers.addBufferTo2dArray(matrix, bufferSize), expected);
+  t.same(map.addBufferTo2dArray(matrix, bufferSize), expected);
 });
 
 test('test traversableCellsInTile', t => {
@@ -204,7 +204,7 @@ test('test init2dArray', t => {
     [1, 1, 1],
     [1, 1, 1],
   ];
-  t.same(helpers.init2dArray(width, height, defaultVal), expected);
+  t.same(map.init2dArray(width, height, defaultVal), expected);
 
   width = 3;
   height = 3;
@@ -214,7 +214,7 @@ test('test init2dArray', t => {
     [55, 55, 55],
     [55, 55, 55],
   ];
-  t.same(helpers.init2dArray(width, height, defaultVal), expected);
+  t.same(map.init2dArray(width, height, defaultVal), expected);
 });
 
 
@@ -235,5 +235,5 @@ test('test multiplyCorrespondingElementsAndSum', t => {
 
   const expected = 165;
 
-  t.same(helpers.multiplyCorrespondingElementsAndSum(m1, m2), expected);
+  t.is(map.multiplyCorrespondingElementsAndSum(m1, m2), expected);
 });
