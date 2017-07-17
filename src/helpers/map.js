@@ -147,27 +147,16 @@ export function getTraversableCells(cpt, map) {
 
 /*
  * Returns the position (in pixels x,y and grid positions xg, yg
- * of first of the specified tile type to appear starting in the
+ * of first of the specified tile types to appear starting in the
  * top left corner and moving in a page-reading fashion.
  */
-export function findTile(targetTile) {
+export function findTile(targetTiles) {
   for (let x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
     for (let y = 0; y < yl; y++) {
-      if (tagpro.map[x][y] === targetTile) {
-        return { x: x * PIXELS_PER_TILE, y: y * PIXELS_PER_TILE, xg: x, yg: y };
-      }
-    }
-  }
-  console.error(`Unable to find tile: ${targetTile}`);
-  return {};
-}
-
-export function findApproxTile(targetTile) {
-  for (let x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
-    for (let y = 0; y < yl; y++) {
-      if (Math.floor(tagpro.map[x][y]) === Math.floor(targetTile)) {
-        return { x: x * PIXELS_PER_TILE, y: y * PIXELS_PER_TILE, xg: x, yg: y };
-      }
+      targetTiles.forEach(function(targetTile) {
+        if (tagpro.map[x][y] === targetTile)
+          return { x: x * PIXELS_PER_TILE, y: y * PIXELS_PER_TILE, xg: x, yg: y };
+      });
     }
   }
   console.error(`Unable to find tile: ${targetTile}`);
