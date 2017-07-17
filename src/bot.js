@@ -84,8 +84,6 @@ function getSeek() {
   seekToward.y *= PIXELS_PER_TILE;
 
   // Version for not attempting path-planning
-  // seek.x = goal.x - (self.x + self.vx);
-  // seek.y = goal.y - (self.y + self.vy);
   return {
     x: seekToward.x - (me.x + me.vx),
     y: seekToward.y - (me.y + me.vy),
