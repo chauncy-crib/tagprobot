@@ -235,77 +235,29 @@ export function multiplyCorrespondingElementsAndSum(m1, m2) {
 
 
 /* Returns a matrix with a buffer applied around its perimeter. Example:
- *   Take the element values in the corners of the matrix and apply them
- *   as a bufSize by bufSize matrix to the new corners
- *   Example:
- *     m = 1 2 3   bufSize = 2   mWithBuf = 1 1       3 3
- *         4 5 6                            1 1       3 3
- *         7 8 9                                1 2 3
- *                                              4 5 6
- *                                              7 8 9
- *                                          7 7       9 9
- *                                          7 7       9 9
- *   Take the element values on the edges of the matrix and apply them as
- *   rows/columns that are bufSize long to the new edges
- *     mWithBuf = 1 1       3 3   bufSize = 2  mWithBuf = 1 1 1 2 3 3 3
- *                1 1       3 3                           1 1 1 2 3 3 3
- *                    1 2 3                               1 1 1 2 3 3 3
- *                    4 5 6                               4 4 4 5 6 6 6
- *                    7 8 9                               7 7 7 8 9 9 9
- *                7 7       9 9                           7 7 7 8 9 9 9
- *                7 7       9 9                           7 7 7 8 9 9 9
+ *   Take the element values of the matrix and apply a bufSize perimeter
+ *   of value bufVal.
+ *     mWithBuf = 1 2 3   bufSize = 2   mWithBuf = 1 1 1 1 1 1 1
+ *                4 5 6                            1 1 1 1 1 1 1
+ *                7 8 9   bufVal = 1               1 1 1 2 3 1 1
+ *                                                 1 1 4 5 6 1 1
+ *                                                 1 1 7 8 9 1 1
+ *                                                 1 1 1 1 1 1 1
+ *                                                 1 1 1 1 1 1 1
  *
  * m: a 2D array, which will have a buffer added around its perimeter
  * bufSize: the size of buffer to add around the matrix
+ * bufVal: the value to fill the buffer with
  */
-export function addBufferTo2dArray(m, bufSize) {
+export function addBufferTo2dArray(m, bufSize, bufVal) {
   const mWidth = m.length;
   const mHeight = m[0].length;
   const mWithBufWidth = mWidth + (bufSize * 2);
   const mWithBufHeight = mHeight + (bufSize * 2);
 
   // Create a grid with matrix's values and a bufSize perimeter of zeros
-  const mWithBuf = init2dArray(mWithBufWidth, mWithBufHeight, 0);
-
-  // Add the buffer
-  for (let x = 0; x < mWithBufWidth; x++) {
-    for (let y = 0; y < mWithBufHeight; y++) {
-      // top row buffer
-      if (y < bufSize) {
-        // top left buffer
-        if (x < bufSize) {
-          mWithBuf[x][y] = m[0][0];
-        // top mid buffer
-        } else if (x < bufSize + mWidth) {
-          mWithBuf[x][y] = m[x - bufSize][0];
-        // top right buffer
-        } else {
-          mWithBuf[x][y] = m[mWidth - 1][0];
-        }
-      } else if (y < bufSize + mWidth) {
-        // mid left buffer
-        if (x < bufSize) {
-          mWithBuf[x][y] = m[0][y - bufSize];
-        // original matrix (not buffer)
-        } else if (x < bufSize + mWidth) {
-          mWithBuf[x][y] = m[x - bufSize][y - bufSize];
-        } else {
-          mWithBuf[x][y] = m[mWidth - 1][y - bufSize];
-        }
-      } else if (y < mWithBufWidth) {
-        // bot left buffer
-        if (x < bufSize) {
-          mWithBuf[x][y] = m[0][mHeight - 1];
-        // bot mid buffer
-        } else if (x < bufSize + mWidth) {
-          mWithBuf[x][y] = m[x - bufSize][mHeight - 1];
-        // bot right buffer
-        } else {
-          mWithBuf[x][y] = m[mWidth - 1][mHeight - 1];
-        }
-      }
-    }
-  }
+  const mWithBuf = init2dArray(mWithBufWidth, mWithBufHeight, bufVal);
+  fillGridWithSubgrid(mWithBuf, m, bufSize, bufSize);
 
   return mWithBuf;
 }

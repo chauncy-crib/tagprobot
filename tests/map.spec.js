@@ -53,17 +53,18 @@ test('test addBufferTo2dArray', t => {
     [4, 5, 6],
     [7, 8, 9],
   ];
-  const bufferSize = 2;
+  const bufSize = 2;
+  const bufVal = 1;
   const expected = [
-    [1, 1, 1, 2, 3, 3, 3],
-    [1, 1, 1, 2, 3, 3, 3],
-    [1, 1, 1, 2, 3, 3, 3],
-    [4, 4, 4, 5, 6, 6, 6],
-    [7, 7, 7, 8, 9, 9, 9],
-    [7, 7, 7, 8, 9, 9, 9],
-    [7, 7, 7, 8, 9, 9, 9],
+    [1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 2, 3, 1, 1],
+    [1, 1, 4, 5, 6, 1, 1],
+    [1, 1, 7, 8, 9, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1],
   ];
-  t.same(map.addBufferTo2dArray(matrix, bufferSize), expected);
+  t.same(map.addBufferTo2dArray(matrix, bufSize, bufVal), expected);
 });
 
 test('test traversableCellsInTile', t => {
