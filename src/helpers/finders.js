@@ -20,7 +20,7 @@ export function findEnemyEndzone() {
  * Returns the position (in pixels) of the specified flag station, even if empty.
  */
 export function findFlagStation() {
-  return findApproxTile([tileTypes.YELLOW_FLAG, tileTypes.YELLOW_FLAG_TAKEN]);
+  return findTile([tileTypes.YELLOW_FLAG, tileTypes.YELLOW_FLAG_TAKEN]);
 }
 
 // Returns the enemy FC if in view.

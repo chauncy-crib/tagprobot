@@ -4,7 +4,7 @@ import {
   findMyEndzone,
   findEnemyEndzone,
   findFlagStation,
-  findEnemy,
+  // findEnemy, // TODO: Commenting this out until juking is implemented
   findEnemyFC,
 } from './helpers/finders';
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
@@ -25,7 +25,7 @@ function getGoal() {
   const me = getMe();
   // If the bot has the flag, go to the endzone
   if (me.flag) {
-    const chaser = findEnemy();
+    // const chaser = findEnemy();
     // really bad jukes! TODO: either remove or integrate this
     // if (chaser) {
     //   goal = chaser;

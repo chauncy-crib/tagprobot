@@ -164,12 +164,14 @@ export function getTraversableCells(cpt, map) {
 export function findTile(targetTiles) {
   for (let x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
     for (let y = 0; y < yl; y++) {
-      targetTiles.forEach(function(targetTile) {
-        if (tagpro.map[x][y] === targetTile)
+      for (let i = 0; i < targetTiles.length; i++) {
+        const targetTile = targetTiles[i];
+        if (tagpro.map[x][y] === targetTile) {
           return { x: x * PIXELS_PER_TILE, y: y * PIXELS_PER_TILE, xg: x, yg: y };
-      });
+        }
+      }
     }
   }
-  console.error(`Unable to find tile: ${targetTile}`);
+  console.error(`Unable to find tile: ${targetTiles}`);
   return {};
 }
