@@ -53,3 +53,19 @@ export function setupVelocity() {
     return this.m_linearVelocity;
   };
 }
+
+/*
+ * Throws a specified error message if a condition is not met. If no message
+ * is specified, then a default error message is thrown.
+ *
+ * condition: the condition, which, if false, will cause an error to be thrown
+ * message: the error message to throw if condition is not true
+ */
+export function assert(condition, message = "Assertion failed") {
+  if (!condition) {
+    if (typeof Error !== "undefined") {
+      throw new Error(message);
+    }
+    throw message;
+  }
+}
