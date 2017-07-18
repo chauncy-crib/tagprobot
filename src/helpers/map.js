@@ -1,5 +1,6 @@
 import { tileTypes, PIXELS_PER_TILE } from '../constants';
 import { amBlue, amRed } from './player';
+import * as utils from '../../src/utils';
 
 
 /*
@@ -220,6 +221,14 @@ export function init2dArray(width, height, defaultVal) {
  * m2: the second matrix (of the same dimensions as m1)
  */
 export function multiplyCorrespondingElementsAndSum(m1, m2) {
+  let condition = (m1.length === m2.length);
+  let errorMessage = 'multiplyCorrespondingElementsAndSum: m1 and m2 are not the same width';
+  utils.assert(condition, errorMessage);
+
+  condition = (m1[0].length === m2[0].length);
+  errorMessage = 'multiplyCorrespondingElementsAndSum: m1 and m2 are not the same height';
+  utils.assert(condition, errorMessage);
+
   const mWidth = m1.length;
   const mHeight = m1[0].length;
   let sum = 0;
@@ -273,6 +282,14 @@ export function addBufferTo2dArray(m, bufSize, bufVal) {
  * height: the height of the subarray (must be an odd number)
  */
 export function getSubarrayFrom2dArray(array, xCenter, yCenter, width, height) {
+  let condition = (width % 2 === 1);
+  let errorMessage = 'getSubarrayFrom2dArray: width is not odd';
+  utils.assert(condition, errorMessage);
+
+  condition = (height % 2 === 1);
+  errorMessage = 'getSubarrayFrom2dArray: height is not odd';
+  utils.assert(condition, errorMessage);
+
   const halfWidth = (width - 1) / 2;
   const halfHeight = (height - 1) / 2;
   const leftEdge = xCenter - halfWidth;
