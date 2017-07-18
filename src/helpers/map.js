@@ -160,18 +160,23 @@ export function getTraversableCells(cpt, map) {
  * Returns the position (in pixels x,y and grid positions xg, yg
  * of first of the specified tile types to appear starting in the
  * top left corner and moving in a page-reading fashion.
+ *
+ * tiles: either a number representing a tileType, or an array of such numbers
  */
-export function findTile(targetTiles) {
+export function findTile(tiles) {
+  // Force an array if the input is just one tile
+  const tileArray = [].concat(tiles);
+
   for (let x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
     for (let y = 0; y < yl; y++) {
-      for (let i = 0; i < targetTiles.length; i++) {
-        const targetTile = targetTiles[i];
-        if (tagpro.map[x][y] === targetTile) {
+      for (let i = 0; i < tileArray.length; i++) {
+        const tile = tileArray[i];
+        if (tagpro.map[x][y] === tile) {
           return { x: x * PIXELS_PER_TILE, y: y * PIXELS_PER_TILE, xg: x, yg: y };
         }
       }
     }
   }
-  console.error(`Unable to find tile: ${targetTiles}`);
+  console.error(`Unable to find tile: ${tiles}`);
   return {};
 }
