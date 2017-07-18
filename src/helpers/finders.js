@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import find from 'lodash/find';
 
 import { tileTypes } from '../constants';
 import { getMyEndzoneTile, getEnemyEndzoneTile, isOnMyTeam } from './player';
@@ -25,7 +25,7 @@ export function findFlagStation() {
 
 // Returns the enemy FC if in view.
 export function findEnemyFC() {
-  return _.find(tagpro.players, player => (
+  return find(tagpro.players, player => (
     !isOnMyTeam(player) &&
     player.flag &&
     !player.dead &&
@@ -35,7 +35,7 @@ export function findEnemyFC() {
 
 // Returns an enemy if in view
 export function findEnemy() {
-  return _.find(tagpro.players, player => (
+  return find(tagpro.players, player => (
     !isOnMyTeam(player) &&
     !player.dead &&
     player.draw
