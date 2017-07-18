@@ -9,7 +9,7 @@
 // @author        Cflakes, snaps_, altodyte, shanek21, davidabrahams, billmwong
 // @namespace     http://www.reddit.com/user/snaps_
 // @require       https://raw.githubusercontent.com/bgrins/javascript-astar/master/astar.js
-// @license       2008
+// @license       2017
 // ==/UserScript==
 
 import botLoop from './bot';
