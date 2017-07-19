@@ -279,3 +279,62 @@ test('test multiplyCorrespondingElementsAndSum', t => {
 
   t.is(map.multiplyCorrespondingElementsAndSum(m1, m2), expected);
 });
+
+test('test convolve', t => {
+  t.plan(3);
+
+  let m = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+  ];
+  let k = [
+    [1],
+  ];
+  let expected = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+  ];
+  t.same(map.convolve(m, k), expected);
+
+  m = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+  ];
+  k = [
+    [2],
+  ];
+  /* eslint-disable array-bracket-spacing*/
+  /* eslint-disable no-multi-spaces*/
+  expected = [
+    [ 2,  4,  6],
+    [ 8, 10, 12],
+    [14, 16, 18],
+  ];
+  /* eslint-enable array-bracket-spacing*/
+  /* eslint-enable no-multi-spaces*/
+  t.same(map.convolve(m, k), expected);
+
+  m = [
+    [1, 2, 3, 4],
+    [5, 6, 7, 8],
+    [9, 0, 1, 2],
+  ];
+  k = [
+    [1, 2, 3],
+    [3, 4, 5],
+    [6, 7, 8],
+  ];
+  /* eslint-disable array-bracket-spacing*/
+  /* eslint-disable no-multi-spaces*/
+  expected = [
+    [112, 160, 193, 142],
+    [131, 150, 129, 100],
+    [ 89,  91,  79,  63],
+  ];
+  /* eslint-enable array-bracket-spacing*/
+  /* eslint-enable no-multi-spaces*/
+  t.same(map.convolve(m, k), expected);
+});
