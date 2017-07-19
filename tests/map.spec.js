@@ -172,15 +172,13 @@ test('test getTraversableCells', t => {
   // define the number of cells per tile
   let cpt = 1;
 
-  /* eslint-disable no-multi-spaces */
-  /* eslint-disable array-bracket-spacing */
+  /* eslint-disable no-multi-spaces, array-bracket-spacing */
   const mockMap = [
     [bomb,    blank,    redgate],
     [redgate, bluegate, blank  ],
     [blank,   spike,    bomb   ],
   ];
-  /* eslint-enable no-multi-spaces */
-  /* eslint-enable array-bracket-spacing */
+  /* eslint-enable no-multi-spaces, array-bracket-spacing */
 
   // this is what we expect the function to return
   let expected = [
@@ -306,15 +304,13 @@ test('test convolve', t => {
   k = [
     [2],
   ];
-  /* eslint-disable array-bracket-spacing*/
-  /* eslint-disable no-multi-spaces*/
+  /* eslint-disable no-multi-spaces, array-bracket-spacing*/
   expected = [
     [ 2,  4,  6],
     [ 8, 10, 12],
     [14, 16, 18],
   ];
-  /* eslint-enable array-bracket-spacing*/
-  /* eslint-enable no-multi-spaces*/
+  /* eslint-enable no-multi-spaces, array-bracket-spacing */
   t.same(map.convolve(m, k), expected);
 
   m = [
@@ -327,14 +323,12 @@ test('test convolve', t => {
     [3, 4, 5],
     [6, 7, 8],
   ];
-  /* eslint-disable array-bracket-spacing*/
-  /* eslint-disable no-multi-spaces*/
+  /* eslint-disable no-multi-spaces, array-bracket-spacing*/
   expected = [
     [112, 160, 193, 142],
     [131, 150, 129, 100],
     [ 89,  91,  79,  63],
   ];
-  /* eslint-enable array-bracket-spacing*/
-  /* eslint-enable no-multi-spaces*/
+  /* eslint-enable no-multi-spaces, array-bracket-spacing */
   t.same(map.convolve(m, k), expected);
 });
