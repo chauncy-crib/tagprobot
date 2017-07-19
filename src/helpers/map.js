@@ -307,3 +307,41 @@ export function getSubarrayFrom2dArray(array, xCenter, yCenter, width, height) {
 
   return subarray;
 }
+
+
+/*
+ * Returns a 2D array that is the result of the convolution of m and k.
+ *
+ * m: the first 2D array in the convolution
+ * k: the second 2D array in the convolution, also called the kernel (must
+ *   have sides of equal length and the sides must have an odd length)
+ */
+export function convolve(m, k) {
+  const kWidth = k.length;
+  const kHeight = k[0].length;
+  let condition = (kWidth === kHeight);
+  let errorMessage = 'Kernel\'s width is not equal to kernel\'s height';
+  utils.assert(condition, errorMessage);
+
+  condition = (((kWidth - 1) % 2) === 0);
+  errorMessage = 'Kernel\'s width is not odd';
+  utils.assert(condition, errorMessage);
+
+  const mWidth = m.length;
+  const mHeight = m[0].length;
+  const kSize = kWidth;
+  const bufSize = (kSize - 1) / 2;
+  const bufVal = 1;
+  const mWithBuf = addBufferTo2dArray(m, bufSize, bufVal);
+
+  let mSubarray = init2dArray(kSize, kSize, 0);
+  const convolution = init2dArray(mWidth, mHeight, 0);
+  for (let x = 0; x < mWidth; x++) {
+    for (let y = 0; y < mHeight; y++) {
+      mSubarray = getSubarrayFrom2dArray(mWithBuf, x + bufSize, y + bufSize, kWidth, kWidth);
+      convolution[x][y] = multiplyCorrespondingElementsAndSum(mSubarray, k);
+    }
+  }
+
+  return convolution;
+}
