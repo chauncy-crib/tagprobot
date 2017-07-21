@@ -197,7 +197,10 @@ export function getTraversableCells(cpt, map, me) {
   }
   for (x = 0; x < xl; x++) {
     for (let y = 0; y < yl; y++) {
-      const objRadius = 20; // TODO: Set radius to be correct value for each cell object
+      // TODO: Set radius to be correct value for each cell object. Currently using 29 because it is > 20 * sqrt(2),
+      // the furthest distance from the center of a tile to its corner, in pixels. This guarantees that if the tile
+      // has anything non-tranversable in it (wall, ball, spike, corner wall), the entire tile is marked as non-traversable
+      const objRadius = 29;
       fillGridWithSubgrid(emptyCells, traversableCellsInTile(isTraversable(map[x][y], me),
         cpt, objRadius), x * cpt, y * cpt);
     }
