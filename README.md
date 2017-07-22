@@ -15,8 +15,10 @@ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | b
 
 
 ## Running the App
-- Run `npm run build`.  This will start webpack, which will "watch" the files in `src/` and will update the bundle automatically.  This will also run eslint whenever your code changes so you can see if the linter fails. It will also automatically run unit tests whenever you save a file it is watching.
-- To test your code, make sure webpack is running and copy-paste the code in `public/bundle.js` into tampermonkey.
+- Run `npm run build`.  This will start webpack, which will "watch" the files in `src/` and will update the bundle automatically.  This will also run eslint whenever your code changes so you can see if the linter fails.
+- `npm run build:test` behaves similarly to `npm run build`, except it will also automatically run unit tests whenever you save a file it is watching, or save a test file
+- You can append `:once` to either of the previous commands to run webpack without watching the files for changes. `npm run build:once` and `npm run build:test:once`.
+- To test your code in tagpro, make sure webpack is running and copy-paste the code in `public/bundle.js` into tampermonkey.
 
 ## Terminology
 
