@@ -7,7 +7,7 @@ var TEST_DIR = path.resolve(__dirname, 'tests/');
 
 module.exports = function(env) {
   exports = [];
-  if (env.test == 'true') {
+  if (env && env.test == 'true') {
     exports.push({
       entry: glob.sync(TEST_DIR + "/**/*.js"),
       target: 'node',
