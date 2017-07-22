@@ -23,9 +23,23 @@ module.exports = function(env) {
             enforce: "pre",
             // Only test js files
             test: [/\.js$/],
-            // Only include files in the client directory (so we don't compile our node modules or server side code)
-            include: TEST_DIR,
+            // Only include files in the client and test directory (so we don't compile our node modules or server side code)
+            include: [TEST_DIR, APP_DIR],
             loader: 'eslint-loader',
+          },
+          // Babel javascript loader, convert js files to es5 javascript
+          {
+            // Only test js files
+            test: [/\.js$/],
+            // Only include files in the src/ directory (so we don't compile our node modules or server side code)
+            include: [TEST_DIR, APP_DIR],
+            loader: 'babel-loader',
+            query: {
+              //use es6 syntax
+              presets: ['es2015'],
+              // makes output more concise
+              plugins: ['transform-runtime'],
+            }
           }
         ]
       },

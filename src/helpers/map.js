@@ -147,9 +147,11 @@ export function getTraversableCells(cpt, map) {
         traversableCellsInTile(
           isTraversable(map[x][y]),
           cpt,
-          objRadius),
+          objRadius,
+        ),
         x * cpt,
-        y * cpt);
+        y * cpt,
+      );
     }
   }
   return emptyCells;
