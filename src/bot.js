@@ -9,7 +9,7 @@ import {
 } from './helpers/finders';
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe } from './helpers/player';
-import getTarget from './helpers/path';
+import { getShortestPath, getTarget } from './helpers/path';
 import { move } from './utils';
 
 /*
@@ -73,12 +73,18 @@ function getSeek() {
     x: Math.floor(goal.x / PIXELS_PER_TILE),
     y: Math.floor(goal.y / PIXELS_PER_TILE),
   };
-  const seekToward = getTarget(
+  const cellsPerTile = 1;
+  const shortestPath = getShortestPath(
     gridPosition.x,
     gridPosition.y,
     gridTarget.x,
     gridTarget.y,
-    getTraversableCells(1, tagpro.map),
+    getTraversableCells(cellsPerTile, tagpro.map),
+  );
+  const seekToward = getTarget(
+    gridPosition.x,
+    gridPosition.y,
+    shortestPath,
   );
   seekToward.x *= PIXELS_PER_TILE;
   seekToward.y *= PIXELS_PER_TILE;
