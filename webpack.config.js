@@ -3,7 +3,7 @@ var glob = require("glob");
 
 var TapWebpackPlugin = require('tap-webpack-plugin');
 var APP_DIR = path.resolve(__dirname, 'src/');
-var TEST_DIR = path.resolve(__dirname, 'tests/');
+var TEST_DIR = path.resolve(__dirname, 'test/');
 
 module.exports = function(env) {
   exports = [];
