@@ -11,7 +11,7 @@ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | b
 - Run `npm test`. This will run all the test files
 
 ## Auto-linting your code
-- Run `npm run lint`. This lint your code and perform any fixes that can be done automatically. It will then give a report of what you still need to fix.
+- Run `npm run lint:fix`. This lint your code and perform any fixes that can be done automatically. It will then give a report of what you still need to fix.
 
 
 ## Running the App
