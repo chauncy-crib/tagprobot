@@ -4,9 +4,9 @@
   "description": "",
   "scripts": {
     "start": "http-server",
-    "lint": "eslint src/**/*.js tests/**/*.js",
-    "lint:fix": "eslint src/**/*.js tests/**/*.js --fix",
-    "test": "babel-tape-runner tests/**/*.js",
+    "lint": "eslint src/**/*.js test/**/*.js",
+    "lint:fix": "eslint src/**/*.js test/**/*.js --fix",
+    "test": "babel-tape-runner test/**/*.js",
     "build": "webpack --watch",
     "build:once": "webpack",
     "build:test": "webpack --watch --env.test=true",
