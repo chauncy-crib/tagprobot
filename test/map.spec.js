@@ -5,7 +5,6 @@ import { mockMe } from '../src/helpers/player';
 
 
 test('test fillGridWithSubgrid', t => {
-  t.plan(2);
   let grid = [
     [0, 0, 0],
     [0, 0, 0],
@@ -43,11 +42,11 @@ test('test fillGridWithSubgrid', t => {
   ];
   map.fillGridWithSubgrid(grid, subgrid, 1, 0);
   t.same(grid, expected);
+
+  t.end();
 });
 
 test('test addBufferTo2dArray', t => {
-  t.plan(1);
-
   const matrix = [
     [1, 2, 3],
     [4, 5, 6],
@@ -65,11 +64,11 @@ test('test addBufferTo2dArray', t => {
     [1, 1, 1, 1, 1, 1, 1],
   ];
   t.same(map.addBufferTo2dArray(matrix, bufSize, bufVal), expected);
+
+  t.end();
 });
 
 test('test getSubarrayFrom2dArray', t => {
-  t.plan(2);
-
   let array = [
     [1, 2, 3, 4],
     [5, 6, 7, 8],
@@ -106,10 +105,11 @@ test('test getSubarrayFrom2dArray', t => {
     [5, 6, 7],
   ];
   t.same(map.getSubarrayFrom2dArray(array, xCenter, yCenter, width, height), expected);
+
+  t.end();
 });
 
 test('test traversableCellsInTile', t => {
-  t.plan(5);
   let expected = [
     [1, 1, 1, 1],
     [1, 1, 1, 1],
@@ -153,12 +153,12 @@ test('test traversableCellsInTile', t => {
     [1, 1, 0, 0, 1, 1],
   ];
   t.same(map.traversableCellsInTile(false, 6, 14), expected);
+
+  t.end();
 });
 
 
 test('test getTraversableCells', t => {
-  t.plan(4);
-
   // create a dummy map from bombs, spikes, gates, and regular tiles
   const bomb = tileTypes.BOMB;
   const spike = tileTypes.SPIKE;
@@ -228,12 +228,12 @@ test('test getTraversableCells', t => {
   ];
 
   t.same(map.getTraversableCells(cpt, smallMap), expected);
+
+  t.end();
 });
 
 
 test('test init2dArray', t => {
-  t.plan(2);
-
   let width = 5;
   let height = 3;
   let defaultVal = 1;
@@ -255,12 +255,12 @@ test('test init2dArray', t => {
     [55, 55, 55],
   ];
   t.same(map.init2dArray(width, height, defaultVal), expected);
+
+  t.end();
 });
 
 
 test('test multiplyCorrespondingElementsAndSum', t => {
-  t.plan(1);
-
   const m1 = [
     [1, 2, 3],
     [4, 5, 6],
@@ -276,11 +276,11 @@ test('test multiplyCorrespondingElementsAndSum', t => {
   const expected = 165;
 
   t.is(map.multiplyCorrespondingElementsAndSum(m1, m2), expected);
+
+  t.end();
 });
 
 test('test convolve', t => {
-  t.plan(3);
-
   let m = [
     [1, 2, 3],
     [4, 5, 6],
@@ -331,4 +331,6 @@ test('test convolve', t => {
   ];
   /* eslint-enable no-multi-spaces, array-bracket-spacing */
   t.same(map.convolve(m, k), expected);
+
+  t.end();
 });
