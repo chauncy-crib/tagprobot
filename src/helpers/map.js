@@ -76,7 +76,7 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
   assert(x >= 0 && x < bigGridWidth && y >= 0 && y < bigGridHeight,
     `${x} and ${y} were not in the bounds of the ${bigGridWidth}x${bigGridHeight} big grid`);
   assert(x + smallGridWidth <= bigGridHeight && y + smallGridHeight <= bigGridHeight,
-    'filling bigGrid with smallGrid would result in the expansion of the bigGrid.')
+    'filling bigGrid with smallGrid would result in the expansion of the bigGrid.');
 
   for (let i = 0; i < smallGridWidth; i++) {
     for (let j = 0; j < smallGridHeight; j++) {
@@ -93,6 +93,8 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
  * @param {number} objRadius - radius of untraversable object in pixels
  */
 export function traversableCellsInTile(tileIsTraversable, cpt, objRadius) {
+  assert(PIXELS_PER_TILE % cpt === 0, 'cpt must be a divisor of PIXELS_PER_TILE');
+  assert(objRadius >= 0, 'objRadius must be non-negative');
   const gridTile = [];
   // Start with all traversable
   let i;
