@@ -57,7 +57,11 @@ test('test fillGridWithSubgrid', t => {
   ];
   map.fillGridWithSubgrid(grid, subgrid, 1, 0);
   t.same(grid, expected);
-
+  t.doesNotThrow(() => { map.fillGridWithSubgrid(grid, subgrid, 0, 0); });
+  t.doesNotThrow(() => { map.fillGridWithSubgrid(grid, subgrid, 1, 1); });
+  t.throws(() => { map.fillGridWithSubgrid(grid, subgrid, -1, 1); });
+  t.throws(() => { map.fillGridWithSubgrid(grid, subgrid, 1, 2); });
+  t.throws(() => { map.fillGridWithSubgrid(subgrid, grid, 0, 0); });
   t.end();
 });
 

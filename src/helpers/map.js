@@ -69,8 +69,14 @@ export function isTraversable(tileID) {
  * place all values from smallGrid into bigGrid. Align the upper left corner at x, y
  */
 export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
+  const bigGridWidth = bigGrid.length;
+  const bigGridHeight = bigGrid[0].length;
   const smallGridWidth = smallGrid.length;
   const smallGridHeight = smallGrid[0].length;
+  assert(x >= 0 && x < bigGridWidth && y >= 0 && y < bigGridHeight,
+    `${x} and ${y} were not in the bounds of the ${bigGridWidth}x${bigGridHeight} big grid`);
+  assert(x + smallGridWidth <= bigGridHeight && y + smallGridHeight <= bigGridHeight,
+    'filling bigGrid with smallGrid would result in the expansion of the bigGrid.')
 
   for (let i = 0; i < smallGridWidth; i++) {
     for (let j = 0; j < smallGridHeight; j++) {
