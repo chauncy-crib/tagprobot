@@ -17,5 +17,6 @@ export function clearSprites(sprites) {
     sprites.forEach(sprite => {
       tagpro.renderer.layers.background.removeChild(sprite);
     });
+    sprites.splice(0, sprites.length);
   }
 }
