@@ -69,7 +69,7 @@ function drawRects() {
  * getShortestPath() in helpers/path.js and the cpt used when calculating shortest path, and draws
  * the corresponding cells in green on the map.
  */
-export default function drawPlannedPath(path, renderer, cpt, hexColor = 0x00ff00, alpha = 0.25) {
+export default function drawPlannedPath(path, cpt, hexColor = 0x00ff00, alpha = 0.25) {
   clearRects(); // clear the previous path from the map
   createPathSprites(path, cpt, hexColor, alpha); // create the PIXI.Graphics objecs we're drawing
   drawRects(); // put the PIXI.Graphics objects on the map

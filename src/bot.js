@@ -10,7 +10,6 @@ import {
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe } from './helpers/player';
 import { getShortestPath, getTarget } from './helpers/path';
-import getTarget from './helpers/path';
 import { move } from './tagproInterface';
 import drawPlannedPath from './draw/visualizePath';
 
@@ -92,7 +91,7 @@ function getSeek() {
   seekToward.y *= PIXELS_PER_TILE;
 
   // Visualize the planned path
-  drawPlannedPath(shortestPath, tagpro.renderer, cellsPerTile);
+  drawPlannedPath(shortestPath, cellsPerTile);
 
   // Version for not attempting path-planning
   return {
