@@ -3,6 +3,21 @@ import * as map from '../src/helpers/map';
 import { tileTypes, teams } from '../src/constants';
 import { mockMe } from '../src/helpers/player';
 
+test('test isTraversable', t => {
+  t.true(map.isTraversable(2)); // Regular floor
+  t.true(map.isTraversable(3.1)); // taken red flag
+  t.true(map.isTraversable(9)); // inactive gate
+  t.true(map.isTraversable(17)); // red endzone
+  t.false(map.isTraversable(0)); // Blank space
+  t.false(map.isTraversable(1)); // square wall
+  t.false(map.isTraversable(7)); // spike
+  // some inputs that the function shouldn't handle
+  t.throws(() => { map.isTraversable(1.123); });
+  t.throws(() => { map.isTraversable(-1); });
+  t.throws(() => { map.isTraversable('potato'); });
+  t.throws(() => { map.isTraversable(undefined); });
+  t.end();
+});
 
 test('test fillGridWithSubgrid', t => {
   let grid = [
