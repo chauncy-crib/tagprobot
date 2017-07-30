@@ -4,14 +4,19 @@ import { tileTypes } from '../constants';
 import { getMyEndzoneTile, getEnemyEndzoneTile, isOnMyTeam } from './player';
 import { findTile } from './map';
 
-// Returns the position of the endzone you should return a the flag to.
-// TODO: return closest endzone tile instead of first
+
+/*
+ * Returns the position (in pixels) of the endzone you should return a the flag to.
+ * TODO: return closest endzone tile instead of first
+ */
 export function findMyEndzone() {
   return findTile(getMyEndzoneTile());
 }
 
-// Returns the position of the endzone you should defend
-// TODO: return closest endzone tile instead of first
+/*
+* Returns the position (in pixels) of the endzone you should defend
+* TODO: return closest endzone tile instead of first
+*/
 export function findEnemyEndzone() {
   return findTile(getEnemyEndzoneTile());
 }
@@ -23,7 +28,9 @@ export function findFlagStation() {
   return findTile([tileTypes.YELLOW_FLAG, tileTypes.YELLOW_FLAG_TAKEN]);
 }
 
-// Returns the enemy FC if in view.
+/*
+ * Returns the enemy FC from the tagpro.players array, if in view.
+ */
 export function findEnemyFC() {
   return find(tagpro.players, player => (
     !isOnMyTeam(player) &&
@@ -33,7 +40,9 @@ export function findEnemyFC() {
   ));
 }
 
-// Returns an enemy if in view
+/*
+ * Returns the enemy FC from the tagpro.players array, if in view.
+ */
 export function findEnemy() {
   return find(tagpro.players, player => (
     !isOnMyTeam(player) &&

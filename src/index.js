@@ -53,7 +53,9 @@ function waitForId(fn) {
   }
 }
 
-// We define everything relevant to our bot inside this function.
+/* 
+ * We define everything relevant to our bot inside this function.
+ */
 function start() {
   setupMe();
   setupVelocity();
@@ -69,8 +71,10 @@ function start() {
   loop();
 }
 
-// Initialize the start script when tagpro is ready, and additionally wait
-// for the playerId property to be assigned.
+/*
+ * Initialize the start script when tagpro is ready, and additionally wait
+ * for the playerId property to be assigned.
+ */
 tagpro.ready(() => {
   waitForId(start);
 });

@@ -17,7 +17,9 @@ export function chat(chatMessage) {
   }
 }
 
-// Sends key events to move to a destination.
+/*
+ * Sends key events to move to a destination.
+ */
 export function move(destination) {
   // TODO: address deadband variable with a comment
   const deadband = 4;

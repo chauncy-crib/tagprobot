@@ -82,9 +82,9 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
 
 /* Returns a 2d cell array of traversible (1) and blocked (0) cells inside a tile.
  *
- * tileIsTraversable: if this tile is traversable
- * cpt: number of cells per tile
- * objRadius: radius of untraversable object in pixels
+ * @param tileIsTraversable - if this tile is traversable
+ * @param cpt - number of cells per tile
+ * @param objRadius - radius of untraversable object in pixels
  */
 export function traversableCellsInTile(tileIsTraversable, cpt, objRadius) {
   const gridTile = [];
@@ -127,8 +127,8 @@ export function traversableCellsInTile(tileIsTraversable, cpt, objRadius) {
  * that column, with 1s and 0s.  empty_tiles[0][0] is the upper-left corner
  * tile.
  *
- * cpt: number of cells per tile
- * map: 2D array representing the Tagpro map
+ * @param cpt - number of cells per tile
+ * @param map - 2D array representing the Tagpro map
  */
 export function getTraversableCells(cpt, map) {
   const xl = map.length;
@@ -162,11 +162,11 @@ export function getTraversableCells(cpt, map) {
 
 
 /*
- * Returns the position (in pixels x,y and grid positions xg, yg
+ * Returns the position (in pixels x,y and grid positions xg, yg)
  * of first of the specified tile types to appear starting in the
  * top left corner and moving in a page-reading fashion.
  *
- * tiles: either a number representing a tileType, or an array of such numbers
+ * @param tiles - either a number representing a tileType, or an array of such numbers
  */
 export function findTile(tiles) {
   // Force an array if the input is just one tile
@@ -191,9 +191,9 @@ export function findTile(tiles) {
  * Initializes and returns a 2D array with the specified width, height, and
  * default value.
  *
- * width: the width of the initialized 2D array
- * height: the height of the initialized 2D array
- * defaultVal: the value to give each element in the initialized 2D array
+ * @param width - the width of the initialized 2D array
+ * @param height - the height of the initialized 2D array
+ * @param defaultVal - the value to give each element in the initialized 2D array
  */
 export function init2dArray(width, height, defaultVal) {
   const matrix = [];
@@ -217,8 +217,8 @@ export function init2dArray(width, height, defaultVal) {
  *   multiplyCorrespondingElementsAndSum(a, b)
  *   (1*4) + (2*1) + (3*2) + (4*3) = 21
  *
- * m1: the first matrix
- * m2: the second matrix (of the same dimensions as m1)
+ * @param m1 - the first matrix
+ * @param m2 - the second matrix (of the same dimensions as m1)
  */
 export function multiplyCorrespondingElementsAndSum(m1, m2) {
   assert(
@@ -255,9 +255,9 @@ export function multiplyCorrespondingElementsAndSum(m1, m2) {
  *                                                 1 1 1 1 1 1 1
  *                                                 1 1 1 1 1 1 1
  *
- * m: a 2D array, which will have a buffer added around its perimeter
- * bufSize: the size of buffer to add around the matrix
- * bufVal: the value to fill the buffer with
+ * @param m - a 2D array, which will have a buffer added around its perimeter
+ * @param bufSize - the size of buffer to add around the matrix
+ * @param bufVal - the value to fill the buffer with
  */
 export function addBufferTo2dArray(m, bufSize, bufVal) {
   const mWidth = m.length;
@@ -276,11 +276,11 @@ export function addBufferTo2dArray(m, bufSize, bufVal) {
 /*
  * Returns a specified section from a 2D array.
  *
- * array: the 2D array to get the subarray from
- * xCenter: the x index of the center of the subarray
- * yCenter: the y index of the center of the subarray
- * width: the width of the subarray (must be an odd number)
- * height: the height of the subarray (must be an odd number)
+ * @param array - the 2D array to get the subarray from
+ * @param xCenter - the x index of the center of the subarray
+ * @param yCenter - the y index of the center of the subarray
+ * @param width - the width of the subarray (must be an odd number)
+ * @param height - the height of the subarray (must be an odd number)
  */
 export function getSubarrayFrom2dArray(array, xCenter, yCenter, width, height) {
   assert(width % 2 === 1, 'getSubarrayFrom2dArray: width is not odd');
@@ -308,8 +308,8 @@ export function getSubarrayFrom2dArray(array, xCenter, yCenter, width, height) {
 /*
  * Returns a 2D array that is the result of the convolution of m and k.
  *
- * m: the first 2D array in the convolution
- * k: the second 2D array in the convolution, also called the kernel (must
+ * @param m - the first 2D array in the convolution
+ * @param k - the second 2D array in the convolution, also called the kernel (must
  *   have sides of equal length and the sides must have an odd length)
  */
 export function convolve(m, k) {

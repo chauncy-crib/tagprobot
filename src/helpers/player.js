@@ -2,7 +2,9 @@ import { teams, tileTypes } from '../constants';
 
 let me;
 
-// Sets up the "me" player for this helper file.
+/* Sets up the "me" player for this helper file.
+ *
+ */
 export function setupMe() {
   me = tagpro.players[tagpro.playerId];
 }
@@ -31,12 +33,16 @@ export function getEnemyEndzoneTile() {
   return amBlue() ? tileTypes.RED_ENDZONE : tileTypes.BLUE_ENDZONE;
 }
 
-// Returns whether or not ally team's flag is taken
+/*
+ * Returns whether or not ally team's flag is taken
+ */
 export function isAllyFlagTaken() {
   return amBlue() ? tagpro.ui.blueFlagTaken : tagpro.ui.redFlagTaken;
 }
 
-// For testing purposes.  Sets me.team to input color
+/*
+ * For testing purposes.  Sets me.team to input color
+ */
 export function mockMe(color) {
   me = { team: color };
 }
