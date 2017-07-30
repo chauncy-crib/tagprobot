@@ -43,6 +43,24 @@ export function createPathSprites(path, cpt, hexColor, alpha) {
   });
 }
 
+function createTraversableCellSprites(
+  traversableCells, cpt, traversableColor, notTraverableColor, alpha) {
+  tagpro.renderer.traversableCellSprites = [];
+  const pixelsPerCell = PIXELS_PER_TILE / cpt;
+  for (let x = 0; x < traversableCells.length; x++) {
+    for (let y = 0; y < traversableCells[0].length; y++) {
+      const rect = new PIXI.Graphics();
+      rect.beginFill(traversableCells[x][y] ? traversableColor : notTraverableColor).drawRect(
+        x * pixelsPerCell, // x coordinate
+        y * pixelsPerCell, // y coordinate
+        pixelsPerCell, // width
+        pixelsPerCell, // height
+      ).alpha = alpha;
+      tagpro.renderer.traversableCellSprites.push(rect);
+    }
+  }
+}
+
 /*
  * Used to draw the bot's planned path. Takes in a reference to a list of cells returned by
  * getShortestPath() in helpers/path.js and the cpt used when calculating shortest path, and draws
@@ -54,3 +72,9 @@ export function drawPlannedPath(path, cpt, hexColor = 0x00ff00, alpha = 0.25) {
   drawSprites(tagpro.renderer.pathSprites); // put the PIXI.Graphics objects on the map
 }
 
+export function drawTraversableCells(traversableCells, cpt, traversableColor = 0x0000ff,
+  notTraverableColor = 0xff0000, alpha = 0.1) {
+  clearSprites(tagpro.renderer.traversableCellSprites);
+  createTraversableCellSprites(traversableCells, cpt, traversableColor, notTraverableColor, alpha);
+  drawSprites(tagpro.renderer.traversableCellSprites);
+}
