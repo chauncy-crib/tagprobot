@@ -25,6 +25,10 @@ export function getShortestPath(myX, myY, targetX, targetY, grid, diagonal = fal
   // calculate shortest path list
   const shortestPath = astar.search(graph, start, end,
     { heuristic: diagonal ? astar.heuristics.diagonal : astar.heuristics.manhattan });
+
+  if (shortestPath.length === 0) {
+    return undefined;
+  }
   return shortestPath;
 }
 
@@ -60,3 +64,4 @@ export function getTarget(myX, myY, shortestPath) {
   const res = { x: next.x, y: next.y };
   return res;
 }
+
