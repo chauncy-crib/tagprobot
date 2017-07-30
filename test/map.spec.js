@@ -333,7 +333,7 @@ test('test convolve', t => {
   k = [
     [2],
   ];
-  /* eslint-disable no-multi-spaces, array-bracket-spacing*/
+  /* eslint-disable no-multi-spaces, array-bracket-spacing */
   expected = [
     [ 2,  4,  6],
     [ 8, 10, 12],
@@ -352,7 +352,7 @@ test('test convolve', t => {
     [3, 4, 5],
     [6, 7, 8],
   ];
-  /* eslint-disable no-multi-spaces, array-bracket-spacing*/
+  /* eslint-disable no-multi-spaces, array-bracket-spacing */
   expected = [
     [112, 160, 193, 142],
     [131, 150, 129, 100],

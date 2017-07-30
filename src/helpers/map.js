@@ -1,6 +1,6 @@
 import { tileTypes, PIXELS_PER_TILE } from '../constants';
 import { amBlue, amRed } from './player';
-import assert from '../../src/utils/asserts';
+import { assert } from '../../src/utils/asserts';
 
 
 /*
@@ -191,8 +191,7 @@ export function findTile(tiles) {
       }
     }
   }
-  console.error(`Unable to find tile: ${tiles}`);
-  return {};
+  throw new Error(`Unable to find tile: ${tiles}`);
 }
 
 
@@ -204,7 +203,7 @@ export function findTile(tiles) {
  * @param {number} height - the height of the initialized 2D array
  * @param {number} defaultVal - the value to give each element in the initialized 2D array
  */
-export function init2dArray(width, height, defaultVal) {
+export function init2dArray(width, height, defaultVal = 0) {
   const matrix = [];
 
   for (let x = 0; x < width; x++) {
@@ -324,12 +323,16 @@ export function getSubarrayFrom2dArray(array, xCenter, yCenter, width, height) {
 export function convolve(m, k) {
   const kWidth = k.length;
   const kHeight = k[0].length;
+  // TODO: Why can't you apply rectangular kernals? I know why you wouldn't want to, but you should
+  // be able to - David
   assert(kWidth === kHeight, 'convolve: kernel\'s width is not equal to kernel\'s height');
   assert(kWidth % 2 === 1, 'convolve: kernel\'s width is not odd');
 
   const mWidth = m.length;
   const mHeight = m[0].length;
   const kSize = kWidth;
+  assert(kSize <= mWidth && kSize <= mHeight,
+    'kernal size must be smaller than both matrix dimensions');
   const bufSize = (kSize - 1) / 2;
   const bufVal = 1;
   const mWithBuf = addBufferTo2dArray(m, bufSize, bufVal);

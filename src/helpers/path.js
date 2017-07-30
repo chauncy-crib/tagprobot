@@ -9,10 +9,9 @@
  * @param {number} targetY - target y location (in cells)
  * @param {number} grid - 2D array of cells. Traversable cells are 1s, others are 0.
  */
-export function getShortestPath(myX, myY, targetX, targetY, grid) {
+export function getShortestPath(myX, myY, targetX, targetY, grid, diagonal = false) {
   // TODO: handle edge cases regarding target and current position
   // diagonal is true if we consider diagonal steps on the grid
-  const diagonal = false;
   const graph = new Graph(grid, { diagonal });
   const start = graph.grid[myX][myY];
   const end = graph.grid[targetX][targetY];
