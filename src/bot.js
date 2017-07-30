@@ -12,6 +12,7 @@ import { getMe } from './helpers/player';
 import { getShortestPath, getTarget } from './helpers/path';
 import { move } from './utils/interface';
 import { drawPlannedPath, drawNonTraversableCells } from './draw/drawings';
+import { visualMode } from './index';
 
 /*
  * The logic/flowchart to get where our goal is.
@@ -76,7 +77,7 @@ function getSeek() {
   };
   const cellsPerTile = 1;
   const traversableCells = getTraversableCells(cellsPerTile, tagpro.map);
-  drawNonTraversableCells(traversableCells, cellsPerTile);
+  drawNonTraversableCells(traversableCells, cellsPerTile, visualMode());
   const shortestPath = getShortestPath(
     gridPosition.x,
     gridPosition.y,
@@ -93,7 +94,11 @@ function getSeek() {
   seekToward.y *= PIXELS_PER_TILE;
 
   // Visualize the planned path
+<<<<<<< HEAD
   drawPlannedPath(shortestPath, cellsPerTile);
+=======
+  drawPlannedPath(shortestPath, cellsPerTile, visualMode());
+>>>>>>> 3f03137... adding toggle visualization feature
 
   // Version for not attempting path-planning
   return {

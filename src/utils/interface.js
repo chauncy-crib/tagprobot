@@ -16,6 +16,7 @@ export function chat(chatMessage) {
 }
 
 let AUTONOMOUS = true;
+let VISUALS = true;
 
 export function isAutonomous() {
   return AUTONOMOUS;
@@ -25,6 +26,7 @@ export function onKeyDown(event) {
   // If letter pressed is Q, toggle autonomous controls
   if (event.keyCode === 81) {
     AUTONOMOUS = !AUTONOMOUS;
+    VISUALS = AUTONOMOUS;
     tagpro.sendKeyPress('up', true);
     tagpro.sendKeyPress('down', true);
     tagpro.sendKeyPress('left', true);
@@ -32,6 +34,14 @@ export function onKeyDown(event) {
     const autonomyMode = AUTONOMOUS ? 'AUTONOMOUS' : 'MANUAL';
     chat(`Autonomy Mode updated: now ${autonomyMode}!`);
     setTimeout(() => { console.log(`Autonomy status: ${AUTONOMOUS}`); }, 200);
+  }
+  if (event.keyCode === 86) { // 'v'
+    VISUALS = !VISUALS;
+    if (VISUALS) {
+      chat('Visuals enabled!');
+    } else {
+      chat('Visuals disabled!');
+    }
   }
 }
 
