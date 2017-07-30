@@ -4,5 +4,5 @@ import getTarget from '../src/helpers/path';
 
 
 test('test getTarget', t => {
-  let condition = false;
+  const condition = false;
 });
