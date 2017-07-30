@@ -1,6 +1,6 @@
 import { tileTypes, PIXELS_PER_TILE } from '../constants';
 import { amBlue, amRed } from './player';
-import { assert, assertArrayInBounds } from '../../src/utils/asserts';
+import { assert, assertGridInBounds } from '../../src/utils/asserts';
 
 
 /*
@@ -71,8 +71,8 @@ export function isTraversable(tileID) {
 export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
   const smallGridWidth = smallGrid.length;
   const smallGridHeight = smallGrid[0].length;
-  assertArrayInBounds(bigGrid, x, y);
-  assertArrayInBounds(bigGrid, (x + smallGridWidth) - 1, (y + smallGridHeight) - 1);
+  assertGridInBounds(bigGrid, x, y);
+  assertGridInBounds(bigGrid, (x + smallGridWidth) - 1, (y + smallGridHeight) - 1);
 
   for (let i = 0; i < smallGridWidth; i++) {
     for (let j = 0; j < smallGridHeight; j++) {
