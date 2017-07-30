@@ -11,6 +11,7 @@ import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe } from './helpers/player';
 import { getShortestPath, getTarget } from './helpers/path';
 import { move } from './utils/interface';
+import drawPlannedPath from './draw/visualizePath';
 
 /*
  * The logic/flowchart to get where our goal is.
@@ -88,6 +89,9 @@ function getSeek() {
   );
   seekToward.x *= PIXELS_PER_TILE;
   seekToward.y *= PIXELS_PER_TILE;
+
+  // Visualize the planned path
+  drawPlannedPath(shortestPath, cellsPerTile);
 
   // Version for not attempting path-planning
   return {
