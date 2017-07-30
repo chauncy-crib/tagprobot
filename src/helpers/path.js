@@ -1,5 +1,5 @@
 import { astar, Graph } from 'javascript-astar';
-import { assertArrayInBounds } from '../../src/utils';
+import { assertGridInBounds } from '../../src/utils/asserts';
 
 /*
  * takes in current location and target location (eg, the location of the flag) and the map
@@ -16,8 +16,8 @@ export function getShortestPath(myX, myY, targetX, targetY, grid, diagonal = fal
   // TODO: handle edge cases regarding target and current position
   // diagonal is true if we consider diagonal steps on the grid
 
-  assertArrayInBounds(grid, myX, myY);
-  assertArrayInBounds(grid, targetX, targetY);
+  assertGridInBounds(grid, myX, myY);
+  assertGridInBounds(grid, targetX, targetY);
 
   const graph = new Graph(grid, { diagonal });
   const start = graph.grid[myX][myY];
