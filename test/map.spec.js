@@ -154,24 +154,34 @@ test('test traversableCellsInTile', t => {
   t.same(map.traversableCellsInTile(false, 4, 15), expected);
 
   expected = [
-    [1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1],
-    [1, 1, 0, 0, 1, 1],
-    [1, 1, 0, 0, 1, 1],
-    [1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 0, 0, 1, 1, 1],
+    [1, 1, 1, 0, 0, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
   ];
-  t.same(map.traversableCellsInTile(false, 6, 1), expected);
+  t.same(map.traversableCellsInTile(false, 8, 1), expected);
 
   expected = [
-    [1, 1, 0, 0, 1, 1],
-    [1, 0, 0, 0, 0, 1],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 1],
-    [1, 1, 0, 0, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 0, 0, 0, 0, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 0, 0, 0, 0, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
   ];
-  t.same(map.traversableCellsInTile(false, 6, 14), expected);
+  t.same(map.traversableCellsInTile(false, 8, 14), expected);
+
+  t.throws(() => { map.traversableCellsInTile(false, 7, 14); });
+  t.throws(() => { map.traversableCellsInTile(false, 3, 1); });
+  t.throws(() => { map.traversableCellsInTile(false, 2.5, 9); });
+  t.throws(() => { map.traversableCellsInTile(false, 4, -1); });
+  t.throws(() => { map.traversableCellsInTile(false, 1, -6); });
 
   t.end();
 });
