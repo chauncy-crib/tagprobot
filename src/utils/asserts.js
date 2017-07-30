@@ -14,7 +14,7 @@ export function assert(condition, errorMessage = 'Assertion failed') {
   }
 }
 
-export function assertArrayInBounds(array, x, y) {
+export function assertGridInBounds(array, x, y) {
   assert(x >= 0, 'x must be >= 0');
   assert(y >= 0, 'y must be >= 0');
   assert(x < array.length, 'x must be < array width');
