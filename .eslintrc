@@ -10,10 +10,13 @@
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "arrow-parens": ["error", "as-needed"],
   },
+  // these are globals made available through either the tagpro API or by
+  // requiring them in src/index.js
   "globals": {
     "tagpro": false,
     "Box2D": false,
     "astar": false,
     "Graph": false,
+    "PIXI": false,
   }
 }
