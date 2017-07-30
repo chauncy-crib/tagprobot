@@ -1,4 +1,4 @@
-import { assert, assertArrayInBounds } from '../../src/utils'
+import { assertArrayInBounds } from '../../src/utils';
 
 /*
  * takes in current location and target location (eg, the location of the flag) and the map
@@ -14,7 +14,7 @@ import { assert, assertArrayInBounds } from '../../src/utils'
 export function getShortestPath(myX, myY, targetX, targetY, grid, diagonal = false) {
   // TODO: handle edge cases regarding target and current position
   // diagonal is true if we consider diagonal steps on the grid
-  
+
   assertArrayInBounds(grid, myX, myY);
   assertArrayInBounds(grid, targetX, targetY);
 
