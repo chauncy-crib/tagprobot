@@ -15,5 +15,6 @@
   "globals": {
     "tagpro": false,
     "Box2D": false,
+    "PIXI": false,
   }
 }
