@@ -1,3 +1,5 @@
+import { assert, assertArrayInBounds } from '../../src/utils'
+
 /*
  * takes in current location and target location (eg, the location of the flag) and the map
  * represented as a grid of 1 and 0, where 1s are traversable and 0s are not. Uses A* to calculate
@@ -12,6 +14,10 @@
 export function getShortestPath(myX, myY, targetX, targetY, grid, diagonal = false) {
   // TODO: handle edge cases regarding target and current position
   // diagonal is true if we consider diagonal steps on the grid
+  
+  assertArrayInBounds(grid, myX, myY);
+  assertArrayInBounds(grid, targetX, targetY);
+
   const graph = new Graph(grid, { diagonal });
   const start = graph.grid[myX][myY];
   const end = graph.grid[targetX][targetY];
