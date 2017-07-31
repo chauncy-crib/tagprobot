@@ -22,6 +22,10 @@ export function isAutonomous() {
   return AUTONOMOUS;
 }
 
+export function visualMode() {
+  return VISUALS;
+}
+
 export function onKeyDown(event) {
   // If letter pressed is Q, toggle autonomous controls
   if (event.keyCode === 81) {
