@@ -1,3 +1,4 @@
+import { astar, Graph } from 'javascript-astar';
 import { assertArrayInBounds } from '../../src/utils';
 
 /*

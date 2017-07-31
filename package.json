@@ -39,6 +39,7 @@
     "webpack": "^3.1.0"
   },
   "dependencies": {
+    "javascript-astar": "git+https://github.com/bgrins/javascript-astar.git",
     "lodash": "^4.17.4"
   }
 }

@@ -13,7 +13,5 @@
   "globals": {
     "tagpro": false,
     "Box2D": false,
-    "astar": false,
-    "Graph": false,
   }
 }
