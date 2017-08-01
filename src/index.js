@@ -14,7 +14,7 @@
 
 import botLoop from './bot';
 import { setupMe } from './helpers/player';
-import { onKeyDown, setupVelocity, isAutonomous } from './tagproInterface';
+import { onKeyDown, setupVelocity, isAutonomous } from './utils/interface';
 
 // Handle keypress and related events for manual/auto toggle
 window.onkeydown = onKeyDown;

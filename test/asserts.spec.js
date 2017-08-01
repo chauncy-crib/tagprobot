@@ -1,5 +1,5 @@
 import test from 'tape';
-import assert from '../src/asserts';
+import assert from '../src/utils/asserts';
 
 
 test('test assert', t => {
