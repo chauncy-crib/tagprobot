@@ -21,16 +21,12 @@ export function findEnemyEndzone() {
   return findTile(getEnemyEndzoneTile());
 }
 
-/*
- * Returns the position (in pixels) of the specified flag station, even if empty.
- */
+// Returns the position (in pixels) of the specified flag station, even if empty.
 export function findFlagStation() {
   return findTile([tileTypes.YELLOW_FLAG, tileTypes.YELLOW_FLAG_TAKEN]);
 }
 
-/*
- * Returns the enemy FC from the tagpro.players array, if in view.
- */
+// Returns the enemy FC from the tagpro.players array, if in view.
 export function findEnemyFC() {
   return find(tagpro.players, player => (
     !isOnMyTeam(player) &&
@@ -40,9 +36,7 @@ export function findEnemyFC() {
   ));
 }
 
-/*
- * Returns the enemy FC from the tagpro.players array, if in view.
- */
+// Returns the enemy FC from the tagpro.players array, if in view.
 export function findEnemy() {
   return find(tagpro.players, player => (
     !isOnMyTeam(player) &&

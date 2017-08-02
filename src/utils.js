@@ -17,9 +17,7 @@ export function chat(chatMessage) {
   }
 }
 
-/*
- * Sends key events to move to a destination.
- */
+// Sends key events to move to a destination.
 export function move(destination) {
   // TODO: address deadband variable with a comment
   const deadband = 4;
@@ -46,8 +44,11 @@ export function move(destination) {
   }
 }
 
-// Overriding this function to get a more accurate velocity of players.
-// Velocity is saved in player.vx and vy.
+/*
+ * Overriding this function to get a more accurate velocity of players.
+ * Velocity is saved in player.vx and vy.
+ * TODO: better documentation for this function. Explain why its necessary. What is 55?
+ */
 export function setupVelocity() {
   Box2D.Dynamics.b2Body.prototype.GetLinearVelocity = function accurateVelocity() {
     tagpro.players[this.player.id].vx = this.m_linearVelocity.x * 55;
