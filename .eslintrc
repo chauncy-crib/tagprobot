@@ -9,6 +9,7 @@
     "no-console": "off",
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "arrow-parens": ["error", "as-needed"],
+    "no-underscore-dangle": "off",
   },
   // these are globals made available through either the tagpro API or by
   // requiring them in src/index.js
