@@ -8,9 +8,7 @@
     "lint:fix": "eslint 'src/**/*.js' 'test/**/*.js' --fix",
     "test": "babel-tape-runner test/**/*.js",
     "build": "webpack --watch",
-    "build:once": "webpack",
-    "build:test": "webpack --watch --env.test=true",
-    "build:test:once": "webpack --env.test=true"
+    "build:once": "webpack"
   },
   "repository": {
     "type": "git",
