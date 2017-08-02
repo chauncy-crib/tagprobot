@@ -44,14 +44,15 @@ export function createPathSprites(path, cpt, hexColor, alpha) {
 }
 
 function createNonTraversableCellSprites(
-  traversableCells, cpt, notTraverableColor, alpha) {
+  traversableCells, cpt, notTraversableColor, alpha) {
   tagpro.renderer.nonTraversableCellSprites = [];
   const pixelsPerCell = PIXELS_PER_TILE / cpt;
   for (let x = 0; x < traversableCells.length; x++) {
     for (let y = 0; y < traversableCells[0].length; y++) {
-      if (!traversableCells[x][y]) { // if cell is non traversable
+      // if cell is non traversable and not an empty space
+      if (!traversableCells[x][y]) {
         const rect = new PIXI.Graphics();
-        rect.beginFill(notTraverableColor).drawRect(
+        rect.beginFill(notTraversableColor).drawRect(
           x * pixelsPerCell, // x coordinate
           y * pixelsPerCell, // y coordinate
           pixelsPerCell, // width
@@ -77,10 +78,10 @@ export function drawPlannedPath(path, cpt, visuals = true, hexColor = 0x00ff00, 
 }
 
 export function drawNonTraversableCells(traversableCells, cpt, visuals = true,
-  notTraverableColor = 0xff8c00, alpha = 0.4) {
+  notTraversableColor = 0xff8c00, alpha = 0.4) {
   clearSprites(tagpro.renderer.nonTraversableCellSprites);
   if (visuals) {
-    createNonTraversableCellSprites(traversableCells, cpt, notTraverableColor, alpha);
+    createNonTraversableCellSprites(traversableCells, cpt, notTraversableColor, alpha);
   }
   drawSprites(tagpro.renderer.nonTraversableCellSprites);
 }
