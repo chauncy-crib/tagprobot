@@ -93,11 +93,7 @@ function getSeek() {
   seekToward.y *= PIXELS_PER_TILE;
 
   // Visualize the planned path
-<<<<<<< HEAD
-  drawPlannedPath(shortestPath, cellsPerTile);
-=======
   drawPlannedPath(shortestPath, cellsPerTile, visualMode());
->>>>>>> 3f03137... adding toggle visualization feature
 
   // Version for not attempting path-planning
   return {
