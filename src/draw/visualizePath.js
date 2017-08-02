@@ -26,7 +26,7 @@ import { PIXELS_PER_TILE } from '../constants';
  * @param hexColor: the color the sprites should be
  * @param alpha: the opacity of the path drawing, 0-1. 1 = opaque.
  */
-function createPathSprites(path, cpt, hexColor, alpha) {
+export function createPathSprites(path, cpt, hexColor, alpha) {
   tagpro.renderer.pathSprites = []; // initialize global object used for storage of PIXI.Graphics
   const pixelsPerCell = PIXELS_PER_TILE / cpt; // dimensional analysis
   path.forEach(cell => { // create a PIXI.Graphics object for each cell in the path
@@ -46,7 +46,7 @@ function createPathSprites(path, cpt, hexColor, alpha) {
  * If tagpro.renderer.pathSprites has been initialized, iterate through each stored object and
  * remove it from the background. Used for removing the drawing of the previous path from the map.
  */
-function clearRects() {
+export function clearRects() {
   if (tagpro.renderer.pathSprites) {
     tagpro.renderer.pathSprites.forEach(sprite => {
       tagpro.renderer.layers.background.removeChild(sprite);
@@ -58,7 +58,7 @@ function clearRects() {
  * Iterates over each PIXI.Graphics object in tagpro.renderer.pathSprites and adds it to the
  * background
  */
-function drawRects() {
+export function drawRects() {
   tagpro.renderer.pathSprites.forEach(sprite => {
     tagpro.renderer.layers.background.addChild(sprite);
   });
