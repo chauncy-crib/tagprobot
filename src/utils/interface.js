@@ -29,11 +29,8 @@ export function onKeyDown(event) {
     tagpro.sendKeyPress('down', true);
     tagpro.sendKeyPress('left', true);
     tagpro.sendKeyPress('right', true);
-    if (AUTONOMOUS) {
-      chat('Autonomy Mode updated: now AUTONOMOUS!');
-    } else {
-      chat('Autonomy Mode updated: now MANUAL!');
-    }
+    const autonomyMode = AUTONOMOUS ? 'AUTONOMOUS' : 'MANUAL';
+    chat(`Autonomy Mode updated: now ${autonomyMode}!`);
     setTimeout(() => { console.log(`Autonomy status: ${AUTONOMOUS}`); }, 200);
   }
 }
