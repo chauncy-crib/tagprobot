@@ -10,7 +10,7 @@ import {
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe } from './helpers/player';
 import { getShortestPath, getTarget } from './helpers/path';
-import { move, visualMode } from './utils/interface';
+import { move } from './utils/interface';
 import { drawPlannedPath, drawNonTraversableCells } from './draw/drawings';
 
 /*
@@ -76,7 +76,7 @@ function getSeek() {
   };
   const cellsPerTile = 1;
   const traversableCells = getTraversableCells(cellsPerTile, tagpro.map);
-  drawNonTraversableCells(traversableCells, cellsPerTile, visualMode());
+  drawNonTraversableCells(traversableCells, cellsPerTile);
   const shortestPath = getShortestPath(
     gridPosition.x,
     gridPosition.y,
@@ -93,7 +93,7 @@ function getSeek() {
   seekToward.y *= PIXELS_PER_TILE;
 
   // Visualize the planned path
-  drawPlannedPath(shortestPath, cellsPerTile, visualMode());
+  drawPlannedPath(shortestPath, cellsPerTile);
 
   // Version for not attempting path-planning
   return {

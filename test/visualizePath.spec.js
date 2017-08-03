@@ -42,7 +42,7 @@ test('drawPlannedPath() calls the right functions', t => {
   RewireAPI.__Rewire__('createPathSprites', mockCreatePathSprites);
   RewireAPI.__Rewire__('drawSprites', mockdrawSprites);
 
-  drawPlannedPath('path', 'cpt', true, 'hexColor', 'alpha');
+  drawPlannedPath('path', 'cpt', 'hexColor', 'alpha');
 
   t.true(mockclearSprites.calledOnce);
   t.true(mockCreatePathSprites.calledWith('path', 'cpt', 'hexColor', 'alpha'));
