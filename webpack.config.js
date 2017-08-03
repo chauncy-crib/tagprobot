@@ -34,7 +34,7 @@ module.exports = function(env) {
             //use es6 syntax
             presets: ['es2015'],
             // makes output more concise
-            plugins: ['transform-runtime'],
+            plugins: ['transform-runtime', 'rewire'],
           }
         }
       ]
