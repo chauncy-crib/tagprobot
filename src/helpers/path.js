@@ -9,7 +9,7 @@
  * @param {number} targetY - target y location (in cells)
  * @param {number} grid - 2D array of cells. Traversable cells are 1s, others are 0.
  */
-export default function getTarget(myX, myY, targetX, targetY, grid) {
+export function getShortestPath(myX, myY, targetX, targetY, grid) {
   // TODO: handle edge cases regarding target and current position
   // diagonal is true if we consider diagonal steps on the grid
   const diagonal = false;
@@ -19,7 +19,14 @@ export default function getTarget(myX, myY, targetX, targetY, grid) {
   // calculate shortest path list
   const shortestPath = astar.search(graph, start, end,
     { heuristic: diagonal ? astar.heuristics.diagonal : astar.heuristics.manhattan });
+  return shortestPath;
+}
 
+/*
+ * Takes in the current player's location, and a representation of the shortest path as an array of
+ * cells returned by getShortestPath(), and returns the cell that the player should seek toward.
+ */
+export function getTarget(myX, myY, shortestPath) {
   // Find the furthest cell in the direction of the next cell
   let winner = 0;
   let j = 0;
