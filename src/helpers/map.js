@@ -59,7 +59,7 @@ export function isTraversable(tileID) {
     case tileTypes.BLUE_GATE:
       return amBlue();
     default:
-      throw new Error(`Unknown tileID given function: ${tileID}`);
+      throw new Error(`Unknown tileID: ${tileID}`);
   }
 }
 
