@@ -1,5 +1,3 @@
-
-
 // Stole this function to send chat messages
 let lastMessage = 0;
 export function chat(chatMessage) {
@@ -14,6 +12,26 @@ export function chat(chatMessage) {
     lastMessage = new Date();
   } else if (timeDiff >= 0) {
     setTimeout(chat, limit - timeDiff, chatMessage);
+  }
+}
+
+let AUTONOMOUS = true;
+
+export function isAutonomous() {
+  return AUTONOMOUS;
+}
+
+export function onKeyDown(event) {
+  // If letter pressed is Q, toggle autonomous controls
+  if (event.keyCode === 81) {
+    AUTONOMOUS = !AUTONOMOUS;
+    tagpro.sendKeyPress('up', true);
+    tagpro.sendKeyPress('down', true);
+    tagpro.sendKeyPress('left', true);
+    tagpro.sendKeyPress('right', true);
+    const autonomyMode = AUTONOMOUS ? 'AUTONOMOUS' : 'MANUAL';
+    chat(`Autonomy Mode updated: now ${autonomyMode}!`);
+    setTimeout(() => { console.log(`Autonomy status: ${AUTONOMOUS}`); }, 200);
   }
 }
 
@@ -55,20 +73,4 @@ export function setupVelocity() {
     tagpro.players[this.player.id].vy = this.m_linearVelocity.y * 55;
     return this.m_linearVelocity;
   };
-}
-
-/*
- * Throws a specified error message if a condition is not met. If no message
- * is specified, then a default error message is thrown.
- *
- * condition: the condition, which, if false, will cause an error to be thrown
- * errorMessage: the error message to throw if condition is not true
- */
-export function assert(condition, errorMessage = 'Assertion failed') {
-  if (!condition) {
-    if (typeof Error !== 'undefined') {
-      throw new Error(errorMessage);
-    }
-    throw errorMessage;
-  }
 }

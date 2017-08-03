@@ -14,26 +14,10 @@
 
 import botLoop from './bot';
 import { setupMe } from './helpers/player';
-import { chat, setupVelocity } from './utils';
-
-let AUTONOMOUS = true;
+import { onKeyDown, setupVelocity, isAutonomous } from './utils/interface';
 
 // Handle keypress and related events for manual/auto toggle
-window.onkeydown = event => {
-  if (event.keyCode === 81) {
-    AUTONOMOUS = !AUTONOMOUS;
-    tagpro.sendKeyPress('up', true);
-    tagpro.sendKeyPress('down', true);
-    tagpro.sendKeyPress('left', true);
-    tagpro.sendKeyPress('right', true);
-    if (AUTONOMOUS) {
-      chat('Autonomy Mode updated: now AUTONOMOUS!');
-    } else {
-      chat('Autonomy Mode updated: now MANUAL!');
-    }
-    setTimeout(() => { console.log(`Autonomy status: ${AUTONOMOUS}`); }, 200);
-  }
-};
+window.onkeydown = onKeyDown;
 
 /*
  * This function will execute the provided function after tagpro.playerId
@@ -63,7 +47,7 @@ function start() {
   function loop() {
     // Call this function every time a tagpro animation frame gets drawn
     requestAnimationFrame(loop);
-    if (AUTONOMOUS) {
+    if (isAutonomous()) {
       botLoop();
     }
   }
