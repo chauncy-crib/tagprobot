@@ -52,8 +52,10 @@ function waitForId(fn) {
     fn();
   }
 }
-
-// We define everything relevant to our bot inside this function.
+/*
+ * This is the "entry point" for our bot. We initialize the global "me" variable, modify the way we
+ * calculate velocity for players, and then run our "botLoop" every time an animation frame is drawn
+ */
 function start() {
   setupMe();
   setupVelocity();
@@ -69,8 +71,10 @@ function start() {
   loop();
 }
 
-// Initialize the start script when tagpro is ready, and additionally wait
-// for the playerId property to be assigned.
+/*
+ * Initialize the start script when tagpro is ready, and additionally wait
+ * for the playerId property to be assigned.
+ */
 tagpro.ready(() => {
   waitForId(start);
 });

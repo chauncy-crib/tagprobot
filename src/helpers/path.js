@@ -2,6 +2,12 @@
  * takes in current location and target location (eg, the location of the flag) and the map
  * represented as a grid of 1 and 0, where 1s are traversable and 0s are not. Uses A* to calculate
  * the best path
+ *
+ * @param {number} myX - my x location (in cells)
+ * @param {number} myY - my y location (in cells)
+ * @param {number} targetX - target x location (in cells)
+ * @param {number} targetY - target y location (in cells)
+ * @param {number} grid - 2D array of cells. Traversable cells are 1s, others are 0.
  */
 export function getShortestPath(myX, myY, targetX, targetY, grid) {
   // TODO: handle edge cases regarding target and current position
