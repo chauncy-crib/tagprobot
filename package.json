@@ -38,6 +38,8 @@
   },
   "dependencies": {
     "javascript-astar": "git+https://github.com/bgrins/javascript-astar.git",
-    "lodash": "^4.17.4"
+    "babel-plugin-rewire": "^1.1.0",
+    "lodash": "^4.17.4",
+    "sinon": "^2.4.1"
   }
 }
