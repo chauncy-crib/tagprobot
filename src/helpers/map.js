@@ -1,6 +1,6 @@
 import { tileTypes, PIXELS_PER_TILE } from '../constants';
 import { amBlue, amRed } from './player';
-import { assert } from '../../src/utils';
+import assert from '../../src/utils/asserts';
 
 
 /*

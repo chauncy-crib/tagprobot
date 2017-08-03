@@ -10,7 +10,7 @@ import {
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe } from './helpers/player';
 import { getShortestPath, getTarget } from './helpers/path';
-import { move } from './utils';
+import { move } from './utils/interface';
 
 /*
  * The logic/flowchart to get where our goal is.
