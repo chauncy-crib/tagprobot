@@ -10,8 +10,8 @@ import {
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe } from './helpers/player';
 import { getShortestPath, getTarget } from './helpers/path';
-import { move } from './utils/interface';
-import drawPlannedPath from './draw/visualizePath';
+import { move, visualMode } from './utils/interface';
+import { drawPlannedPath, drawNonTraversableCells } from './draw/drawings';
 
 /*
  * The logic/flowchart to get where our goal is.
@@ -75,12 +75,14 @@ function getSeek() {
     y: Math.floor(goal.y / PIXELS_PER_TILE),
   };
   const cellsPerTile = 1;
+  const traversableCells = getTraversableCells(cellsPerTile, tagpro.map);
+  drawNonTraversableCells(traversableCells, cellsPerTile, visualMode());
   const shortestPath = getShortestPath(
     gridPosition.x,
     gridPosition.y,
     gridTarget.x,
     gridTarget.y,
-    getTraversableCells(cellsPerTile, tagpro.map),
+    traversableCells,
   );
   const seekToward = getTarget(
     gridPosition.x,
@@ -91,7 +93,7 @@ function getSeek() {
   seekToward.y *= PIXELS_PER_TILE;
 
   // Visualize the planned path
-  drawPlannedPath(shortestPath, cellsPerTile);
+  drawPlannedPath(shortestPath, cellsPerTile, visualMode());
 
   // Version for not attempting path-planning
   return {

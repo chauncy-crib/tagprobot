@@ -11,7 +11,6 @@ test('test assert', t => {
   t.end();
 });
 
-
 test('test assertGridInBounds', t => {
   const arr = [[0, 0, 0], [0, 0, 0]]; // a 2x3 array
   t.throws(() => { assertGridInBounds(arr, -1, 0); });
