@@ -89,8 +89,8 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
  * @param {number} objRadius - radius of untraversable object in pixels
  */
 export function traversableCellsInTile(tileIsTraversable, cpt, objRadius) {
-  assert(PIXELS_PER_TILE % cpt === 0, 'cpt must be a divisor of PIXELS_PER_TILE');
-  assert(objRadius >= 0, 'objRadius must be non-negative');
+  assert(PIXELS_PER_TILE % cpt === 0, 'cpt not a divisor of PIXELS_PER_TILE');
+  assert(objRadius >= 0, 'objRadius is negative');
   const gridTile = [];
   // Start with all traversable
   let i;
