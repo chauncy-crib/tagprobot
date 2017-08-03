@@ -59,7 +59,7 @@ export function isTraversable(tileID) {
     case tileTypes.BLUE_GATE:
       return amBlue();
     default:
-      throw new Error(`Unknown tileID given function: ${tileID}`);
+      throw new Error(`Unknown tileID: ${tileID}`);
   }
 }
 
@@ -319,8 +319,6 @@ export function getSubarrayFrom2dArray(array, xCenter, yCenter, width, height) {
 export function convolve(m, k) {
   const kWidth = k.length;
   const kHeight = k[0].length;
-  // TODO: Why can't you apply rectangular kernals? I know why you wouldn't want to, but you should
-  // be able to - David
   assert(kWidth === kHeight, 'convolve: kernel\'s width is not equal to kernel\'s height');
   assert(kWidth % 2 === 1, 'convolve: kernel\'s width is not odd');
 
