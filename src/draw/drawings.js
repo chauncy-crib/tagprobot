@@ -14,6 +14,7 @@
  * that was previously drawn.
  */
 import { PIXELS_PER_TILE } from '../constants';
+import { visualMode } from '../utils/interface';
 import { clearSprites, drawSprites } from './utils';
 
 /*
@@ -69,18 +70,18 @@ function createNonTraversableCellSprites(
  * getShortestPath() in helpers/path.js and the cpt used when calculating shortest path, and draws
  * the corresponding cells in green on the map.
  */
-export function drawPlannedPath(path, cpt, visuals = true, hexColor = 0x00ff00, alpha = 0.25) {
+export function drawPlannedPath(path, cpt, hexColor = 0x00ff00, alpha = 0.25) {
   clearSprites(tagpro.renderer.pathSprites); // clear the previous path from the map
-  if (visuals) {
+  if (visualMode()) {
     createPathSprites(path, cpt, hexColor, alpha); // create the PIXI.Graphics objecs we're drawing
   }
   drawSprites(tagpro.renderer.pathSprites); // put the PIXI.Graphics objects on the map
 }
 
-export function drawNonTraversableCells(traversableCells, cpt, visuals = true,
-  notTraversableColor = 0xff8c00, alpha = 0.4) {
+export function drawNonTraversableCells(traversableCells, cpt, notTraversableColor = 0xff8c00,
+  alpha = 0.4) {
   clearSprites(tagpro.renderer.nonTraversableCellSprites);
-  if (visuals) {
+  if (visualMode()) {
     createNonTraversableCellSprites(traversableCells, cpt, notTraversableColor, alpha);
   }
   drawSprites(tagpro.renderer.nonTraversableCellSprites);

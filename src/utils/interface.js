@@ -44,11 +44,8 @@ export function onKeyDown(event) {
   }
   if (event.keyCode === KEY_CODES.v) { // toggle visuals
     VISUALS = !VISUALS;
-    if (VISUALS) {
-      chat('Visuals enabled!');
-    } else {
-      chat('Visuals disabled!');
-    }
+    const chatMsg = visualMode() ? 'enabled' : 'disabled';
+    chat(`Visuals ${chatMsg}`);
   }
 }
 
