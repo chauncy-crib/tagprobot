@@ -44,4 +44,8 @@ export const teams = {
   BLUE: 2,
 };
 
-export const PIXELS_PER_TILE = 40;
+// Pixels per tile length
+export const PPTL = 40;
+
+// Cells per tile length
+export const CPTL = 1;

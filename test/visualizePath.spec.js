@@ -4,6 +4,7 @@ import test from 'tape';
 import { drawPlannedPath, drawNonTraversableCells, __RewireAPI__ as DrawingRewireAPI } from '../src/draw/drawings';
 import { clearSprites, drawSprites } from '../src/draw/utils';
 
+
 test('clearSprites() calls removeChild for each sprite', t => {
   const mockRemoveChild = sinon.spy();
   const pathSprites = [1, 2, 3];
