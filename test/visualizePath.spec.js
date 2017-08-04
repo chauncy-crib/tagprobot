@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import test from 'tape';
 
-import { drawPlannedPath, __RewireAPI__ as RewireAPI } from '../src/draw/drawings';
+import { drawPlannedPath, drawNonTraversableCells, __RewireAPI__ as DrawingRewireAPI } from '../src/draw/drawings';
 import { clearSprites, drawSprites } from '../src/draw/utils';
 
 test('clearSprites() calls removeChild for each sprite', t => {
@@ -34,22 +34,57 @@ test('clearSprites() calls addChild for each sprite', t => {
   t.end();
 });
 
-test('drawPlannedPath() calls the right functions', t => {
-  const mockclearSprites = sinon.spy();
+test('drawPlannedPath() calls the right functions with visualMode on', t => {
+  const mockClearSprites = sinon.spy();
   const mockCreatePathSprites = sinon.spy();
-  const mockdrawSprites = sinon.spy();
-  RewireAPI.__Rewire__('clearSprites', mockclearSprites);
-  RewireAPI.__Rewire__('createPathSprites', mockCreatePathSprites);
-  RewireAPI.__Rewire__('drawSprites', mockdrawSprites);
+  const mockDrawSprites = sinon.spy();
+  DrawingRewireAPI.__Rewire__('clearSprites', mockClearSprites);
+  DrawingRewireAPI.__Rewire__('createPathSprites', mockCreatePathSprites);
+  DrawingRewireAPI.__Rewire__('drawSprites', mockDrawSprites);
 
   drawPlannedPath('path', 'cpt', 'hexColor', 'alpha');
 
-  t.true(mockclearSprites.calledOnce);
+  t.true(mockClearSprites.calledOnce);
   t.true(mockCreatePathSprites.calledWith('path', 'cpt', 'hexColor', 'alpha'));
-  t.true(mockdrawSprites.calledOnce);
+  t.true(mockDrawSprites.calledOnce);
 
-  RewireAPI.__ResetDependency__('clearSprites');
-  RewireAPI.__ResetDependency__('createPathSprites');
-  RewireAPI.__ResetDependency__('drawSprites');
+  DrawingRewireAPI.__ResetDependency__('clearSprites');
+  DrawingRewireAPI.__ResetDependency__('createPathSprites');
+  DrawingRewireAPI.__ResetDependency__('drawSprites');
+  t.end();
+});
+
+test('drawNonTraversableCells() calls the right functions', t => {
+  const mockClearSprites = sinon.spy();
+  const mockCreateNonTraversableCellSprites = sinon.spy();
+  const mockDrawSprites = sinon.spy();
+  let mockVisual = sinon.stub().returns(true);
+  DrawingRewireAPI.__Rewire__('clearSprites', mockClearSprites);
+  DrawingRewireAPI.__Rewire__('createNonTraversableCellSprites',
+    mockCreateNonTraversableCellSprites);
+  DrawingRewireAPI.__Rewire__('drawSprites', mockDrawSprites);
+  DrawingRewireAPI.__Rewire__('visualMode', mockVisual);
+
+  drawNonTraversableCells('traversableCells', 'cpt', 'hexColor', 'alpha');
+
+  t.true(mockVisual.calledOnce); // THIS LINE FAILS
+  t.true(mockClearSprites.calledOnce);
+  t.true(mockCreateNonTraversableCellSprites.calledWith(
+    'traversableCells', 'cpt', 'hexColor', 'alpha'));
+  t.true(mockDrawSprites.calledOnce);
+
+  mockVisual = sinon.stub().returns(false);
+  DrawingRewireAPI.__Rewire__('visualMode', mockVisual);
+  drawNonTraversableCells('traversableCells', 'cpt', 'hexColor', 'alpha');
+
+  t.true(mockVisual.calledOnce); // THIS LINE FAILS
+  t.true(mockClearSprites.calledTwice);
+  t.true(mockCreateNonTraversableCellSprites.calledOnce)
+  t.true(mockDrawSprites.calledTwice);
+
+  DrawingRewireAPI.__ResetDependency__('clearSprites');
+  DrawingRewireAPI.__ResetDependency__('createPathSprites');
+  DrawingRewireAPI.__ResetDependency__('drawSprites');
+  DrawingRewireAPI.__ResetDependency__('visualMode');
   t.end();
 });
