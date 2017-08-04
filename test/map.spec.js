@@ -1,28 +1,42 @@
 import test from 'tape';
-import * as map from '../src/helpers/map';
-import { tileTypes, teams } from '../src/constants';
-import { mockMe } from '../src/helpers/player';
+import {
+  isTraversable,
+  fillGridWithSubgrid,
+  addBufferTo2dArray,
+  getSubarrayFrom2dArray,
+  traversableCellsInTile,
+  getTraversableCells,
+  init2dArray,
+  multiplyCorrespondingElementsAndSum,
+  convolve,
+  __RewireAPI__ as MapRewireAPI,
+} from '../src/helpers/map';
+import { tileTypes } from '../src/constants';
 
-test('test isTraversable returns correct value', t => {
-  t.true(map.isTraversable(2)); // Regular floor
-  t.true(map.isTraversable(3.1)); // taken red flag
-  t.true(map.isTraversable(9)); // inactive gate
-  t.true(map.isTraversable(17)); // red endzone
-  t.false(map.isTraversable(0)); // Blank space
-  t.false(map.isTraversable(1)); // square wall
-  t.false(map.isTraversable(7)); // spike
+
+test('isTraversable: returns correct values for varying inputs', t => {
+  t.true(isTraversable(2)); // Regular floor
+  t.true(isTraversable(3.1)); // taken red flag
+  t.true(isTraversable(9)); // inactive gate
+  t.true(isTraversable(17)); // red endzone
+  t.false(isTraversable(0)); // Blank space
+  t.false(isTraversable(1)); // square wall
+  t.false(isTraversable(7)); // spike
+
   t.end();
 });
 
-test('test isTraversable throws errors for invalid inputs', t => {
-  t.throws(() => { map.isTraversable(1.123); });
-  t.throws(() => { map.isTraversable(-1); });
-  t.throws(() => { map.isTraversable('potato'); });
-  t.throws(() => { map.isTraversable(undefined); });
+
+test('isTraversable: throws errors for invalid inputs', t => {
+  t.throws(() => { isTraversable(1.123); });
+  t.throws(() => { isTraversable(-1); });
+  t.throws(() => { isTraversable('potato'); });
+  t.throws(() => { isTraversable(undefined); });
   t.end();
 });
 
-test('test fillGridWithSubgrid places correct values in larger grid', t => {
+
+test('fillGridWithSubgrid: fills larger grids correctly', t => {
   let grid = [
     [0, 0, 0],
     [0, 0, 0],
@@ -38,7 +52,7 @@ test('test fillGridWithSubgrid places correct values in larger grid', t => {
     [1, 1, 1],
     [1, 1, 1],
   ];
-  map.fillGridWithSubgrid(grid, subgrid, 0, 0);
+  fillGridWithSubgrid(grid, subgrid, 0, 0);
   t.same(grid, expected);
 
   grid = [
@@ -58,12 +72,14 @@ test('test fillGridWithSubgrid places correct values in larger grid', t => {
     [1, 1, 1, 0],
     [1, 1, 1, 0],
   ];
-  map.fillGridWithSubgrid(grid, subgrid, 1, 0);
+  fillGridWithSubgrid(grid, subgrid, 1, 0);
   t.same(grid, expected);
+
   t.end();
 });
 
-test('test fillGridWithSubgrid does not throw errors for valid inputs', t => {
+
+test('fillGridWithSubgrid: throws errors for invalid inputs', t => {
   const grid = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -75,30 +91,15 @@ test('test fillGridWithSubgrid does not throw errors for valid inputs', t => {
     [1, 1, 1],
     [1, 1, 1],
   ];
-  t.doesNotThrow(() => { map.fillGridWithSubgrid(grid, subgrid, 0, 0); });
-  t.doesNotThrow(() => { map.fillGridWithSubgrid(grid, subgrid, 1, 1); });
+  t.throws(() => { fillGridWithSubgrid(grid, subgrid, -1, 1); });
+  t.throws(() => { fillGridWithSubgrid(grid, subgrid, 1, 2); });
+  t.throws(() => { fillGridWithSubgrid(subgrid, grid, 0, 0); });
+
   t.end();
 });
 
-test('test fillGridWithSubgrid throws errors for invalid inputs', t => {
-  const grid = [
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-  ];
-  const subgrid = [
-    [1, 1, 1],
-    [1, 1, 1],
-    [1, 1, 1],
-  ];
-  t.throws(() => { map.fillGridWithSubgrid(grid, subgrid, -1, 1); });
-  t.throws(() => { map.fillGridWithSubgrid(grid, subgrid, 1, 2); });
-  t.throws(() => { map.fillGridWithSubgrid(subgrid, grid, 0, 0); });
-  t.end();
-});
 
-test('test addBufferTo2dArray', t => {
+test('addBufferTo2dArray: correctly adds buffer to grid', t => {
   const matrix = [
     [1, 2, 3],
     [4, 5, 6],
@@ -115,12 +116,13 @@ test('test addBufferTo2dArray', t => {
     [1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1],
   ];
-  t.same(map.addBufferTo2dArray(matrix, bufSize, bufVal), expected);
+  t.same(addBufferTo2dArray(matrix, bufSize, bufVal), expected);
 
   t.end();
 });
 
-test('test getSubarrayFrom2dArray', t => {
+
+test('getSubarrayFrom2dArray: returns correct subarray for varying inputs', t => {
   let array = [
     [1, 2, 3, 4],
     [5, 6, 7, 8],
@@ -136,7 +138,7 @@ test('test getSubarrayFrom2dArray', t => {
     [0, 1, 2],
     [4, 5, 6],
   ];
-  t.same(map.getSubarrayFrom2dArray(array, xCenter, yCenter, width, height), expected);
+  t.same(getSubarrayFrom2dArray(array, xCenter, yCenter, width, height), expected);
 
   array = [
     [1, 2, 3, 4, 5, 6],
@@ -156,47 +158,85 @@ test('test getSubarrayFrom2dArray', t => {
     [9, 0, 1],
     [5, 6, 7],
   ];
-  t.same(map.getSubarrayFrom2dArray(array, xCenter, yCenter, width, height), expected);
+  t.same(getSubarrayFrom2dArray(array, xCenter, yCenter, width, height), expected);
 
   t.end();
 });
 
-test('test traversableCellsInTile returns correct cells for each tile', t => {
+
+test('traversableCellsInTile: returns correctly with traversable tile, CPTL=1', t => {
+  MapRewireAPI.__Rewire__('CPTL', 1);
+  const expected = [
+    [1],
+  ];
+  t.same(traversableCellsInTile(tileTypes.YELLOW_FLAG), expected);
+
+  t.end();
+});
+
+
+test('traversableCellsInTile: returns correctly with nontraversable tile, CPTL=1', t => {
+  MapRewireAPI.__Rewire__('CPTL', 1);
+  const expected = [
+    [0],
+  ];
+  t.same(traversableCellsInTile(tileTypes.BOMB), expected);
+  t.end();
+});
+
+
+test('traversableCellsInTile: returns correctly with traversable tile, CPTL=4', t => {
+  MapRewireAPI.__Rewire__('CPTL', 4);
+  const expected = [
+    [1, 1, 1, 1],
+    [1, 1, 1, 1],
+    [1, 1, 1, 1],
+    [1, 1, 1, 1],
+  ];
+  t.same(traversableCellsInTile(tileTypes.YELLOW_FLAG), expected);
+
+  t.end();
+});
+
+
+test('traversableCellsInTile: returns correctly with nontraversable tile, CPTL=4', t => {
+  const expected = [
+    [1, 0, 0, 1],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [1, 0, 0, 1],
+  ];
+  t.same(traversableCellsInTile(tileTypes.SPIKE), expected);
+
+  t.end();
+});
+
+
+test('traversableCellsInTile: returns correctly with nontraversable tile, CPTL=4', t => {
+  const expected = [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ];
+  t.same(traversableCellsInTile(tileTypes.ACTIVE_PORTAL), expected);
+  t.end();
+});
+
+
+test('traversableCellsInTile: returns correctly with nontraversable tile, CPTL=8', t => {
+  MapRewireAPI.__Rewire__('CPTL', 8);
   let expected = [
-    [1, 1, 1, 1],
-    [1, 1, 1, 1],
-    [1, 1, 1, 1],
-    [1, 1, 1, 1],
-  ];
-  t.same(map.traversableCellsInTile(true, 4, 14), expected);
-
-  expected = [
-    [1, 0, 0, 1],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [1, 0, 0, 1],
-  ];
-  t.same(map.traversableCellsInTile(false, 4, 14), expected);
-
-  expected = [
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-  ];
-  t.same(map.traversableCellsInTile(false, 4, 15), expected);
-
-  expected = [
     [1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 0, 0, 1, 1, 1],
-    [1, 1, 1, 0, 0, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 0, 0, 0, 0, 1, 1],
+    [1, 1, 0, 0, 0, 0, 1, 1],
+    [1, 1, 0, 0, 0, 0, 1, 1],
+    [1, 1, 0, 0, 0, 0, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1],
   ];
-  t.same(map.traversableCellsInTile(false, 8, 1), expected);
+  t.same(traversableCellsInTile(tileTypes.BUTTON), expected);
 
   expected = [
     [1, 1, 1, 1, 1, 1, 1, 1],
@@ -208,21 +248,23 @@ test('test traversableCellsInTile returns correct cells for each tile', t => {
     [1, 1, 0, 0, 0, 0, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1],
   ];
-  t.same(map.traversableCellsInTile(false, 8, 14), expected);
-  t.end();
-});
+  t.same(traversableCellsInTile(tileTypes.SPIKE), expected);
 
-test('test traversableCellsInTile throws errors for invalid inputs', t => {
-  t.throws(() => { map.traversableCellsInTile(false, 7, 14); });
-  t.throws(() => { map.traversableCellsInTile(false, 3, 1); });
-  t.throws(() => { map.traversableCellsInTile(false, 2.5, 9); });
-  t.throws(() => { map.traversableCellsInTile(false, 4, -1); });
-  t.throws(() => { map.traversableCellsInTile(false, 1, -6); });
   t.end();
 });
 
 
-test('test getTraversableCells returns correct traverable grid of cells', t => {
+test('traversableCellsInTile: throws errors for invalid inputs', t => {
+  t.throws(() => { traversableCellsInTile(false); });
+  t.throws(() => { traversableCellsInTile(1.23); });
+  t.throws(() => { traversableCellsInTile(undefined); });
+  t.throws(() => { traversableCellsInTile('apple'); });
+
+  t.end();
+});
+
+
+test('getTraversableCells: returns correctly with CPTL=1', t => {
   // create a dummy map from bombs, spikes, gates, and regular tiles
   const bomb = tileTypes.BOMB;
   const spike = tileTypes.SPIKE;
@@ -231,11 +273,10 @@ test('test getTraversableCells returns correct traverable grid of cells', t => {
   const blank = tileTypes.REGULAR_FLOOR;
 
   // initialize current player as blue
-  mockMe(teams.BLUE);
+  MapRewireAPI.__Rewire__('amBlue', () => true);
+  MapRewireAPI.__Rewire__('amRed', () => false);
 
-  // define the number of cells per tile
-  let cpt = 1;
-
+  MapRewireAPI.__Rewire__('CPTL', 1);
   /* eslint-disable no-multi-spaces, array-bracket-spacing */
   const mockMap = [
     [bomb,    blank,    redgate],
@@ -243,27 +284,45 @@ test('test getTraversableCells returns correct traverable grid of cells', t => {
     [blank,   spike,    bomb   ],
   ];
   /* eslint-enable no-multi-spaces, array-bracket-spacing */
-
   // this is what we expect the function to return
   let expected = [
     [0, 1, 0],
     [0, 1, 1],
     [1, 0, 0],
   ];
-  t.same(map.getTraversableCells(cpt, mockMap), expected);
-
+  t.same(getTraversableCells(mockMap), expected);
 
   // initialize current player as red
-  mockMe(teams.RED);
+  MapRewireAPI.__Rewire__('amBlue', () => false);
+  MapRewireAPI.__Rewire__('amRed', () => true);
   expected = [
     [0, 1, 1],
     [1, 0, 1],
     [1, 0, 0],
   ];
-  t.same(map.getTraversableCells(cpt, mockMap), expected);
+  t.same(getTraversableCells(mockMap), expected);
 
-  cpt = 2;
-  expected = [
+  t.end();
+});
+
+
+test('getTraversableCells: CPTL=2', t => {
+  // create a dummy map from bombs, spikes, gates, and regular tiles
+  const bomb = tileTypes.BOMB;
+  const spike = tileTypes.SPIKE;
+  const redgate = tileTypes.RED_GATE;
+  const bluegate = tileTypes.BLUE_GATE;
+  const blank = tileTypes.REGULAR_FLOOR;
+
+  MapRewireAPI.__Rewire__('CPTL', 2);
+  /* eslint-disable no-multi-spaces, array-bracket-spacing */
+  const mockMap = [
+    [bomb,    blank,    redgate],
+    [redgate, bluegate, blank  ],
+    [blank,   spike,    bomb   ],
+  ];
+  /* eslint-enable no-multi-spaces, array-bracket-spacing */
+  let expected = [
     [0, 0, 1, 1, 1, 1],
     [0, 0, 1, 1, 1, 1],
     [1, 1, 0, 0, 1, 1],
@@ -271,27 +330,27 @@ test('test getTraversableCells returns correct traverable grid of cells', t => {
     [1, 1, 0, 0, 0, 0],
     [1, 1, 0, 0, 0, 0],
   ];
-  t.same(map.getTraversableCells(cpt, mockMap), expected);
+  t.same(getTraversableCells(mockMap), expected);
 
-  cpt = 10;
+  MapRewireAPI.__Rewire__('CPTL', 10);
   const smallMap = [[bomb, bluegate]];
   // For an object with radius 29, there are no traversable cells.
   // TODO: fix this unit test when we have proper object radii
   // implemented in getTraversableCells
   expected = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ];
 
-  t.same(map.getTraversableCells(cpt, smallMap), expected);
+  t.same(getTraversableCells(smallMap), expected);
 
   t.end();
 });
@@ -308,7 +367,7 @@ test('test init2dArray', t => {
     [1, 1, 1],
     [1, 1, 1],
   ];
-  t.same(map.init2dArray(width, height, defaultVal), expected);
+  t.same(init2dArray(width, height, defaultVal), expected);
 
   width = 3;
   height = 3;
@@ -318,7 +377,7 @@ test('test init2dArray', t => {
     [55, 55, 55],
     [55, 55, 55],
   ];
-  t.same(map.init2dArray(width, height, defaultVal), expected);
+  t.same(init2dArray(width, height, defaultVal), expected);
 
   t.end();
 });
@@ -339,12 +398,13 @@ test('test multiplyCorrespondingElementsAndSum', t => {
 
   const expected = 165;
 
-  t.is(map.multiplyCorrespondingElementsAndSum(m1, m2), expected);
+  t.is(multiplyCorrespondingElementsAndSum(m1, m2), expected);
 
   t.end();
 });
 
-test('test convolve', t => {
+
+test('convolve: input 1x1 kernel', t => {
   let m = [
     [1, 2, 3],
     [4, 5, 6],
@@ -358,7 +418,7 @@ test('test convolve', t => {
     [4, 5, 6],
     [7, 8, 9],
   ];
-  t.same(map.convolve(m, k), expected);
+  t.same(convolve(m, k), expected);
 
   m = [
     [1, 2, 3],
@@ -375,26 +435,31 @@ test('test convolve', t => {
     [14, 16, 18],
   ];
   /* eslint-enable no-multi-spaces, array-bracket-spacing */
-  t.same(map.convolve(m, k), expected);
+  t.same(convolve(m, k), expected);
 
-  m = [
+  t.end();
+});
+
+
+test('convolve: input 3x3 kernel', t => {
+  const m = [
     [1, 2, 3, 4],
     [5, 6, 7, 8],
     [9, 0, 1, 2],
   ];
-  k = [
+  const k = [
     [1, 2, 3],
     [3, 4, 5],
     [6, 7, 8],
   ];
   /* eslint-disable no-multi-spaces, array-bracket-spacing */
-  expected = [
+  const expected = [
     [112, 160, 193, 142],
     [131, 150, 129, 100],
     [ 89,  91,  79,  63],
   ];
   /* eslint-enable no-multi-spaces, array-bracket-spacing */
-  t.same(map.convolve(m, k), expected);
+  t.same(convolve(m, k), expected);
 
   t.end();
 });

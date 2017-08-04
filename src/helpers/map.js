@@ -1,6 +1,28 @@
-import { tileTypes, PIXELS_PER_TILE } from '../constants';
+import { tileTypes, PPTL, CPTL } from '../constants';
 import { amBlue, amRed } from './player';
 import { assert, assertGridInBounds } from '../../src/utils/asserts';
+
+
+/*
+ * Initializes and returns a 2D array with the specified width, height, and
+ * default value.
+ *
+ * @param {number} width - the width of the initialized 2D array
+ * @param {number} height - the height of the initialized 2D array
+ * @param {number} defaultVal - the value to give each element in the initialized 2D array
+ */
+export function init2dArray(width, height, defaultVal = 0) {
+  const matrix = [];
+
+  for (let x = 0; x < width; x++) {
+    matrix[x] = new Array(height);
+    for (let y = 0; y < height; y++) {
+      matrix[x][y] = defaultVal;
+    }
+  }
+
+  return matrix;
+}
 
 
 /*
@@ -64,6 +86,69 @@ export function isTraversable(tileID) {
 }
 
 
+/*
+ * Returns the radius, in pixels, of the given circular nontraversable tile ID.
+ *
+ * Circular nontraversable tiles include: powerups, bombs, active portals,
+ *   speed boosts, spikes, and buttons
+ */
+export function getNontraversableObjectRadius(tileID) {
+  switch (tileID) {
+    case 'marsball':
+      return 39;
+    case tileTypes.EMPTY_SPACE:
+    case tileTypes.SQUARE_WALL:
+    case tileTypes.ANGLE_WALL_1:
+    case tileTypes.ANGLE_WALL_2:
+    case tileTypes.ANGLE_WALL_3:
+    case tileTypes.ANGLE_WALL_4:
+    case tileTypes.GREEN_GATE:
+    case tileTypes.RED_GATE:
+    case tileTypes.BLUE_GATE:
+      return 29;
+      // TODO: implement functionality for non-circular objects - for now, just
+      // make them circles that fill a whole tile
+    case tileTypes.POWERUP_SUBGROUP:
+    case tileTypes.JUKEJUICE:
+    case tileTypes.ROLLING_BOMB:
+    case tileTypes.TAGPRO:
+    case tileTypes.MAX_SPEED:
+    case tileTypes.BOMB:
+    case tileTypes.ACTIVE_PORTAL:
+    case tileTypes.SPEEDPAD_ACTIVE:
+    case tileTypes.SPEEDPAD_RED_ACTIVE:
+    case tileTypes.SPEEDPAD_BLUE_ACTIVE:
+      return 15;
+    case tileTypes.SPIKE:
+      return 14;
+    case tileTypes.BUTTON:
+      return 8;
+    case tileTypes.REGULAR_FLOOR:
+    case tileTypes.RED_FLAG:
+    case tileTypes.RED_FLAG_TAKEN:
+    case tileTypes.BLUE_FLAG:
+    case tileTypes.BLUE_FLAG_TAKEN:
+    case tileTypes.SPEEDPAD_INACTIVE:
+    case tileTypes.INACTIVE_GATE:
+    case tileTypes.INACTIVE_BOMB:
+    case tileTypes.RED_TEAMTILE:
+    case tileTypes.BLUE_TEAMTILE:
+    case tileTypes.INACTIVE_PORTAL:
+    case tileTypes.SPEEDPAD_RED_INACTIVE:
+    case tileTypes.SPEEDPAD_BLUE_INACTIVE:
+    case tileTypes.YELLOW_FLAG:
+    case tileTypes.YELLOW_FLAG_TAKEN:
+    case tileTypes.RED_ENDZONE:
+    case tileTypes.BLUE_ENDZONE:
+    case 'blueball':
+    case 'redball':
+      throw new Error(`A traversable tile was given: ${tileID}`);
+    default:
+      throw new Error(`Unknown tileID: ${tileID}`);
+  }
+}
+
+
 /* eslint no-param-reassign: ["error", { "ignorePropertyModificationsFor": ["bigGrid"] }] */
 /*
  * place all values from smallGrid into bigGrid. Align the upper left corner at x, y
@@ -84,34 +169,23 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
 
 /* Returns a 2d cell array of traversible (1) and blocked (0) cells inside a tile.
  *
- * @param {number} tileIsTraversable - if this tile is traversable, 1 or 0
- * @param {number} cpt - number of cells per tile
- * @param {number} objRadius - radius of untraversable object in pixels
+ * @param {number} tileID - the ID of the tile that should be split into cells and
+ *   parsed for traversability
  */
-export function traversableCellsInTile(tileIsTraversable, cpt, objRadius) {
-  assert(PIXELS_PER_TILE % cpt === 0, 'cpt not a divisor of PIXELS_PER_TILE');
-  assert(objRadius >= 0, 'objRadius is negative');
-  const gridTile = [];
-  // Start with all traversable
-  let i;
-  let j;
-  for (i = 0; i < cpt; i++) {
-    gridTile[i] = new Array(cpt);
-    for (j = 0; j < cpt; j++) {
-      gridTile[i][j] = 1;
-    }
-  }
+export function traversableCellsInTile(tileID) {
+  // Start with all cells being traversable
+  const gridTile = init2dArray(CPTL, CPTL, 1);
 
-  if (!tileIsTraversable) {
-    const midCell = (cpt - 1.0) / 2.0;
-    for (i = 0; i < cpt; i++) {
-      for (j = 0; j < cpt; j++) {
+  if (!isTraversable(tileID)) {
+    const midCell = (CPTL - 1.0) / 2.0;
+    for (let i = 0; i < CPTL; i++) {
+      for (let j = 0; j < CPTL; j++) {
         const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
         const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
         const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
-        const ppc = PIXELS_PER_TILE / cpt; // number of pixels per cell
+        const ppc = PPTL / CPTL; // number of pixels per cell
         const pixelDist = cellDist * ppc;
-        if (pixelDist <= objRadius) {
+        if (pixelDist <= getNontraversableObjectRadius(tileID)) {
           // This cell touches the object, is not traversable
           gridTile[i][j] = 0;
         }
@@ -124,23 +198,22 @@ export function traversableCellsInTile(tileIsTraversable, cpt, objRadius) {
 
 /*
  * Returns a 2D array of traversable (1) and blocked (0) cells. Size of return grid is
- * map.length * cpt
+ * map.length * CPTL
  *
  * The 2D array is an array of the columns in the game. empty_tiles[0] is
  * the left-most column. Each column array is an array of the tiles in
  * that column, with 1s and 0s.  empty_tiles[0][0] is the upper-left corner
  * tile.
  *
- * @param {number} cpt - number of cells per tile
  * @param {number} map - 2D array representing the Tagpro map
  */
-export function getTraversableCells(cpt, map) {
+export function getTraversableCells(map) {
   const xl = map.length;
   const yl = map[0].length;
   const emptyCells = [];
   let x;
-  for (x = 0; x < xl * cpt; x++) {
-    emptyCells[x] = new Array(yl * cpt);
+  for (x = 0; x < xl * CPTL; x++) {
+    emptyCells[x] = new Array(yl * CPTL);
   }
   for (x = 0; x < xl; x++) {
     for (let y = 0; y < yl; y++) {
@@ -148,16 +221,11 @@ export function getTraversableCells(cpt, map) {
       // is > 20 * sqrt(2), the furthest distance from the center of a tile to its corner, in
       // pixels. This guarantees that if the tile has anything non-tranversable in it (wall, ball,
       // spike, corner wall), the entire tile is marked as non-traversable
-      const objRadius = 29;
       fillGridWithSubgrid(
         emptyCells,
-        traversableCellsInTile(
-          isTraversable(map[x][y]),
-          cpt,
-          objRadius,
-        ),
-        x * cpt,
-        y * cpt,
+        traversableCellsInTile(map[x][y]),
+        x * CPTL,
+        y * CPTL,
       );
     }
   }
@@ -182,34 +250,12 @@ export function findTile(tiles) {
       for (let i = 0; i < tileArray.length; i++) {
         const tile = tileArray[i];
         if (tagpro.map[x][y] === tile) {
-          return { x: x * PIXELS_PER_TILE, y: y * PIXELS_PER_TILE, xg: x, yg: y };
+          return { x: x * PPTL, y: y * PPTL, xg: x, yg: y };
         }
       }
     }
   }
   throw new Error(`Unable to find tile: ${tiles}`);
-}
-
-
-/*
- * Initializes and returns a 2D array with the specified width, height, and
- * default value.
- *
- * @param {number} width - the width of the initialized 2D array
- * @param {number} height - the height of the initialized 2D array
- * @param {number} defaultVal - the value to give each element in the initialized 2D array
- */
-export function init2dArray(width, height, defaultVal = 0) {
-  const matrix = [];
-
-  for (let x = 0; x < width; x++) {
-    matrix[x] = new Array(height);
-    for (let y = 0; y < height; y++) {
-      matrix[x][y] = defaultVal;
-    }
-  }
-
-  return matrix;
 }
 
 
