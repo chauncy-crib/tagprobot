@@ -18,33 +18,33 @@ export function chat(chatMessage) {
   }
 }
 
-let AUTONOMOUS = true;
-let VISUALS = true;
+let autonomous = true;
+let visuals = true;
 
 export function isAutonomous() {
-  return AUTONOMOUS;
+  return autonomous;
 }
 
-export function visualMode() {
-  return VISUALS;
+export function visualsOn() {
+  return visuals;
 }
 
 export function onKeyDown(event) {
   // If letter pressed is Q, toggle autonomous controls
   if (event.keyCode === KEY_CODES.q) {
-    AUTONOMOUS = !AUTONOMOUS;
-    VISUALS = AUTONOMOUS;
+    autonomous = !autonomous;
+    visuals = autonomous;
     tagpro.sendKeyPress('up', true);
     tagpro.sendKeyPress('down', true);
     tagpro.sendKeyPress('left', true);
     tagpro.sendKeyPress('right', true);
-    const autonomyMode = AUTONOMOUS ? 'AUTONOMOUS' : 'MANUAL';
+    const autonomyMode = autonomous ? 'autonomous' : 'MANUAL';
     chat(`Autonomy Mode updated: now ${autonomyMode}!`);
-    setTimeout(() => { console.log(`Autonomy status: ${AUTONOMOUS}`); }, 200);
+    setTimeout(() => { console.log(`Autonomy status: ${autonomous}`); }, 200);
   }
   if (event.keyCode === KEY_CODES.v) { // toggle visuals
-    VISUALS = !VISUALS;
-    const chatMsg = visualMode() ? 'enabled' : 'disabled';
+    visuals = !visuals;
+    const chatMsg = visuals ? 'enabled' : 'disabled';
     chat(`Visuals ${chatMsg}`);
   }
 }
