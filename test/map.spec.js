@@ -3,7 +3,7 @@ import * as map from '../src/helpers/map';
 import { tileTypes, teams } from '../src/constants';
 import { mockMe } from '../src/helpers/player';
 
-test('test isTraversable', t => {
+test('test isTraversable returns correct value', t => {
   t.true(map.isTraversable(2)); // Regular floor
   t.true(map.isTraversable(3.1)); // taken red flag
   t.true(map.isTraversable(9)); // inactive gate
@@ -11,7 +11,10 @@ test('test isTraversable', t => {
   t.false(map.isTraversable(0)); // Blank space
   t.false(map.isTraversable(1)); // square wall
   t.false(map.isTraversable(7)); // spike
-  // some inputs that the function shouldn't handle
+  t.end();
+});
+
+test('test isTraversable throws errors for inproper inputs', t => {
   t.throws(() => { map.isTraversable(1.123); });
   t.throws(() => { map.isTraversable(-1); });
   t.throws(() => { map.isTraversable('potato'); });
@@ -19,7 +22,7 @@ test('test isTraversable', t => {
   t.end();
 });
 
-test('test fillGridWithSubgrid', t => {
+test('test fillGridWithSubgrid places correct values in larger grid', t => {
   let grid = [
     [0, 0, 0],
     [0, 0, 0],
@@ -57,8 +60,38 @@ test('test fillGridWithSubgrid', t => {
   ];
   map.fillGridWithSubgrid(grid, subgrid, 1, 0);
   t.same(grid, expected);
+  t.end();
+});
+
+test('test fillGridWithSubgrid does not throw errors for valid inputs', t => {
+  const grid = [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ];
+  const subgrid = [
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 1],
+  ];
   t.doesNotThrow(() => { map.fillGridWithSubgrid(grid, subgrid, 0, 0); });
   t.doesNotThrow(() => { map.fillGridWithSubgrid(grid, subgrid, 1, 1); });
+  t.end();
+});
+
+test('test fillGridWithSubgrid throws errors for invalid inputs', t => {
+  const grid = [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ];
+  const subgrid = [
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 1],
+  ];
   t.throws(() => { map.fillGridWithSubgrid(grid, subgrid, -1, 1); });
   t.throws(() => { map.fillGridWithSubgrid(grid, subgrid, 1, 2); });
   t.throws(() => { map.fillGridWithSubgrid(subgrid, grid, 0, 0); });
