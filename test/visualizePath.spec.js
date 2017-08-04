@@ -6,30 +6,39 @@ import { clearSprites, drawSprites } from '../src/draw/utils';
 
 test('clearSprites() calls removeChild for each sprite', t => {
   const mockRemoveChild = sinon.spy();
+  const pathSprites = [1, 2, 3];
   global.tagpro = {
     renderer: {
-      pathSprites: [1, 2, 3],
       layers: { background: { removeChild: mockRemoveChild } },
     },
   };
-
-  clearSprites(tagpro.renderer.pathSprites);
-
+  clearSprites(pathSprites);
   t.true(mockRemoveChild.calledThrice);
+  t.end();
+});
+
+test('clearSprites() returns an empty array', t => {
+  const mockRemoveChild = sinon.spy();
+  let pathSprites = [1, 2, 3];
+  global.tagpro = {
+    renderer: {
+      layers: { background: { removeChild: mockRemoveChild } },
+    },
+  };
+  pathSprites = clearSprites(pathSprites);
+  t.is(pathSprites.length, 0);
   t.end();
 });
 
 test('clearSprites() calls addChild for each sprite', t => {
   const mockAddChild = sinon.spy();
+  const pathSprites = [1, 2, 3];
   global.tagpro = {
     renderer: {
-      pathSprites: [1, 2, 3],
       layers: { background: { addChild: mockAddChild } },
     },
   };
-
-  drawSprites(tagpro.renderer.pathSprites);
-
+  drawSprites(pathSprites);
   t.true(mockAddChild.calledThrice);
   t.end();
 });
