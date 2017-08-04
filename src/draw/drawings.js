@@ -12,7 +12,7 @@
  * nonTraversableCellSprites to store the sprites we're going to draw. Then, before drawing the
  * path, we erase any path that was previously drawn.
  */
-import { PIXELS_PER_TILE } from '../constants';
+import { PPCL } from '../constants';
 import { areVisualsOn } from '../utils/interface';
 import { clearSprites, drawSprites } from './utils';
 
@@ -26,21 +26,19 @@ let nonTraversableCellSprites = [];
  * See: http://pixijs.download/dev/docs/PIXI.Graphics.html
  *
  * @param path: an array of cells, each with an x and y coordinate
- * @param cpt: cells per tile, as defined throughout project
  * @param hexColor: the color the sprites should be
  * @param alpha: the opacity of the path drawing, 0-1. 1 = opaque.
  */
-export function createPathSprites(path, cpt, hexColor, alpha) {
+export function createPathSprites(path, hexColor, alpha) {
   const sprites = []; // initialize global object used for storage of PIXI.Graphics
-  const pixelsPerCell = PIXELS_PER_TILE / cpt; // dimensional analysis
   path.forEach(cell => { // create a PIXI.Graphics object for each cell in the path
     // note: all units in pixels
     const rect = new PIXI.Graphics();
     rect.beginFill(hexColor).drawRect(
-      cell.x * pixelsPerCell, // x coordinate
-      cell.y * pixelsPerCell, // y coordinate
-      pixelsPerCell, // width
-      pixelsPerCell, // height
+      cell.x * PPCL, // x coordinate
+      cell.y * PPCL, // y coordinate
+      PPCL, // width
+      PPCL, // height
     ).alpha = alpha;
     sprites.push(rect);
   });
@@ -52,24 +50,21 @@ export function createPathSprites(path, cpt, hexColor, alpha) {
  * object and returns them.
  *
  * @param traversableCells: an grid of cells
- * @param cpt: cells per tile, as defined throughout project
  * @param notTraversableColor: the color the sprites should be
  * @param alpha: the opacity: 0-1. 1 = opaque.
  */
-function createNonTraversableCellSprites(
-  traversableCells, cpt, notTraversableColor, alpha) {
+function createNonTraversableCellSprites(traversableCells, notTraversableColor, alpha) {
   const sprites = [];
-  const pixelsPerCell = PIXELS_PER_TILE / cpt;
   for (let x = 0; x < traversableCells.length; x++) {
     for (let y = 0; y < traversableCells[0].length; y++) {
       // if cell is non traversable and not an empty space
       if (!traversableCells[x][y]) {
         const rect = new PIXI.Graphics();
         rect.beginFill(notTraversableColor).drawRect(
-          x * pixelsPerCell, // x coordinate
-          y * pixelsPerCell, // y coordinate
-          pixelsPerCell, // width
-          pixelsPerCell, // height
+          x * PPCL, // x coordinate
+          y * PPCL, // y coordinate
+          PPCL, // width
+          PPCL, // height
         ).alpha = alpha;
         sprites.push(rect);
       }
@@ -79,24 +74,24 @@ function createNonTraversableCellSprites(
 }
 
 /*
- * Used to draw the bot's planned path. Takes in a reference to a list of cells returned by
- * getShortestPath() in helpers/path.js and the cpt used when calculating shortest path, and draws
- * the corresponding cells in green on the map.
+ * Used to draw the bot's planned path. Takes in a reference to a list of cells
+ * returned by getShortestPath() in helpers/path.js and draws the corresponding
+ * cells in green on the map.
  */
-export function drawPlannedPath(path, cpt, hexColor = 0x00ff00, alpha = 0.25) {
+export function drawPlannedPath(path, hexColor = 0x00ff00, alpha = 0.25) {
   pathSprites = clearSprites(pathSprites); // clear the previous path from the map
   if (areVisualsOn()) {
     // create the PIXI.Graphics objecs we're drawing
-    pathSprites = createPathSprites(path, cpt, hexColor, alpha);
+    pathSprites = createPathSprites(path, hexColor, alpha);
   }
   drawSprites(pathSprites); // put the PIXI.Graphics objects on the map
 }
 
-export function drawNonTraversableCells(traversableCells, cpt, notTraversableColor = 0xff8c00,
+export function drawNonTraversableCells(traversableCells, notTraversableColor = 0xff8c00,
   alpha = 0.4) {
   nonTraversableCellSprites = clearSprites(nonTraversableCellSprites);
   if (areVisualsOn()) {
-    nonTraversableCellSprites = createNonTraversableCellSprites(traversableCells, cpt,
+    nonTraversableCellSprites = createNonTraversableCellSprites(traversableCells,
       notTraversableColor, alpha);
   }
   drawSprites(nonTraversableCellSprites);

@@ -1,5 +1,5 @@
-import { PIXELS_PER_TILE } from './constants';
-import { getTraversableCells } from './helpers/map';
+import { PPTL } from './constants';
+import { getMapTraversabilityInCells } from './helpers/map';
 import {
   findMyEndzone,
   findEnemyEndzone,
@@ -67,16 +67,15 @@ function getSeek() {
 
   // Version for attempting path-planning
   const gridPosition = {
-    x: Math.floor((me.x + 20) / PIXELS_PER_TILE),
-    y: Math.floor((me.y + 20) / PIXELS_PER_TILE),
+    x: Math.floor((me.x + 20) / PPTL),
+    y: Math.floor((me.y + 20) / PPTL),
   };
   const gridTarget = {
-    x: Math.floor(goal.x / PIXELS_PER_TILE),
-    y: Math.floor(goal.y / PIXELS_PER_TILE),
+    x: Math.floor(goal.x / PPTL),
+    y: Math.floor(goal.y / PPTL),
   };
-  const cellsPerTile = 1;
-  const traversableCells = getTraversableCells(cellsPerTile, tagpro.map);
-  drawNonTraversableCells(traversableCells, cellsPerTile);
+  const traversableCells = getMapTraversabilityInCells(tagpro.map);
+  drawNonTraversableCells(traversableCells);
   const shortestPath = getShortestPath(
     gridPosition.x,
     gridPosition.y,
@@ -89,11 +88,11 @@ function getSeek() {
     gridPosition.y,
     shortestPath,
   );
-  seekToward.x *= PIXELS_PER_TILE;
-  seekToward.y *= PIXELS_PER_TILE;
+  seekToward.x *= PPTL;
+  seekToward.y *= PPTL;
 
   // Visualize the planned path
-  drawPlannedPath(shortestPath, cellsPerTile);
+  drawPlannedPath(shortestPath);
 
   // Version for not attempting path-planning
   return {

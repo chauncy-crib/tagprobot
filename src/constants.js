@@ -1,3 +1,6 @@
+import { assert } from '../src/utils/asserts';
+
+
 export const tileTypes = {
   EMPTY_SPACE: 0,
   SQUARE_WALL: 1,
@@ -44,4 +47,12 @@ export const teams = {
   BLUE: 2,
 };
 
-export const PIXELS_PER_TILE = 40;
+// Pixels per tile length
+export const PPTL = 40;
+
+// Cells per tile length
+export const CPTL = 1;
+assert(PPTL % CPTL === 0, 'CPTL does not divide evenly into PPTL');
+
+// Pixels per cell length
+export const PPCL = PPTL / CPTL;
