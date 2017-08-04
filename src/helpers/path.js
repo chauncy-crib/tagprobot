@@ -61,7 +61,6 @@ export function getTarget(myX, myY, shortestPath) {
   }
   const next = shortestPath[j];
   // TODO: this seems to throw null pointer when bot doesn't know where the center flag is.
-  const res = { x: next.x, y: next.y };
-  return res;
+  return { x: next.x, y: next.y };
 }
 
