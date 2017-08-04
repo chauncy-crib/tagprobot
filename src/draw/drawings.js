@@ -17,6 +17,9 @@ import { PIXELS_PER_TILE } from '../constants';
 import { visualsOn } from '../utils/interface';
 import { clearSprites, drawSprites } from './utils';
 
+let pathSprites = [];
+let nonTraversableCellSprites = [];
+
 /*
  * Takes in an array of cells, and creates an array of PIXI.Graphics objects (which the tagpro API
  * knows how to draw) and stores them in the global tagpro.renderer.pathSprites object.
@@ -29,7 +32,7 @@ import { clearSprites, drawSprites } from './utils';
  * @param alpha: the opacity of the path drawing, 0-1. 1 = opaque.
  */
 export function createPathSprites(path, cpt, hexColor, alpha) {
-  tagpro.renderer.pathSprites = []; // initialize global object used for storage of PIXI.Graphics
+  pathSprites = []; // initialize global object used for storage of PIXI.Graphics
   const pixelsPerCell = PIXELS_PER_TILE / cpt; // dimensional analysis
   path.forEach(cell => { // create a PIXI.Graphics object for each cell in the path
     // note: all units in pixels
@@ -40,13 +43,13 @@ export function createPathSprites(path, cpt, hexColor, alpha) {
       pixelsPerCell, // width
       pixelsPerCell, // height
     ).alpha = alpha;
-    tagpro.renderer.pathSprites.push(rect);
+    pathSprites.push(rect);
   });
 }
 
 function createNonTraversableCellSprites(
   traversableCells, cpt, notTraversableColor, alpha) {
-  tagpro.renderer.nonTraversableCellSprites = [];
+  nonTraversableCellSprites = [];
   const pixelsPerCell = PIXELS_PER_TILE / cpt;
   for (let x = 0; x < traversableCells.length; x++) {
     for (let y = 0; y < traversableCells[0].length; y++) {
@@ -59,7 +62,7 @@ function createNonTraversableCellSprites(
           pixelsPerCell, // width
           pixelsPerCell, // height
         ).alpha = alpha;
-        tagpro.renderer.nonTraversableCellSprites.push(rect);
+        nonTraversableCellSprites.push(rect);
       }
     }
   }
@@ -71,18 +74,18 @@ function createNonTraversableCellSprites(
  * the corresponding cells in green on the map.
  */
 export function drawPlannedPath(path, cpt, hexColor = 0x00ff00, alpha = 0.25) {
-  clearSprites(tagpro.renderer.pathSprites); // clear the previous path from the map
+  pathSprites = clearSprites(pathSprites); // clear the previous path from the map
   if (visualsOn()) {
     createPathSprites(path, cpt, hexColor, alpha); // create the PIXI.Graphics objecs we're drawing
   }
-  drawSprites(tagpro.renderer.pathSprites); // put the PIXI.Graphics objects on the map
+  drawSprites(pathSprites); // put the PIXI.Graphics objects on the map
 }
 
 export function drawNonTraversableCells(traversableCells, cpt, notTraversableColor = 0xff8c00,
   alpha = 0.4) {
-  clearSprites(tagpro.renderer.nonTraversableCellSprites);
+  nonTraversableCellSprites = clearSprites(nonTraversableCellSprites);
   if (visualsOn()) {
     createNonTraversableCellSprites(traversableCells, cpt, notTraversableColor, alpha);
   }
-  drawSprites(tagpro.renderer.nonTraversableCellSprites);
+  drawSprites(nonTraversableCellSprites);
 }
