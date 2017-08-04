@@ -34,7 +34,7 @@ test('clearSprites() calls addChild for each sprite', t => {
   t.end();
 });
 
-test('drawPlannedPath() calls the right functions with visualMode on', t => {
+test('drawPlannedPath() calls the right functions with visualsOn on', t => {
   const mockClearSprites = sinon.spy();
   const mockCreatePathSprites = sinon.spy();
   const mockDrawSprites = sinon.spy();
@@ -43,7 +43,7 @@ test('drawPlannedPath() calls the right functions with visualMode on', t => {
   DrawingRewireAPI.__Rewire__('clearSprites', mockClearSprites);
   DrawingRewireAPI.__Rewire__('createPathSprites', mockCreatePathSprites);
   DrawingRewireAPI.__Rewire__('drawSprites', mockDrawSprites);
-  DrawingRewireAPI.__Rewire__('visualMode', mockVisual);
+  DrawingRewireAPI.__Rewire__('visualsOn', mockVisual);
 
   drawPlannedPath('path', 'cpt', 'hexColor', 'alpha');
 
@@ -53,7 +53,7 @@ test('drawPlannedPath() calls the right functions with visualMode on', t => {
   t.true(mockDrawSprites.calledOnce);
 
   mockVisual = sinon.stub().returns(false);
-  DrawingRewireAPI.__Rewire__('visualMode', mockVisual);
+  DrawingRewireAPI.__Rewire__('visualsOn', mockVisual);
   drawPlannedPath('path', 'cpt', 'hexColor', 'alpha');
 
   t.true(mockVisual.calledOnce);
@@ -77,7 +77,7 @@ test('drawNonTraversableCells() calls the right functions', t => {
   DrawingRewireAPI.__Rewire__('createNonTraversableCellSprites',
     mockCreateNonTraversableCellSprites);
   DrawingRewireAPI.__Rewire__('drawSprites', mockDrawSprites);
-  DrawingRewireAPI.__Rewire__('visualMode', mockVisual);
+  DrawingRewireAPI.__Rewire__('visualsOn', mockVisual);
 
   drawNonTraversableCells('traversableCells', 'cpt', 'hexColor', 'alpha');
 
@@ -88,7 +88,7 @@ test('drawNonTraversableCells() calls the right functions', t => {
   t.true(mockDrawSprites.calledOnce);
 
   mockVisual = sinon.stub().returns(false);
-  DrawingRewireAPI.__Rewire__('visualMode', mockVisual);
+  DrawingRewireAPI.__Rewire__('visualsOn', mockVisual);
   drawNonTraversableCells('traversableCells', 'cpt', 'hexColor', 'alpha');
 
   t.true(mockVisual.calledOnce);
@@ -99,6 +99,6 @@ test('drawNonTraversableCells() calls the right functions', t => {
   DrawingRewireAPI.__ResetDependency__('clearSprites');
   DrawingRewireAPI.__ResetDependency__('createPathSprites');
   DrawingRewireAPI.__ResetDependency__('drawSprites');
-  DrawingRewireAPI.__ResetDependency__('visualMode');
+  DrawingRewireAPI.__ResetDependency__('visualsOn');
   t.end();
 });
