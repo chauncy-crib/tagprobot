@@ -161,7 +161,7 @@ test('test getSubarrayFrom2dArray', t => {
   t.end();
 });
 
-test('test traversableCellsInTile', t => {
+test('test traversableCellsInTile returns correct cells for each tile', t => {
   let expected = [
     [1, 1, 1, 1],
     [1, 1, 1, 1],
