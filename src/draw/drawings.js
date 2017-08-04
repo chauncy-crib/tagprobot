@@ -8,10 +8,9 @@
  * seemed to be the best thing for this feature.
  *
  * There are two functions in the background object we will use: `addChild` and `removeChild`, each
- * of which take a reference to the object being drawn/removed. We use the tagpro global object to
- * store the objects currently draw on the screen in an array: `tagpro.rendered.pathSprites` (this
- * was from line 21 of the referenced userscript). Then, before drawing the path, we erase any path
- * that was previously drawn.
+ * of which take a reference to the object being drawn/removed. We use the variables pathSprites and
+ * nonTraversableCellSprites to store the sprites we're going to draw. Then, before drawing the
+ * path, we erase any path that was previously drawn.
  */
 import { PIXELS_PER_TILE } from '../constants';
 import { visualsOn } from '../utils/interface';
@@ -22,7 +21,7 @@ let nonTraversableCellSprites = [];
 
 /*
  * Takes in an array of cells, and creates an array of PIXI.Graphics objects (which the tagpro API
- * knows how to draw) and stores them in the global tagpro.renderer.pathSprites object.
+ * knows how to draw) and stores them in the pathSprites object.
  *
  * See: http://pixijs.download/dev/docs/PIXI.Graphics.html
  *
@@ -47,6 +46,15 @@ export function createPathSprites(path, cpt, hexColor, alpha) {
   });
 }
 
+/*
+ * Takes in an grid of cells, and creates an array of PIXI.Graphics objects for each non-traversable
+ * object and stores them in the nonTraversableCellSprites object.
+ *
+ * @param traversableCells: an grid of cells
+ * @param cpt: cells per tile, as defined throughout project
+ * @param notTraversableColor: the color the sprites should be
+ * @param alpha: the opacity: 0-1. 1 = opaque.
+ */
 function createNonTraversableCellSprites(
   traversableCells, cpt, notTraversableColor, alpha) {
   nonTraversableCellSprites = [];
