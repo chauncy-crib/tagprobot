@@ -10,13 +10,14 @@ export function drawSprites(sprites) {
 
 /*
  * Iterates through the sprites provided to the function, and removes them from
- * tagpro.renderer.layers.background
+ * tagpro.renderer.layers.background. Returns the new sprites object
  */
 export function clearSprites(sprites) {
   if (sprites) {
     sprites.forEach(sprite => {
       tagpro.renderer.layers.background.removeChild(sprite);
     });
-    sprites.splice(0, sprites.length);
+    return [];
   }
+  return sprites;
 }
