@@ -2,6 +2,7 @@ import test from 'tape';
 import {
   init2dArray,
   isTraversable,
+  getNonTraversableObjectRadius,
   fillGridWithSubgrid,
   addBufferTo2dArray,
   getSubarrayFrom2dArray,
@@ -14,11 +15,44 @@ import {
 import { tileTypes } from '../src/constants';
 
 
-test('isTraversable: returns correct values for varying inputs', t => {
+test('init2dArray: returns correctly with varying inputs', t => {
+  let width = 5;
+  let height = 3;
+  let defaultVal = 1;
+  let expected = [
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 1],
+  ];
+  t.same(init2dArray(width, height, defaultVal), expected);
+
+  width = 3;
+  height = 3;
+  defaultVal = 55;
+  expected = [
+    [55, 55, 55],
+    [55, 55, 55],
+    [55, 55, 55],
+  ];
+  t.same(init2dArray(width, height, defaultVal), expected);
+
+  t.end();
+});
+
+
+test('isTraversable: correctly returns true for varying inputs', t => {
   t.true(isTraversable(2)); // Regular floor
   t.true(isTraversable(3.1)); // taken red flag
   t.true(isTraversable(9)); // inactive gate
   t.true(isTraversable(17)); // red endzone
+
+  t.end();
+});
+
+
+test('isTraversable: correctly returns false for varying inputs', t => {
   t.false(isTraversable(0)); // Blank space
   t.false(isTraversable(1)); // square wall
   t.false(isTraversable(7)); // spike
@@ -32,11 +66,29 @@ test('isTraversable: throws errors for invalid inputs', t => {
   t.throws(() => { isTraversable(-1); });
   t.throws(() => { isTraversable('potato'); });
   t.throws(() => { isTraversable(undefined); });
+
   t.end();
 });
 
 
-test('fillGridWithSubgrid: fills larger grids correctly', t => {
+test('getNonTraversableObjectRadius: correctly returns for varying inputs', t => {
+  t.is(getNonTraversableObjectRadius(tileTypes.SPIKE), 14);
+  t.is(getNonTraversableObjectRadius(tileTypes.BUTTON), 8);
+
+  t.end();
+});
+
+
+test('getNonTraversableObjectRadius: throws errors for invalid inputs', t => {
+  t.throws(() => { getNonTraversableObjectRadius(tileTypes.YELLOW_FLAG); });
+  t.throws(() => { getNonTraversableObjectRadius('banana'); });
+  t.throws(() => { getNonTraversableObjectRadius(undefined); });
+
+  t.end();
+});
+
+
+test('fillGridWithSubgrid: correctly fills larger grids', t => {
   let grid = [
     [0, 0, 0],
     [0, 0, 0],
@@ -220,6 +272,7 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
     [0, 0, 0, 0],
   ];
   t.same(getTileTraversabilityInCells(tileTypes.ACTIVE_PORTAL), expected);
+
   t.end();
 });
 
@@ -351,33 +404,6 @@ test('getMapTraversabilityInCells: CPTL=2', t => {
   ];
 
   t.same(getMapTraversabilityInCells(smallMap), expected);
-
-  t.end();
-});
-
-
-test('test init2dArray', t => {
-  let width = 5;
-  let height = 3;
-  let defaultVal = 1;
-  let expected = [
-    [1, 1, 1],
-    [1, 1, 1],
-    [1, 1, 1],
-    [1, 1, 1],
-    [1, 1, 1],
-  ];
-  t.same(init2dArray(width, height, defaultVal), expected);
-
-  width = 3;
-  height = 3;
-  defaultVal = 55;
-  expected = [
-    [55, 55, 55],
-    [55, 55, 55],
-    [55, 55, 55],
-  ];
-  t.same(init2dArray(width, height, defaultVal), expected);
 
   t.end();
 });
