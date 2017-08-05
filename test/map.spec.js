@@ -14,7 +14,7 @@ test('test isTraversable returns correct value', t => {
   t.end();
 });
 
-test('test isTraversable throws errors for inproper inputs', t => {
+test('test isTraversable throws errors for invalid inputs', t => {
   t.throws(() => { map.isTraversable(1.123); });
   t.throws(() => { map.isTraversable(-1); });
   t.throws(() => { map.isTraversable('potato'); });
@@ -209,18 +209,20 @@ test('test traversableCellsInTile', t => {
     [1, 1, 1, 1, 1, 1, 1, 1],
   ];
   t.same(map.traversableCellsInTile(false, 8, 14), expected);
+  t.end();
+});
 
+test('test traversableCellsInTile throws errors for invalid inputs', t => {
   t.throws(() => { map.traversableCellsInTile(false, 7, 14); });
   t.throws(() => { map.traversableCellsInTile(false, 3, 1); });
   t.throws(() => { map.traversableCellsInTile(false, 2.5, 9); });
   t.throws(() => { map.traversableCellsInTile(false, 4, -1); });
   t.throws(() => { map.traversableCellsInTile(false, 1, -6); });
-
   t.end();
 });
 
 
-test('test getTraversableCells', t => {
+test('test getTraversableCells returns correct traverable grid of cells', t => {
   // create a dummy map from bombs, spikes, gates, and regular tiles
   const bomb = tileTypes.BOMB;
   const spike = tileTypes.SPIKE;
