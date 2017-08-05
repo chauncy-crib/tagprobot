@@ -92,7 +92,7 @@ export function isTraversable(tileID) {
  * Circular nontraversable tiles include: powerups, bombs, active portals,
  *   speed boosts, spikes, and buttons
  */
-export function getNontraversableObjectRadius(tileID) {
+export function getNonTraversableObjectRadius(tileID) {
   switch (tileID) {
     case 'marsball':
       return 39;
@@ -172,7 +172,7 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
  * @param {number} tileID - the ID of the tile that should be split into cells and
  *   parsed for traversability
  */
-export function traversableCellsInTile(tileID) {
+export function getTileTraversabilityInCells(tileID) {
   // Start with all cells being traversable
   const gridTile = init2dArray(CPTL, CPTL, 1);
 
@@ -183,9 +183,9 @@ export function traversableCellsInTile(tileID) {
         const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
         const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
         const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
-        const ppc = PPTL / CPTL; // number of pixels per cell
+        const ppc = PPTL / CPTL; // number of pixels per cell length
         const pixelDist = cellDist * ppc;
-        if (pixelDist <= getNontraversableObjectRadius(tileID)) {
+        if (pixelDist <= getNonTraversableObjectRadius(tileID)) {
           // This cell touches the object, is not traversable
           gridTile[i][j] = 0;
         }
@@ -207,7 +207,7 @@ export function traversableCellsInTile(tileID) {
  *
  * @param {number} map - 2D array representing the Tagpro map
  */
-export function getTraversableCells(map) {
+export function getMapTraversabilityInCells(map) {
   const xl = map.length;
   const yl = map[0].length;
   const emptyCells = [];
@@ -217,13 +217,14 @@ export function getTraversableCells(map) {
   }
   for (x = 0; x < xl; x++) {
     for (let y = 0; y < yl; y++) {
-      // TODO: Set radius to be correct value for each cell object. Currently using 29 because it
-      // is > 20 * sqrt(2), the furthest distance from the center of a tile to its corner, in
-      // pixels. This guarantees that if the tile has anything non-tranversable in it (wall, ball,
-      // spike, corner wall), the entire tile is marked as non-traversable
+      // TODO: Set radius to be correct value for each cell object. Currently
+      // using 29 because it is > 20 * sqrt(2), the furthest distance from the
+      // center of a tile to its corner, in pixels. This guarantees that if the
+      // tile has anything non-tranversable in it (wall, ball, spike, corner
+      // wall), the entire tile is marked as non-traversable
       fillGridWithSubgrid(
         emptyCells,
-        traversableCellsInTile(map[x][y]),
+        getTileTraversabilityInCells(map[x][y]),
         x * CPTL,
         y * CPTL,
       );
