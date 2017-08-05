@@ -25,7 +25,7 @@ export function isAutonomous() {
   return autonomous;
 }
 
-export function visualsOn() {
+export function areVisualsOn() {
   return visuals;
 }
 
