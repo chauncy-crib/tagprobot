@@ -80,7 +80,7 @@ test('getCNTORadius: correctly returns for varying inputs', t => {
 
 
 test('getCNTORadius: throws errors for invalid inputs', t => {
-  t.throws(() => { getCNTORadius(tileTypes.YELLOW_FLAG); });
+  t.throws(() => { getCNTORadius(tileTypes.STANDARD_FLOOR); });
   t.throws(() => { getCNTORadius('banana'); });
   t.throws(() => { getCNTORadius(undefined); });
 
@@ -216,13 +216,13 @@ test('getSubarrayFrom2dArray: returns correct subarray for varying inputs', t =>
 });
 
 
-test('getTileTraversabilityInCells: returns correctly with traversable tile, CPTL=1', t => {
+test('getTileTraversabilityInCells: returns correctly with entirely traversable tile, CPTL=1', t => {
   MapRewireAPI.__Rewire__('CPTL', 1);
   MapRewireAPI.__Rewire__('PPCL', 40);
   const expected = [
     [1],
   ];
-  t.same(getTileTraversabilityInCells(tileTypes.YELLOW_FLAG), expected);
+  t.same(getTileTraversabilityInCells(tileTypes.REGULAR_FLOOR), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
 
@@ -230,13 +230,13 @@ test('getTileTraversabilityInCells: returns correctly with traversable tile, CPT
 });
 
 
-test('getTileTraversabilityInCells: returns correctly with nontraversable tile, CPTL=1', t => {
+test('getTileTraversabilityInCells: returns correctly with entirely nontraversable tile, CPTL=1', t => {
   MapRewireAPI.__Rewire__('CPTL', 1);
   MapRewireAPI.__Rewire__('PPCL', 40);
   const expected = [
     [0],
   ];
-  t.same(getTileTraversabilityInCells(tileTypes.BOMB), expected);
+  t.same(getTileTraversabilityInCells(tileTypes.SQUARE_WALL), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
 
@@ -244,7 +244,7 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
 });
 
 
-test('getTileTraversabilityInCells: returns correctly with traversable tile, CPTL=4', t => {
+test('getTileTraversabilityInCells: returns correctly with entirely traversable tile, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
   MapRewireAPI.__Rewire__('PPCL', 10);
   const expected = [
@@ -253,7 +253,7 @@ test('getTileTraversabilityInCells: returns correctly with traversable tile, CPT
     [1, 1, 1, 1],
     [1, 1, 1, 1],
   ];
-  t.same(getTileTraversabilityInCells(tileTypes.YELLOW_FLAG), expected);
+  t.same(getTileTraversabilityInCells(tileTypes.INACTIVE_PORTAL), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
 
@@ -261,7 +261,7 @@ test('getTileTraversabilityInCells: returns correctly with traversable tile, CPT
 });
 
 
-test('getTileTraversabilityInCells: returns correctly with nontraversable tile, CPTL=4', t => {
+test('getTileTraversabilityInCells: returns correctly with CNTO, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
   MapRewireAPI.__Rewire__('PPCL', 10);
   const expected = [
@@ -278,7 +278,7 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
 });
 
 
-test('getTileTraversabilityInCells: returns correctly with nontraversable tile, CPTL=4', t => {
+test('getTileTraversabilityInCells: returns correctly with CNTO, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
   MapRewireAPI.__Rewire__('PPCL', 10);
   const expected = [
@@ -290,6 +290,66 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
   t.same(getTileTraversabilityInCells(tileTypes.ACTIVE_PORTAL), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
+
+  t.end();
+});
+
+
+test('getTileTraversabilityInCells: returns correctly with angled wall 1, CPTL=4', t => {
+  MapRewireAPI.__Rewire__('CPTL', 4);
+  const expected = [
+    [0, 0, 0, 0],
+    [1, 0, 0, 0],
+    [1, 1, 0, 0],
+    [1, 1, 1, 0],
+  ];
+  t.same(getTileTraversabilityInCells(tileTypes.ANGLE_WALL_1), expected);
+  MapRewireAPI.__ResetDependency__('CPTL');
+
+  t.end();
+});
+
+
+test('getTileTraversabilityInCells: returns correctly with angled wall 2, CPTL=4', t => {
+  MapRewireAPI.__Rewire__('CPTL', 4);
+  const expected = [
+    [0, 0, 0, 0],
+    [0, 0, 0, 1],
+    [0, 0, 1, 1],
+    [0, 1, 1, 1],
+  ];
+  t.same(getTileTraversabilityInCells(tileTypes.ANGLE_WALL_2), expected);
+  MapRewireAPI.__ResetDependency__('CPTL');
+
+  t.end();
+});
+
+
+test('getTileTraversabilityInCells: returns correctly with angled wall 3, CPTL=4', t => {
+  MapRewireAPI.__Rewire__('CPTL', 4);
+  const expected = [
+    [0, 1, 1, 1],
+    [0, 0, 1, 1],
+    [0, 0, 0, 1],
+    [0, 0, 0, 0],
+  ];
+  t.same(getTileTraversabilityInCells(tileTypes.ANGLE_WALL_3), expected);
+  MapRewireAPI.__ResetDependency__('CPTL');
+
+  t.end();
+});
+
+
+test('getTileTraversabilityInCells: returns correctly with angled wall 4, CPTL=4', t => {
+  MapRewireAPI.__Rewire__('CPTL', 4);
+  const expected = [
+    [1, 1, 1, 0],
+    [1, 1, 0, 0],
+    [1, 0, 0, 0],
+    [0, 0, 0, 0],
+  ];
+  t.same(getTileTraversabilityInCells(tileTypes.ANGLE_WALL_4), expected);
+  MapRewireAPI.__ResetDependency__('CPTL');
 
   t.end();
 });

@@ -31,8 +31,11 @@ export function init2dArray(width, height, defaultVal = 0) {
  * Traversable includes: regular floor, all flags, inactive speedpad,
  *   inactive gate, friendly gate, inactive bomb, teamtiles, inactive
  *   portal, endzones
- * Untraversable includes: empty space, walls, active speedpad, any
+ * Nontraversable includes: empty space, walls, active speedpad, any
  *   powerup, spike, button, enemy/green gate, bomb, active portal
+ *
+ * @param {number} tileID - the ID of the tile that should be checked for
+ * traversability
  */
 export function isTraversable(tileID) {
   switch (tileID) {
@@ -73,13 +76,72 @@ export function isTraversable(tileID) {
     case tileTypes.GREEN_GATE:
     case tileTypes.BOMB:
     case tileTypes.ACTIVE_PORTAL:
-    case tileTypes.SPEEDPAD_RED_ACTIVE:
-    case tileTypes.SPEEDPAD_BLUE_ACTIVE:
       return false;
     case tileTypes.RED_GATE:
+    case tileTypes.SPEEDPAD_BLUE_ACTIVE:
       return amRed();
     case tileTypes.BLUE_GATE:
+    case tileTypes.SPEEDPAD_RED_ACTIVE:
       return amBlue();
+    default:
+      throw new Error(`Unknown tileID: ${tileID}`);
+  }
+}
+
+
+/*
+ * Is circular nontraversable object? Returns a boolean stating whether or not
+ * the given nontraversable object tile ID is a circular nontraversable object.
+ *
+ * Circular nontraversable objects include: boosts, powerups, spikes, buttons,
+ * bombs, and active portals
+ */
+export function isCNTO(tileID) {
+  switch (tileID) {
+    case 'marsball':
+    case tileTypes.POWERUP_SUBGROUP:
+    case tileTypes.JUKEJUICE:
+    case tileTypes.ROLLING_BOMB:
+    case tileTypes.TAGPRO:
+    case tileTypes.MAX_SPEED:
+    case tileTypes.BOMB:
+    case tileTypes.ACTIVE_PORTAL:
+    case tileTypes.SPEEDPAD_ACTIVE:
+    case tileTypes.SPEEDPAD_RED_ACTIVE:
+    case tileTypes.SPEEDPAD_BLUE_ACTIVE:
+    case tileTypes.SPIKE:
+    case tileTypes.BUTTON:
+      return true;
+    case tileTypes.EMPTY_SPACE:
+    case tileTypes.SQUARE_WALL:
+    case tileTypes.ANGLE_WALL_1:
+    case tileTypes.ANGLE_WALL_2:
+    case tileTypes.ANGLE_WALL_3:
+    case tileTypes.ANGLE_WALL_4:
+    case tileTypes.GREEN_GATE:
+    case tileTypes.RED_GATE:
+    case tileTypes.BLUE_GATE:
+      return false;
+    case tileTypes.REGULAR_FLOOR:
+    case tileTypes.RED_FLAG:
+    case tileTypes.RED_FLAG_TAKEN:
+    case tileTypes.BLUE_FLAG_TAKEN:
+    case tileTypes.BLUE_FLAG:
+    case tileTypes.SPEEDPAD_INACTIVE:
+    case tileTypes.INACTIVE_GATE:
+    case tileTypes.INACTIVE_BOMB:
+    case tileTypes.RED_TEAMTILE:
+    case tileTypes.BLUE_TEAMTILE:
+    case tileTypes.INACTIVE_PORTAL:
+    case tileTypes.SPEEDPAD_RED_INACTIVE:
+    case tileTypes.SPEEDPAD_BLUE_INACTIVE:
+    case tileTypes.YELLOW_FLAG:
+    case tileTypes.YELLOW_FLAG_TAKEN:
+    case tileTypes.RED_ENDZONE:
+    case tileTypes.BLUE_ENDZONE:
+    case 'blueball':
+    case 'redball':
+      throw new Error(`A traversable tile was given: ${tileID}`);
     default:
       throw new Error(`Unknown tileID: ${tileID}`);
   }
@@ -90,25 +152,17 @@ export function isTraversable(tileID) {
  * Get circular nontraversable object radius. Returns the radius, in pixels, of
  * the given circular nontraversable object tile ID.
  *
- * Circular nontraversable tiles include: powerups, bombs, active portals,
- *   speed boosts, spikes, and buttons
+ * Circular nontraversable objects include: boosts, powerups, spikes, buttons,
+ * bombs, and active portals
+ *
+ * @param {number} tileID - the ID of the circular nontraversable tile that you
+ * wish to get the radius of
  */
 export function getCNTORadius(tileID) {
   switch (tileID) {
-    case 'marsball':
-      return 39;
-    case tileTypes.EMPTY_SPACE:
-    case tileTypes.SQUARE_WALL:
-    case tileTypes.ANGLE_WALL_1:
-    case tileTypes.ANGLE_WALL_2:
-    case tileTypes.ANGLE_WALL_3:
-    case tileTypes.ANGLE_WALL_4:
-    case tileTypes.GREEN_GATE:
-    case tileTypes.RED_GATE:
-    case tileTypes.BLUE_GATE:
-      return 29;
-      // TODO: implement functionality for non-circular objects - for now, just
-      // make them circles that fill a whole tile
+    case 'blueball':
+    case 'redball':
+      return 19;
     case tileTypes.POWERUP_SUBGROUP:
     case tileTypes.JUKEJUICE:
     case tileTypes.ROLLING_BOMB:
@@ -124,6 +178,16 @@ export function getCNTORadius(tileID) {
       return 14;
     case tileTypes.BUTTON:
       return 8;
+    case tileTypes.EMPTY_SPACE:
+    case tileTypes.SQUARE_WALL:
+    case tileTypes.ANGLE_WALL_1:
+    case tileTypes.ANGLE_WALL_2:
+    case tileTypes.ANGLE_WALL_3:
+    case tileTypes.ANGLE_WALL_4:
+    case tileTypes.GREEN_GATE:
+    case tileTypes.RED_GATE:
+    case tileTypes.BLUE_GATE:
+      throw new Error(`A noncircular nontraversable tile was given: ${tileID}`);
     case tileTypes.REGULAR_FLOOR:
     case tileTypes.RED_FLAG:
     case tileTypes.RED_FLAG_TAKEN:
@@ -141,9 +205,9 @@ export function getCNTORadius(tileID) {
     case tileTypes.YELLOW_FLAG_TAKEN:
     case tileTypes.RED_ENDZONE:
     case tileTypes.BLUE_ENDZONE:
-    case 'blueball':
-    case 'redball':
       throw new Error(`A traversable tile was given: ${tileID}`);
+    case 'marsball':
+      throw new Error('Marsball was given. Case is not handled.');
     default:
       throw new Error(`Unknown tileID: ${tileID}`);
   }
@@ -175,21 +239,57 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
  */
 export function getTileTraversabilityInCells(tileID) {
   // Start with all cells being traversable
-  const gridTile = init2dArray(CPTL, CPTL, 1);
+  let gridTile = init2dArray(CPTL, CPTL, 1);
 
   if (!isTraversable(tileID)) {
-    const midCell = (CPTL - 1.0) / 2.0;
-    for (let i = 0; i < CPTL; i++) {
-      for (let j = 0; j < CPTL; j++) {
-        const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
-        const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
-        const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
-        const pixelDist = cellDist * PPCL;
-        if (pixelDist <= getNonTraversableObjectRadius(tileID)) {
-          // This cell touches the object, is not traversable
-          gridTile[i][j] = 0;
+    if (isCNTO(tileID)) {
+      const midCell = (CPTL - 1.0) / 2.0;
+      for (let i = 0; i < CPTL; i++) {
+        for (let j = 0; j < CPTL; j++) {
+          const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
+          const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
+          const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
+          const pixelDist = cellDist * PPCL;
+          if (pixelDist <= getCNTORadius(tileID)) {
+            // This cell touches the object, is not traversable
+            gridTile[i][j] = 0;
+          }
+        }
+      } // tile is noncircular and nontraversable
+    } else if (tileID === tileTypes.ANGLE_WALL_1) {
+      for (let i = 0; i < CPTL; i++) {
+        for (let j = 0; j < CPTL; j++) {
+          if (j - i >= 0) {
+            gridTile[i][j] = 0;
+          }
         }
       }
+    } else if (tileID === tileTypes.ANGLE_WALL_2) {
+      for (let i = 0; i < CPTL; i++) {
+        for (let j = 0; j < CPTL; j++) {
+          if (i + j <= CPTL - 1) {
+            gridTile[i][j] = 0;
+          }
+        }
+      }
+    } else if (tileID === tileTypes.ANGLE_WALL_3) {
+      for (let i = 0; i < CPTL; i++) {
+        for (let j = 0; j < CPTL; j++) {
+          if (j - i <= 0) {
+            gridTile[i][j] = 0;
+          }
+        }
+      }
+    } else if (tileID === tileTypes.ANGLE_WALL_4) {
+      for (let i = 0; i < CPTL; i++) {
+        for (let j = 0; j < CPTL; j++) {
+          if (i + j >= CPTL - 1) {
+            gridTile[i][j] = 0;
+          }
+        }
+      }
+    } else { // tile is entirely nontraversable
+      gridTile = init2dArray(CPTL, CPTL, 0);
     }
   }
   return gridTile;

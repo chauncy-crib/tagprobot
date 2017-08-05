@@ -1,5 +1,5 @@
 import { astar, Graph } from 'javascript-astar';
-import { assertGridInBounds } from '../../src/utils/asserts';
+import { assert, assertGridInBounds } from '../../src/utils/asserts';
 
 /*
  * takes in current location and target location (eg, the location of the flag) and the map
@@ -37,6 +37,7 @@ export function getShortestPath(myX, myY, targetX, targetY, grid, diagonal = fal
  * cells returned by getShortestPath(), and returns the cell that the player should seek toward.
  */
 export function getTarget(myX, myY, shortestPath) {
+  assert(shortestPath, 'shortestPath is undefined, there may be no traversable path to the target');
   // Find the furthest cell in the direction of the next cell
   let winner = 0;
   let j = 0;
