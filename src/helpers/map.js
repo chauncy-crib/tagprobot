@@ -87,12 +87,13 @@ export function isTraversable(tileID) {
 
 
 /*
- * Returns the radius, in pixels, of the given circular nontraversable tile ID.
+ * Get circular nontraversable object radius. Returns the radius, in pixels, of
+ * the given circular nontraversable object tile ID.
  *
  * Circular nontraversable tiles include: powerups, bombs, active portals,
  *   speed boosts, spikes, and buttons
  */
-export function getNonTraversableObjectRadius(tileID) {
+export function getCNTORadius(tileID) {
   switch (tileID) {
     case 'marsball':
       return 39;
@@ -185,7 +186,7 @@ export function getTileTraversabilityInCells(tileID) {
         const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
         const ppc = PPTL / CPTL; // number of pixels per cell length
         const pixelDist = cellDist * ppc;
-        if (pixelDist <= getNonTraversableObjectRadius(tileID)) {
+        if (pixelDist <= getCNTORadius(tileID)) {
           // This cell touches the object, is not traversable
           gridTile[i][j] = 0;
         }
