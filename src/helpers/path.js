@@ -63,4 +63,3 @@ export function getTarget(myX, myY, shortestPath) {
   // TODO: this seems to throw null pointer when bot doesn't know where the center flag is.
   return { x: next.x, y: next.y };
 }
-
