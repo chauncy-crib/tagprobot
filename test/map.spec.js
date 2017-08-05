@@ -1,12 +1,12 @@
 import test from 'tape';
 import {
+  init2dArray,
   isTraversable,
   fillGridWithSubgrid,
   addBufferTo2dArray,
   getSubarrayFrom2dArray,
-  traversableCellsInTile,
-  getTraversableCells,
-  init2dArray,
+  getTileTraversabilityInCells,
+  getMapTraversabilityInCells,
   multiplyCorrespondingElementsAndSum,
   convolve,
   __RewireAPI__ as MapRewireAPI,
@@ -164,28 +164,28 @@ test('getSubarrayFrom2dArray: returns correct subarray for varying inputs', t =>
 });
 
 
-test('traversableCellsInTile: returns correctly with traversable tile, CPTL=1', t => {
+test('getTileTraversabilityInCells: returns correctly with traversable tile, CPTL=1', t => {
   MapRewireAPI.__Rewire__('CPTL', 1);
   const expected = [
     [1],
   ];
-  t.same(traversableCellsInTile(tileTypes.YELLOW_FLAG), expected);
+  t.same(getTileTraversabilityInCells(tileTypes.YELLOW_FLAG), expected);
 
   t.end();
 });
 
 
-test('traversableCellsInTile: returns correctly with nontraversable tile, CPTL=1', t => {
+test('getTileTraversabilityInCells: returns correctly with nontraversable tile, CPTL=1', t => {
   MapRewireAPI.__Rewire__('CPTL', 1);
   const expected = [
     [0],
   ];
-  t.same(traversableCellsInTile(tileTypes.BOMB), expected);
+  t.same(getTileTraversabilityInCells(tileTypes.BOMB), expected);
   t.end();
 });
 
 
-test('traversableCellsInTile: returns correctly with traversable tile, CPTL=4', t => {
+test('getTileTraversabilityInCells: returns correctly with traversable tile, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
   const expected = [
     [1, 1, 1, 1],
@@ -193,38 +193,38 @@ test('traversableCellsInTile: returns correctly with traversable tile, CPTL=4', 
     [1, 1, 1, 1],
     [1, 1, 1, 1],
   ];
-  t.same(traversableCellsInTile(tileTypes.YELLOW_FLAG), expected);
+  t.same(getTileTraversabilityInCells(tileTypes.YELLOW_FLAG), expected);
 
   t.end();
 });
 
 
-test('traversableCellsInTile: returns correctly with nontraversable tile, CPTL=4', t => {
+test('getTileTraversabilityInCells: returns correctly with nontraversable tile, CPTL=4', t => {
   const expected = [
     [1, 0, 0, 1],
     [0, 0, 0, 0],
     [0, 0, 0, 0],
     [1, 0, 0, 1],
   ];
-  t.same(traversableCellsInTile(tileTypes.SPIKE), expected);
+  t.same(getTileTraversabilityInCells(tileTypes.SPIKE), expected);
 
   t.end();
 });
 
 
-test('traversableCellsInTile: returns correctly with nontraversable tile, CPTL=4', t => {
+test('getTileTraversabilityInCells: returns correctly with nontraversable tile, CPTL=4', t => {
   const expected = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
     [0, 0, 0, 0],
     [0, 0, 0, 0],
   ];
-  t.same(traversableCellsInTile(tileTypes.ACTIVE_PORTAL), expected);
+  t.same(getTileTraversabilityInCells(tileTypes.ACTIVE_PORTAL), expected);
   t.end();
 });
 
 
-test('traversableCellsInTile: returns correctly with nontraversable tile, CPTL=8', t => {
+test('getTileTraversabilityInCells: returns correctly with nontraversable tile, CPTL=8', t => {
   MapRewireAPI.__Rewire__('CPTL', 8);
   let expected = [
     [1, 1, 1, 1, 1, 1, 1, 1],
@@ -236,7 +236,7 @@ test('traversableCellsInTile: returns correctly with nontraversable tile, CPTL=8
     [1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1],
   ];
-  t.same(traversableCellsInTile(tileTypes.BUTTON), expected);
+  t.same(getTileTraversabilityInCells(tileTypes.BUTTON), expected);
 
   expected = [
     [1, 1, 1, 1, 1, 1, 1, 1],
@@ -248,17 +248,17 @@ test('traversableCellsInTile: returns correctly with nontraversable tile, CPTL=8
     [1, 1, 0, 0, 0, 0, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1],
   ];
-  t.same(traversableCellsInTile(tileTypes.SPIKE), expected);
+  t.same(getTileTraversabilityInCells(tileTypes.SPIKE), expected);
 
   t.end();
 });
 
 
-test('traversableCellsInTile: throws errors for invalid inputs', t => {
-  t.throws(() => { traversableCellsInTile(false); });
-  t.throws(() => { traversableCellsInTile(1.23); });
-  t.throws(() => { traversableCellsInTile(undefined); });
-  t.throws(() => { traversableCellsInTile('apple'); });
+test('getTileTraversabilityInCells: throws errors for invalid inputs', t => {
+  t.throws(() => { getTileTraversabilityInCells(false); });
+  t.throws(() => { getTileTraversabilityInCells(1.23); });
+  t.throws(() => { getTileTraversabilityInCells(undefined); });
+  t.throws(() => { getTileTraversabilityInCells('apple'); });
 
   t.end();
 });
@@ -290,7 +290,7 @@ test('getTraversableCells: returns correctly with CPTL=1', t => {
     [0, 1, 1],
     [1, 0, 0],
   ];
-  t.same(getTraversableCells(mockMap), expected);
+  t.same(getMapTraversabilityInCells(mockMap), expected);
 
   // initialize current player as red
   MapRewireAPI.__Rewire__('amBlue', () => false);
@@ -300,13 +300,13 @@ test('getTraversableCells: returns correctly with CPTL=1', t => {
     [1, 0, 1],
     [1, 0, 0],
   ];
-  t.same(getTraversableCells(mockMap), expected);
+  t.same(getMapTraversabilityInCells(mockMap), expected);
 
   t.end();
 });
 
 
-test('getTraversableCells: CPTL=2', t => {
+test('getMapTraversabilityInCells: CPTL=2', t => {
   // create a dummy map from bombs, spikes, gates, and regular tiles
   const bomb = tileTypes.BOMB;
   const spike = tileTypes.SPIKE;
@@ -330,13 +330,13 @@ test('getTraversableCells: CPTL=2', t => {
     [1, 1, 0, 0, 0, 0],
     [1, 1, 0, 0, 0, 0],
   ];
-  t.same(getTraversableCells(mockMap), expected);
+  t.same(getMapTraversabilityInCells(mockMap), expected);
 
   MapRewireAPI.__Rewire__('CPTL', 10);
   const smallMap = [[bomb, bluegate]];
   // For an object with radius 29, there are no traversable cells.
   // TODO: fix this unit test when we have proper object radii
-  // implemented in getTraversableCells
+  // implemented in getMapTraversabilityInCells
   expected = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -350,7 +350,7 @@ test('getTraversableCells: CPTL=2', t => {
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ];
 
-  t.same(getTraversableCells(smallMap), expected);
+  t.same(getMapTraversabilityInCells(smallMap), expected);
 
   t.end();
 });
