@@ -43,7 +43,7 @@ test('clearSprites() calls addChild for each sprite', t => {
   t.end();
 });
 
-test('drawPlannedPath() calls the right functions with visualsOn on', t => {
+test('drawPlannedPath() calls the right functions with areVisualsOn false', t => {
   const mockClearSprites = sinon.spy();
   const mockCreatePathSprites = sinon.spy();
   const mockDrawSprites = sinon.spy();
@@ -52,7 +52,7 @@ test('drawPlannedPath() calls the right functions with visualsOn on', t => {
   DrawingRewireAPI.__Rewire__('clearSprites', mockClearSprites);
   DrawingRewireAPI.__Rewire__('createPathSprites', mockCreatePathSprites);
   DrawingRewireAPI.__Rewire__('drawSprites', mockDrawSprites);
-  DrawingRewireAPI.__Rewire__('visualsOn', mockVisual);
+  DrawingRewireAPI.__Rewire__('areVisualsOn', mockVisual);
 
   drawPlannedPath('path', 'cpt', 'hexColor', 'alpha');
 
@@ -64,11 +64,11 @@ test('drawPlannedPath() calls the right functions with visualsOn on', t => {
   DrawingRewireAPI.__ResetDependency__('clearSprites');
   DrawingRewireAPI.__ResetDependency__('createPathSprites');
   DrawingRewireAPI.__ResetDependency__('drawSprites');
-  DrawingRewireAPI.__ResetDependency__('visualsOn');
+  DrawingRewireAPI.__ResetDependency__('areVisualsOn');
   t.end();
 });
 
-test('drawPlannedPath() calls the right functions with visualsOn off', t => {
+test('drawPlannedPath() calls the right functions with areVisualsOn false', t => {
   const mockClearSprites = sinon.spy();
   const mockCreatePathSprites = sinon.spy();
   const mockDrawSprites = sinon.spy();
@@ -77,7 +77,7 @@ test('drawPlannedPath() calls the right functions with visualsOn off', t => {
   DrawingRewireAPI.__Rewire__('clearSprites', mockClearSprites);
   DrawingRewireAPI.__Rewire__('createPathSprites', mockCreatePathSprites);
   DrawingRewireAPI.__Rewire__('drawSprites', mockDrawSprites);
-  DrawingRewireAPI.__Rewire__('visualsOn', mockVisual);
+  DrawingRewireAPI.__Rewire__('areVisualsOn', mockVisual);
 
   drawPlannedPath('path', 'cpt', 'hexColor', 'alpha');
 
@@ -89,11 +89,11 @@ test('drawPlannedPath() calls the right functions with visualsOn off', t => {
   DrawingRewireAPI.__ResetDependency__('clearSprites');
   DrawingRewireAPI.__ResetDependency__('createPathSprites');
   DrawingRewireAPI.__ResetDependency__('drawSprites');
-  DrawingRewireAPI.__ResetDependency__('visualsOn');
+  DrawingRewireAPI.__ResetDependency__('areVisualsOn');
   t.end();
 });
 
-test('drawNonTraversableCells() calls the right functions with visualsOn on', t => {
+test('drawNonTraversableCells() calls the right functions with areVisualsOn true', t => {
   const mockClearSprites = sinon.spy();
   const mockCreateNonTraversableCellSprites = sinon.spy();
   const mockDrawSprites = sinon.spy();
@@ -103,7 +103,7 @@ test('drawNonTraversableCells() calls the right functions with visualsOn on', t 
   DrawingRewireAPI.__Rewire__('createNonTraversableCellSprites',
     mockCreateNonTraversableCellSprites);
   DrawingRewireAPI.__Rewire__('drawSprites', mockDrawSprites);
-  DrawingRewireAPI.__Rewire__('visualsOn', mockVisual);
+  DrawingRewireAPI.__Rewire__('areVisualsOn', mockVisual);
 
   drawNonTraversableCells('traversableCells', 'cpt', 'hexColor', 'alpha');
 
@@ -116,11 +116,11 @@ test('drawNonTraversableCells() calls the right functions with visualsOn on', t 
   DrawingRewireAPI.__ResetDependency__('clearSprites');
   DrawingRewireAPI.__ResetDependency__('createPathSprites');
   DrawingRewireAPI.__ResetDependency__('drawSprites');
-  DrawingRewireAPI.__ResetDependency__('visualsOn');
+  DrawingRewireAPI.__ResetDependency__('areVisualsOn');
   t.end();
 });
 
-test('drawNonTraversableCells() calls the right functions with visualsOn off', t => {
+test('drawNonTraversableCells() calls the right functions with areVisualsOn false', t => {
   const mockClearSprites = sinon.spy();
   const mockCreateNonTraversableCellSprites = sinon.spy();
   const mockDrawSprites = sinon.spy();
@@ -130,7 +130,7 @@ test('drawNonTraversableCells() calls the right functions with visualsOn off', t
   DrawingRewireAPI.__Rewire__('createNonTraversableCellSprites',
     mockCreateNonTraversableCellSprites);
   DrawingRewireAPI.__Rewire__('drawSprites', mockDrawSprites);
-  DrawingRewireAPI.__Rewire__('visualsOn', mockVisual);
+  DrawingRewireAPI.__Rewire__('areVisualsOn', mockVisual);
 
   drawNonTraversableCells('traversableCells', 'cpt', 'hexColor', 'alpha');
 
@@ -142,6 +142,6 @@ test('drawNonTraversableCells() calls the right functions with visualsOn off', t
   DrawingRewireAPI.__ResetDependency__('clearSprites');
   DrawingRewireAPI.__ResetDependency__('createPathSprites');
   DrawingRewireAPI.__ResetDependency__('drawSprites');
-  DrawingRewireAPI.__ResetDependency__('visualsOn');
+  DrawingRewireAPI.__ResetDependency__('areVisualsOn');
   t.end();
 });

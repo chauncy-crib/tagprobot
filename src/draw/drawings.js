@@ -13,7 +13,7 @@
  * path, we erase any path that was previously drawn.
  */
 import { PIXELS_PER_TILE } from '../constants';
-import { visualsOn } from '../utils/interface';
+import { areVisualsOn } from '../utils/interface';
 import { clearSprites, drawSprites } from './utils';
 
 let pathSprites = [];
@@ -83,7 +83,7 @@ function createNonTraversableCellSprites(
  */
 export function drawPlannedPath(path, cpt, hexColor = 0x00ff00, alpha = 0.25) {
   pathSprites = clearSprites(pathSprites); // clear the previous path from the map
-  if (visualsOn()) {
+  if (areVisualsOn()) {
     createPathSprites(path, cpt, hexColor, alpha); // create the PIXI.Graphics objecs we're drawing
   }
   drawSprites(pathSprites); // put the PIXI.Graphics objects on the map
@@ -92,7 +92,7 @@ export function drawPlannedPath(path, cpt, hexColor = 0x00ff00, alpha = 0.25) {
 export function drawNonTraversableCells(traversableCells, cpt, notTraversableColor = 0xff8c00,
   alpha = 0.4) {
   nonTraversableCellSprites = clearSprites(nonTraversableCellSprites);
-  if (visualsOn()) {
+  if (areVisualsOn()) {
     createNonTraversableCellSprites(traversableCells, cpt, notTraversableColor, alpha);
   }
   drawSprites(nonTraversableCellSprites);
