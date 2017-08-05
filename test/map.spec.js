@@ -2,7 +2,7 @@ import test from 'tape';
 import {
   init2dArray,
   isTraversable,
-  getNonTraversableObjectRadius,
+  getCNTORadius,
   fillGridWithSubgrid,
   addBufferTo2dArray,
   getSubarrayFrom2dArray,
@@ -71,18 +71,18 @@ test('isTraversable: throws errors for invalid inputs', t => {
 });
 
 
-test('getNonTraversableObjectRadius: correctly returns for varying inputs', t => {
-  t.is(getNonTraversableObjectRadius(tileTypes.SPIKE), 14);
-  t.is(getNonTraversableObjectRadius(tileTypes.BUTTON), 8);
+test('getCNTORadius: correctly returns for varying inputs', t => {
+  t.is(getCNTORadius(tileTypes.SPIKE), 14);
+  t.is(getCNTORadius(tileTypes.BUTTON), 8);
 
   t.end();
 });
 
 
-test('getNonTraversableObjectRadius: throws errors for invalid inputs', t => {
-  t.throws(() => { getNonTraversableObjectRadius(tileTypes.YELLOW_FLAG); });
-  t.throws(() => { getNonTraversableObjectRadius('banana'); });
-  t.throws(() => { getNonTraversableObjectRadius(undefined); });
+test('getCNTORadius: throws errors for invalid inputs', t => {
+  t.throws(() => { getCNTORadius(tileTypes.YELLOW_FLAG); });
+  t.throws(() => { getCNTORadius('banana'); });
+  t.throws(() => { getCNTORadius(undefined); });
 
   t.end();
 });
