@@ -1,5 +1,5 @@
 
-const KEY_CODES = { q: 81, v: 86 };
+const KEY_CODES = { Q: 81, V: 86 };
 
 // Stole this function to send chat messages
 let lastMessage = 0;
@@ -31,7 +31,7 @@ export function areVisualsOn() {
 
 export function onKeyDown(event) {
   // If letter pressed is Q, toggle autonomous controls
-  if (event.keyCode === KEY_CODES.q) {
+  if (event.keyCode === KEY_CODES.Q) {
     autonomous = !autonomous;
     visuals = autonomous;
     tagpro.sendKeyPress('up', true);
@@ -42,7 +42,7 @@ export function onKeyDown(event) {
     chat(`Autonomy Mode updated: now ${autonomyMode}!`);
     setTimeout(() => { console.log(`Autonomy status: ${autonomous}`); }, 200);
   }
-  if (event.keyCode === KEY_CODES.v) { // toggle visuals
+  if (event.keyCode === KEY_CODES.V) { // toggle visuals
     visuals = !visuals;
     const chatMsg = visuals ? 'enabled' : 'disabled';
     chat(`Visuals ${chatMsg}`);
