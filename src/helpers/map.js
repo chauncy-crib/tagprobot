@@ -87,12 +87,13 @@ export function isTraversable(tileID) {
 
 
 /*
- * Returns the radius, in pixels, of the given circular nontraversable tile ID.
+ * Get circular nontraversable object radius. Returns the radius, in pixels, of
+ * the given circular nontraversable object tile ID.
  *
  * Circular nontraversable tiles include: powerups, bombs, active portals,
  *   speed boosts, spikes, and buttons
  */
-export function getNonTraversableObjectRadius(tileID) {
+export function getCNTORadius(tileID) {
   switch (tileID) {
     case 'marsball':
       return 39;
