@@ -21,7 +21,7 @@ let nonTraversableCellSprites = [];
 
 /*
  * Takes in an array of cells, and creates an array of PIXI.Graphics objects (which the tagpro API
- * knows how to draw) and stores them in the pathSprites object.
+ * knows how to draw) and returns them
  *
  * See: http://pixijs.download/dev/docs/PIXI.Graphics.html
  *
@@ -31,7 +31,7 @@ let nonTraversableCellSprites = [];
  * @param alpha: the opacity of the path drawing, 0-1. 1 = opaque.
  */
 export function createPathSprites(path, cpt, hexColor, alpha) {
-  pathSprites = []; // initialize global object used for storage of PIXI.Graphics
+  const sprites = []; // initialize global object used for storage of PIXI.Graphics
   const pixelsPerCell = PIXELS_PER_TILE / cpt; // dimensional analysis
   path.forEach(cell => { // create a PIXI.Graphics object for each cell in the path
     // note: all units in pixels
@@ -42,13 +42,14 @@ export function createPathSprites(path, cpt, hexColor, alpha) {
       pixelsPerCell, // width
       pixelsPerCell, // height
     ).alpha = alpha;
-    pathSprites.push(rect);
+    sprites.push(rect);
   });
+  return sprites;
 }
 
 /*
  * Takes in an grid of cells, and creates an array of PIXI.Graphics objects for each non-traversable
- * object and stores them in the nonTraversableCellSprites object.
+ * object and returns them.
  *
  * @param traversableCells: an grid of cells
  * @param cpt: cells per tile, as defined throughout project
@@ -57,7 +58,7 @@ export function createPathSprites(path, cpt, hexColor, alpha) {
  */
 function createNonTraversableCellSprites(
   traversableCells, cpt, notTraversableColor, alpha) {
-  nonTraversableCellSprites = [];
+  const sprites = [];
   const pixelsPerCell = PIXELS_PER_TILE / cpt;
   for (let x = 0; x < traversableCells.length; x++) {
     for (let y = 0; y < traversableCells[0].length; y++) {
@@ -70,10 +71,11 @@ function createNonTraversableCellSprites(
           pixelsPerCell, // width
           pixelsPerCell, // height
         ).alpha = alpha;
-        nonTraversableCellSprites.push(rect);
+        sprites.push(rect);
       }
     }
   }
+  return sprites;
 }
 
 /*
@@ -84,7 +86,8 @@ function createNonTraversableCellSprites(
 export function drawPlannedPath(path, cpt, hexColor = 0x00ff00, alpha = 0.25) {
   pathSprites = clearSprites(pathSprites); // clear the previous path from the map
   if (areVisualsOn()) {
-    createPathSprites(path, cpt, hexColor, alpha); // create the PIXI.Graphics objecs we're drawing
+    // create the PIXI.Graphics objecs we're drawing
+    pathSprites = createPathSprites(path, cpt, hexColor, alpha);
   }
   drawSprites(pathSprites); // put the PIXI.Graphics objects on the map
 }
@@ -93,7 +96,8 @@ export function drawNonTraversableCells(traversableCells, cpt, notTraversableCol
   alpha = 0.4) {
   nonTraversableCellSprites = clearSprites(nonTraversableCellSprites);
   if (areVisualsOn()) {
-    createNonTraversableCellSprites(traversableCells, cpt, notTraversableColor, alpha);
+    nonTraversableCellSprites = createNonTraversableCellSprites(traversableCells, cpt,
+      notTraversableColor, alpha);
   }
   drawSprites(nonTraversableCellSprites);
 }
