@@ -376,7 +376,7 @@ test('getTraversableCells: returns correctly with CPTL=1', t => {
 });
 
 
-test('getMapTraversabilityInCells: CPTL=2', t => {
+test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
   // create a dummy map from bombs, spikes, gates, and regular tiles
   const bomb = tileTypes.BOMB;
   const spike = tileTypes.SPIKE;
@@ -432,7 +432,7 @@ test('getMapTraversabilityInCells: CPTL=2', t => {
 });
 
 
-test('test multiplyCorrespondingElementsAndSum', t => {
+test('multiplyCorrespondingElementsAndSum: returns correctly with valid input', t => {
   const m1 = [
     [1, 2, 3],
     [4, 5, 6],
@@ -450,7 +450,7 @@ test('test multiplyCorrespondingElementsAndSum', t => {
 });
 
 
-test('convolve: input 1x1 kernel', t => {
+test('convolve: returns correctly with kernel size 1x1', t => {
   let m = [
     [1, 2, 3],
     [4, 5, 6],
@@ -487,7 +487,7 @@ test('convolve: input 1x1 kernel', t => {
 });
 
 
-test('convolve: input 3x3 kernel', t => {
+test('convolve: returns correctly with kernel size 3x3', t => {
   const m = [
     [1, 2, 3, 4],
     [5, 6, 7, 8],
