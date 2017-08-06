@@ -4,14 +4,17 @@ import {
   isTraversable,
   getCNTORadius,
   fillGridWithSubgrid,
-  addBufferTo2dArray,
-  getSubarrayFrom2dArray,
-  getTileTraversabilityInCells,
   getMapTraversabilityInCells,
-  multiplyCorrespondingElementsAndSum,
-  convolve,
+  getTileTraversabilityInCells,
   __RewireAPI__ as MapRewireAPI,
 } from '../src/helpers/map';
+
+import { multiplyCorrespondingElementsAndSum,
+  getSubarrayFrom2dArray,
+  addBufferTo2dArray,
+  convolve } from '../src/helpers/convolve';
+
+
 import { tileTypes } from '../src/constants';
 
 
