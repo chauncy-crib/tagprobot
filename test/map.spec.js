@@ -1,14 +1,19 @@
 import test from 'tape';
 import {
   init2dArray,
-  isTraversable,
-  getCNTORadius,
   fillGridWithSubgrid,
   getTileTraversabilityInCells,
   getMapTraversabilityInCells,
   __RewireAPI__ as MapRewireAPI,
 } from '../src/helpers/map';
-import { tileTypes } from '../src/constants';
+import {
+  isTraversable,
+  getCNTORadius,
+  computeTileInfo,
+  resetTileInfo,
+  getId,
+  __RewireAPI__ as TileRewireAPI,
+} from '../src/tiles';
 
 
 test('init2dArray: returns correctly with varying inputs', t => {
@@ -39,47 +44,74 @@ test('init2dArray: returns correctly with varying inputs', t => {
 
 
 test('isTraversable: correctly returns true for varying inputs', t => {
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
   t.true(isTraversable(2)); // Regular floor
   t.true(isTraversable(3.1)); // taken red flag
   t.true(isTraversable(9)); // inactive gate
   t.true(isTraversable(17)); // red endzone
-
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
   t.end();
 });
 
 
 test('isTraversable: correctly returns false for varying inputs', t => {
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
   t.false(isTraversable(0)); // Blank space
   t.false(isTraversable(1)); // square wall
   t.false(isTraversable(7)); // spike
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
 
   t.end();
 });
 
 
 test('isTraversable: throws errors for invalid inputs', t => {
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
   t.throws(() => { isTraversable(1.123); });
   t.throws(() => { isTraversable(-1); });
   t.throws(() => { isTraversable('potato'); });
   t.throws(() => { isTraversable(undefined); });
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
 
   t.end();
 });
 
 
 test('getCNTORadius: correctly returns for varying inputs', t => {
-  t.is(getCNTORadius(tileTypes.SPIKE), 14);
-  t.is(getCNTORadius(tileTypes.BUTTON), 8);
-
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
+  t.is(getCNTORadius(getId('SPIKE')), 14);
+  t.is(getCNTORadius(getId('BUTTON')), 8);
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
   t.end();
 });
 
 
 test('getCNTORadius: throws errors for invalid inputs', t => {
-  t.throws(() => { getCNTORadius(tileTypes.STANDARD_FLOOR); });
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
+  t.throws(() => { getCNTORadius(getId('STANDARD_FLOOR')); });
   t.throws(() => { getCNTORadius('banana'); });
   t.throws(() => { getCNTORadius(undefined); });
-
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
   t.end();
 });
 
@@ -148,34 +180,49 @@ test('fillGridWithSubgrid: throws errors for invalid inputs', t => {
 
 
 test('getTileTraversabilityInCells: returns correctly with entirely traversable tile, CPTL=1', t => {
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
   MapRewireAPI.__Rewire__('CPTL', 1);
   MapRewireAPI.__Rewire__('PPCL', 40);
   const expected = [
     [1],
   ];
-  t.same(getTileTraversabilityInCells(tileTypes.REGULAR_FLOOR), expected);
+  t.same(getTileTraversabilityInCells(getId('REGULAR_FLOOR')), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
 
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
   t.end();
 });
 
 
 test('getTileTraversabilityInCells: returns correctly with entirely nontraversable tile, CPTL=1', t => {
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
   MapRewireAPI.__Rewire__('CPTL', 1);
   MapRewireAPI.__Rewire__('PPCL', 40);
   const expected = [
     [0],
   ];
-  t.same(getTileTraversabilityInCells(tileTypes.SQUARE_WALL), expected);
+  t.same(getTileTraversabilityInCells(getId('SQUARE_WALL')), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
 
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
   t.end();
 });
 
 
 test('getTileTraversabilityInCells: returns correctly with entirely traversable tile, CPTL=4', t => {
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
   MapRewireAPI.__Rewire__('CPTL', 4);
   MapRewireAPI.__Rewire__('PPCL', 10);
   const expected = [
@@ -184,10 +231,13 @@ test('getTileTraversabilityInCells: returns correctly with entirely traversable 
     [1, 1, 1, 1],
     [1, 1, 1, 1],
   ];
-  t.same(getTileTraversabilityInCells(tileTypes.INACTIVE_PORTAL), expected);
+  t.same(getTileTraversabilityInCells(getId('INACTIVE_PORTAL')), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
 
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
   t.end();
 });
 
@@ -195,16 +245,22 @@ test('getTileTraversabilityInCells: returns correctly with entirely traversable 
 test('getTileTraversabilityInCells: returns correctly with CNTO, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
   MapRewireAPI.__Rewire__('PPCL', 10);
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
   const expected = [
     [1, 0, 0, 1],
     [0, 0, 0, 0],
     [0, 0, 0, 0],
     [1, 0, 0, 1],
   ];
-  t.same(getTileTraversabilityInCells(tileTypes.SPIKE), expected);
+  t.same(getTileTraversabilityInCells(getId('SPIKE')), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
 
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
   t.end();
 });
 
@@ -212,81 +268,110 @@ test('getTileTraversabilityInCells: returns correctly with CNTO, CPTL=4', t => {
 test('getTileTraversabilityInCells: returns correctly with CNTO, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
   MapRewireAPI.__Rewire__('PPCL', 10);
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
   const expected = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
     [0, 0, 0, 0],
     [0, 0, 0, 0],
   ];
-  t.same(getTileTraversabilityInCells(tileTypes.ACTIVE_PORTAL), expected);
+  t.same(getTileTraversabilityInCells(getId('ACTIVE_PORTAL')), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
 
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
   t.end();
 });
 
 
 test('getTileTraversabilityInCells: returns correctly with angled wall 1, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
   const expected = [
     [0, 0, 0, 0],
     [1, 0, 0, 0],
     [1, 1, 0, 0],
     [1, 1, 1, 0],
   ];
-  t.same(getTileTraversabilityInCells(tileTypes.ANGLE_WALL_1), expected);
+  t.same(getTileTraversabilityInCells(getId('ANGLE_WALL_1')), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
-
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
   t.end();
 });
 
 
 test('getTileTraversabilityInCells: returns correctly with angled wall 2, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
   const expected = [
     [0, 0, 0, 0],
     [0, 0, 0, 1],
     [0, 0, 1, 1],
     [0, 1, 1, 1],
   ];
-  t.same(getTileTraversabilityInCells(tileTypes.ANGLE_WALL_2), expected);
+  t.same(getTileTraversabilityInCells(getId('ANGLE_WALL_2')), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
-
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
   t.end();
 });
 
 
 test('getTileTraversabilityInCells: returns correctly with angled wall 3, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
   const expected = [
     [0, 1, 1, 1],
     [0, 0, 1, 1],
     [0, 0, 0, 1],
     [0, 0, 0, 0],
   ];
-  t.same(getTileTraversabilityInCells(tileTypes.ANGLE_WALL_3), expected);
+  t.same(getTileTraversabilityInCells(getId('ANGLE_WALL_3')), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
-
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
   t.end();
 });
 
 
 test('getTileTraversabilityInCells: returns correctly with angled wall 4, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
   const expected = [
     [1, 1, 1, 0],
     [1, 1, 0, 0],
     [1, 0, 0, 0],
     [0, 0, 0, 0],
   ];
-  t.same(getTileTraversabilityInCells(tileTypes.ANGLE_WALL_4), expected);
+  t.same(getTileTraversabilityInCells(getId('ANGLE_WALL_4')), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
-
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
   t.end();
 });
 
 
 test('getTileTraversabilityInCells: returns correctly with nontraversable tile, CPTL=8', t => {
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
   MapRewireAPI.__Rewire__('CPTL', 8);
   MapRewireAPI.__Rewire__('PPCL', 5);
   let expected = [
@@ -299,7 +384,7 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
     [1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1],
   ];
-  t.same(getTileTraversabilityInCells(tileTypes.BUTTON), expected);
+  t.same(getTileTraversabilityInCells(getId('BUTTON')), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
 
@@ -315,35 +400,46 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
     [1, 1, 0, 0, 0, 0, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1],
   ];
-  t.same(getTileTraversabilityInCells(tileTypes.SPIKE), expected);
+  t.same(getTileTraversabilityInCells(getId('SPIKE')), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
 
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
   t.end();
 });
 
 
 test('getTileTraversabilityInCells: throws errors for invalid inputs', t => {
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
   t.throws(() => { getTileTraversabilityInCells(false); });
   t.throws(() => { getTileTraversabilityInCells(1.23); });
   t.throws(() => { getTileTraversabilityInCells(undefined); });
   t.throws(() => { getTileTraversabilityInCells('apple'); });
 
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
   t.end();
 });
 
 
 test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
+  TileRewireAPI.__Rewire__('amBlue', () => true);
+  TileRewireAPI.__Rewire__('amRed', () => false);
+  computeTileInfo();
   // create a dummy map from bombs, spikes, gates, and regular tiles
-  const bomb = tileTypes.BOMB;
-  const spike = tileTypes.SPIKE;
-  const redgate = tileTypes.RED_GATE;
-  const bluegate = tileTypes.BLUE_GATE;
-  const blank = tileTypes.REGULAR_FLOOR;
+  const bomb = getId('BOMB');
+  const spike = getId('SPIKE');
+  const redgate = getId('RED_GATE');
+  const bluegate = getId('BLUE_GATE');
+  const blank = getId('REGULAR_FLOOR');
 
   // initialize current player as blue
-  MapRewireAPI.__Rewire__('amBlue', () => true);
-  MapRewireAPI.__Rewire__('amRed', () => false);
+
   MapRewireAPI.__Rewire__('CPTL', 1);
   /* eslint-disable no-multi-spaces, array-bracket-spacing */
   const mockMap = [
@@ -359,38 +455,39 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
     [1, 0, 0],
   ];
   t.same(getMapTraversabilityInCells(mockMap), expected);
-  MapRewireAPI.__ResetDependency__('amBlue');
-  MapRewireAPI.__ResetDependency__('amRed');
   MapRewireAPI.__ResetDependency__('CPTL');
 
   // initialize current player as red
-  MapRewireAPI.__Rewire__('amBlue', () => false);
-  MapRewireAPI.__Rewire__('amRed', () => true);
   MapRewireAPI.__Rewire__('CPTL', 1);
+  TileRewireAPI.__Rewire__('amBlue', () => false);
+  TileRewireAPI.__Rewire__('amRed', () => true);
+  computeTileInfo();
   expected = [
     [0, 1, 1],
     [1, 0, 1],
     [1, 0, 0],
   ];
   t.same(getMapTraversabilityInCells(mockMap), expected);
-  MapRewireAPI.__ResetDependency__('amBlue');
-  MapRewireAPI.__ResetDependency__('amRed');
   MapRewireAPI.__ResetDependency__('CPTL');
 
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
   t.end();
 });
 
 
 test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
+  TileRewireAPI.__Rewire__('amBlue', () => false);
+  TileRewireAPI.__Rewire__('amRed', () => true);
+  computeTileInfo();
   // create a dummy map from bombs, spikes, gates, and regular tiles
-  const bomb = tileTypes.BOMB;
-  const spike = tileTypes.SPIKE;
-  const redgate = tileTypes.RED_GATE;
-  const bluegate = tileTypes.BLUE_GATE;
-  const blank = tileTypes.REGULAR_FLOOR;
+  const bomb = getId('BOMB');
+  const spike = getId('SPIKE');
+  const redgate = getId('RED_GATE');
+  const bluegate = getId('BLUE_GATE');
+  const blank = getId('REGULAR_FLOOR');
 
-  MapRewireAPI.__Rewire__('amBlue', () => false);
-  MapRewireAPI.__Rewire__('amRed', () => true);
   MapRewireAPI.__Rewire__('CPTL', 2);
   /* eslint-disable no-multi-spaces, array-bracket-spacing */
   const mockMap = [
@@ -408,12 +505,7 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
     [1, 1, 0, 0, 0, 0],
   ];
   t.same(getMapTraversabilityInCells(mockMap), expected);
-  MapRewireAPI.__ResetDependency__('amBlue');
-  MapRewireAPI.__ResetDependency__('amRed');
-  MapRewireAPI.__ResetDependency__('CPTL');
 
-  MapRewireAPI.__Rewire__('amBlue', () => false);
-  MapRewireAPI.__Rewire__('amRed', () => true);
   MapRewireAPI.__Rewire__('CPTL', 10);
   MapRewireAPI.__Rewire__('PPCL', 4);
   const smallMap = [[bomb, bluegate]];
@@ -430,10 +522,11 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ];
   t.same(getMapTraversabilityInCells(smallMap), expected);
-  MapRewireAPI.__ResetDependency__('amBlue');
-  MapRewireAPI.__ResetDependency__('amRed');
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
 
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  resetTileInfo();
   t.end();
 });
