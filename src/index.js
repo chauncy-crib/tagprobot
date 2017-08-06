@@ -12,6 +12,7 @@
 // ==/UserScript==
 
 import botLoop from './bot';
+import { computeTileInfo } from './tiles';
 import { setupMe } from './helpers/player';
 import { onKeyDown, setupVelocity, isAutonomous } from './utils/interface';
 
@@ -42,6 +43,7 @@ function waitForId(fn) {
 function start() {
   setupMe();
   setupVelocity();
+  computeTileInfo();
 
   function loop() {
     // Call this function every time a tagpro animation frame gets drawn
