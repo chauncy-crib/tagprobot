@@ -76,7 +76,7 @@ export function resetTileInfo() {
  * @param {String} property - the name of a property stored in tileInfo
  * @return - the property for the input tile
  */
-function getTileProperty(tileID, property) {
+export function getTileProperty(tileID, property) {
   const tileIDString = String(tileID);
   assert(includes(keys(tileNames), tileIDString), `Unknown tileID: ${tileID}`);
   const tileName = tileNames[tileID];
