@@ -6,6 +6,7 @@ import {
   computeTileInfo,
   resetTileInfo,
   getId,
+  isTileType,
   __RewireAPI__ as TileRewireAPI,
 } from '../src/tiles';
 
@@ -70,3 +71,38 @@ test('getCNTORadius: throws errors for invalid inputs', t => {
   t.end();
 });
 
+
+test('isTileType: returns true when tileId and name match', t => {
+  setupTiles(true);
+  t.ok(isTileType(1.1, 'ANGLE_WALL_1'));
+  t.ok(isTileType(4, 'BLUE_FLAG'));
+  t.ok(isTileType('5.1', 'SPEEDPAD_INACTIVE'));
+  t.ok(isTileType('16.1', 'YELLOW_FLAG_TAKEN'));
+  t.ok(isTileType(18, 'BLUE_ENDZONE'));
+  teardownTiles();
+  t.end();
+});
+
+
+test('isTileType: returns false when tileId and name do not match', t => {
+  setupTiles(true);
+  t.notOk(isTileType(1, 'ANGLE_WALL_1'));
+  t.notOk(isTileType(4, 'RED_FLAG'));
+  t.notOk(isTileType(5.1, 'SPEEDPAD_INACTIVE'));
+  t.notOk(isTileType('16', 'YELLOW_FLAG_TAKEN'));
+  t.notOk(isTileType(17, 'BLUE_ENDZONE'));
+  teardownTiles();
+  t.end();
+});
+
+
+test('isTileType: errors when name is not a tile', t => {
+  setupTiles(true);
+  t.throws(() => { isTileType(1, undefined); });
+  t.throws(() => { isTileType(1, 'potato'); });
+  t.throws(() => { isTileType(1, 'toid'); });
+  t.throws(() => { isTileType(1, ''); });
+  t.throws(() => { isTileType(1, 1); });
+  teardownTiles();
+  t.end();
+});

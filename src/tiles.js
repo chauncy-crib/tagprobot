@@ -118,6 +118,7 @@ export function isCNTO(tileID) {
  * @return - true if tileId is the id of the named tile
  */
 export function isTileType(tileId, name) {
+  assert(includes(keys(tileInfo), name), `Unknown tile name: ${name}`);
   return tileInfo[name].id === tileId;
 }
 
