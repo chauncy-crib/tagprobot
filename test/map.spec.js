@@ -107,6 +107,7 @@ test('getTileTraversabilityInCells: returns correctly with entirely traversable 
   ];
   t.same(getTileTraversabilityInCells(getId('REGULAR_FLOOR')), expected);
   teardownTiles();
+  MapRewireAPI.__ResetDependency__('CPTL');
   t.end();
 });
 
@@ -119,6 +120,7 @@ test('getTileTraversabilityInCells: returns correctly with entirely nontraversab
   ];
   t.same(getTileTraversabilityInCells(getId('SQUARE_WALL')), expected);
   teardownTiles();
+  MapRewireAPI.__ResetDependency__('CPTL');
   t.end();
 });
 
@@ -134,6 +136,7 @@ test('getTileTraversabilityInCells: returns correctly with entirely traversable 
   ];
   t.same(getTileTraversabilityInCells(getId('INACTIVE_PORTAL')), expected);
   teardownTiles();
+  MapRewireAPI.__ResetDependency__('CPTL');
   t.end();
 });
 
@@ -249,6 +252,7 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
   ];
   t.same(getTileTraversabilityInCells(getId('SPIKE')), expected);
   teardownTiles();
+  MapRewireAPI.__ResetDependency__('CPTL');
   t.end();
 });
 
@@ -299,6 +303,7 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
   ];
   t.same(getMapTraversabilityInCells(mockMap), expected);
   resetTileInfo();
+  MapRewireAPI.__ResetDependency__('CPTL');
   t.end();
 });
 
@@ -351,5 +356,6 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
   t.same(getMapTraversabilityInCells(smallMap), expected);
 
   teardownTiles();
+  MapRewireAPI.__ResetDependency__('CPTL');
   t.end();
 });
