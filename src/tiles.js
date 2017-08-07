@@ -90,6 +90,17 @@ export function isTraversable(tileID) {
   return getTileProperty(tileID, 'traversable');
 }
 
+/*
+ * Returns true if a tile containing this tileID will never change.
+ * Some permanent examples: EMPTY_SQUARE, SPIKE
+ * Non-permanent examples: INACTIVE GATE, YELLOW_FLAG_TAKEN
+ *
+ * @param {number} tileID - the ID of the tile that should be checked for
+ * permanence
+ */
+export function isPermanent(tileID) {
+  return getTileProperty(tileID, 'permanent');
+}
 
 /*
  * Is circular nontraversable object? Returns a boolean stating whether or not

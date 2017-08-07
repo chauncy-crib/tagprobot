@@ -4,6 +4,7 @@ import keys from 'lodash/keys';
 import {
   getTileProperty,
   isTraversable,
+  isPermanent,
   getCNTORadius,
   getTileId,
   isTileType,
@@ -104,7 +105,6 @@ test('isTraversable: correctly returns true for varying inputs', t => {
   t.end();
 });
 
-
 test('isTraversable: correctly returns false for varying inputs', t => {
   setupTiles(true);
   t.false(isTraversable(0)); // Blank space
@@ -122,6 +122,28 @@ test('isTraversable: throws errors for invalid inputs', t => {
   t.throws(() => { isTraversable(-1); });
   t.throws(() => { isTraversable('potato'); });
   t.throws(() => { isTraversable(undefined); });
+  teardownTiles();
+
+  t.end();
+});
+
+
+test('isPermanent: correctly returns true for varying inputs', t => {
+  setupTiles(true);
+  t.true(isPermanent(0)); // Blank space
+  t.true(isPermanent(1)); // square wall
+  t.true(isPermanent(7)); // spike
+  teardownTiles();
+
+  t.end();
+});
+
+
+test('isPermanent: correctly returns false for varying inputs', t => {
+  setupTiles(true);
+  t.false(isPermanent(9)); // Inactive gate
+  t.false(isPermanent(10)); // Bomb
+  t.false(isPermanent('10.1')); // Inactive bomb
   teardownTiles();
 
   t.end();
