@@ -3,8 +3,8 @@ import { assert, assertGridInBounds } from '../utils/asserts';
 import { getTileProperty, tileIsType } from '../tiles';
 
 let mapTraversabilityCells;
-let tilesToUpdate;
-let tilesToUpdateValues;
+let tilesToUpdate; // A list of x, y pairs, which are the locations in the map that might change
+let tilesToUpdateValues; // the values stored in those locations
 
 
 /*
