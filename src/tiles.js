@@ -7,6 +7,12 @@ import { amBlue, amRed } from './helpers/player';
 let tileInfo;
 let tileNames;
 
+/*
+ * Stores all information we need about tiles in the tileInfo object, and creates the tileNames
+ * object so that we can quickly map from an id to a name. This function depends on amBlue and
+ * amRed, so the current player must be defined. We call this function once, after our player has an
+ * id.
+ */
 export function computeTileInfo() {
   tileInfo = {
     EMPTY_SPACE: { id: 0, traversable: false },
@@ -56,11 +62,20 @@ export function computeTileInfo() {
   });
 }
 
+/*
+ * Resets stored tile info. This function exists for testing purposes, in case we want to call
+ * computeTileInfo with a different me setup for different tests.
+ */
 export function resetTileInfo() {
   tileInfo = undefined;
   tileNames = undefined;
 }
 
+/*
+ * @param {number} tileID - the ID of the tile whose property we want
+ * @param {String} property - the name of a property stored in tileInfo
+ * @return - the property for the input tile
+ */
 function getTileProperty(tileID, property) {
   const tileIDString = String(tileID);
   assert(includes(keys(tileNames), tileIDString), `Unknown tileID: ${tileID}`);
@@ -97,11 +112,20 @@ export function isCNTO(tileID) {
 }
 
 
+/*
+ * @param {number} tileID - the id for a tile
+ * @param {String} name - the name of a tile
+ * @return - true if tileId is the id of the named tile
+ */
 export function isTileType(tileId, name) {
   return tileInfo[name].id === tileId;
 }
 
 
+/*
+ * @param {String} name - the name of a tile
+ * @return - the id for the input tile name
+ */
 export function getId(name) {
   assert(includes(keys(tileInfo), name), `Unknown tile name: ${name}`);
   return tileInfo[name].id;
