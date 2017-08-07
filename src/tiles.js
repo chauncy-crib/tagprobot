@@ -106,20 +106,12 @@ export function isTraversable(tileID) {
  *
  * Circular nontraversable objects include: boosts, powerups, spikes, buttons,
  * bombs, and active portals
+ *
+ * @param {number} tileID - the ID of the tile that should be checked if it is
+ * a circular nontraversable object.
  */
 export function isCNTO(tileID) {
   return Boolean(getTileProperty(tileID, 'radius'));
-}
-
-
-/*
- * @param {number} tileID - the id for a tile
- * @param {String} name - the name of a tile
- * @return - true if tileId is the id of the named tile
- */
-export function isTileType(tileId, name) {
-  assert(includes(keys(tileInfo), name), `Unknown tile name: ${name}`);
-  return tileInfo[name].id === tileId;
 }
 
 
@@ -130,6 +122,17 @@ export function isTileType(tileId, name) {
 export function getId(name) {
   assert(includes(keys(tileInfo), name), `Unknown tile name: ${name}`);
   return tileInfo[name].id;
+}
+
+
+/*
+ * @param {number} tileID - the id for a tile
+ * @param {String} name - the name of a tile
+ * @return - true if tileId is the id of the named tile
+ */
+export function isTileType(tileId, name) {
+  assert(includes(keys(tileInfo), name), `Unknown tile name: ${name}`);
+  return getId(name) === tileId;
 }
 
 
