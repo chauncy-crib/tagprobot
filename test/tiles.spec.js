@@ -1,6 +1,7 @@
 import test from 'tape';
 
 import {
+  getTileProperty,
   isTraversable,
   getCNTORadius,
   computeTileInfo,
@@ -21,6 +22,25 @@ export function teardownTiles() {
   TileRewireAPI.__ResetDependency__('amRed');
   resetTileInfo();
 }
+
+test('getTileProperty: returns correct properties', t => {
+  setupTiles(true);
+  t.is(getTileProperty(1, 'traversable'), false);
+  t.is(getTileProperty(2, 'traversable'), true);
+  t.is(getTileProperty(13, 'radius'), 15);
+  teardownTiles();
+  t.end();
+});
+
+test('getTileProperty: errors given tileIds that don\'t exist', t => {
+  setupTiles(true);
+  t.throws(() => { getTileProperty(1.123, 'traversable'); });
+  t.throws(() => { getTileProperty(-1, 'traversable'); });
+  t.throws(() => { getTileProperty('potato', 'traversable'); });
+  t.throws(() => { getTileProperty(undefined, 'traversable'); });
+  teardownTiles();
+  t.end();
+});
 
 test('isTraversable: correctly returns true for varying inputs', t => {
   setupTiles(true);
