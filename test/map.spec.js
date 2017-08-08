@@ -7,7 +7,7 @@ import {
   __RewireAPI__ as MapRewireAPI,
 } from '../src/helpers/map';
 import { setupTiles, teardownTiles } from './tiles.spec';
-import { getId, computeTileInfo, resetTileInfo } from '../src/tiles';
+import { getId } from '../src/tiles';
 
 test('init2dArray: returns correctly with varying inputs', t => {
   let width = 5;
@@ -291,14 +291,13 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
 
   // initialize current player as red
   setupTiles(false);
-  computeTileInfo();
   expected = [
     [0, 1, 1],
     [1, 0, 1],
     [1, 0, 0],
   ];
   t.same(getMapTraversabilityInCells(mockMap), expected);
-  resetTileInfo();
+  teardownTiles();
   t.end();
 });
 
