@@ -63,15 +63,6 @@ export function computeTileInfo() {
 }
 
 /*
- * Resets stored tile info. This function exists for testing purposes, in case we want to call
- * computeTileInfo with a different me setup for different tests.
- */
-export function resetTileInfo() {
-  tileInfo = undefined;
-  tileNames = undefined;
-}
-
-/*
  * @param {number} tileID - the ID of the tile whose property we want
  * @param {String} property - the name of a property stored in tileInfo
  * @return - the property for the input tile
