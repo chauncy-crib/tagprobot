@@ -222,6 +222,7 @@ test('getTileTraversabilityInCells: returns correctly with traversable tile, CPT
     [1],
   ];
   t.same(getTileTraversabilityInCells(tileTypes.YELLOW_FLAG), expected);
+  MapRewireAPI.__ResetDependency__('CPTL');
 
   t.end();
 });
@@ -233,6 +234,8 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
     [0],
   ];
   t.same(getTileTraversabilityInCells(tileTypes.BOMB), expected);
+  MapRewireAPI.__ResetDependency__('CPTL');
+
   t.end();
 });
 
@@ -246,12 +249,14 @@ test('getTileTraversabilityInCells: returns correctly with traversable tile, CPT
     [1, 1, 1, 1],
   ];
   t.same(getTileTraversabilityInCells(tileTypes.YELLOW_FLAG), expected);
+  MapRewireAPI.__ResetDependency__('CPTL');
 
   t.end();
 });
 
 
 test('getTileTraversabilityInCells: returns correctly with nontraversable tile, CPTL=4', t => {
+  MapRewireAPI.__Rewire__('CPTL', 4);
   const expected = [
     [1, 0, 0, 1],
     [0, 0, 0, 0],
@@ -259,12 +264,14 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
     [1, 0, 0, 1],
   ];
   t.same(getTileTraversabilityInCells(tileTypes.SPIKE), expected);
+  MapRewireAPI.__ResetDependency__('CPTL');
 
   t.end();
 });
 
 
 test('getTileTraversabilityInCells: returns correctly with nontraversable tile, CPTL=4', t => {
+  MapRewireAPI.__Rewire__('CPTL', 4);
   const expected = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -272,6 +279,7 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
     [0, 0, 0, 0],
   ];
   t.same(getTileTraversabilityInCells(tileTypes.ACTIVE_PORTAL), expected);
+  MapRewireAPI.__ResetDependency__('CPTL');
 
   t.end();
 });
@@ -290,7 +298,9 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
     [1, 1, 1, 1, 1, 1, 1, 1],
   ];
   t.same(getTileTraversabilityInCells(tileTypes.BUTTON), expected);
+  MapRewireAPI.__ResetDependency__('CPTL');
 
+  MapRewireAPI.__Rewire__('CPTL', 8);
   expected = [
     [1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 0, 0, 0, 0, 1, 1],
@@ -302,6 +312,7 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
     [1, 1, 1, 1, 1, 1, 1, 1],
   ];
   t.same(getTileTraversabilityInCells(tileTypes.SPIKE), expected);
+  MapRewireAPI.__ResetDependency__('CPTL');
 
   t.end();
 });
@@ -328,7 +339,6 @@ test('getTraversableCells: returns correctly with CPTL=1', t => {
   // initialize current player as blue
   MapRewireAPI.__Rewire__('amBlue', () => true);
   MapRewireAPI.__Rewire__('amRed', () => false);
-
   MapRewireAPI.__Rewire__('CPTL', 1);
   /* eslint-disable no-multi-spaces, array-bracket-spacing */
   const mockMap = [
@@ -344,16 +354,23 @@ test('getTraversableCells: returns correctly with CPTL=1', t => {
     [1, 0, 0],
   ];
   t.same(getMapTraversabilityInCells(mockMap), expected);
+  MapRewireAPI.__ResetDependency__('amBlue');
+  MapRewireAPI.__ResetDependency__('amRed');
+  MapRewireAPI.__ResetDependency__('CPTL');
 
   // initialize current player as red
   MapRewireAPI.__Rewire__('amBlue', () => false);
   MapRewireAPI.__Rewire__('amRed', () => true);
+  MapRewireAPI.__Rewire__('CPTL', 1);
   expected = [
     [0, 1, 1],
     [1, 0, 1],
     [1, 0, 0],
   ];
   t.same(getMapTraversabilityInCells(mockMap), expected);
+  MapRewireAPI.__ResetDependency__('amBlue');
+  MapRewireAPI.__ResetDependency__('amRed');
+  MapRewireAPI.__ResetDependency__('CPTL');
 
   t.end();
 });
@@ -367,6 +384,8 @@ test('getMapTraversabilityInCells: CPTL=2', t => {
   const bluegate = tileTypes.BLUE_GATE;
   const blank = tileTypes.REGULAR_FLOOR;
 
+  MapRewireAPI.__Rewire__('amBlue', () => false);
+  MapRewireAPI.__Rewire__('amRed', () => true);
   MapRewireAPI.__Rewire__('CPTL', 2);
   /* eslint-disable no-multi-spaces, array-bracket-spacing */
   const mockMap = [
@@ -384,12 +403,14 @@ test('getMapTraversabilityInCells: CPTL=2', t => {
     [1, 1, 0, 0, 0, 0],
   ];
   t.same(getMapTraversabilityInCells(mockMap), expected);
+  MapRewireAPI.__ResetDependency__('amBlue');
+  MapRewireAPI.__ResetDependency__('amRed');
+  MapRewireAPI.__ResetDependency__('CPTL');
 
+  MapRewireAPI.__Rewire__('amBlue', () => false);
+  MapRewireAPI.__Rewire__('amRed', () => true);
   MapRewireAPI.__Rewire__('CPTL', 10);
   const smallMap = [[bomb, bluegate]];
-  // For an object with radius 29, there are no traversable cells.
-  // TODO: fix this unit test when we have proper object radii
-  // implemented in getMapTraversabilityInCells
   expected = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -402,8 +423,10 @@ test('getMapTraversabilityInCells: CPTL=2', t => {
     [1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ];
-
   t.same(getMapTraversabilityInCells(smallMap), expected);
+  MapRewireAPI.__ResetDependency__('amBlue');
+  MapRewireAPI.__ResetDependency__('amRed');
+  MapRewireAPI.__ResetDependency__('CPTL');
 
   t.end();
 });
@@ -415,15 +438,12 @@ test('test multiplyCorrespondingElementsAndSum', t => {
     [4, 5, 6],
     [7, 8, 9],
   ];
-
   const m2 = [
     [9, 8, 7],
     [6, 5, 4],
     [3, 2, 1],
   ];
-
   const expected = 165;
-
   t.is(multiplyCorrespondingElementsAndSum(m1, m2), expected);
 
   t.end();
