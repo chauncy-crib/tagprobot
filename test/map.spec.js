@@ -7,7 +7,7 @@ import {
   __RewireAPI__ as MapRewireAPI,
 } from '../src/helpers/map';
 import { setupTiles, teardownTiles } from './tiles.spec';
-import { getId, computeTileInfo, resetTileInfo } from '../src/tiles';
+import { getId } from '../src/tiles';
 
 test('init2dArray: returns correctly with varying inputs', t => {
   let width = 5;
@@ -145,7 +145,6 @@ test('getTileTraversabilityInCells: returns correctly with entirely traversable 
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
 
-  resetTileInfo();
   teardownTiles();
   t.end();
 });
@@ -154,7 +153,6 @@ test('getTileTraversabilityInCells: returns correctly with entirely traversable 
 test('getTileTraversabilityInCells: returns correctly with CNTO, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
   MapRewireAPI.__Rewire__('PPCL', 10);
-  computeTileInfo();
   setupTiles(true);
   const expected = [
     [1, 0, 0, 1],
@@ -166,7 +164,6 @@ test('getTileTraversabilityInCells: returns correctly with CNTO, CPTL=4', t => {
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
 
-  resetTileInfo();
   teardownTiles();
   t.end();
 });
@@ -175,7 +172,6 @@ test('getTileTraversabilityInCells: returns correctly with CNTO, CPTL=4', t => {
 test('getTileTraversabilityInCells: returns correctly with CNTO, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
   MapRewireAPI.__Rewire__('PPCL', 10);
-  computeTileInfo();
   setupTiles(true);
   const expected = [
     [0, 0, 0, 0],
@@ -187,7 +183,6 @@ test('getTileTraversabilityInCells: returns correctly with CNTO, CPTL=4', t => {
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
 
-  resetTileInfo();
   teardownTiles();
   t.end();
 });
