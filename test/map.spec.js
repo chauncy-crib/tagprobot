@@ -7,7 +7,7 @@ import {
   __RewireAPI__ as MapRewireAPI,
 } from '../src/helpers/map';
 import { setupTiles, teardownTiles } from './tiles.spec';
-import { getId, computeTileInfo, resetTileInfo } from '../src/tiles';
+import { getId } from '../src/tiles';
 
 test('init2dArray: returns correctly with varying inputs', t => {
   let width = 5;
