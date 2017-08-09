@@ -110,7 +110,7 @@ export function isCNTO(tileID) {
  * @param {String} name - the name of a tile
  * @return - the id for the input tile name
  */
-export function getId(name) {
+export function getTileId(name) {
   assert(includes(keys(tileInfo), name), `Unknown tile name: ${name}`);
   return tileInfo[name].id;
 }
@@ -123,7 +123,7 @@ export function getId(name) {
  */
 export function isTileType(tileId, name) {
   assert(includes(keys(tileInfo), name), `Unknown tile name: ${name}`);
-  return getId(name) === tileId;
+  return getTileId(name) === tileId;
 }
 
 

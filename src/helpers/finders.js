@@ -2,7 +2,7 @@ import find from 'lodash/find';
 
 import { getMyEndzoneTile, getEnemyEndzoneTile, isOnMyTeam } from './player';
 import { findTile } from './map';
-import { getId } from '../tiles';
+import { getTileId } from '../tiles';
 
 
 /*
@@ -23,7 +23,7 @@ export function findEnemyEndzone() {
 
 // Returns the position (in pixels) of the specified flag station, even if empty.
 export function findFlagStation() {
-  return findTile([getId('YELLOW_FLAG'), getId('YELLOW_FLAG_TAKEN')]);
+  return findTile([getTileId('YELLOW_FLAG'), getTileId('YELLOW_FLAG_TAKEN')]);
 }
 
 // Returns the enemy FC from the tagpro.players array, if in view.
