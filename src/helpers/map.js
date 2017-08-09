@@ -239,57 +239,40 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
  */
 export function getTileTraversabilityInCells(tileID) {
   // Start with all cells being traversable
-  let gridTile = init2dArray(CPTL, CPTL, 1);
+  const gridTile = init2dArray(CPTL, CPTL, 1);
 
-  if (!isTraversable(tileID)) {
-    if (isCNTO(tileID)) {
-      const midCell = (CPTL - 1.0) / 2.0;
-      for (let i = 0; i < CPTL; i++) {
-        for (let j = 0; j < CPTL; j++) {
+  if (!isTraversable(tileID)) { // tile is not fully traversable
+    const midCell = (CPTL - 1.0) / 2.0;
+    for (let i = 0; i < CPTL; i++) {
+      for (let j = 0; j < CPTL; j++) {
+        if (isCNTO(tileID)) {
           const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
           const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
           const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
           const pixelDist = cellDist * PPCL;
           if (pixelDist <= getCNTORadius(tileID)) {
-            // This cell touches the object, is not traversable
             gridTile[i][j] = 0;
-          }
-        }
-      } // tile is noncircular and nontraversable
-    } else if (tileID === tileTypes.ANGLE_WALL_1) {
-      for (let i = 0; i < CPTL; i++) {
-        for (let j = 0; j < CPTL; j++) {
+          } // tile is noncircular and nontraversable
+        } else if (tileID === tileTypes.ANGLE_WALL_1) {
           if (j - i >= 0) {
             gridTile[i][j] = 0;
           }
-        }
-      }
-    } else if (tileID === tileTypes.ANGLE_WALL_2) {
-      for (let i = 0; i < CPTL; i++) {
-        for (let j = 0; j < CPTL; j++) {
+        } else if (tileID === tileTypes.ANGLE_WALL_2) {
           if (i + j <= CPTL - 1) {
             gridTile[i][j] = 0;
           }
-        }
-      }
-    } else if (tileID === tileTypes.ANGLE_WALL_3) {
-      for (let i = 0; i < CPTL; i++) {
-        for (let j = 0; j < CPTL; j++) {
+        } else if (tileID === tileTypes.ANGLE_WALL_3) {
           if (j - i <= 0) {
             gridTile[i][j] = 0;
           }
-        }
-      }
-    } else if (tileID === tileTypes.ANGLE_WALL_4) {
-      for (let i = 0; i < CPTL; i++) {
-        for (let j = 0; j < CPTL; j++) {
+        } else if (tileID === tileTypes.ANGLE_WALL_4) {
           if (i + j >= CPTL - 1) {
             gridTile[i][j] = 0;
           }
+        } else { // tile is entirely nontraversable
+          return init2dArray(CPTL, CPTL, 0);
         }
       }
-    } else { // tile is entirely nontraversable
-      gridTile = init2dArray(CPTL, CPTL, 0);
     }
   }
   return gridTile;
