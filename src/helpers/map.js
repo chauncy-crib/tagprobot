@@ -1,4 +1,4 @@
-import { tileTypes, PPTL, CPTL } from '../constants';
+import { tileTypes, PPTL, CPTL, PPCL } from '../constants';
 import { amBlue, amRed } from './player';
 import { assert, assertGridInBounds } from '../../src/utils/asserts';
 
@@ -183,8 +183,7 @@ export function getTileTraversabilityInCells(tileID) {
         const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
         const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
         const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
-        const ppc = PPTL / CPTL; // number of pixels per cell length
-        const pixelDist = cellDist * ppc;
+        const pixelDist = cellDist * PPCL;
         if (pixelDist <= getNonTraversableObjectRadius(tileID)) {
           // This cell touches the object, is not traversable
           gridTile[i][j] = 0;
