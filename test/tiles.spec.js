@@ -5,7 +5,7 @@ import {
   getTileProperty,
   isTraversable,
   getCNTORadius,
-  getId,
+  getTileId,
   isTileType,
   __RewireAPI__ as TileRewireAPI,
 } from '../src/tiles';
@@ -118,8 +118,8 @@ test('isTraversable: throws errors for invalid inputs', t => {
 
 test('getCNTORadius: correctly returns for varying inputs', t => {
   setupTiles(true);
-  t.is(getCNTORadius(getId('SPIKE')), 14);
-  t.is(getCNTORadius(getId('BUTTON')), 8);
+  t.is(getCNTORadius(getTileId('SPIKE')), 14);
+  t.is(getCNTORadius(getTileId('BUTTON')), 8);
   teardownTiles();
   t.end();
 });
@@ -127,7 +127,7 @@ test('getCNTORadius: correctly returns for varying inputs', t => {
 
 test('getCNTORadius: throws errors for invalid inputs', t => {
   setupTiles(true);
-  t.throws(() => { getCNTORadius(getId('STANDARD_FLOOR')); });
+  t.throws(() => { getCNTORadius(getTileId('STANDARD_FLOOR')); });
   t.throws(() => { getCNTORadius('banana'); });
   t.throws(() => { getCNTORadius(undefined); });
   teardownTiles();
