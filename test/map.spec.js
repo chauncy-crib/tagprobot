@@ -218,11 +218,13 @@ test('getSubarrayFrom2dArray: returns correct subarray for varying inputs', t =>
 
 test('getTileTraversabilityInCells: returns correctly with traversable tile, CPTL=1', t => {
   MapRewireAPI.__Rewire__('CPTL', 1);
+  MapRewireAPI.__Rewire__('PPCL', 40);
   const expected = [
     [1],
   ];
   t.same(getTileTraversabilityInCells(tileTypes.YELLOW_FLAG), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
+  MapRewireAPI.__ResetDependency__('PPCL');
 
   t.end();
 });
@@ -230,11 +232,13 @@ test('getTileTraversabilityInCells: returns correctly with traversable tile, CPT
 
 test('getTileTraversabilityInCells: returns correctly with nontraversable tile, CPTL=1', t => {
   MapRewireAPI.__Rewire__('CPTL', 1);
+  MapRewireAPI.__Rewire__('PPCL', 40);
   const expected = [
     [0],
   ];
   t.same(getTileTraversabilityInCells(tileTypes.BOMB), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
+  MapRewireAPI.__ResetDependency__('PPCL');
 
   t.end();
 });
@@ -242,6 +246,7 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
 
 test('getTileTraversabilityInCells: returns correctly with traversable tile, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
+  MapRewireAPI.__Rewire__('PPCL', 10);
   const expected = [
     [1, 1, 1, 1],
     [1, 1, 1, 1],
@@ -250,6 +255,7 @@ test('getTileTraversabilityInCells: returns correctly with traversable tile, CPT
   ];
   t.same(getTileTraversabilityInCells(tileTypes.YELLOW_FLAG), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
+  MapRewireAPI.__ResetDependency__('PPCL');
 
   t.end();
 });
@@ -257,6 +263,7 @@ test('getTileTraversabilityInCells: returns correctly with traversable tile, CPT
 
 test('getTileTraversabilityInCells: returns correctly with nontraversable tile, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
+  MapRewireAPI.__Rewire__('PPCL', 10);
   const expected = [
     [1, 0, 0, 1],
     [0, 0, 0, 0],
@@ -265,6 +272,7 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
   ];
   t.same(getTileTraversabilityInCells(tileTypes.SPIKE), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
+  MapRewireAPI.__ResetDependency__('PPCL');
 
   t.end();
 });
@@ -272,6 +280,7 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
 
 test('getTileTraversabilityInCells: returns correctly with nontraversable tile, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
+  MapRewireAPI.__Rewire__('PPCL', 10);
   const expected = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -280,6 +289,7 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
   ];
   t.same(getTileTraversabilityInCells(tileTypes.ACTIVE_PORTAL), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
+  MapRewireAPI.__ResetDependency__('PPCL');
 
   t.end();
 });
@@ -287,6 +297,7 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
 
 test('getTileTraversabilityInCells: returns correctly with nontraversable tile, CPTL=8', t => {
   MapRewireAPI.__Rewire__('CPTL', 8);
+  MapRewireAPI.__Rewire__('PPCL', 5);
   let expected = [
     [1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1],
@@ -299,8 +310,10 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
   ];
   t.same(getTileTraversabilityInCells(tileTypes.BUTTON), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
+  MapRewireAPI.__ResetDependency__('PPCL');
 
   MapRewireAPI.__Rewire__('CPTL', 8);
+  MapRewireAPI.__Rewire__('PPCL', 5);
   expected = [
     [1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 0, 0, 0, 0, 1, 1],
@@ -313,6 +326,7 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
   ];
   t.same(getTileTraversabilityInCells(tileTypes.SPIKE), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
+  MapRewireAPI.__ResetDependency__('PPCL');
 
   t.end();
 });
@@ -328,7 +342,7 @@ test('getTileTraversabilityInCells: throws errors for invalid inputs', t => {
 });
 
 
-test('getTraversableCells: returns correctly with CPTL=1', t => {
+test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
   // create a dummy map from bombs, spikes, gates, and regular tiles
   const bomb = tileTypes.BOMB;
   const spike = tileTypes.SPIKE;
@@ -410,6 +424,7 @@ test('getMapTraversabilityInCells: CPTL=2', t => {
   MapRewireAPI.__Rewire__('amBlue', () => false);
   MapRewireAPI.__Rewire__('amRed', () => true);
   MapRewireAPI.__Rewire__('CPTL', 10);
+  MapRewireAPI.__Rewire__('PPCL', 4);
   const smallMap = [[bomb, bluegate]];
   expected = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -427,6 +442,7 @@ test('getMapTraversabilityInCells: CPTL=2', t => {
   MapRewireAPI.__ResetDependency__('amBlue');
   MapRewireAPI.__ResetDependency__('amRed');
   MapRewireAPI.__ResetDependency__('CPTL');
+  MapRewireAPI.__ResetDependency__('PPCL');
 
   t.end();
 });
