@@ -1,6 +1,7 @@
 import { init2dArray, fillGridWithSubgrid } from './map';
 import { assert } from '../../src/utils/asserts';
 
+
 /*
  * Returns the sum of all corresponding elements from two matrices being
  * multiplied together. For example:

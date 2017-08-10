@@ -4,12 +4,10 @@ import {
   isTraversable,
   getCNTORadius,
   fillGridWithSubgrid,
-  getMapTraversabilityInCells,
   getTileTraversabilityInCells,
+  getMapTraversabilityInCells,
   __RewireAPI__ as MapRewireAPI,
 } from '../src/helpers/map';
-
-
 import { tileTypes } from '../src/constants';
 
 
