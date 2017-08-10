@@ -10,6 +10,8 @@ import {
   __RewireAPI__ as TileRewireAPI,
 } from '../src/tiles';
 
+// functions for setup and teardown tests begin here
+
 export function setupTiles(myColorIsBlue) {
   const mockTileInfo = {
     EMPTY_SPACE: { id: 0, traversable: false },
@@ -66,24 +68,30 @@ export function teardownTiles() {
   TileRewireAPI.__ResetDependency__('tileNames');
 }
 
+// begin actual tests
+
 test('getTileProperty: returns correct properties', t => {
   setupTiles(true);
   t.is(getTileProperty(1, 'traversable'), false);
   t.is(getTileProperty(2, 'traversable'), true);
   t.is(getTileProperty(13, 'radius'), 15);
   teardownTiles();
+
   t.end();
 });
 
-test('getTileProperty: errors given tileIds that don\'t exist', t => {
+
+test('getTileProperty: throws error given tileIds that don\'t exist', t => {
   setupTiles(true);
   t.throws(() => { getTileProperty(1.123, 'traversable'); });
   t.throws(() => { getTileProperty(-1, 'traversable'); });
   t.throws(() => { getTileProperty('potato', 'traversable'); });
   t.throws(() => { getTileProperty(undefined, 'traversable'); });
   teardownTiles();
+
   t.end();
 });
+
 
 test('isTraversable: correctly returns true for varying inputs', t => {
   setupTiles(true);
@@ -92,8 +100,10 @@ test('isTraversable: correctly returns true for varying inputs', t => {
   t.true(isTraversable(9)); // inactive gate
   t.true(isTraversable(17)); // red endzone
   teardownTiles();
+
   t.end();
 });
+
 
 
 test('isTraversable: correctly returns false for varying inputs', t => {
@@ -102,8 +112,10 @@ test('isTraversable: correctly returns false for varying inputs', t => {
   t.false(isTraversable(1)); // square wall
   t.false(isTraversable(7)); // spike
   teardownTiles();
+
   t.end();
 });
+
 
 
 test('isTraversable: throws errors for invalid inputs', t => {
@@ -113,16 +125,20 @@ test('isTraversable: throws errors for invalid inputs', t => {
   t.throws(() => { isTraversable('potato'); });
   t.throws(() => { isTraversable(undefined); });
   teardownTiles();
+
   t.end();
 });
+
 
 test('getCNTORadius: correctly returns for varying inputs', t => {
   setupTiles(true);
   t.is(getCNTORadius(getTileId('SPIKE')), 14);
   t.is(getCNTORadius(getTileId('BUTTON')), 8);
   teardownTiles();
+
   t.end();
 });
+
 
 
 test('getCNTORadius: throws errors for invalid inputs', t => {
@@ -131,8 +147,10 @@ test('getCNTORadius: throws errors for invalid inputs', t => {
   t.throws(() => { getCNTORadius('banana'); });
   t.throws(() => { getCNTORadius(undefined); });
   teardownTiles();
+
   t.end();
 });
+
 
 
 test('isTileType: returns true when tileId and name match', t => {
@@ -143,8 +161,10 @@ test('isTileType: returns true when tileId and name match', t => {
   t.ok(isTileType('16.1', 'YELLOW_FLAG_TAKEN'));
   t.ok(isTileType(18, 'BLUE_ENDZONE'));
   teardownTiles();
+
   t.end();
 });
+
 
 
 test('isTileType: returns false when tileId and name do not match', t => {
@@ -155,8 +175,10 @@ test('isTileType: returns false when tileId and name do not match', t => {
   t.notOk(isTileType('16', 'YELLOW_FLAG_TAKEN'));
   t.notOk(isTileType(17, 'BLUE_ENDZONE'));
   teardownTiles();
+
   t.end();
 });
+
 
 
 test('isTileType: errors when name is not a tile', t => {
@@ -167,5 +189,7 @@ test('isTileType: errors when name is not a tile', t => {
   t.throws(() => { isTileType(1, ''); });
   t.throws(() => { isTileType(1, 1); });
   teardownTiles();
+
   t.end();
 });
+
