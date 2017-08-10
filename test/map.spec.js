@@ -4,14 +4,12 @@ import {
   isTraversable,
   getCNTORadius,
   fillGridWithSubgrid,
-  getMapTraversabilityInCells,
   getTileTraversabilityInCells,
+  getMapTraversabilityInCells,
   __RewireAPI__ as MapRewireAPI,
 } from '../src/helpers/map';
 
-
 import { tileTypes } from '../src/constants';
-
 
 test('init2dArray: returns correctly with varying inputs', t => {
   let width = 5;
