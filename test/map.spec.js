@@ -108,10 +108,11 @@ test('getTileTraversabilityInCells: returns correctly with entirely traversable 
     [1],
   ];
   t.same(getTileTraversabilityInCells(getTileId('REGULAR_FLOOR')), expected);
+
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
-
   teardownTiles();
+
   t.end();
 });
 
@@ -124,10 +125,11 @@ test('getTileTraversabilityInCells: returns correctly with entirely nontraversab
     [0],
   ];
   t.same(getTileTraversabilityInCells(getTileId('SQUARE_WALL')), expected);
+
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
-
   teardownTiles();
+
   t.end();
 });
 
@@ -143,10 +145,11 @@ test('getTileTraversabilityInCells: returns correctly with entirely traversable 
     [1, 1, 1, 1],
   ];
   t.same(getTileTraversabilityInCells(getTileId('INACTIVE_PORTAL')), expected);
+
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
-
   teardownTiles();
+
   t.end();
 });
 
@@ -162,10 +165,11 @@ test('getTileTraversabilityInCells: returns correctly with CNTO, CPTL=4', t => {
     [1, 0, 0, 1],
   ];
   t.same(getTileTraversabilityInCells(getTileId('SPIKE')), expected);
+
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
-
   teardownTiles();
+
   t.end();
 });
 
@@ -181,10 +185,11 @@ test('getTileTraversabilityInCells: returns correctly with CNTO, CPTL=4', t => {
     [0, 0, 0, 0],
   ];
   t.same(getTileTraversabilityInCells(getTileId('ACTIVE_PORTAL')), expected);
+
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
-
   teardownTiles();
+
   t.end();
 });
 
@@ -199,8 +204,10 @@ test('getTileTraversabilityInCells: returns correctly with angled wall 1, CPTL=4
     [1, 1, 1, 0],
   ];
   t.same(getTileTraversabilityInCells(getTileId('ANGLE_WALL_1')), expected);
+
   MapRewireAPI.__ResetDependency__('CPTL');
   teardownTiles();
+
   t.end();
 });
 
@@ -215,8 +222,10 @@ test('getTileTraversabilityInCells: returns correctly with angled wall 2, CPTL=4
     [0, 1, 1, 1],
   ];
   t.same(getTileTraversabilityInCells(getTileId('ANGLE_WALL_2')), expected);
+
   MapRewireAPI.__ResetDependency__('CPTL');
   teardownTiles();
+
   t.end();
 });
 
@@ -231,8 +240,10 @@ test('getTileTraversabilityInCells: returns correctly with angled wall 3, CPTL=4
     [0, 0, 0, 0],
   ];
   t.same(getTileTraversabilityInCells(getTileId('ANGLE_WALL_3')), expected);
+
   MapRewireAPI.__ResetDependency__('CPTL');
   teardownTiles();
+
   t.end();
 });
 
@@ -247,8 +258,10 @@ test('getTileTraversabilityInCells: returns correctly with angled wall 4, CPTL=4
     [0, 0, 0, 0],
   ];
   t.same(getTileTraversabilityInCells(getTileId('ANGLE_WALL_4')), expected);
+
   MapRewireAPI.__ResetDependency__('CPTL');
   teardownTiles();
+
   t.end();
 });
 
@@ -284,10 +297,11 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
     [1, 1, 1, 1, 1, 1, 1, 1],
   ];
   t.same(getTileTraversabilityInCells(getTileId('SPIKE')), expected);
+
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
-
   teardownTiles();
+
   t.end();
 });
 
@@ -298,7 +312,9 @@ test('getTileTraversabilityInCells: throws errors for invalid inputs', t => {
   t.throws(() => { getTileTraversabilityInCells(1.23); });
   t.throws(() => { getTileTraversabilityInCells(undefined); });
   t.throws(() => { getTileTraversabilityInCells('apple'); });
+
   teardownTiles();
+
   t.end();
 });
 
@@ -339,8 +355,10 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
     [1, 0, 0],
   ];
   t.same(getMapTraversabilityInCells(mockMap), expected);
+
   MapRewireAPI.__ResetDependency__('CPTL');
   teardownTiles();
+
   t.end();
 });
 
@@ -388,9 +406,10 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ];
   t.same(getMapTraversabilityInCells(smallMap), expected);
+
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
-
   teardownTiles();
+
   t.end();
 });
