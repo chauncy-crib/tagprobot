@@ -105,7 +105,6 @@ test('isTraversable: correctly returns true for varying inputs', t => {
 });
 
 
-
 test('isTraversable: correctly returns false for varying inputs', t => {
   setupTiles(true);
   t.false(isTraversable(0)); // Blank space
@@ -115,7 +114,6 @@ test('isTraversable: correctly returns false for varying inputs', t => {
 
   t.end();
 });
-
 
 
 test('isTraversable: throws errors for invalid inputs', t => {
@@ -140,7 +138,6 @@ test('getCNTORadius: correctly returns for varying inputs', t => {
 });
 
 
-
 test('getCNTORadius: throws errors for invalid inputs', t => {
   setupTiles(true);
   t.throws(() => { getCNTORadius(getTileId('STANDARD_FLOOR')); });
@@ -150,7 +147,6 @@ test('getCNTORadius: throws errors for invalid inputs', t => {
 
   t.end();
 });
-
 
 
 test('isTileType: returns true when tileId and name match', t => {
@@ -166,7 +162,6 @@ test('isTileType: returns true when tileId and name match', t => {
 });
 
 
-
 test('isTileType: returns false when tileId and name do not match', t => {
   setupTiles(true);
   t.notOk(isTileType(1, 'ANGLE_WALL_1'));
@@ -178,7 +173,6 @@ test('isTileType: returns false when tileId and name do not match', t => {
 
   t.end();
 });
-
 
 
 test('isTileType: errors when name is not a tile', t => {
