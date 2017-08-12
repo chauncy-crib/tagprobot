@@ -17,9 +17,11 @@ const tilesToUpdateValues = []; // the values stored in those locations
  * @param {number} height - the height of the initialized 2D array
  * @param {number} defaultVal - the value to give each element in the initialized 2D array
  */
-export function init2dArray(width, height, defaultVal = 0) {
-  const matrix = [];
-
+export function init2dArray(width, height, defaultVal = 0, inputMatrix = undefined) {
+  let matrix = inputMatrix;
+  if (!matrix) {
+    matrix = [];
+  }
   for (let x = 0; x < width; x++) {
     matrix[x] = new Array(height);
     for (let y = 0; y < height; y++) {
@@ -99,11 +101,8 @@ export function initMapTraversabilityCells(map) {
   assert(isEmpty(mapTraversabilityCells), 'map already has values stored in it when initializing');
   const xl = map.length;
   const yl = map[0].length;
-  let x;
-  for (x = 0; x < xl * CPTL; x++) {
-    mapTraversabilityCells.push(new Array(yl * CPTL));
-  }
-  for (x = 0; x < xl; x++) {
+  init2dArray(xl * CPTL, yl * CPTL, 0, mapTraversabilityCells);
+  for (let x = 0; x < xl; x++) {
     for (let y = 0; y < yl; y++) {
       if (!propertyFromId(map[x][y], 'permanent')) {
         tilesToUpdate.push({ x, y });
