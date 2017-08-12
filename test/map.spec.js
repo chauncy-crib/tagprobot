@@ -331,6 +331,22 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
   const redgate = getTileId('RED_GATE');
   const bluegate = getTileId('BLUE_GATE');
   const blank = getTileId('REGULAR_FLOOR');
+
+  const mockTilesToUpdateValues = [bomb, redgate, redgate, bluegate, bomb];
+  MapRewireAPI.__Rewire__('mapTraversabilityCells', [
+    [0, 1, 0],
+    [0, 1, 1],
+    [1, 0, 0],
+  ]);
+  MapRewireAPI.__Rewire__('tilesToUpdate', [
+    { x: 0, y: 0 },
+    { x: 0, y: 2 },
+    { x: 1, y: 0 },
+    { x: 1, y: 1 },
+    { x: 2, y: 2 },
+  ]);
+  MapRewireAPI.__Rewire__('tilesToUpdateValues', mockTilesToUpdateValues);
+
   /* eslint-disable no-multi-spaces, array-bracket-spacing */
   const mockMap = [
     [bomb,    blank,    redgate],
@@ -344,8 +360,8 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
     [0, 1, 1],
     [1, 0, 0],
   ];
-  initMapTraversabilityCells(mockMap);
   t.same(getMapTraversabilityInCells(mockMap), expected);
+  t.same(mockTilesToUpdateValues, [bomb, redgate, redgate, bluegate, bomb]);
 
   mockMap[0][0] = inactivebomb;
   expected = [
@@ -354,20 +370,24 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
     [1, 0, 0],
   ];
   t.same(getMapTraversabilityInCells(mockMap), expected);
-  MapRewireAPI.__ResetDependency__('CPTL');
+  t.same(mockTilesToUpdateValues, [inactivebomb, redgate, redgate, bluegate, bomb]);
 
-  // initialize current player as red
-  MapRewireAPI.__Rewire__('CPTL', 1);
-  setupTiles(false);
+  // change the gate colors
+  mockMap[0][2] = bluegate;
+  mockMap[1][0] = bluegate;
+  mockMap[1][1] = redgate;
   expected = [
     [1, 1, 1],
     [1, 0, 1],
     [1, 0, 0],
   ];
-  initMapTraversabilityCells(mockMap);
   t.same(getMapTraversabilityInCells(mockMap), expected);
+  t.same(mockTilesToUpdateValues, [inactivebomb, bluegate, bluegate, redgate, bomb]);
 
   MapRewireAPI.__ResetDependency__('CPTL');
+  MapRewireAPI.__ResetDependency__('mapTraversabilityCells');
+  MapRewireAPI.__ResetDependency__('tilesToUpdate');
+  MapRewireAPI.__ResetDependency__('tilesToUpdateValues');
   teardownTiles();
 
   t.end();
@@ -378,10 +398,29 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
   setupTiles(false);
   // create a dummy map from bombs, spikes, gates, and regular tiles
   const bomb = getTileId('BOMB');
+  const inactivebomb = getTileId('INACTIVE_BOMB');
   const spike = getTileId('SPIKE');
   const redgate = getTileId('RED_GATE');
   const bluegate = getTileId('BLUE_GATE');
   const blank = getTileId('REGULAR_FLOOR');
+
+  let mockTilesToUpdateValues = [inactivebomb, redgate, bluegate, redgate, bomb];
+  MapRewireAPI.__Rewire__('mapTraversabilityCells', [
+    [1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1],
+    [0, 0, 1, 1, 1, 1],
+    [0, 0, 1, 1, 1, 1],
+    [1, 1, 0, 0, 0, 0],
+    [1, 1, 0, 0, 0, 0],
+  ]);
+  MapRewireAPI.__Rewire__('tilesToUpdate', [
+    { x: 0, y: 0 },
+    { x: 0, y: 2 },
+    { x: 1, y: 0 },
+    { x: 1, y: 1 },
+    { x: 2, y: 2 },
+  ]);
+  MapRewireAPI.__Rewire__('tilesToUpdateValues', mockTilesToUpdateValues);
 
   MapRewireAPI.__Rewire__('CPTL', 2);
   /* eslint-disable no-multi-spaces, array-bracket-spacing */
@@ -399,9 +438,27 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
     [1, 1, 0, 0, 0, 0],
     [1, 1, 0, 0, 0, 0],
   ];
-  initMapTraversabilityCells(mockMap);
   t.same(getMapTraversabilityInCells(mockMap), expected);
+  t.same(mockTilesToUpdateValues, [bomb, redgate, redgate, bluegate, bomb]);
 
+  mockTilesToUpdateValues = [inactivebomb, bluegate];
+  MapRewireAPI.__Rewire__('mapTraversabilityCells', [
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ]);
+  MapRewireAPI.__Rewire__('tilesToUpdate', [
+    { x: 0, y: 0 },
+    { x: 0, y: 1 },
+  ]);
+  MapRewireAPI.__Rewire__('tilesToUpdateValues', mockTilesToUpdateValues);
   MapRewireAPI.__Rewire__('CPTL', 10);
   MapRewireAPI.__Rewire__('PPCL', 4);
   const smallMap = [[bomb, bluegate]];
@@ -418,12 +475,69 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ];
 
-  initMapTraversabilityCells(smallMap);
   t.same(getMapTraversabilityInCells(smallMap), expected);
+  t.same(mockTilesToUpdateValues, [bomb, bluegate]);
 
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
+  MapRewireAPI.__ResetDependency__('mapTraversabilityCells');
+  MapRewireAPI.__ResetDependency__('tilesToUpdate');
+  MapRewireAPI.__ResetDependency__('tilesToUpdateValues');
   teardownTiles();
 
   t.end();
 });
+
+
+test('initMapTraversabilityCells: stores correct values in mapTraversabilityCells, tilesToUpdate, and tilesToUpdateValues with CPT=2', t => {
+  // initialize current player as blue
+  setupTiles(true);
+  MapRewireAPI.__Rewire__('CPTL', 1);
+  // create a dummy map from bombs, spikes, gates, and regular tiles
+  const bomb = getTileId('BOMB');
+  const spike = getTileId('SPIKE');
+  const redgate = getTileId('RED_GATE');
+  const bluegate = getTileId('BLUE_GATE');
+  const blank = getTileId('REGULAR_FLOOR');
+
+  const mockMapTraversabilityCells = [];
+  const mockTilesToUpdate = [];
+  const mockTilesToUpdateValues = [];
+
+  /* eslint-disable no-multi-spaces, array-bracket-spacing */
+  const mockMap = [
+    [bomb,    blank,    redgate],
+    [redgate, bluegate, blank  ],
+    [blank,   spike,    bomb   ],
+  ];
+  /* eslint-enable no-multi-spaces, array-bracket-spacing */
+
+  MapRewireAPI.__Rewire__('mapTraversabilityCells', mockMapTraversabilityCells);
+  MapRewireAPI.__Rewire__('tilesToUpdate', mockTilesToUpdate);
+  MapRewireAPI.__Rewire__('tilesToUpdateValues', mockTilesToUpdateValues);
+
+  initMapTraversabilityCells(mockMap);
+
+  t.same(mockMapTraversabilityCells, [
+    [0, 1, 0],
+    [0, 1, 1],
+    [1, 0, 0],
+  ]);
+  t.same(mockTilesToUpdate, [
+    { x: 0, y: 0 },
+    { x: 0, y: 2 },
+    { x: 1, y: 0 },
+    { x: 1, y: 1 },
+    { x: 2, y: 2 },
+  ]);
+  t.same(mockTilesToUpdateValues, [bomb, redgate, redgate, bluegate, bomb]);
+
+  MapRewireAPI.__ResetDependency__('CPTL');
+  MapRewireAPI.__ResetDependency__('mapTraversabilityCells');
+  MapRewireAPI.__ResetDependency__('tilesToUpdate');
+  MapRewireAPI.__ResetDependency__('tilesToUpdateValues');
+  teardownTiles();
+
+  t.end();
+});
+

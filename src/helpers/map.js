@@ -1,10 +1,12 @@
+import isEmpty from 'lodash/isEmpty';
 import { PPTL, CPTL, PPCL } from '../constants';
 import { assert, assertGridInBounds } from '../utils/asserts';
 import { propertyFromId, isTileType } from '../tiles';
 
-let mapTraversabilityCells;
-let tilesToUpdate; // A list of x, y pairs, which are the locations in the map that might change
-let tilesToUpdateValues; // the values stored in those locations
+const mapTraversabilityCells = [];
+// A list of x, y pairs, which are the locations in the map that might change
+const tilesToUpdate = [];
+const tilesToUpdateValues = []; // the values stored in those locations
 
 
 /*
@@ -94,14 +96,12 @@ export function getTileTraversabilityInCells(tileID) {
 }
 
 export function initMapTraversabilityCells(map) {
-  mapTraversabilityCells = [];
-  tilesToUpdate = [];
-  tilesToUpdateValues = [];
+  assert(isEmpty(mapTraversabilityCells), 'map already has values stored in it when initializing');
   const xl = map.length;
   const yl = map[0].length;
   let x;
   for (x = 0; x < xl * CPTL; x++) {
-    mapTraversabilityCells[x] = new Array(yl * CPTL);
+    mapTraversabilityCells.push(new Array(yl * CPTL));
   }
   for (x = 0; x < xl; x++) {
     for (let y = 0; y < yl; y++) {
@@ -131,7 +131,8 @@ export function initMapTraversabilityCells(map) {
  * @param {number} map - 2D array representing the Tagpro map
  */
 export function getMapTraversabilityInCells(map) {
-  assert(tilesToUpdate.length === tilesToUpdateValues.length);
+  assert(tilesToUpdate.length === tilesToUpdateValues.length,
+    'the number of tiles to update and the number of values stored for them are not equal');
   for (let i = 0; i < tilesToUpdate.length; i++) {
     const xy = tilesToUpdate[i];
     if (map[xy.x][xy.y] !== tilesToUpdateValues[i]) {
