@@ -7,10 +7,7 @@ import sinon from 'sinon';
 
 import {
   computeTileInfo,
-  getTileProperty,
-  isTraversable,
-  getCNTORadius,
-  getTileId,
+  propertyFromId,
   isTileType,
   __RewireAPI__ as TileRewireAPI,
 } from '../src/tiles';
@@ -99,79 +96,23 @@ test('computeTileInfo: stores info in tileInfo', t => {
 });
 
 
-test('getTileProperty: returns correct properties', t => {
+test('propertyFromId: returns correct properties', t => {
   setupTiles(true);
-  t.is(getTileProperty(1, 'traversable'), false);
-  t.is(getTileProperty(2, 'traversable'), true);
-  t.is(getTileProperty(13, 'radius'), 15);
+  t.is(propertyFromId(1, 'traversable'), false);
+  t.is(propertyFromId(2, 'traversable'), true);
+  t.is(propertyFromId(13, 'radius'), 15);
   teardownTiles();
 
   t.end();
 });
 
 
-test('getTileProperty: throws error given tileIds that don\'t exist', t => {
+test('propertyFromId: throws error given tileIds that don\'t exist', t => {
   setupTiles(true);
-  t.throws(() => { getTileProperty(1.123, 'traversable'); });
-  t.throws(() => { getTileProperty(-1, 'traversable'); });
-  t.throws(() => { getTileProperty('potato', 'traversable'); });
-  t.throws(() => { getTileProperty(undefined, 'traversable'); });
-  teardownTiles();
-
-  t.end();
-});
-
-
-test('isTraversable: correctly returns true for varying inputs', t => {
-  setupTiles(true);
-  t.true(isTraversable(2)); // Regular floor
-  t.true(isTraversable(3.1)); // taken red flag
-  t.true(isTraversable(9)); // inactive gate
-  t.true(isTraversable(17)); // red endzone
-  teardownTiles();
-
-  t.end();
-});
-
-
-test('isTraversable: correctly returns false for varying inputs', t => {
-  setupTiles(true);
-  t.false(isTraversable(0)); // Blank space
-  t.false(isTraversable(1)); // square wall
-  t.false(isTraversable(7)); // spike
-  teardownTiles();
-
-  t.end();
-});
-
-
-test('isTraversable: throws errors for invalid inputs', t => {
-  setupTiles(true);
-  t.throws(() => { isTraversable(1.123); });
-  t.throws(() => { isTraversable(-1); });
-  t.throws(() => { isTraversable('potato'); });
-  t.throws(() => { isTraversable(undefined); });
-  teardownTiles();
-
-  t.end();
-});
-
-
-test('getCNTORadius: correctly returns for varying inputs', t => {
-  setupTiles(true);
-  t.is(getCNTORadius(getTileId('SPIKE')), 14);
-  t.is(getCNTORadius(getTileId('BUTTON')), 8);
-  teardownTiles();
-
-  t.end();
-});
-
-
-test('getCNTORadius: throws errors for invalid inputs', t => {
-  setupTiles(true);
-  t.throws(() => { getCNTORadius(getTileId('STANDARD_FLOOR')); });
-  t.throws(() => { getCNTORadius('banana'); });
-  t.throws(() => { getCNTORadius(undefined); });
+  t.throws(() => { propertyFromId(1.123, 'traversable'); });
+  t.throws(() => { propertyFromId(-1, 'traversable'); });
+  t.throws(() => { propertyFromId('potato', 'traversable'); });
+  t.throws(() => { propertyFromId(undefined, 'traversable'); });
   teardownTiles();
 
   t.end();
