@@ -1,11 +1,13 @@
 import keys from 'lodash/keys';
+import forOwn from 'lodash/forOwn';
+import isEmpty from 'lodash/isEmpty';
 import includes from 'lodash/includes';
 import isUndefined from 'lodash/isUndefined';
 import { assert } from './utils/asserts';
 import { amBlue, amRed } from './helpers/player';
 
-let tileInfo;
-let tileNames;
+const tileInfo = {};
+const tileNames = {};
 
 /*
  * Stores all information we need about tiles in the tileInfo object, and creates the tileNames
@@ -14,7 +16,9 @@ let tileNames;
  * id.
  */
 export function computeTileInfo() {
-  tileInfo = {
+  assert(isEmpty(tileInfo), 'tileInfo is not an empty object');
+  assert(isEmpty(tileNames), 'tileNames is not an empty object');
+  forOwn({
     EMPTY_SPACE: { id: 0, traversable: false },
     SQUARE_WALL: { id: 1, traversable: false },
     ANGLE_WALL_1: { id: 1.1, traversable: false },
@@ -55,8 +59,10 @@ export function computeTileInfo() {
     BLUE_ENDZONE: { id: 18, traversable: true },
     RED_BALL: { id: 'redball', traversable: true },
     BLUE_BALL: { id: 'blueball', traversable: true },
-  };
-  tileNames = {};
+  },
+  (value, key) => {
+    tileInfo[key] = value;
+  });
   keys(tileInfo).forEach(key => {
     tileNames[tileInfo[key].id] = key;
   });
