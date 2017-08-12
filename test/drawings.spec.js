@@ -150,6 +150,7 @@ test('generatePermanentNTSprites', tester => {
     DrawRewireAPI.__Rewire__('permNTSprites', mockPermNTSprites);
     DrawRewireAPI.__Rewire__('getPixiRect', mockGetPixiRect);
     DrawRewireAPI.__Rewire__('CPTL', 1);
+    DrawRewireAPI.__Rewire__('PPCL', 40);
 
     generatePermanentNTSprites(0, 0, [[1, 0, 1]]);
     t.notok(mockGetPixiRect.called);
@@ -161,6 +162,7 @@ test('generatePermanentNTSprites', tester => {
     DrawRewireAPI.__ResetDependency__('permNTSprites');
     DrawRewireAPI.__ResetDependency__('getPixiRect');
     DrawRewireAPI.__ResetDependency__('CPTL');
+    DrawRewireAPI.__ResetDependency__('PPCL');
 
     t.end();
   });
