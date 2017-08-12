@@ -1,7 +1,12 @@
 import test from 'tape';
 import keys from 'lodash/keys';
+import values from 'lodash/values';
+import forEach from 'lodash/forEach';
+import has from 'lodash/has';
+import sinon from 'sinon';
 
 import {
+  computeTileInfo,
   getTileProperty,
   isTraversable,
   getCNTORadius,
@@ -69,6 +74,30 @@ export function teardownTiles() {
 }
 
 // begin actual tests
+
+test('computeTileInfo: stores info in tileInfo', t => {
+  const mockTileInfo = {};
+  const mockAmRed = sinon.stub().returns(false);
+  const mockAmBlue = sinon.stub().returns(true);
+  TileRewireAPI.__Rewire__('amBlue', mockAmBlue);
+  TileRewireAPI.__Rewire__('amRed', mockAmRed);
+  TileRewireAPI.__Rewire__('tileInfo', mockTileInfo);
+  computeTileInfo();
+  // Check that 40 tiles were stored
+  t.is(keys(mockTileInfo).length, 40);
+  // Check that all values in tileInfo have an id
+  forEach(values(mockTileInfo), value => {
+    t.true(has(value, 'id'));
+  });
+  t.is(mockTileInfo.SPEEDPAD_RED_ACTIVE.radius, 15);
+  t.is(mockTileInfo.ANGLE_WALL_2.traversable, false);
+  t.is(mockTileInfo.RED_GATE.traversable, false);
+  t.is(mockTileInfo.BLUE_GATE.traversable, true);
+  t.true(mockAmRed.calledOnce);
+  t.true(mockAmBlue.calledOnce);
+  t.end();
+});
+
 
 test('getTileProperty: returns correct properties', t => {
   setupTiles(true);
