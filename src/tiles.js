@@ -1,8 +1,7 @@
 import keys from 'lodash/keys';
 import forOwn from 'lodash/forOwn';
 import isEmpty from 'lodash/isEmpty';
-import includes from 'lodash/includes';
-import isUndefined from 'lodash/isUndefined';
+import has from 'lodash/has';
 import { assert } from './utils/asserts';
 import { amBlue, amRed } from './helpers/player';
 
@@ -73,42 +72,23 @@ export function computeTileInfo() {
  * @param {String} property - the name of a property stored in tileInfo
  * @return - the property for the input tile
  */
-export function getTileProperty(tileID, property) {
+export function propertyFromId(tileID, property) {
   const tileIDString = String(tileID);
-  assert(includes(keys(tileNames), tileIDString), `Unknown tileID: ${tileID}`);
+  assert(has(tileNames, tileIDString), `Unknown tileID: ${tileID}`);
   const tileName = tileNames[tileID];
   return tileInfo[tileName][property];
 }
 
-/*
- * Returns true if tileID is traversable without consequences.
- *
- * Traversable includes: regular floor, all flags, inactive speedpad,
- *   inactive gate, friendly gate, inactive bomb, teamtiles, inactive
- *   portal, endzones
- * Nontraversable includes: empty space, walls, active speedpad, any
- *   powerup, spike, button, enemy/green gate, bomb, active portal
- *
- * @param {number} tileID - the ID of the tile that should be checked for
- * traversability
- */
-export function isTraversable(tileID) {
-  return getTileProperty(tileID, 'traversable');
-}
-
 
 /*
- * Is circular nontraversable object? Returns a boolean stating whether or not
- * the given nontraversable object tile ID is a circular nontraversable object.
- *
- * Circular nontraversable objects include: boosts, powerups, spikes, buttons,
- * bombs, and active portals
- *
- * @param {number} tileID - the ID of the tile that should be checked if it is
- * a circular nontraversable object.
+ * @param {number} tileName - the name of the tile whose property we want
+ * @param {String} property - the name of a property stored in tileInfo
+ * @return - the property for the input tile
  */
-export function isCNTO(tileID) {
-  return Boolean(getTileProperty(tileID, 'radius'));
+export function propertyFromName(tileName, property) {
+  assert(has(tileInfo, tileName), `Unknown tileName: ${tileName}`);
+  assert(has(tileInfo, [tileName, property]), `${tileName} does not have property ${property}`);
+  return tileInfo[tileName][property];
 }
 
 
@@ -117,7 +97,7 @@ export function isCNTO(tileID) {
  * @return - the id for the input tile name
  */
 export function getTileId(name) {
-  assert(includes(keys(tileInfo), name), `Unknown tile name: ${name}`);
+  assert(has(tileInfo, name), `Unknown tileName: ${name}`);
   return tileInfo[name].id;
 }
 
@@ -129,23 +109,4 @@ export function getTileId(name) {
  */
 export function isTileType(tileId, name) {
   return getTileId(name) === tileId;
-}
-
-
-/*
- * Get circular nontraversable object radius. Returns the radius, in pixels, of
- * the given circular nontraversable object tile ID.
- *
- * Circular nontraversable objects include: boosts, powerups, spikes, buttons,
- * bombs, and active portals
- *
- * @param {number} tileID - the ID of the circular nontraversable tile that you
- * wish to get the radius of
- */
-export function getCNTORadius(tileID) {
-  assert(!getTileProperty(tileID, 'traversable'), `A traversable tile was given: ${tileID}`);
-  assert(tileNames[tileID] !== 'marsball', 'Marsball was given. Case is not handled.');
-  assert(!isUndefined(getTileProperty(tileID, 'radius')),
-    `A noncircular nontraversable tile was given: ${tileID}`);
-  return tileInfo[tileNames[tileID]].radius;
 }
