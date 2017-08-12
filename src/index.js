@@ -11,12 +11,20 @@
 // @license       2017
 // ==/UserScript==
 
+
 import botLoop from './bot';
 import { setupMe } from './helpers/player';
-import { onKeyDown, setupVelocity, isAutonomous } from './utils/interface';
+import {
+  onKeyDown,
+  setupVelocity,
+  chatHelpMenu,
+  isAutonomous,
+} from './utils/interface';
+
 
 // Handle keypress and related events for manual/auto toggle
 window.onkeydown = onKeyDown;
+
 
 /*
  * This function will execute the provided function after tagpro.playerId
@@ -35,13 +43,17 @@ function waitForId(fn) {
     fn();
   }
 }
+
+
 /*
- * This is the "entry point" for our bot. We initialize the global "me" variable, modify the way we
- * calculate velocity for players, and then run our "botLoop" every time an animation frame is drawn
+ * This is the "entry point" for our bot. We initialize the global "me"
+ * variable, modify the way we calculate velocity for players, and then run our
+ * "botLoop" every time an animation frame is drawn
  */
 function start() {
   setupMe();
   setupVelocity();
+  chatHelpMenu();
 
   function loop() {
     // Call this function every time a tagpro animation frame gets drawn
@@ -53,6 +65,7 @@ function start() {
 
   loop();
 }
+
 
 /*
  * Initialize the start script when tagpro is ready, and additionally wait

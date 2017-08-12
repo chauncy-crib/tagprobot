@@ -1,10 +1,17 @@
 
-const KEY_CODES = { Q: 81, V: 86 };
 
-// Stole this function to send chat messages
+const KEY_CODES = {
+  H: 72,
+  Q: 81,
+  V: 86,
+};
+
+
 let lastMessage = 0;
 export function chat(chatMessage) {
-  const limit = 500 + 10;
+  // Seems that TagPro keeps you from sending a chat message faster than every
+  // 500ms. This limit accounts for that plus a 100ms buffer.
+  const limit = 500 + 100;
   const now = new Date();
   const timeDiff = now - lastMessage;
   if (timeDiff > limit) {
@@ -18,36 +25,57 @@ export function chat(chatMessage) {
   }
 }
 
-let autonomous = true;
-let visuals = true;
 
+let autonomous = true;
 export function isAutonomous() {
   return autonomous;
 }
 
+
+let visuals = true;
 export function areVisualsOn() {
   return visuals;
 }
 
+
+export function chatHelpMenu() {
+  const menu = [
+    'Help Menu -',
+    'H: print this help menu',
+    'Q: toggle autonomous mode',
+    'V: toggle visual mode',
+  ];
+  menu.forEach(item => {
+    chat(item);
+  });
+}
+
+
 export function onKeyDown(event) {
-  // If letter pressed is Q, toggle autonomous controls
-  if (event.keyCode === KEY_CODES.Q) {
-    autonomous = !autonomous;
-    visuals = autonomous;
-    tagpro.sendKeyPress('up', true);
-    tagpro.sendKeyPress('down', true);
-    tagpro.sendKeyPress('left', true);
-    tagpro.sendKeyPress('right', true);
-    const autonomyMode = autonomous ? 'autonomous' : 'MANUAL';
-    chat(`Autonomy Mode updated: now ${autonomyMode}!`);
-    setTimeout(() => { console.log(`Autonomy status: ${autonomous}`); }, 200);
-  }
-  if (event.keyCode === KEY_CODES.V) { // toggle visuals
-    visuals = !visuals;
-    const chatMsg = visuals ? 'enabled' : 'disabled';
-    chat(`Visuals ${chatMsg}`);
+  switch (event.keyCode) {
+    case KEY_CODES.H: { // chat the help menu
+      chatHelpMenu();
+      break;
+    } case KEY_CODES.Q: { // toggle autonomous mode
+      autonomous = !autonomous;
+      visuals = autonomous;
+      tagpro.sendKeyPress('up', true);
+      tagpro.sendKeyPress('down', true);
+      tagpro.sendKeyPress('left', true);
+      tagpro.sendKeyPress('right', true);
+      const autonomyMode = autonomous ? 'autonomous' : 'MANUAL';
+      chat(`Autonomy Mode updated: now ${autonomyMode}!`);
+      setTimeout(() => { console.log(`Autonomy status: ${autonomous}`); }, 200);
+      break;
+    } case KEY_CODES.V: { // toggle visual mode
+      visuals = !visuals;
+      const visualsMode = visuals ? 'enabled' : 'disabled';
+      chat(`Visuals ${visualsMode}`);
+      break;
+    } default:
   }
 }
+
 
 // Sends key events to move to a destination.
 export function move(destination) {
@@ -75,6 +103,7 @@ export function move(destination) {
     tagpro.sendKeyPress('down', true);
   }
 }
+
 
 /*
  * Overriding this function to get a more accurate velocity of players.
