@@ -128,7 +128,6 @@ export function getTileId(name) {
  * @return - true if tileId is the id of the named tile
  */
 export function isTileType(tileId, name) {
-  assert(includes(keys(tileInfo), name), `Unknown tile name: ${name}`);
   return getTileId(name) === tileId;
 }
 
