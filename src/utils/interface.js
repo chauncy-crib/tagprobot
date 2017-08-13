@@ -1,3 +1,5 @@
+import { clearSprites, drawPermanentNTSprites } from '../draw/drawings';
+
 
 
 const KEY_CODES = {
@@ -53,26 +55,38 @@ export function chatHelpMenu() {
 
 export function onKeyDown(event) {
   switch (event.keyCode) {
-    case KEY_CODES.H: { // chat the help menu
+    case KEY_CODES.H: // chat the help menu
       chatHelpMenu();
       break;
-    } case KEY_CODES.Q: { // toggle autonomous mode
+    // If letter pressed is Q, toggle autonomous controls
+    case KEY_CODES.Q: {
       autonomous = !autonomous;
       visuals = autonomous;
+      if (!visuals) {
+        clearSprites();
+      } else {
+        drawPermanentNTSprites();
+      }
       tagpro.sendKeyPress('up', true);
       tagpro.sendKeyPress('down', true);
       tagpro.sendKeyPress('left', true);
       tagpro.sendKeyPress('right', true);
       const autonomyMode = autonomous ? 'autonomous' : 'MANUAL';
       chat(`Autonomy Mode updated: now ${autonomyMode}!`);
-      setTimeout(() => { console.log(`Autonomy status: ${autonomous}`); }, 200);
       break;
-    } case KEY_CODES.V: { // toggle visual mode
+    }
+    case KEY_CODES.V: { // toggle visuals
       visuals = !visuals;
-      const visualsMode = visuals ? 'enabled' : 'disabled';
-      chat(`Visuals ${visualsMode}`);
+      const chatMsg = visuals ? 'enabled' : 'disabled';
+      chat(`Visuals ${chatMsg}`);
+      if (!visuals) {
+        clearSprites();
+      } else {
+        drawPermanentNTSprites();
+      }
       break;
-    } default:
+    }
+    default:
   }
 }
 
