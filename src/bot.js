@@ -11,6 +11,7 @@ import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe } from './helpers/player';
 import { getShortestPath, getTarget } from './helpers/path';
 import { move } from './utils/interface';
+import { updatePath } from './draw/drawings';
 
 /*
  * The logic/flowchart to get where our goal is.
@@ -81,6 +82,7 @@ function getSeek() {
     gridTarget.y,
     traversableCells,
   );
+  updatePath(shortestPath);
   const seekToward = getTarget(
     gridPosition.x,
     gridPosition.y,
