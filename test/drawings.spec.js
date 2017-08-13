@@ -57,8 +57,8 @@ test('updatePath', tester => {
     DrawRewireAPI.__Rewire__('PPCL', 1);
 
     updatePath([
-      { x: 0, y: 1 },
-      { x: 2, y: 3 },
+      { xc: 0, yc: 1 },
+      { xc: 2, yc: 3 },
     ]);
 
     t.ok(mockGetPixiRect.calledTwice);
