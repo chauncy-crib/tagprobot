@@ -16,6 +16,7 @@ import { computeTileInfo } from './tiles';
 import { setupMe } from './helpers/player';
 import { initMapTraversabilityCells } from './helpers/map';
 import { onKeyDown, setupVelocity, isAutonomous } from './utils/interface';
+import { drawPermanentNTSprites } from './draw/drawings';
 
 // Handle keypress and related events for manual/auto toggle
 window.onkeydown = onKeyDown;
@@ -46,6 +47,7 @@ function start() {
   setupVelocity();
   computeTileInfo();
   initMapTraversabilityCells(tagpro.map);
+  drawPermanentNTSprites();
 
   function loop() {
     // Call this function every time a tagpro animation frame gets drawn
