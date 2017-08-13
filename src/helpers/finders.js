@@ -6,40 +6,49 @@ import { getTileId } from '../tiles';
 
 
 /*
- * Returns the position (in pixels) of the endzone you should return a the flag to.
- * TODO: return closest endzone tile instead of first
+ * Returns the position of the endzone you should return a the flag to.
+ *
+ * @return {object} - object with the endzone's position in pixels, x and y, and
+ * in cells, xc and yc
  */
 export function findMyEndzone() {
+  // TODO: return closest endzone tile instead of first
   return findTile(getMyEndzoneTile());
 }
 
+
 /*
-* Returns the position (in pixels) of the endzone you should defend
-* TODO: return closest endzone tile instead of first
-*/
+ * Returns the position (in pixels) of the endzone you should defend
+ *
+ * @return {object} - object with the endzone's position in pixels, x and y, and
+ * in cells, xc and yc
+ */
 export function findEnemyEndzone() {
+  // TODO: return closest endzone tile instead of first
   return findTile(getEnemyEndzoneTile());
 }
 
-// Returns the position (in pixels) of the specified flag station, even if empty.
+
+/*
+ * Returns the position (in pixels) of the specified flag station, even if empty
+ *
+ * @return {object} - object with the flag station's position in pixels, x and
+ * y, and in cells, xc and yc
+ */
 export function findFlagStation() {
   return findTile([getTileId('YELLOW_FLAG'), getTileId('YELLOW_FLAG_TAKEN')]);
 }
 
-// Returns the enemy FC from the tagpro.players array, if in view.
+
+/*
+ * Returns the enemy FC object from the tagpro.players array, if in view
+ *
+ * @return {object} - the enemy FC object
+ */
 export function findEnemyFC() {
   return _.find(tagpro.players, player => (
     !isOnMyTeam(player) &&
     player.flag &&
-    !player.dead &&
-    player.draw
-  ));
-}
-
-// Returns the enemy FC from the tagpro.players array, if in view.
-export function findEnemy() {
-  return _.find(tagpro.players, player => (
-    !isOnMyTeam(player) &&
     !player.dead &&
     player.draw
   ));
