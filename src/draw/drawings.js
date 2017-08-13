@@ -15,10 +15,11 @@
 import _ from 'lodash';
 import { PPCL, CPTL } from '../constants';
 import { init2dArray } from '../helpers/map';
+import { areVisualsOn } from '../utils/interface';
 
 let pathSprites = []; // a list of the current path sprites drawn
 // a grid of NT-sprites, which are subject to change
-const tempNTSprites = [];
+let tempNTSprites = [];
 // a list of permanent NT sprites. Will always be on map (if visualizations are on)
 const permNTSprites = [];
 
@@ -40,6 +41,9 @@ function getRect(x, y, width, height, alpha, color) {
 }
 
 export function updatePath(path) {
+  if (!areVisualsOn()) {
+    return;
+  }
   _.forEach(pathSprites, p => tagpro.renderer.layers.background.removeChild(p));
   pathSprites = [];
   _.forEach(path, cell => {
@@ -56,6 +60,8 @@ export function clearSprites() {
     // flatten the tempNTSprites grid, and remove null values
     .concat(_.filter(_.flatten(tempNTSprites)), x => !_.isNull(x));
   _.forEach(allSprites, s => tagpro.renderer.layers.background.removeChild(s));
+  pathSprites = [];
+  tempNTSprites = [];
 }
 
 export function drawPermanentNTSprites() {
@@ -84,8 +90,11 @@ export function generatePermanentNTSprites(x, y, cellTraversabilities) {
  * @param cellTraversabilities: the cell-traversabilities of the tagpro map.
  */
 export function updateNTSprites(x, y, cellTraversabilities) {
+  if (!areVisualsOn()) {
+    return;
+  }
   if (_.isEmpty(tempNTSprites)) {
-    init2dArray(tagpro.map.length, tagpro.map[0].length, null, tempNTSprites);
+    tempNTSprites = init2dArray(tagpro.map.length, tagpro.map[0].length, null);
   }
   for (let i = x * CPTL; i < (x + 1) * CPTL; i++) {
     for (let j = y * CPTL; j < (y + 1) * CPTL; j++) {
