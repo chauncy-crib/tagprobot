@@ -1,3 +1,5 @@
+import { clearSprites, drawPermanentNTSprites } from '../draw/drawings';
+
 
 const KEY_CODES = { Q: 81, V: 86 };
 
@@ -34,6 +36,11 @@ export function onKeyDown(event) {
   if (event.keyCode === KEY_CODES.Q) {
     autonomous = !autonomous;
     visuals = autonomous;
+    if (!visuals) {
+      clearSprites();
+    } else {
+      drawPermanentNTSprites();
+    }
     tagpro.sendKeyPress('up', true);
     tagpro.sendKeyPress('down', true);
     tagpro.sendKeyPress('left', true);
@@ -46,6 +53,11 @@ export function onKeyDown(event) {
     visuals = !visuals;
     const chatMsg = visuals ? 'enabled' : 'disabled';
     chat(`Visuals ${chatMsg}`);
+    if (!visuals) {
+      clearSprites();
+    } else {
+      drawPermanentNTSprites();
+    }
   }
 }
 

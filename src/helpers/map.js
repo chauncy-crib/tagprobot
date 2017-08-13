@@ -2,6 +2,7 @@ import isEmpty from 'lodash/isEmpty';
 import { PPTL, CPTL, PPCL } from '../constants';
 import { assert, assertGridInBounds } from '../utils/asserts';
 import { getPropertyFromId, isTileType } from '../tiles';
+import { updateNTSprites, generatePermanentNTSprites } from '../draw/drawings';
 
 const mapTraversabilityCells = [];
 // A list of x, y pairs, which are the locations in the map that might change
@@ -113,6 +114,11 @@ export function initMapTraversabilityCells(map) {
       if (!getPropertyFromId(map[x][y], 'permanent')) {
         tilesToUpdate.push({ x, y });
         tilesToUpdateValues.push(map[x][y]);
+        if (!getPropertyFromId(map[x][y], 'traverable')) {
+          updateNTSprites(x, y, mapTraversabilityCells);
+        }
+      } else if (!getPropertyFromId(map[x][y], 'traversable')) {
+        generatePermanentNTSprites(x, y, mapTraversabilityCells);
       }
     }
   }
@@ -143,6 +149,7 @@ export function getMapTraversabilityInCells(map) {
         xy.y * CPTL,
       );
     }
+    updateNTSprites(xy.x, xy.y, mapTraversabilityCells);
   }
   return mapTraversabilityCells;
 }
