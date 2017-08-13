@@ -1,7 +1,4 @@
-import keys from 'lodash/keys';
-import forOwn from 'lodash/forOwn';
-import isEmpty from 'lodash/isEmpty';
-import has from 'lodash/has';
+import _ from 'lodash';
 import { assert } from './utils/asserts';
 import { amBlue, amRed } from './helpers/player';
 
@@ -15,9 +12,9 @@ const tileNames = {};
  * id.
  */
 export function computeTileInfo() {
-  assert(isEmpty(tileInfo), 'tileInfo is not an empty object');
-  assert(isEmpty(tileNames), 'tileNames is not an empty object');
-  forOwn({
+  assert(_.isEmpty(tileInfo), 'tileInfo is not an empty object');
+  assert(_.isEmpty(tileNames), 'tileNames is not an empty object');
+  _.forOwn({
     EMPTY_SPACE: { id: 0, traversable: false, permanent: true },
     SQUARE_WALL: { id: 1, traversable: false, permanent: true },
     ANGLE_WALL_1: { id: 1.1, traversable: false, permanent: true },
@@ -62,7 +59,7 @@ export function computeTileInfo() {
   (value, key) => {
     tileInfo[key] = value;
   });
-  keys(tileInfo).forEach(key => {
+  _.keys(tileInfo).forEach(key => {
     tileNames[tileInfo[key].id] = key;
   });
 }
@@ -74,7 +71,7 @@ export function computeTileInfo() {
  */
 export function getTileProperty(tileID, property) {
   const tileIDString = String(tileID);
-  assert(has(tileNames, tileIDString), `Unknown tileID: ${tileID}`);
+  assert(_.has(tileNames, tileIDString), `Unknown tileID: ${tileID}`);
   const tileName = tileNames[tileID];
   return tileInfo[tileName][property];
 }
@@ -85,7 +82,7 @@ export function getTileProperty(tileID, property) {
  * @return - the id for the input tile name
  */
 export function getTileId(name) {
-  assert(has(tileInfo, name), `Unknown tileName: ${name}`);
+  assert(_.has(tileInfo, name), `Unknown tileName: ${name}`);
   return tileInfo[name].id;
 }
 
