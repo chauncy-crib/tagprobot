@@ -156,8 +156,8 @@ export function getMapTraversabilityInCells(map) {
 
 
 /*
- * Returns the position (in pixels x,y and grid positions xg, yg)
- * of first of the specified tile types to appear starting in the
+ * Returns the position x and y (in pixels) and xc, yc (in cells)
+ * of the first of the specified tile types to appear starting in the
  * top left corner and moving in a page-reading fashion.
  *
  * @param {(number | number[])} tiles - either a number representing a tileType,
@@ -172,7 +172,7 @@ export function findTile(tiles) {
       for (let i = 0; i < tileArray.length; i++) {
         const tile = tileArray[i];
         if (tagpro.map[x][y] === tile) {
-          return { x: x * PPTL, y: y * PPTL, xg: x, yg: y };
+          return { x: x * PPTL, y: y * PPTL, xc: x * CPTL, yc: y * CPTL };
         }
       }
     }

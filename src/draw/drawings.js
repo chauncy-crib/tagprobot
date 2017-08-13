@@ -47,7 +47,7 @@ export function updatePath(path) {
   _.forEach(pathSprites, p => tagpro.renderer.layers.background.removeChild(p));
   pathSprites = [];
   _.forEach(path, cell => {
-    const sprite = getRect(cell.x * PPCL, cell.y * PPCL, PPCL, PPCL, pathAlpha, pathColor);
+    const sprite = getRect(cell.xc * PPCL, cell.yc * PPCL, PPCL, PPCL, pathAlpha, pathColor);
     pathSprites.push(sprite);
     tagpro.renderer.layers.background.addChild(sprite);
   });
