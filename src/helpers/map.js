@@ -104,16 +104,16 @@ export function initMapTraversabilityCells(map) {
   init2dArray(xl * CPTL, yl * CPTL, 0, mapTraversabilityCells);
   for (let x = 0; x < xl; x++) {
     for (let y = 0; y < yl; y++) {
-      if (!getPropertyFromId(map[x][y], 'permanent')) {
-        tilesToUpdate.push({ x, y });
-        tilesToUpdateValues.push(map[x][y]);
-      }
       fillGridWithSubgrid(
         mapTraversabilityCells,
         getTileTraversabilityInCells(map[x][y]),
         x * CPTL,
         y * CPTL,
       );
+      if (!getPropertyFromId(map[x][y], 'permanent')) {
+        tilesToUpdate.push({ x, y });
+        tilesToUpdateValues.push(map[x][y]);
+      }
     }
   }
 }
