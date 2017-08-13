@@ -54,45 +54,38 @@ function getGoalPos() {
 
 
 /*
- * @return {object} - the position, in pixels, of the next immediate place to
- * navigate to. Has an x and a y attribute.
+ * @return {object} - an object with position of the next immediate place to
+ * navigate to in pixels, x and y
  */
 function getNextTargetPos() {
   const goal = getGoalPos();
   const me = getMe();
+  me.xc = Math.floor((me.x + (PPCL / 2)) / PPCL);
+  me.yc = Math.floor((me.y + (PPCL / 2)) / PPCL);
 
-  const myPosInCells = {
-    x: Math.floor((me.x + (PPCL / 2)) / PPCL),
-    y: Math.floor((me.y + (PPCL / 2)) / PPCL),
-  };
-  const finalTargetPosInCells = {
-    x: Math.floor(goal.x / PPCL),
-    y: Math.floor(goal.y / PPCL),
+  const finalTarget = {
+    xc: Math.floor(goal.x / PPCL),
+    yc: Math.floor(goal.y / PPCL),
   };
 
   const traversableCells = getMapTraversabilityInCells(tagpro.map);
   const shortestPath = getShortestPath(
-    myPosInCells.x,
-    myPosInCells.y,
-    finalTargetPosInCells.x,
-    finalTargetPosInCells.y,
+    { xc: me.xc, yc: me.yc },
+    { xc: finalTarget.xc, yc: finalTarget.yc },
     traversableCells,
   );
   updatePath(shortestPath);
 
-  const nextTargetPosInCells = getTarget(
-    myPosInCells.x,
-    myPosInCells.y,
+  const nextTarget = getTarget(
+    { xc: me.xc, yc: me.yc },
     shortestPath,
   );
-  const nextTargetPosInPixels = {
-    x: nextTargetPosInCells.x * PPCL,
-    y: nextTargetPosInCells.y * PPCL,
-  };
+  nextTarget.x = nextTarget.xc * PPCL;
+  nextTarget.y = nextTarget.yc * PPCL;
 
   return {
-    x: nextTargetPosInPixels.x - (me.x + me.vx),
-    y: nextTargetPosInPixels.y - (me.y + me.vy),
+    x: nextTarget.x - (me.x + me.vx),
+    y: nextTarget.y - (me.y + me.vy),
   };
 }
 
