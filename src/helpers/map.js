@@ -1,4 +1,4 @@
-import isEmpty from 'lodash/isEmpty';
+import _ from 'lodash';
 import { PPTL, CPTL, PPCL } from '../constants';
 import { assert, assertGridInBounds } from '../utils/asserts';
 import { getTileProperty, tileHasProperty, tileIsType } from '../tiles';
@@ -99,7 +99,7 @@ export function getTileTraversabilityInCells(tileID) {
 }
 
 export function initMapTraversabilityCells(map) {
-  assert(isEmpty(mapTraversabilityCells), 'map already has values stored in it when initializing');
+  assert(_.isEmpty(mapTraversabilityCells), 'map already has values stored in it when initializing');
   const xl = map.length;
   const yl = map[0].length;
   init2dArray(xl * CPTL, yl * CPTL, 0, mapTraversabilityCells);
