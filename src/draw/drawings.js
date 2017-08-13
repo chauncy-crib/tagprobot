@@ -94,7 +94,11 @@ export function updateNTSprites(x, y, cellTraversabilities) {
     return;
   }
   if (_.isEmpty(tempNTSprites)) {
-    tempNTSprites = init2dArray(tagpro.map.length, tagpro.map[0].length, null);
+    tempNTSprites = init2dArray(
+      tagpro.map.length * CPTL,
+      tagpro.map[0].length * CPTL,
+      null,
+    );
   }
   for (let i = x * CPTL; i < (x + 1) * CPTL; i++) {
     for (let j = y * CPTL; j < (y + 1) * CPTL; j++) {
