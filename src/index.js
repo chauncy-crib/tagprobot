@@ -23,6 +23,7 @@ import {
   isAutonomous,
 } from './utils/interface';
 
+import { drawPermanentNTSprites } from './draw/drawings';
 
 // Handle keypress and related events for manual/auto toggle
 window.onkeydown = onKeyDown;
@@ -56,8 +57,9 @@ function start() {
   setupMe();
   setupVelocity();
   computeTileInfo();
-  initMapTraversabilityCells(tagpro.map);
   chatHelpMenu();
+  initMapTraversabilityCells(tagpro.map);
+  drawPermanentNTSprites();
 
   function loop() {
     // Call this function every time a tagpro animation frame gets drawn
