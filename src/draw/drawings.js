@@ -36,15 +36,16 @@ function getRect(x, y, width, height, alpha, color) {
     width,
     height,
   ).alpha = alpha;
+  return rect;
 }
 
 export function updatePath(path) {
-  _.forEach(path, p => tagpro.renderer.background.removeChild(p));
+  _.forEach(pathSprites, p => tagpro.renderer.layers.background.removeChild(p));
   pathSprites = [];
   _.forEach(path, cell => {
     const sprite = getRect(cell.x * PPCL, cell.y * PPCL, PPCL, PPCL, pathAlpha, pathColor);
-    path.append(sprite);
-    tagpro.renderer.background.addChild(sprite);
+    pathSprites.push(sprite);
+    tagpro.renderer.layers.background.addChild(sprite);
   });
 }
 
@@ -54,11 +55,11 @@ export function clearSprites() {
     .concat(pathSprites)
     // flatten the tempNTSprites grid, and remove null values
     .concat(_.filter(_.flatten(tempNTSprites)), x => !_.isNull(x));
-  _.forEach(allSprites, s => tagpro.renderer.background.removeChild(s));
+  _.forEach(allSprites, s => tagpro.renderer.layers.background.removeChild(s));
 }
 
 export function drawPermanentNTSprites() {
-  _.forEach(permNTSprites, s => tagpro.renderer.background.addChild(s));
+  _.forEach(permNTSprites, s => tagpro.renderer.layers.background.addChild(s));
 }
 
 export function generatePermanentNTSprites(x, y, cellTraversabilities) {
