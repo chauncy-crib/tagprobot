@@ -1,7 +1,7 @@
 import isEmpty from 'lodash/isEmpty';
 import { PPTL, CPTL, PPCL } from '../constants';
 import { assert, assertGridInBounds } from '../utils/asserts';
-import { propertyFromId, isTileType } from '../tiles';
+import { getPropertyFromId, isTileType } from '../tiles';
 
 const mapTraversabilityCells = [];
 // A list of x, y pairs, which are the locations in the map that might change
@@ -60,16 +60,16 @@ export function getTileTraversabilityInCells(tileID) {
   // Start with all cells being traversable
   const gridTile = init2dArray(CPTL, CPTL, 1);
 
-  if (!propertyFromId(tileID, 'traversable')) { // tile is not fully traversable
+  if (!getPropertyFromId(tileID, 'traversable')) { // tile is not fully traversable
     const midCell = (CPTL - 1.0) / 2.0;
     for (let i = 0; i < CPTL; i++) {
       for (let j = 0; j < CPTL; j++) {
-        if (propertyFromId(tileID, 'radius')) {
+        if (getPropertyFromId(tileID, 'radius')) {
           const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
           const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
           const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
           const pixelDist = cellDist * PPCL;
-          if (pixelDist <= propertyFromId(tileID, 'radius')) {
+          if (pixelDist <= getPropertyFromId(tileID, 'radius')) {
             gridTile[i][j] = 0;
           } // tile is noncircular and nontraversable
         } else if (isTileType(tileID, 'ANGLE_WALL_1')) {
@@ -104,7 +104,7 @@ export function initMapTraversabilityCells(map) {
   init2dArray(xl * CPTL, yl * CPTL, 0, mapTraversabilityCells);
   for (let x = 0; x < xl; x++) {
     for (let y = 0; y < yl; y++) {
-      if (!propertyFromId(map[x][y], 'permanent')) {
+      if (!getPropertyFromId(map[x][y], 'permanent')) {
         tilesToUpdate.push({ x, y });
         tilesToUpdateValues.push(map[x][y]);
       }
