@@ -1,5 +1,6 @@
 import test from 'tape';
 import {
+  initMapTraversabilityCells,
   init2dArray,
   fillGridWithSubgrid,
   getTileTraversabilityInCells,
@@ -322,14 +323,14 @@ test('getTileTraversabilityInCells: throws errors for invalid inputs', t => {
 test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
   // initialize current player as blue
   setupTiles(true);
+  MapRewireAPI.__Rewire__('CPTL', 1);
   // create a dummy map from bombs, spikes, gates, and regular tiles
   const bomb = getTileId('BOMB');
+  const inactivebomb = getTileId('INACTIVE_BOMB');
   const spike = getTileId('SPIKE');
   const redgate = getTileId('RED_GATE');
   const bluegate = getTileId('BLUE_GATE');
   const blank = getTileId('REGULAR_FLOOR');
-
-  MapRewireAPI.__Rewire__('CPTL', 1);
   /* eslint-disable no-multi-spaces, array-bracket-spacing */
   const mockMap = [
     [bomb,    blank,    redgate],
@@ -343,6 +344,15 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
     [0, 1, 1],
     [1, 0, 0],
   ];
+  initMapTraversabilityCells(mockMap);
+  t.same(getMapTraversabilityInCells(mockMap), expected);
+
+  mockMap[0][0] = inactivebomb;
+  expected = [
+    [1, 1, 0],
+    [0, 1, 1],
+    [1, 0, 0],
+  ];
   t.same(getMapTraversabilityInCells(mockMap), expected);
   MapRewireAPI.__ResetDependency__('CPTL');
 
@@ -350,10 +360,11 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
   MapRewireAPI.__Rewire__('CPTL', 1);
   setupTiles(false);
   expected = [
-    [0, 1, 1],
+    [1, 1, 1],
     [1, 0, 1],
     [1, 0, 0],
   ];
+  initMapTraversabilityCells(mockMap);
   t.same(getMapTraversabilityInCells(mockMap), expected);
 
   MapRewireAPI.__ResetDependency__('CPTL');
@@ -388,6 +399,7 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
     [1, 1, 0, 0, 0, 0],
     [1, 1, 0, 0, 0, 0],
   ];
+  initMapTraversabilityCells(mockMap);
   t.same(getMapTraversabilityInCells(mockMap), expected);
 
   MapRewireAPI.__Rewire__('CPTL', 10);
@@ -405,6 +417,8 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
     [1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ];
+
+  initMapTraversabilityCells(smallMap);
   t.same(getMapTraversabilityInCells(smallMap), expected);
 
   MapRewireAPI.__ResetDependency__('CPTL');

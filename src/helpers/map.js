@@ -1,6 +1,10 @@
 import { PPTL, CPTL, PPCL } from '../constants';
-import { assertGridInBounds } from '../utils/asserts';
+import { assert, assertGridInBounds } from '../utils/asserts';
 import { getTileProperty, tileIsType } from '../tiles';
+
+let mapTraversabilityCells;
+let tilesToUpdate;
+let tilesToUpdateValues;
 
 
 /*
@@ -89,6 +93,31 @@ export function getTileTraversabilityInCells(tileID) {
   return gridTile;
 }
 
+export function initMapTraversabilityCells(map) {
+  mapTraversabilityCells = [];
+  tilesToUpdate = [];
+  tilesToUpdateValues = [];
+  const xl = map.length;
+  const yl = map[0].length;
+  let x;
+  for (x = 0; x < xl * CPTL; x++) {
+    mapTraversabilityCells[x] = new Array(yl * CPTL);
+  }
+  for (x = 0; x < xl; x++) {
+    for (let y = 0; y < yl; y++) {
+      if (!getTileProperty(map[x][y], 'permanent')) {
+        tilesToUpdate.push({ x, y });
+        tilesToUpdateValues.push(map[x][y]);
+      }
+      fillGridWithSubgrid(
+        mapTraversabilityCells,
+        getTileTraversabilityInCells(map[x][y]),
+        x * CPTL,
+        y * CPTL,
+      );
+    }
+  }
+}
 
 /*
  * Returns a 2D array of traversable (1) and blocked (0) cells. Size of return grid is
@@ -102,24 +131,20 @@ export function getTileTraversabilityInCells(tileID) {
  * @param {number} map - 2D array representing the Tagpro map
  */
 export function getMapTraversabilityInCells(map) {
-  const xl = map.length;
-  const yl = map[0].length;
-  const emptyCells = [];
-  let x;
-  for (x = 0; x < xl * CPTL; x++) {
-    emptyCells[x] = new Array(yl * CPTL);
-  }
-  for (x = 0; x < xl; x++) {
-    for (let y = 0; y < yl; y++) {
+  assert(tilesToUpdate.length === tilesToUpdateValues.length);
+  for (let i = 0; i < tilesToUpdate.length; i++) {
+    const xy = tilesToUpdate[i];
+    if (map[xy.x][xy.y] !== tilesToUpdateValues[i]) {
+      tilesToUpdateValues[i] = map[xy.x][xy.y];
       fillGridWithSubgrid(
-        emptyCells,
-        getTileTraversabilityInCells(map[x][y]),
-        x * CPTL,
-        y * CPTL,
+        mapTraversabilityCells,
+        getTileTraversabilityInCells(map[xy.x][xy.y]),
+        xy.x * CPTL,
+        xy.y * CPTL,
       );
     }
   }
-  return emptyCells;
+  return mapTraversabilityCells;
 }
 
 
