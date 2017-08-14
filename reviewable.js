@@ -95,6 +95,4 @@ const reviewableStatus = {
   shortDescription: shortReasons.join(', '),
 };
 
-// console.log(reviewableStatus);
-
 return reviewableStatus;
