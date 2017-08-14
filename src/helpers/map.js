@@ -114,7 +114,7 @@ export function initMapTraversabilityCells(map) {
       if (!getPropertyFromId(map[x][y], 'permanent')) {
         tilesToUpdate.push({ x, y });
         tilesToUpdateValues.push(map[x][y]);
-        if (!getPropertyFromId(map[x][y], 'traverable')) {
+        if (!getPropertyFromId(map[x][y], 'traversable')) {
           updateNTSprites(x, y, mapTraversabilityCells);
         }
       } else if (!getPropertyFromId(map[x][y], 'traversable')) {
