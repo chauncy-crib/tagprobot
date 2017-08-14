@@ -1,4 +1,5 @@
 import test from 'tape';
+import sinon from 'sinon';
 import {
   initMapTraversabilityCells,
   init2dArray,
@@ -346,6 +347,8 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
     { x: 2, y: 2 },
   ]);
   MapRewireAPI.__Rewire__('tilesToUpdateValues', mockTilesToUpdateValues);
+  let mockUpdateNTSprites = sinon.spy();
+  MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
 
   /* eslint-disable no-multi-spaces, array-bracket-spacing */
   const mockMap = [
@@ -362,7 +365,10 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
   ];
   t.same(getMapTraversabilityInCells(mockMap), expected);
   t.same(mockTilesToUpdateValues, [bomb, redgate, redgate, bluegate, bomb]);
+  t.is(mockUpdateNTSprites.callCount, 5);
 
+  mockUpdateNTSprites = sinon.spy();
+  MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
   mockMap[0][0] = inactivebomb;
   expected = [
     [1, 1, 0],
@@ -371,7 +377,10 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
   ];
   t.same(getMapTraversabilityInCells(mockMap), expected);
   t.same(mockTilesToUpdateValues, [inactivebomb, redgate, redgate, bluegate, bomb]);
+  t.is(mockUpdateNTSprites.callCount, 5);
 
+  mockUpdateNTSprites = sinon.spy();
+  MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
   // change the gate colors
   mockMap[0][2] = bluegate;
   mockMap[1][0] = bluegate;
@@ -383,11 +392,13 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
   ];
   t.same(getMapTraversabilityInCells(mockMap), expected);
   t.same(mockTilesToUpdateValues, [inactivebomb, bluegate, bluegate, redgate, bomb]);
+  t.is(mockUpdateNTSprites.callCount, 5);
 
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('mapTraversabilityCells');
   MapRewireAPI.__ResetDependency__('tilesToUpdate');
   MapRewireAPI.__ResetDependency__('tilesToUpdateValues');
+  MapRewireAPI.__ResetDependency__('updateNTSprites');
   teardownTiles();
 
   t.end();
@@ -423,6 +434,8 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
   MapRewireAPI.__Rewire__('tilesToUpdateValues', mockTilesToUpdateValues);
 
   MapRewireAPI.__Rewire__('CPTL', 2);
+  let mockUpdateNTSprites = sinon.spy();
+  MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
   /* eslint-disable no-multi-spaces, array-bracket-spacing */
   const mockMap = [
     [bomb,    blank,    redgate],
@@ -440,7 +453,10 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
   ];
   t.same(getMapTraversabilityInCells(mockMap), expected);
   t.same(mockTilesToUpdateValues, [bomb, redgate, redgate, bluegate, bomb]);
+  t.is(mockUpdateNTSprites.callCount, 5);
 
+  mockUpdateNTSprites = sinon.spy();
+  MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
   mockTilesToUpdateValues = [inactivebomb, bluegate];
   MapRewireAPI.__Rewire__('mapTraversabilityCells', [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -477,12 +493,14 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
 
   t.same(getMapTraversabilityInCells(smallMap), expected);
   t.same(mockTilesToUpdateValues, [bomb, bluegate]);
+  t.is(mockUpdateNTSprites.callCount, 2);
 
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('PPCL');
   MapRewireAPI.__ResetDependency__('mapTraversabilityCells');
   MapRewireAPI.__ResetDependency__('tilesToUpdate');
   MapRewireAPI.__ResetDependency__('tilesToUpdateValues');
+  MapRewireAPI.__ResetDependency__('updateNTSprites');
   teardownTiles();
 
   t.end();
@@ -515,6 +533,11 @@ test('initMapTraversabilityCells: stores correct values in mapTraversabilityCell
   MapRewireAPI.__Rewire__('mapTraversabilityCells', mockMapTraversabilityCells);
   MapRewireAPI.__Rewire__('tilesToUpdate', mockTilesToUpdate);
   MapRewireAPI.__Rewire__('tilesToUpdateValues', mockTilesToUpdateValues);
+  const mockUpdateNTSprites = sinon.spy();
+  MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
+  const mockGeneratePermanentNTSprites = sinon.spy();
+  MapRewireAPI.__Rewire__('generatePermanentNTSprites', mockGeneratePermanentNTSprites);
+
 
   initMapTraversabilityCells(mockMap);
 
@@ -531,6 +554,8 @@ test('initMapTraversabilityCells: stores correct values in mapTraversabilityCell
     { x: 2, y: 2 },
   ]);
   t.same(mockTilesToUpdateValues, [bomb, redgate, redgate, bluegate, bomb]);
+  t.ok(mockGeneratePermanentNTSprites.calledOnce); // one permanent NT object - the spike
+  t.is(mockUpdateNTSprites.callCount, 4); // four non-permanent NT objects
 
   MapRewireAPI.__ResetDependency__('CPTL');
   MapRewireAPI.__ResetDependency__('mapTraversabilityCells');
