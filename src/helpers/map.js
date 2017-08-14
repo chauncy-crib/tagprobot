@@ -1,6 +1,6 @@
 import { PPTL, CPTL, PPCL } from '../constants';
 import { assertGridInBounds } from '../utils/asserts';
-import { getTileProperty, isTileType } from '../tiles';
+import { getTileProperty, tileIsType } from '../tiles';
 
 
 /*
@@ -64,19 +64,19 @@ export function getTileTraversabilityInCells(tileID) {
           if (pixelDist <= getTileProperty(tileID, 'radius')) {
             gridTile[i][j] = 0;
           } // tile is noncircular and nontraversable
-        } else if (isTileType(tileID, 'ANGLE_WALL_1')) {
+        } else if (tileIsType(tileID, 'ANGLE_WALL_1')) {
           if (j - i >= 0) {
             gridTile[i][j] = 0;
           }
-        } else if (isTileType(tileID, 'ANGLE_WALL_2')) {
+        } else if (tileIsType(tileID, 'ANGLE_WALL_2')) {
           if (i + j <= CPTL - 1) {
             gridTile[i][j] = 0;
           }
-        } else if (isTileType(tileID, 'ANGLE_WALL_3')) {
+        } else if (tileIsType(tileID, 'ANGLE_WALL_3')) {
           if (j - i <= 0) {
             gridTile[i][j] = 0;
           }
-        } else if (isTileType(tileID, 'ANGLE_WALL_4')) {
+        } else if (tileIsType(tileID, 'ANGLE_WALL_4')) {
           if (i + j >= CPTL - 1) {
             gridTile[i][j] = 0;
           }

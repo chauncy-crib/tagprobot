@@ -8,7 +8,7 @@ import sinon from 'sinon';
 import {
   computeTileInfo,
   getTileProperty,
-  isTileType,
+  tileIsType,
   __RewireAPI__ as TileRewireAPI,
 } from '../src/tiles';
 
@@ -119,39 +119,39 @@ test('getTileProperty: throws error given tileIds that don\'t exist', t => {
 });
 
 
-test('isTileType: returns true when tileId and name match', t => {
+test('tileIsType: returns true when tileId and name match', t => {
   setupTiles(true);
-  t.ok(isTileType(1.1, 'ANGLE_WALL_1'));
-  t.ok(isTileType(4, 'BLUE_FLAG'));
-  t.ok(isTileType('5.1', 'SPEEDPAD_INACTIVE'));
-  t.ok(isTileType('16.1', 'YELLOW_FLAG_TAKEN'));
-  t.ok(isTileType(18, 'BLUE_ENDZONE'));
+  t.ok(tileIsType(1.1, 'ANGLE_WALL_1'));
+  t.ok(tileIsType(4, 'BLUE_FLAG'));
+  t.ok(tileIsType('5.1', 'SPEEDPAD_INACTIVE'));
+  t.ok(tileIsType('16.1', 'YELLOW_FLAG_TAKEN'));
+  t.ok(tileIsType(18, 'BLUE_ENDZONE'));
   teardownTiles();
 
   t.end();
 });
 
 
-test('isTileType: returns false when tileId and name do not match', t => {
+test('tileIsType: returns false when tileId and name do not match', t => {
   setupTiles(true);
-  t.notOk(isTileType(1, 'ANGLE_WALL_1'));
-  t.notOk(isTileType(4, 'RED_FLAG'));
-  t.notOk(isTileType(5.1, 'SPEEDPAD_INACTIVE'));
-  t.notOk(isTileType('16', 'YELLOW_FLAG_TAKEN'));
-  t.notOk(isTileType(17, 'BLUE_ENDZONE'));
+  t.notOk(tileIsType(1, 'ANGLE_WALL_1'));
+  t.notOk(tileIsType(4, 'RED_FLAG'));
+  t.notOk(tileIsType(5.1, 'SPEEDPAD_INACTIVE'));
+  t.notOk(tileIsType('16', 'YELLOW_FLAG_TAKEN'));
+  t.notOk(tileIsType(17, 'BLUE_ENDZONE'));
   teardownTiles();
 
   t.end();
 });
 
 
-test('isTileType: errors when name is not a tile', t => {
+test('tileIsType: errors when name is not a tile', t => {
   setupTiles(true);
-  t.throws(() => { isTileType(1, undefined); });
-  t.throws(() => { isTileType(1, 'potato'); });
-  t.throws(() => { isTileType(1, 'toid'); });
-  t.throws(() => { isTileType(1, ''); });
-  t.throws(() => { isTileType(1, 1); });
+  t.throws(() => { tileIsType(1, undefined); });
+  t.throws(() => { tileIsType(1, 'potato'); });
+  t.throws(() => { tileIsType(1, 'toid'); });
+  t.throws(() => { tileIsType(1, ''); });
+  t.throws(() => { tileIsType(1, 1); });
   teardownTiles();
 
   t.end();
