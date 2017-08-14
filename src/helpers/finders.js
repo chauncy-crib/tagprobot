@@ -8,7 +8,7 @@ import { getTileId } from '../tiles';
 /*
  * Returns the position of the endzone you should return a the flag to.
  *
- * @return {object} - object with the endzone's position in pixels, x and y, and
+ * @return {Object} - object with the endzone's position in pixels, x and y, and
  * in cells, xc and yc
  */
 export function findMyEndzone() {
@@ -20,7 +20,7 @@ export function findMyEndzone() {
 /*
  * Returns the position (in pixels) of the endzone you should defend
  *
- * @return {object} - object with the endzone's position in pixels, x and y, and
+ * @return {Object} - object with the endzone's position in pixels, x and y, and
  * in cells, xc and yc
  */
 export function findEnemyEndzone() {
@@ -32,7 +32,7 @@ export function findEnemyEndzone() {
 /*
  * Returns the position (in pixels) of the specified flag station, even if empty
  *
- * @return {object} - object with the flag station's position in pixels, x and
+ * @return {Object} - object with the flag station's position in pixels, x and
  * y, and in cells, xc and yc
  */
 export function findFlagStation() {
@@ -43,7 +43,7 @@ export function findFlagStation() {
 /*
  * Returns the enemy FC object from the tagpro.players array, if in view
  *
- * @return {object} - the enemy FC object
+ * @return {Object} - the enemy FC object
  */
 export function findEnemyFC() {
   return _.find(tagpro.players, player => (
