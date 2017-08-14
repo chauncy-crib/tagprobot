@@ -95,6 +95,6 @@ export function getTileId(name) {
  * @param {String} name - the name of a tile
  * @return - true if tileId is the id of the named tile
  */
-export function isTileType(tileId, name) {
+export function tileIsType(tileId, name) {
   return getTileId(name) === tileId;
 }
