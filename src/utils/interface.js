@@ -63,7 +63,7 @@ export function onKeyDown(event) {
 /*
  * Sends key events to move to a destination.
  *
- * @param {object} destination - object with the position to move to, in pixels,
+ * @param {Object} destination - object with the position to move to, in pixels,
  * x and y
  */
 export function move(destination) {
