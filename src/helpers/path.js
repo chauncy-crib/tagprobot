@@ -6,8 +6,8 @@ import { assert, assertGridInBounds } from '../../src/utils/asserts';
  * represented as a grid of 1 and 0, where 1s are traversable and 0s are not. Uses A* to calculate
  * the best path
  *
- * @param {object} me - object with bot's position in cells, xc and yc
- * @param {object} target - object with target's position in cells, xc and yc
+ * @param {Object} me - object with bot's position in cells, xc and yc
+ * @param {Object} target - object with target's position in cells, xc and yc
  * @param {number} grid - 2D array of cells. Traversable cells are 1s, others are 0.
  */
 export function getShortestPath(me, target, grid, diagonal = false) {
@@ -35,8 +35,8 @@ export function getShortestPath(me, target, grid, diagonal = false) {
  * path as an array of cells returned by getShortestPath(), and returns the
  * position (in cells) that the player should seek toward.
  *
- * @param {object} me - object with bot's position in cells, xc and yc
- * @return {object} - object with target's position in cells, xc and yc
+ * @param {Object} me - object with bot's position in cells, xc and yc
+ * @return {Object} - object with target's position in cells, xc and yc
  */
 export function getTarget(me, shortestPath) {
   assert(shortestPath, 'shortestPath is undefined, there may be no traversable path to the target');
