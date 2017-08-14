@@ -72,22 +72,10 @@ export function computeTileInfo() {
  * @param {String} property - the name of a property stored in tileInfo
  * @return - the property for the input tile
  */
-export function propertyFromId(tileID, property) {
+export function getTileProperty(tileID, property) {
   const tileIDString = String(tileID);
   assert(has(tileNames, tileIDString), `Unknown tileID: ${tileID}`);
   const tileName = tileNames[tileID];
-  return tileInfo[tileName][property];
-}
-
-
-/*
- * @param {number} tileName - the name of the tile whose property we want
- * @param {String} property - the name of a property stored in tileInfo
- * @return - the property for the input tile
- */
-export function propertyFromName(tileName, property) {
-  assert(has(tileInfo, tileName), `Unknown tileName: ${tileName}`);
-  assert(has(tileInfo, [tileName, property]), `${tileName} does not have property ${property}`);
   return tileInfo[tileName][property];
 }
 
