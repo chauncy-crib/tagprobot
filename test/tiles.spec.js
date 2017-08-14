@@ -7,7 +7,7 @@ import sinon from 'sinon';
 
 import {
   computeTileInfo,
-  propertyFromId,
+  getTileProperty,
   isTileType,
   __RewireAPI__ as TileRewireAPI,
 } from '../src/tiles';
@@ -96,23 +96,23 @@ test('computeTileInfo: stores info in tileInfo', t => {
 });
 
 
-test('propertyFromId: returns correct properties', t => {
+test('getTileProperty: returns correct properties', t => {
   setupTiles(true);
-  t.is(propertyFromId(1, 'traversable'), false);
-  t.is(propertyFromId(2, 'traversable'), true);
-  t.is(propertyFromId(13, 'radius'), 15);
+  t.is(getTileProperty(1, 'traversable'), false);
+  t.is(getTileProperty(2, 'traversable'), true);
+  t.is(getTileProperty(13, 'radius'), 15);
   teardownTiles();
 
   t.end();
 });
 
 
-test('propertyFromId: throws error given tileIds that don\'t exist', t => {
+test('getTileProperty: throws error given tileIds that don\'t exist', t => {
   setupTiles(true);
-  t.throws(() => { propertyFromId(1.123, 'traversable'); });
-  t.throws(() => { propertyFromId(-1, 'traversable'); });
-  t.throws(() => { propertyFromId('potato', 'traversable'); });
-  t.throws(() => { propertyFromId(undefined, 'traversable'); });
+  t.throws(() => { getTileProperty(1.123, 'traversable'); });
+  t.throws(() => { getTileProperty(-1, 'traversable'); });
+  t.throws(() => { getTileProperty('potato', 'traversable'); });
+  t.throws(() => { getTileProperty(undefined, 'traversable'); });
   teardownTiles();
 
   t.end();

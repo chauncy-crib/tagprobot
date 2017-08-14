@@ -1,6 +1,6 @@
 import { PPTL, CPTL, PPCL } from '../constants';
 import { assertGridInBounds } from '../utils/asserts';
-import { propertyFromId, isTileType } from '../tiles';
+import { getTileProperty, isTileType } from '../tiles';
 
 
 /*
@@ -52,16 +52,16 @@ export function getTileTraversabilityInCells(tileID) {
   // Start with all cells being traversable
   const gridTile = init2dArray(CPTL, CPTL, 1);
 
-  if (!propertyFromId(tileID, 'traversable')) { // tile is not fully traversable
+  if (!getTileProperty(tileID, 'traversable')) { // tile is not fully traversable
     const midCell = (CPTL - 1.0) / 2.0;
     for (let i = 0; i < CPTL; i++) {
       for (let j = 0; j < CPTL; j++) {
-        if (propertyFromId(tileID, 'radius')) {
+        if (getTileProperty(tileID, 'radius')) {
           const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
           const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
           const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
           const pixelDist = cellDist * PPCL;
-          if (pixelDist <= propertyFromId(tileID, 'radius')) {
+          if (pixelDist <= getTileProperty(tileID, 'radius')) {
             gridTile[i][j] = 0;
           } // tile is noncircular and nontraversable
         } else if (isTileType(tileID, 'ANGLE_WALL_1')) {
