@@ -13,7 +13,7 @@
  * path, we erase any path that was previously drawn.
  */
 import _ from 'lodash';
-import { PPCL, CPTL } from '../constants';
+import { PPCL, CPTL, pathAlpha, pathColor, ntAlpha, ntColor } from '../constants';
 import { init2dArray } from '../helpers/map';
 import { areVisualsOn } from '../utils/interface';
 
@@ -22,11 +22,6 @@ let pathSprites = []; // a list of the current path sprites drawn
 let tempNTSprites = [];
 // a list of permanent NT sprites. Will always be on map (if visualizations are on)
 const permNTSprites = [];
-
-const pathAlpha = 0.25;
-const pathColor = 0x00ff00;
-const ntAlpha = 0.4;
-const ntColor = 0xff8c00;
 
 
 function getRect(x, y, width, height, alpha, color) {
