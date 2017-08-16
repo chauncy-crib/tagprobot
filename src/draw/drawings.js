@@ -12,87 +12,96 @@
  * nonTraversableCellSprites to store the sprites we're going to draw. Then, before drawing the
  * path, we erase any path that was previously drawn.
  */
-import { PPCL } from '../constants';
-import { areVisualsOn } from '../utils/interface';
-import { clearSprites, drawSprites } from './utils';
+import _ from 'lodash';
+import { PPCL, CPTL } from '../constants';
+import { init2dArray } from '../helpers/map';
 
-let pathSprites = [];
-let nonTraversableCellSprites = [];
+let pathSprites = []; // a list of the current path sprites drawn
+// a grid of NT-sprites, which are subject to change
+const tempNTSprites = [];
+// a list of permanent NT sprites. Will always be on map (if visualizations are on)
+const permNTSprites = [];
 
-/*
- * Takes in an array of cells, and creates an array of PIXI.Graphics objects (which the tagpro API
- * knows how to draw) and returns them
- *
- * See: http://pixijs.download/dev/docs/PIXI.Graphics.html
- *
- * @param path: an array of cells, each with an x and y coordinate
- * @param hexColor: the color the sprites should be
- * @param alpha: the opacity of the path drawing, 0-1. 1 = opaque.
- */
-export function createPathSprites(path, hexColor, alpha) {
-  const sprites = []; // initialize global object used for storage of PIXI.Graphics
-  path.forEach(cell => { // create a PIXI.Graphics object for each cell in the path
-    // note: all units in pixels
-    const rect = new PIXI.Graphics();
-    rect.beginFill(hexColor).drawRect(
-      cell.x * PPCL, // x coordinate
-      cell.y * PPCL, // y coordinate
-      PPCL, // width
-      PPCL, // height
-    ).alpha = alpha;
-    sprites.push(rect);
-  });
-  return sprites;
+const pathAlpha = 0.25;
+const pathColor = 0x00ff00;
+const ntAlpha = 0.4;
+const ntColor = 0xff8c00;
+
+
+function getRect(x, y, width, height, alpha, color) {
+  const rect = new PIXI.Graphics();
+  rect.beginFill(color).drawRect(
+    x,
+    y,
+    width,
+    height,
+  ).alpha = alpha;
 }
 
-/*
- * Takes in an grid of cells, and creates an array of PIXI.Graphics objects for each non-traversable
- * object and returns them.
- *
- * @param traversableCells: an grid of cells
- * @param notTraversableColor: the color the sprites should be
- * @param alpha: the opacity: 0-1. 1 = opaque.
- */
-function createNonTraversableCellSprites(traversableCells, notTraversableColor, alpha) {
-  const sprites = [];
-  for (let x = 0; x < traversableCells.length; x++) {
-    for (let y = 0; y < traversableCells[0].length; y++) {
-      // if cell is non traversable and not an empty space
-      if (!traversableCells[x][y]) {
-        const rect = new PIXI.Graphics();
-        rect.beginFill(notTraversableColor).drawRect(
-          x * PPCL, // x coordinate
-          y * PPCL, // y coordinate
-          PPCL, // width
-          PPCL, // height
-        ).alpha = alpha;
-        sprites.push(rect);
+export function updatePath(path) {
+  _.forEach(path, p => tagpro.renderer.background.removeChild(p));
+  pathSprites = [];
+  _.forEach(path, cell => {
+    const sprite = getRect(cell.x * PPCL, cell.y * PPCL, PPCL, PPCL, pathAlpha, pathColor);
+    path.append(sprite);
+    tagpro.renderer.background.addChild(sprite);
+  });
+}
+
+export function clearSprites() {
+  // get a list of all sprites
+  const allSprites = permNTSprites
+    .concat(pathSprites)
+    // flatten the tempNTSprites grid, and remove null values
+    .concat(_.filter(_.flatten(tempNTSprites)), x => !_.isNull(x));
+  _.forEach(allSprites, s => tagpro.renderer.background.removeChild(s));
+}
+
+export function drawPermanentNTSprites() {
+  _.forEach(permNTSprites, s => tagpro.renderer.background.addChild(s));
+}
+
+export function generatePermanentNTSprites(x, y, cellTraversabilities) {
+  for (let i = x * CPTL; i < (x + 1) * CPTL; i++) {
+    for (let j = y * CPTL; j < (y + 1) * CPTL; j++) {
+      // if we don't have a sprite already there and there should be one,
+      // draw it
+      if (!cellTraversabilities[i][j]) {
+        const sprite = getRect(i * PPCL, j * PPCL, PPCL, PPCL, ntAlpha, ntColor);
+        permNTSprites.push(sprite);
       }
     }
   }
-  return sprites;
 }
 
 /*
- * Used to draw the bot's planned path. Takes in a reference to a list of cells
- * returned by getShortestPath() in helpers/path.js and draws the corresponding
- * cells in green on the map.
+ * Takes in an grid of cellTraversabilities, and the x, y tile locations that we should check for
+ * updates, and updates the sprites drawn on the tagpro map
+ *
+ * @param {number} x: x location, in tiles
+ * @param {number} y: y location, in tiles
+ * @param cellTraversabilities: the cell-traversabilities of the tagpro map.
  */
-export function drawPlannedPath(path, hexColor = 0x00ff00, alpha = 0.25) {
-  pathSprites = clearSprites(pathSprites); // clear the previous path from the map
-  if (areVisualsOn()) {
-    // create the PIXI.Graphics objecs we're drawing
-    pathSprites = createPathSprites(path, hexColor, alpha);
+export function updateNTSprites(x, y, cellTraversabilities) {
+  if (_.isEmpty(tempNTSprites)) {
+    init2dArray(tagpro.map.length, tagpro.map[0].length, null, tempNTSprites);
   }
-  drawSprites(pathSprites); // put the PIXI.Graphics objects on the map
+  for (let i = x * CPTL; i < (x + 1) * CPTL; i++) {
+    for (let j = y * CPTL; j < (y + 1) * CPTL; j++) {
+      // if we don't have a sprite already there and there should be one,
+      // draw it
+      if (_.isNull(tempNTSprites[i][j]) && !cellTraversabilities[i][j]) {
+        const sprite = getRect(i * PPCL, j * PPCL, PPCL, PPCL, ntAlpha, ntColor);
+        tempNTSprites[i][j] = sprite;
+        tagpro.renderer.layers.background.addChild(sprite);
+      // else if we already have a sprite there and there shouldn't be one,
+      // remove it
+      } else if (!_.isNull(tempNTSprites[i][j]) && cellTraversabilities[i][j]) {
+        const sprite = tempNTSprites[i][j];
+        tagpro.renderer.layers.background.removeChild(sprite);
+        tempNTSprites[i][j] = null;
+      }
+    }
+  }
 }
 
-export function drawNonTraversableCells(traversableCells, notTraversableColor = 0xff8c00,
-  alpha = 0.4) {
-  nonTraversableCellSprites = clearSprites(nonTraversableCellSprites);
-  if (areVisualsOn()) {
-    nonTraversableCellSprites = createNonTraversableCellSprites(traversableCells,
-      notTraversableColor, alpha);
-  }
-  drawSprites(nonTraversableCellSprites);
-}
