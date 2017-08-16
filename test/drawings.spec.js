@@ -81,47 +81,53 @@ test('updatePath', tester => {
 });
 
 
-test('clearSprites: removes all sprites in permNTSprites, pathSprites, and tempNTSprites', t => {
-  const mockRemoveChild = sinon.spy();
-  global.tagpro = { renderer: { layers: { background: { removeChild: mockRemoveChild } } } };
+test('clearSprites', tester => {
+  tester.test('removes all sprites in permNTSprites, pathSprites, and tempNTSprites', t => {
+    const mockRemoveChild = sinon.spy();
+    global.tagpro = { renderer: { layers: { background: { removeChild: mockRemoveChild } } } };
 
-  DrawRewireAPI.__Rewire__('permNTSprites', [1, 2]);
-  DrawRewireAPI.__Rewire__('pathSprites', [3, 4]);
-  DrawRewireAPI.__Rewire__('tempNTSprites', [[5, null], [null, 6]]);
+    DrawRewireAPI.__Rewire__('permNTSprites', [1, 2]);
+    DrawRewireAPI.__Rewire__('pathSprites', [3, 4]);
+    DrawRewireAPI.__Rewire__('tempNTSprites', [[5, null], [null, 6]]);
 
-  clearSprites();
+    clearSprites();
 
-  t.is(mockRemoveChild.callCount, 6);
-  t.ok(mockRemoveChild.calledWithExactly(1));
-  t.ok(mockRemoveChild.calledWithExactly(2));
-  t.ok(mockRemoveChild.calledWithExactly(3));
-  t.ok(mockRemoveChild.calledWithExactly(4));
-  t.ok(mockRemoveChild.calledWithExactly(5));
-  t.ok(mockRemoveChild.calledWithExactly(6));
+    t.is(mockRemoveChild.callCount, 6);
+    t.ok(mockRemoveChild.calledWithExactly(1));
+    t.ok(mockRemoveChild.calledWithExactly(2));
+    t.ok(mockRemoveChild.calledWithExactly(3));
+    t.ok(mockRemoveChild.calledWithExactly(4));
+    t.ok(mockRemoveChild.calledWithExactly(5));
+    t.ok(mockRemoveChild.calledWithExactly(6));
 
-  DrawRewireAPI.__ResetDependency__('permNTSprites');
-  DrawRewireAPI.__ResetDependency__('pathSprites');
-  DrawRewireAPI.__ResetDependency__('tempNTSprites');
+    DrawRewireAPI.__ResetDependency__('permNTSprites');
+    DrawRewireAPI.__ResetDependency__('pathSprites');
+    DrawRewireAPI.__ResetDependency__('tempNTSprites');
 
-  t.end();
+    t.end();
+  });
+  tester.end();
 });
 
 
-test('drawPermanentNTSprites: adds permanent sprites to the renderer', t => {
-  const mockAddChild = sinon.spy();
-  global.tagpro = { renderer: { layers: { background: { addChild: mockAddChild } } } };
-  DrawRewireAPI.__Rewire__('permNTSprites', ['sprite1', 'sprite2', 'sprite3']);
+test('drawPermanentNTSprites', tester => {
+  tester.test('adds permanent sprites to the renderer', t => {
+    const mockAddChild = sinon.spy();
+    global.tagpro = { renderer: { layers: { background: { addChild: mockAddChild } } } };
+    DrawRewireAPI.__Rewire__('permNTSprites', ['sprite1', 'sprite2', 'sprite3']);
 
-  drawPermanentNTSprites();
+    drawPermanentNTSprites();
 
-  t.is(mockAddChild.callCount, 3);
-  t.ok(mockAddChild.calledWithExactly('sprite1'));
-  t.ok(mockAddChild.calledWithExactly('sprite2'));
-  t.ok(mockAddChild.calledWithExactly('sprite3'));
+    t.is(mockAddChild.callCount, 3);
+    t.ok(mockAddChild.calledWithExactly('sprite1'));
+    t.ok(mockAddChild.calledWithExactly('sprite2'));
+    t.ok(mockAddChild.calledWithExactly('sprite3'));
 
-  DrawRewireAPI.__ResetDependency__('permNTSprites');
+    DrawRewireAPI.__ResetDependency__('permNTSprites');
 
-  t.end();
+    t.end();
+  });
+  tester.end();
 });
 
 
@@ -190,43 +196,46 @@ test('generatePermanentNTSprites', tester => {
 });
 
 
-test('updateNTSprites: adds/deletes the correct sprites from tempNTSprites', t => {
-  const mockGetPixiRect = sinon.stub();
-  mockGetPixiRect.withArgs(0, 80, 20, 20).returns('rect1');
-  mockGetPixiRect.withArgs(20, 60, 20, 20).returns('rect2');
-  mockGetPixiRect.withArgs(20, 100, 20, 20).returns('rect3');
+test('updateNTSprites', tester => {
+  tester.test('adds/deletes the correct sprites from tempNTSprites', t => {
+    const mockGetPixiRect = sinon.stub();
+    mockGetPixiRect.withArgs(0, 80, 20, 20).returns('rect1');
+    mockGetPixiRect.withArgs(20, 60, 20, 20).returns('rect2');
+    mockGetPixiRect.withArgs(20, 100, 20, 20).returns('rect3');
 
-  const mockTempNTSprites = [
-    [null, null, 1, 1, null, 1],
-    [null, 1, 1, null, 1, null],
-  ];
-  const cellTraversabilities = [
-    [1, 1, 0, 0, 0, 1],
-    [0, 0, 1, 0, 0, 0],
-  ];
+    const mockTempNTSprites = [
+      [null, null, 1, 1, null, 1],
+      [null, 1, 1, null, 1, null],
+    ];
+    const cellTraversabilities = [
+      [1, 1, 0, 0, 0, 1],
+      [0, 0, 1, 0, 0, 0],
+    ];
 
-  const mockAddChild = sinon.spy();
-  const mockRemoveChild = sinon.spy();
-  global.tagpro = { renderer: { layers: { background: {
-    addChild: mockAddChild, removeChild: mockRemoveChild } } } };
+    const mockAddChild = sinon.spy();
+    const mockRemoveChild = sinon.spy();
+    global.tagpro = { renderer: { layers: { background: {
+      addChild: mockAddChild, removeChild: mockRemoveChild } } } };
 
-  DrawRewireAPI.__Rewire__('CPTL', 2);
-  DrawRewireAPI.__Rewire__('PPCL', 20);
-  DrawRewireAPI.__Rewire__('getPixiRect', mockGetPixiRect);
-  DrawRewireAPI.__Rewire__('tempNTSprites', mockTempNTSprites);
+    DrawRewireAPI.__Rewire__('CPTL', 2);
+    DrawRewireAPI.__Rewire__('PPCL', 20);
+    DrawRewireAPI.__Rewire__('getPixiRect', mockGetPixiRect);
+    DrawRewireAPI.__Rewire__('tempNTSprites', mockTempNTSprites);
 
-  updateNTSprites(0, 1, cellTraversabilities);
-  updateNTSprites(0, 2, cellTraversabilities);
+    updateNTSprites(0, 1, cellTraversabilities);
+    updateNTSprites(0, 2, cellTraversabilities);
 
-  t.same(mockTempNTSprites, [
-    [null, null, 1, 1, 'rect1', null],
-    [null, 1, null, 'rect2', 1, 'rect3'],
-  ]);
+    t.same(mockTempNTSprites, [
+      [null, null, 1, 1, 'rect1', null],
+      [null, 1, null, 'rect2', 1, 'rect3'],
+    ]);
 
-  DrawRewireAPI.__ResetDependency__('CPTL');
-  DrawRewireAPI.__ResetDependency__('PPCL');
-  DrawRewireAPI.__ResetDependency__('getPixiRect');
-  DrawRewireAPI.__ResetDependency__('tempNTSprites');
+    DrawRewireAPI.__ResetDependency__('CPTL');
+    DrawRewireAPI.__ResetDependency__('PPCL');
+    DrawRewireAPI.__ResetDependency__('getPixiRect');
+    DrawRewireAPI.__ResetDependency__('tempNTSprites');
 
-  t.end();
+    t.end();
+  });
+  tester.end();
 });
