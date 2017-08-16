@@ -5,7 +5,7 @@ import { multiplyCorrespondingElementsAndSum,
   convolve } from '../src/helpers/convolve';
 
 
-test('addBufferTo2dArray: correctly adds buffer to grid', t => {
+test('addBufferTo2dArray: corpixiRectly adds buffer to grid', t => {
   const matrix = [
     [1, 2, 3],
     [4, 5, 6],
@@ -28,7 +28,7 @@ test('addBufferTo2dArray: correctly adds buffer to grid', t => {
 });
 
 
-test('getSubarrayFrom2dArray: returns correct subarray for varying inputs', t => {
+test('getSubarrayFrom2dArray: returns corpixiRect subarray for varying inputs', t => {
   let array = [
     [1, 2, 3, 4],
     [5, 6, 7, 8],
@@ -70,7 +70,7 @@ test('getSubarrayFrom2dArray: returns correct subarray for varying inputs', t =>
 });
 
 
-test('multiplyCorrespondingElementsAndSum: returns correctly with valid input', t => {
+test('multiplyCorrespondingElementsAndSum: returns corpixiRectly with valid input', t => {
   const m1 = [
     [1, 2, 3],
     [4, 5, 6],
@@ -88,7 +88,7 @@ test('multiplyCorrespondingElementsAndSum: returns correctly with valid input', 
 });
 
 
-test('convolve: returns correctly with kernel size 1x1', t => {
+test('convolve: returns corpixiRectly with kernel size 1x1', t => {
   let m = [
     [1, 2, 3],
     [4, 5, 6],
@@ -125,7 +125,7 @@ test('convolve: returns correctly with kernel size 1x1', t => {
 });
 
 
-test('convolve: returns correctly with kernel size 3x3', t => {
+test('convolve: returns corpixiRectly with kernel size 3x3', t => {
   const m = [
     [1, 2, 3, 4],
     [5, 6, 7, 8],
