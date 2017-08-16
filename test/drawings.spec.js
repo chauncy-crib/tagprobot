@@ -1,11 +1,15 @@
 import test from 'tape';
 import sinon from 'sinon';
 
-import { updatePath, __RewireAPI__ as DrawRewireAPI } from '../src/draw/drawings';
+import { updatePath,
+  clearSprites,
+  drawPermanentNTSprites,
+  generatePermanentNTSprites,
+  updateNTSprites,
+  __RewireAPI__ as DrawRewireAPI } from '../src/draw/drawings';
 
 
 test('updatePath', tester => {
-
   tester.test('checks areVisualsOn', t => {
     const mockAreVisualsOn = sinon.stub().returns(false);
     DrawRewireAPI.__Rewire__('areVisualsOn', mockAreVisualsOn);
@@ -20,15 +24,20 @@ test('updatePath', tester => {
     const mockPathSprites = ['sprite1', 'sprite2', 'sprite3'];
     global.tagpro = { renderer: { layers: { background:
       { removeChild: mockRemoveChild, addChild: () => {} } } } };
+
     DrawRewireAPI.__Rewire__('areVisualsOn', mockAreVisualsOn);
     DrawRewireAPI.__Rewire__('pathSprites', mockPathSprites);
+
     updatePath();
+
     t.ok(mockRemoveChild.calledThrice);
     t.ok(mockRemoveChild.getCall(0).calledWithExactly('sprite1'));
     t.ok(mockRemoveChild.getCall(1).calledWithExactly('sprite2'));
     t.ok(mockRemoveChild.getCall(2).calledWithExactly('sprite3'));
+
     DrawRewireAPI.__ResetDependency__('areVisualsOn');
     DrawRewireAPI.__ResetDependency__('pathSprites');
+
     t.end();
   });
 
@@ -41,27 +50,183 @@ test('updatePath', tester => {
     mockGetRect.onCall(1).returns('rect2');
     global.tagpro = { renderer: { layers: { background:
       { removeChild: () => {}, addChild: mockAddChild } } } };
+
     DrawRewireAPI.__Rewire__('areVisualsOn', mockAreVisualsOn);
     DrawRewireAPI.__Rewire__('pathSprites', mockPathSprites);
     DrawRewireAPI.__Rewire__('getRect', mockGetRect);
     DrawRewireAPI.__Rewire__('PPCL', 1);
+
     updatePath([
       { x: 0, y: 1 },
       { x: 2, y: 3 },
     ]);
+
     t.ok(mockGetRect.calledTwice);
     t.ok(mockAddChild.calledTwice);
-    t.ok(mockGetRect.getCall(0).calledWith(0, 1));
-    t.ok(mockGetRect.getCall(1).calledWith(2, 3));
-    t.ok(mockAddChild.getCall(0).calledWith('rect1'));
-    t.ok(mockAddChild.getCall(1).calledWith('rect2'));
+    t.ok(mockGetRect.calledWith(0, 1));
+    t.ok(mockGetRect.calledWith(2, 3));
+    t.ok(mockAddChild.calledWithExactly('rect1'));
+    t.ok(mockAddChild.calledWithExactly('rect2'));
     t.same(mockPathSprites, ['rect1', 'rect2']);
+
     DrawRewireAPI.__ResetDependency__('areVisualsOn');
     DrawRewireAPI.__ResetDependency__('pathSprites');
     DrawRewireAPI.__ResetDependency__('getRect');
     DrawRewireAPI.__ResetDependency__('PPCL');
+
     t.end();
   });
 
   tester.end();
+});
+
+
+test('clearSprites: removes all sprites in permNTSprites, pathSprites, and tempNTSprites', t => {
+  const mockRemoveChild = sinon.spy();
+  global.tagpro = { renderer: { layers: { background: { removeChild: mockRemoveChild } } } };
+
+  DrawRewireAPI.__Rewire__('permNTSprites', [1, 2]);
+  DrawRewireAPI.__Rewire__('pathSprites', [3, 4]);
+  DrawRewireAPI.__Rewire__('tempNTSprites', [[5, null], [null, 6]]);
+
+  clearSprites();
+
+  t.is(mockRemoveChild.callCount, 6);
+  t.ok(mockRemoveChild.calledWithExactly(1));
+  t.ok(mockRemoveChild.calledWithExactly(2));
+  t.ok(mockRemoveChild.calledWithExactly(3));
+  t.ok(mockRemoveChild.calledWithExactly(4));
+  t.ok(mockRemoveChild.calledWithExactly(5));
+  t.ok(mockRemoveChild.calledWithExactly(6));
+
+  DrawRewireAPI.__ResetDependency__('permNTSprites');
+  DrawRewireAPI.__ResetDependency__('pathSprites');
+  DrawRewireAPI.__ResetDependency__('tempNTSprites');
+
+  t.end();
+});
+
+
+test('drawPermanentNTSprites: adds permanent sprites to the renderer', t => {
+  const mockAddChild = sinon.spy();
+  global.tagpro = { renderer: { layers: { background: { addChild: mockAddChild } } } };
+  DrawRewireAPI.__Rewire__('permNTSprites', ['sprite1', 'sprite2', 'sprite3']);
+
+  drawPermanentNTSprites();
+
+  t.is(mockAddChild.callCount, 3);
+  t.ok(mockAddChild.calledWithExactly('sprite1'));
+  t.ok(mockAddChild.calledWithExactly('sprite2'));
+  t.ok(mockAddChild.calledWithExactly('sprite3'));
+
+  DrawRewireAPI.__ResetDependency__('permNTSprites');
+
+  t.end();
+});
+
+
+test('generatePermanentNTSprites', tester => {
+  tester.test('throws error when x, y out of bounds', t => {
+    DrawRewireAPI.__Rewire__('CPTL', 1);
+    t.throws(() => generatePermanentNTSprites(1, 0, [[0, 0, 0]]));
+    t.throws(() => generatePermanentNTSprites(0, 1, [[0], [0], [0]]));
+    DrawRewireAPI.__Rewire__('CPTL', 2);
+    t.throws(() => generatePermanentNTSprites(1, 0, [[0, 0], [0, 0]]));
+    DrawRewireAPI.__Rewire__('CPTL', 2);
+    t.end();
+  });
+
+  tester.test('stores correct values in permNTSprites and calls getRect for CPTL=1', t => {
+    const mockGetRect = sinon.stub();
+    const mockPermNTSprites = [];
+    mockGetRect.withArgs(0, 40, 40, 40).returns('rect');
+
+    DrawRewireAPI.__Rewire__('permNTSprites', mockPermNTSprites);
+    DrawRewireAPI.__Rewire__('getRect', mockGetRect);
+    DrawRewireAPI.__Rewire__('CPTL', 1);
+
+    generatePermanentNTSprites(0, 0, [[1, 0, 1]]);
+    t.notok(mockGetRect.called);
+
+    generatePermanentNTSprites(0, 1, [[1, 0, 1]]);
+    t.ok(mockGetRect.calledOnce);
+    t.same(mockPermNTSprites, ['rect']);
+
+    DrawRewireAPI.__ResetDependency__('permNTSprites');
+    DrawRewireAPI.__ResetDependency__('getRect');
+    DrawRewireAPI.__ResetDependency__('CPTL');
+
+    t.end();
+  });
+
+  tester.test('stores correct values in permNTSprites and calls getRect for CPTL=2', t => {
+    const mockGetRect = sinon.stub();
+    const mockPermNTSprites = [];
+    mockGetRect.withArgs(0, 40, 20, 20).returns('rect1');
+    mockGetRect.withArgs(20, 40, 20, 20).returns('rect2');
+    mockGetRect.withArgs(0, 60, 20, 20).returns('rect3');
+    mockGetRect.withArgs(20, 60, 20, 20).returns('rect4');
+
+    DrawRewireAPI.__Rewire__('permNTSprites', mockPermNTSprites);
+    DrawRewireAPI.__Rewire__('getRect', mockGetRect);
+    DrawRewireAPI.__Rewire__('CPTL', 2);
+    DrawRewireAPI.__Rewire__('PPCL', 20);
+
+    generatePermanentNTSprites(0, 0, [[1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 1, 1]]);
+    t.notok(mockGetRect.called);
+
+    generatePermanentNTSprites(0, 1, [[1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 1, 1]]);
+
+    t.ok(mockGetRect.calledTwice);
+    t.same(mockPermNTSprites, ['rect1', 'rect4']);
+
+    DrawRewireAPI.__ResetDependency__('permNTSprites');
+    DrawRewireAPI.__ResetDependency__('getRect');
+    DrawRewireAPI.__ResetDependency__('CPTL');
+    DrawRewireAPI.__ResetDependency__('PPCL');
+
+    t.end();
+  });
+});
+
+
+test('updateNTSprites: adds/deletes the correct sprites from tempNTSprites', t => {
+  const mockGetRect = sinon.stub();
+  mockGetRect.withArgs(0, 80, 20, 20).returns('rect1');
+  mockGetRect.withArgs(20, 60, 20, 20).returns('rect2');
+  mockGetRect.withArgs(20, 100, 20, 20).returns('rect3');
+
+  const mockTempNTSprites = [
+    [null, null, 1, 1, null, 1],
+    [null, 1, 1, null, 1, null],
+  ];
+  const cellTraversabilities = [
+    [1, 1, 0, 0, 0, 1],
+    [0, 0, 1, 0, 0, 0],
+  ];
+
+  const mockAddChild = sinon.spy();
+  const mockRemoveChild = sinon.spy();
+  global.tagpro = { renderer: { layers: { background: {
+    addChild: mockAddChild, removeChild: mockRemoveChild } } } };
+
+  DrawRewireAPI.__Rewire__('CPTL', 2);
+  DrawRewireAPI.__Rewire__('PPCL', 20);
+  DrawRewireAPI.__Rewire__('getRect', mockGetRect);
+  DrawRewireAPI.__Rewire__('tempNTSprites', mockTempNTSprites);
+
+  updateNTSprites(0, 1, cellTraversabilities);
+  updateNTSprites(0, 2, cellTraversabilities);
+
+  t.same(mockTempNTSprites, [
+    [null, null, 1, 1, 'rect1', null],
+    [null, 1, null, 'rect2', 1, 'rect3'],
+  ]);
+
+  DrawRewireAPI.__ResetDependency__('CPTL');
+  DrawRewireAPI.__ResetDependency__('PPCL');
+  DrawRewireAPI.__ResetDependency__('getRect');
+  DrawRewireAPI.__ResetDependency__('tempNTSprites');
+
+  t.end();
 });
