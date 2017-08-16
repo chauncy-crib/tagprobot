@@ -14,9 +14,9 @@ export function assert(condition, errorMessage = 'Assertion failed') {
   }
 }
 
-export function assertGridInBounds(array, x, y) {
-  const width = array.length;
-  const height = array[0].length;
+export function assertGridInBounds(grid, x, y) {
+  const width = grid.length;
+  const height = grid[0].length;
   assert(x >= 0, `Grid out of bounds error: x<0. x=${x}`);
   assert(y >= 0, `Grid out of bounds error: y<0. y=${y}`);
   assert(x < width,
