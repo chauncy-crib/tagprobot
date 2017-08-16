@@ -1,5 +1,5 @@
 // These variables are provided by the reviewable environment.
-// For debugging, I imported these functions and created a sample json PR using the info
+// For debugging, we import these functions and created a sample json PR using the info
 // in: https://github.com/Reviewable/Reviewable/wiki/FAQ
 // import _ from 'lodash';
 // import review from './sample_pr.json';
