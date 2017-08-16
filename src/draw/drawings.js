@@ -33,15 +33,15 @@ const permNTSprites = [];
  * @param {number} color - a hex color
  * @return - a PIXI.Graphics object
  */
-function getRect(x, y, width, height, alpha, color) {
-  const rect = new PIXI.Graphics();
-  rect.beginFill(color).drawRect(
+function getPixiRect(x, y, width, height, alpha, color) {
+  const pixiRect = new PIXI.Graphics();
+  pixiRect.beginFill(color).drawRect(
     x,
     y,
     width,
     height,
   ).alpha = alpha;
-  return rect;
+  return pixiRect;
 }
 
 
@@ -58,7 +58,7 @@ export function updatePath(path) {
   _.forEach(pathSprites, p => tagpro.renderer.layers.background.removeChild(p));
   pathSprites.splice(0, pathSprites.length);
   _.forEach(path, cell => {
-    const sprite = getRect(cell.x * PPCL, cell.y * PPCL, PPCL, PPCL, pathAlpha, pathColor);
+    const sprite = getPixiRect(cell.x * PPCL, cell.y * PPCL, PPCL, PPCL, pathAlpha, pathColor);
     pathSprites.push(sprite);
     tagpro.renderer.layers.background.addChild(sprite);
   });
@@ -104,7 +104,7 @@ export function generatePermanentNTSprites(x, y, cellTraversabilities) {
       // if we don't have a sprite already there and there should be one,
       // draw it
       if (!cellTraversabilities[i][j]) {
-        const sprite = getRect(i * PPCL, j * PPCL, PPCL, PPCL, ntAlpha, ntColor);
+        const sprite = getPixiRect(i * PPCL, j * PPCL, PPCL, PPCL, ntAlpha, ntColor);
         permNTSprites.push(sprite);
       }
     }
@@ -136,7 +136,7 @@ export function updateNTSprites(x, y, cellTraversabilities) {
       // if we don't have a sprite already there and there should be one,
       // draw it
       if (_.isNull(tempNTSprites[i][j]) && !cellTraversabilities[i][j]) {
-        const sprite = getRect(i * PPCL, j * PPCL, PPCL, PPCL, ntAlpha, ntColor);
+        const sprite = getPixiRect(i * PPCL, j * PPCL, PPCL, PPCL, ntAlpha, ntColor);
         tempNTSprites[i][j] = sprite;
         tagpro.renderer.layers.background.addChild(sprite);
       // else if we already have a sprite there and there shouldn't be one,
