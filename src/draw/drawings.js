@@ -12,7 +12,7 @@ import _ from 'lodash';
 import { PPCL, CPTL, pathAlpha, pathColor, ntAlpha, ntColor } from '../constants';
 import { init2dArray } from '../helpers/map';
 import { areVisualsOn } from '../utils/interface';
-import { assert } from '../utils/asserts';
+import { assertGridInBounds } from '../utils/asserts';
 
 let pathSprites = []; // a list of the current path sprites drawn
 
@@ -74,7 +74,7 @@ export function clearSprites() {
   const allSprites = permNTSprites
     .concat(pathSprites)
     // flatten the tempNTSprites grid, and remove null values
-    .concat(_.filter(_.flatten(tempNTSprites)), x => !_.isNull(x));
+    .concat(_.reject(_.flatten(tempNTSprites), _.isNull));
   _.forEach(allSprites, s => tagpro.renderer.layers.background.removeChild(s));
   pathSprites = [];
   tempNTSprites = [];
@@ -97,7 +97,8 @@ export function drawPermanentNTSprites() {
  * the input tile have aleady been computed and stored in cellTraversabilities.
  */
 export function generatePermanentNTSprites(x, y, cellTraversabilities) {
-  assert(_.isEmpty(permNTSprites), 'permNTSprites was not empty when calling generatePermanentNTSprites');
+  assertGridInBounds(cellTraversabilities, x * CPTL, y * CPTL);
+  assertGridInBounds(cellTraversabilities, ((x + 1) * CPTL) - 1, ((y + 1) * CPTL) - 1);
   for (let i = x * CPTL; i < (x + 1) * CPTL; i++) {
     for (let j = y * CPTL; j < (y + 1) * CPTL; j++) {
       // if we don't have a sprite already there and there should be one,
@@ -111,7 +112,7 @@ export function generatePermanentNTSprites(x, y, cellTraversabilities) {
 }
 
 /*
- * Takes in an grid of cellTraversabilities, and the x, y tile locations that we should check for
+ * Takes in an grid of cellTraversabilities, and the x, y tile location that we should check for
  * updates, and updates the sprites drawn on the tagpro map. If tempNTSprites is empty, initialize
  * it to the correct size as specified by the comment at the top of this file
  *
