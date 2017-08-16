@@ -45,15 +45,15 @@ test('updatePath', tester => {
     const mockAreVisualsOn = sinon.stub().returns(true);
     const mockAddChild = sinon.spy();
     const mockPathSprites = ['potato', 'banana'];
-    const mockGetRect = sinon.stub();
-    mockGetRect.onCall(0).returns('rect1');
-    mockGetRect.onCall(1).returns('rect2');
+    const mockGetPixiRect = sinon.stub();
+    mockGetPixiRect.onCall(0).returns('rect1');
+    mockGetPixiRect.onCall(1).returns('rect2');
     global.tagpro = { renderer: { layers: { background:
       { removeChild: () => {}, addChild: mockAddChild } } } };
 
     DrawRewireAPI.__Rewire__('areVisualsOn', mockAreVisualsOn);
     DrawRewireAPI.__Rewire__('pathSprites', mockPathSprites);
-    DrawRewireAPI.__Rewire__('getRect', mockGetRect);
+    DrawRewireAPI.__Rewire__('getPixiRect', mockGetPixiRect);
     DrawRewireAPI.__Rewire__('PPCL', 1);
 
     updatePath([
@@ -61,17 +61,17 @@ test('updatePath', tester => {
       { x: 2, y: 3 },
     ]);
 
-    t.ok(mockGetRect.calledTwice);
+    t.ok(mockGetPixiRect.calledTwice);
     t.ok(mockAddChild.calledTwice);
-    t.ok(mockGetRect.calledWith(0, 1));
-    t.ok(mockGetRect.calledWith(2, 3));
+    t.ok(mockGetPixiRect.calledWith(0, 1));
+    t.ok(mockGetPixiRect.calledWith(2, 3));
     t.ok(mockAddChild.calledWithExactly('rect1'));
     t.ok(mockAddChild.calledWithExactly('rect2'));
     t.same(mockPathSprites, ['rect1', 'rect2']);
 
     DrawRewireAPI.__ResetDependency__('areVisualsOn');
     DrawRewireAPI.__ResetDependency__('pathSprites');
-    DrawRewireAPI.__ResetDependency__('getRect');
+    DrawRewireAPI.__ResetDependency__('getPixiRect');
     DrawRewireAPI.__ResetDependency__('PPCL');
 
     t.end();
@@ -136,52 +136,52 @@ test('generatePermanentNTSprites', tester => {
     t.end();
   });
 
-  tester.test('stores correct values in permNTSprites and calls getRect for CPTL=1', t => {
-    const mockGetRect = sinon.stub();
+  tester.test('stores correct values in permNTSprites and calls getPixiRect for CPTL=1', t => {
+    const mockGetPixiRect = sinon.stub();
     const mockPermNTSprites = [];
-    mockGetRect.withArgs(0, 40, 40, 40).returns('rect');
+    mockGetPixiRect.withArgs(0, 40, 40, 40).returns('rect');
 
     DrawRewireAPI.__Rewire__('permNTSprites', mockPermNTSprites);
-    DrawRewireAPI.__Rewire__('getRect', mockGetRect);
+    DrawRewireAPI.__Rewire__('getPixiRect', mockGetPixiRect);
     DrawRewireAPI.__Rewire__('CPTL', 1);
 
     generatePermanentNTSprites(0, 0, [[1, 0, 1]]);
-    t.notok(mockGetRect.called);
+    t.notok(mockGetPixiRect.called);
 
     generatePermanentNTSprites(0, 1, [[1, 0, 1]]);
-    t.ok(mockGetRect.calledOnce);
+    t.ok(mockGetPixiRect.calledOnce);
     t.same(mockPermNTSprites, ['rect']);
 
     DrawRewireAPI.__ResetDependency__('permNTSprites');
-    DrawRewireAPI.__ResetDependency__('getRect');
+    DrawRewireAPI.__ResetDependency__('getPixiRect');
     DrawRewireAPI.__ResetDependency__('CPTL');
 
     t.end();
   });
 
-  tester.test('stores correct values in permNTSprites and calls getRect for CPTL=2', t => {
-    const mockGetRect = sinon.stub();
+  tester.test('stores correct values in permNTSprites and calls getPixiRect for CPTL=2', t => {
+    const mockGetPixiRect = sinon.stub();
     const mockPermNTSprites = [];
-    mockGetRect.withArgs(0, 40, 20, 20).returns('rect1');
-    mockGetRect.withArgs(20, 40, 20, 20).returns('rect2');
-    mockGetRect.withArgs(0, 60, 20, 20).returns('rect3');
-    mockGetRect.withArgs(20, 60, 20, 20).returns('rect4');
+    mockGetPixiRect.withArgs(0, 40, 20, 20).returns('rect1');
+    mockGetPixiRect.withArgs(20, 40, 20, 20).returns('rect2');
+    mockGetPixiRect.withArgs(0, 60, 20, 20).returns('rect3');
+    mockGetPixiRect.withArgs(20, 60, 20, 20).returns('rect4');
 
     DrawRewireAPI.__Rewire__('permNTSprites', mockPermNTSprites);
-    DrawRewireAPI.__Rewire__('getRect', mockGetRect);
+    DrawRewireAPI.__Rewire__('getPixiRect', mockGetPixiRect);
     DrawRewireAPI.__Rewire__('CPTL', 2);
     DrawRewireAPI.__Rewire__('PPCL', 20);
 
     generatePermanentNTSprites(0, 0, [[1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 1, 1]]);
-    t.notok(mockGetRect.called);
+    t.notok(mockGetPixiRect.called);
 
     generatePermanentNTSprites(0, 1, [[1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 1, 1]]);
 
-    t.ok(mockGetRect.calledTwice);
+    t.ok(mockGetPixiRect.calledTwice);
     t.same(mockPermNTSprites, ['rect1', 'rect4']);
 
     DrawRewireAPI.__ResetDependency__('permNTSprites');
-    DrawRewireAPI.__ResetDependency__('getRect');
+    DrawRewireAPI.__ResetDependency__('getPixiRect');
     DrawRewireAPI.__ResetDependency__('CPTL');
     DrawRewireAPI.__ResetDependency__('PPCL');
 
@@ -191,10 +191,10 @@ test('generatePermanentNTSprites', tester => {
 
 
 test('updateNTSprites: adds/deletes the correct sprites from tempNTSprites', t => {
-  const mockGetRect = sinon.stub();
-  mockGetRect.withArgs(0, 80, 20, 20).returns('rect1');
-  mockGetRect.withArgs(20, 60, 20, 20).returns('rect2');
-  mockGetRect.withArgs(20, 100, 20, 20).returns('rect3');
+  const mockGetPixiRect = sinon.stub();
+  mockGetPixiRect.withArgs(0, 80, 20, 20).returns('rect1');
+  mockGetPixiRect.withArgs(20, 60, 20, 20).returns('rect2');
+  mockGetPixiRect.withArgs(20, 100, 20, 20).returns('rect3');
 
   const mockTempNTSprites = [
     [null, null, 1, 1, null, 1],
@@ -212,7 +212,7 @@ test('updateNTSprites: adds/deletes the correct sprites from tempNTSprites', t =
 
   DrawRewireAPI.__Rewire__('CPTL', 2);
   DrawRewireAPI.__Rewire__('PPCL', 20);
-  DrawRewireAPI.__Rewire__('getRect', mockGetRect);
+  DrawRewireAPI.__Rewire__('getPixiRect', mockGetPixiRect);
   DrawRewireAPI.__Rewire__('tempNTSprites', mockTempNTSprites);
 
   updateNTSprites(0, 1, cellTraversabilities);
@@ -225,7 +225,7 @@ test('updateNTSprites: adds/deletes the correct sprites from tempNTSprites', t =
 
   DrawRewireAPI.__ResetDependency__('CPTL');
   DrawRewireAPI.__ResetDependency__('PPCL');
-  DrawRewireAPI.__ResetDependency__('getRect');
+  DrawRewireAPI.__ResetDependency__('getPixiRect');
   DrawRewireAPI.__ResetDependency__('tempNTSprites');
 
   t.end();
