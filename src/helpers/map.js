@@ -14,6 +14,8 @@ const tilesToUpdateValues = []; // the values stored in those locations
  * Initializes and returns a 2D array with the specified width, height, and
  * default value.
  *
+ * Runtime: O(width * height)
+ *
  * @param {number} width - the width of the initialized 2D array
  * @param {number} height - the height of the initialized 2D array
  * @param {number} defaultVal - the value to give each element in the initialized 2D array
@@ -53,6 +55,7 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
 
 
 /* Returns a 2d cell array of traversible (1) and blocked (0) cells inside a tile.
+ * Runtime: O(CPTL^2)
  *
  * @param {number} tileID - the ID of the tile that should be split into cells and
  *   parsed for traversability
@@ -98,6 +101,16 @@ export function getTileTraversabilityInCells(tileID) {
   return gridTile;
 }
 
+
+/*
+ * Initializes mapTraversabilityCells to a grid of size map.length * CPTL with
+ * the correct values. Store all non-permanent locations in tilesToUpdate, and 
+ * their corresponding values in tilesToUpdateValues. Initialize permanent sprites
+ * for all permanent NT sprites.
+ * Runtime: O(N^2 * CPTL^2)
+ *
+ * @param {number} map - 2D array representing the Tagpro map
+ */
 export function initMapTraversabilityCells(map) {
   assert(_.isEmpty(mapTraversabilityCells), 'map already has values stored in it when initializing');
   const xl = map.length;
@@ -133,6 +146,8 @@ export function initMapTraversabilityCells(map) {
  * that column, with 1s and 0s.  empty_tiles[0][0] is the upper-left corner
  * tile.
  *
+ * Runtime: O(E*CPTL^2) with drawings on, O(E + S*CPTL^2) with drawings off
+ *
  * @param {number} map - 2D array representing the Tagpro map
  */
 export function getMapTraversabilityInCells(map) {
@@ -142,6 +157,7 @@ export function getMapTraversabilityInCells(map) {
     const xy = tilesToUpdate[i];
     if (map[xy.x][xy.y] !== tilesToUpdateValues[i]) {
       tilesToUpdateValues[i] = map[xy.x][xy.y];
+      // O(CTPL^2)
       fillGridWithSubgrid(
         mapTraversabilityCells,
         getTileTraversabilityInCells(map[xy.x][xy.y]),
@@ -149,6 +165,8 @@ export function getMapTraversabilityInCells(map) {
         xy.y * CPTL,
       );
     }
+    // O(CTPL^2).
+    // TODO: We can optimize this by only calling updateNTSprites when a cell changes.
     updateNTSprites(xy.x, xy.y, mapTraversabilityCells);
   }
   return mapTraversabilityCells;
@@ -159,6 +177,8 @@ export function getMapTraversabilityInCells(map) {
  * Returns the position (in pixels x,y and grid positions xg, yg)
  * of first of the specified tile types to appear starting in the
  * top left corner and moving in a page-reading fashion.
+ *
+ * Runtime: O(N^2)
  *
  * @param {(number | number[])} tiles - either a number representing a tileType,
  * or an array of such numbers
