@@ -49,6 +49,7 @@ function getPixiRect(x, y, width, height, alpha, color) {
  * Erases all spirtes in pathSprites from the renderer
  * Creates a new path sprite for each cell in path
  * Adds each new sprite to pathSprites, and to the renderer
+ * Runtime: O(A)
  * @param {Array} - an array of cells, likely returned by getShortestPath()
  */
 export function updatePath(path) {
@@ -68,12 +69,14 @@ export function updatePath(path) {
 /*
  * Erases all sprites in pathSprites, tempNTSprites, and permNTSprites.
  * Reassigns pathSprites and tempNTSprites to empty list
+ * Runtime: O(N^2)
  */
 export function clearSprites() {
   // get a list of all sprites
   const allSprites = permNTSprites
     .concat(pathSprites)
     // flatten the tempNTSprites grid, and remove null values
+    // O(N^2), because tempNTSprites is NxN
     .concat(_.reject(_.flatten(tempNTSprites), _.isNull));
   _.forEach(allSprites, s => tagpro.renderer.layers.background.removeChild(s));
   pathSprites = [];
@@ -83,6 +86,7 @@ export function clearSprites() {
 
 /*
  * Iterates over permNTSprites and adds each sprite to the renderer
+ * Runtime: O(P)
  */
 export function drawPermanentNTSprites() {
   _.forEach(permNTSprites, s => tagpro.renderer.layers.background.addChild(s));
@@ -95,6 +99,7 @@ export function drawPermanentNTSprites() {
  * It takes each cell in the corresponding cellTraversabilities grid, and if a cell is NT, creates a
  * new sprite for the cell and stores it in permNTSprites. Assumes that the cellTraversabilities for
  * the input tile have aleady been computed and stored in cellTraversabilities.
+ * Runtime: O(CPTL^2)
  */
 export function generatePermanentNTSprites(x, y, cellTraversabilities) {
   assertGridInBounds(cellTraversabilities, x * CPTL, y * CPTL);
@@ -115,6 +120,7 @@ export function generatePermanentNTSprites(x, y, cellTraversabilities) {
  * Takes in an grid of cellTraversabilities, and the x, y tile location that we should check for
  * updates, and updates the sprites drawn on the tagpro map. If tempNTSprites is empty, initialize
  * it to the correct size as specified by the comment at the top of this file
+ * Runtime: O(CPTL^2), O(1) if visualizations off
  *
  * @param {number} x: x location, in tiles
  * @param {number} y: y location, in tiles
