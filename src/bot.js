@@ -74,7 +74,9 @@ function getSeek() {
     x: Math.floor(goal.x / PPTL),
     y: Math.floor(goal.y / PPTL),
   };
+  // Runtime: O(E*CPTL^2) with visualizations on, O(E + S*CPTL^2) with visualizations off
   const traversableCells = getMapTraversabilityInCells(tagpro.map);
+  // TODO: runtime of this? Call is O(R) for now
   const shortestPath = getShortestPath(
     gridPosition.x,
     gridPosition.y,
@@ -82,6 +84,7 @@ function getSeek() {
     gridTarget.y,
     traversableCells,
   );
+  // Runtime: O(A), O(1) if visualizations off
   updatePath(shortestPath);
   const seekToward = getTarget(
     gridPosition.x,
