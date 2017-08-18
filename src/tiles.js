@@ -73,9 +73,7 @@ export function computeTileInfo() {
  * @return - the property for the input tile
  */
 export function getTileProperty(tileID, property) {
-  const tileIDString = String(tileID);
-  assert(has(tileNames, tileIDString), `Unknown tileID: ${tileID}`);
-  const tileName = tileNames[tileID];
+  assert(tileHasProperty(tileID, property), `Unknown property for tile: ${tileName}`);
   return tileInfo[tileName][property];
 }
 
