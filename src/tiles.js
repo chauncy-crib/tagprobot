@@ -81,6 +81,19 @@ export function getTileProperty(tileID, property) {
 
 
 /*
+ * @param {number} tileID - the ID of the tile
+ * @param {String} property - the name of a property
+ * @return - if the corresponding tile has a value for this property
+ */
+export function tileHasProperty(tileID, property) {
+  const tileIDString = String(tileID);
+  assert(has(tileNames, tileIDString), `Unknown tileID: ${tileID}`);
+  const tileName = tileNames[tileID];
+  return has(tileInfo[tileName], property);
+}
+
+
+/*
  * @param {String} name - the name of a tile
  * @return - the id for the input tile name
  */
