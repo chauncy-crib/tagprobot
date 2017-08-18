@@ -9,6 +9,7 @@ import {
   computeTileInfo,
   getTileProperty,
   tileIsType,
+  tileHasProperty,
   __RewireAPI__ as TileRewireAPI,
 } from '../src/tiles';
 
@@ -113,6 +114,28 @@ test('getTileProperty: throws error given tileIds that don\'t exist', t => {
   t.throws(() => { getTileProperty(-1, 'traversable'); });
   t.throws(() => { getTileProperty('potato', 'traversable'); });
   t.throws(() => { getTileProperty(undefined, 'traversable'); });
+  teardownTiles();
+
+  t.end();
+});
+
+
+test('getTileProperty: throws error given properties that don\'t exist', t => {
+  setupTiles(true);
+  t.throws(() => { getTileProperty(5, 'potato'); });
+  t.throws(() => { getTileProperty(4.1, 'radius'); });
+  teardownTiles();
+
+  t.end();
+});
+
+
+test('tileHasProperty: checks if a tile has a property', t => {
+  setupTiles(true);
+  t.true(tileHasProperty(4.1, 'permanent'))
+  t.true(tileHasProperty(6.1, 'radius'))
+  t.false(tileHasProperty(0, 'radius'))
+  t.false(tileHasProperty(1, 'radius'))
   teardownTiles();
 
   t.end();
