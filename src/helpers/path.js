@@ -1,6 +1,7 @@
 import { astar, Graph } from 'javascript-astar';
 import { assert, assertGridInBounds } from '../../src/utils/asserts';
 
+
 /*
  * takes in current location and target location (eg, the location of the flag) and the map
  * represented as a grid of 1 and 0, where 1s are traversable and 0s are not. Uses A* to calculate
@@ -29,6 +30,7 @@ export function getShortestPath(me, target, grid, diagonal = false) {
   }
   return shortestPath;
 }
+
 
 /*
  * Takes in the current player's location, and a representation of the shortest
