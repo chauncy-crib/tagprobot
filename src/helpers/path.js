@@ -2,15 +2,21 @@ import _ from 'lodash';
 import FibonacciHeap from '@tyriar/fibonacci-heap';
 import { assert, assertGridInBounds } from '../../src/utils/asserts';
 
+
 const diagonal = false;
 
 export class GameState {
   constructor(xc, yc) {
     this.xc = xc;
     this.yc = yc;
-    // initialized for readability
-    this.g = undefined;
+
+    this.g = undefined; // the cost to the current state
+
+    // the estimated total cost from the start state to the target state,
+    // passing through this state.
     this.f = undefined;
+
+    // the GameState we came from
     this.parent = undefined;
   }
 
@@ -21,7 +27,7 @@ export class GameState {
   /*
    * @param {GameState} targetState - the GameState object we are calculating the heuristic distance
    *   to
-   * @return the heuristic distance from this state to the targetState
+   * @return - the heuristic distance from this state to the targetState
    */
   heuristic(targetState) {
     const xdiff = Math.abs(this.xc - targetState.xc);
@@ -36,6 +42,11 @@ export class GameState {
     return this.xc === state.xc && this.yc === state.yc;
   }
 
+  /*
+   * @param traversabilityCells - 2d grid of cell traversabilities, 1 for traversable, 0 for NT
+   * @return {Array} - Array of neighboring GameStates, with g values initialized to current node's
+   *   g value + 1
+   */
   neighbors(traversabilityCells) {
     // vertical and horizontal neighbors
     let potentialNeighbors = [
@@ -71,7 +82,11 @@ export class GameState {
   }
 }
 
-
+/*
+ * @param {GameState} finalState
+ * @returns {Array} list of GameStates from starting state to final state, not including the
+ *   starting state.
+ */
 function constructPath(finalState) {
   const path = [];
   let state = finalState;
