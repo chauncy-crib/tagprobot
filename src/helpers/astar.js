@@ -71,7 +71,20 @@ export class GameState {
   }
 }
 
-export function shortestPath(me, target, traversabilityCells) {
+
+function constructPath(finalState) {
+  const path = [];
+  let state = finalState;
+  while (state.parent) {
+    console.log(state.xc, state.yc);
+    path.push(state);
+    state = state.parent;
+  }
+  path.reverse();
+  return path;
+}
+
+export function getShortestPath(me, target, traversabilityCells) {
   assert(_.has(me, 'xc'));
   assert(_.has(me, 'yc'));
   assert(_.has(target, 'xc'));
@@ -100,13 +113,7 @@ export function shortestPath(me, target, traversabilityCells) {
     // get the state with the lowest f-cost
     const currState = fibHeap.extractMinimum().value; // key is f-cost, value is state
     if (targetState.equals(currState)) { // we found the target
-      // construct the path
-      let curr = currState;
-      while (curr) {
-        console.log(curr.xc, curr.yc);
-        curr = curr.parent;
-      }
-      break;
+      return constructPath(currState);
     }
     // move current state from openList to closedList
     openList.delete(currState.key());
@@ -137,4 +144,5 @@ export function shortestPath(me, target, traversabilityCells) {
       }
     });
   }
+  return null;
 }
