@@ -15,7 +15,7 @@ export class GameState {
   }
 
   key() {
-    return [this.xc, this.yc];
+    return [this.xc, this.yc].join(',');
   }
 
   /*
@@ -87,7 +87,7 @@ export function shortestPath(me, target, traversabilityCells) {
   // state, and value is the GameState object
   const fibHeap = new FibonacciHeap();
   // keep a Map from GameState key to GameState object stored in the Fibonacci Heap
-  const openListMap = new Map();
+  const openList = new Map();
   // keep a list of the GameState keys of closed states
   const closedList = new Set();
 
@@ -97,36 +97,42 @@ export function shortestPath(me, target, traversabilityCells) {
   fibHeap.insert(startState.f, startState);
 
   while (!fibHeap.isEmpty()) {
-    const node = fibHeap.extractMinimum();
-    const state = node.value;
-    openListMap.delete(state.key());
-    if (targetState.equals(state)) {
-      let curr = state;
+    // get the state with the lowest f-cost
+    const currState = fibHeap.extractMinimum().value; // key is f-cost, value is state
+    if (targetState.equals(currState)) { // we found the target
+      // construct the path
+      let curr = currState;
       while (curr) {
         console.log(curr.xc, curr.yc);
         curr = curr.parent;
       }
-      console.log('FOUND');
       break;
     }
-    closedList.add(state.key());
-    _.each(state.neighbors(traversabilityCells), neighbor => {
-      if (!closedList.has(neighbor.key())) {
-        // eslint-disable-next-line no-param-reassign
-        neighbor.f = neighbor.g + neighbor.heuristic(targetState);
-        if (!openListMap.has(neighbor.key())) {
-          const neighborNode = fibHeap.insert(neighbor.f, neighbor);
-          openListMap.set(neighbor.key(), neighborNode);
-        } else {
-          const openNeighbor = openListMap.get(neighbor.key());
-          const openNeighborState = openNeighbor.value;
-          if (neighbor.g < openNeighborState.g) {
-            openNeighborState.g = neighbor.g;
-            openNeighborState.f = neighbor.f;
-            openNeighborState.parent = state;
-            // TODO: handle parent
-            fibHeap.decreaseKey(openNeighbor, openNeighborState.f);
-          }
+    // move current state from openList to closedList
+    openList.delete(currState.key());
+    closedList.add(currState.key());
+    // iterate over neighbors
+    _.each(currState.neighbors(traversabilityCells), neighbor => {
+      // if the neighbor has been closed, don't add it to the fib heap
+      if (closedList.has(neighbor.key())) {
+        return;
+      }
+      // assign neighbor's f-cost
+      // eslint-disable-next-line no-param-reassign
+      neighbor.f = neighbor.g + neighbor.heuristic(targetState);
+      // if neighbor not in openList, add it
+      if (!openList.has(neighbor.key())) {
+        const neighborNode = fibHeap.insert(neighbor.f, neighbor);
+        openList.set(neighbor.key(), neighborNode);
+      // else, if we've found a faster route to the neighbor, update the f-cost in openList
+      } else {
+        const openNeighbor = openList.get(neighbor.key());
+        const openNeighborState = openNeighbor.value;
+        if (neighbor.g < openNeighborState.g) {
+          openNeighborState.g = neighbor.g;
+          openNeighborState.f = neighbor.f;
+          openNeighborState.parent = currState;
+          fibHeap.decreaseKey(openNeighbor, openNeighborState.f);
         }
       }
     });
