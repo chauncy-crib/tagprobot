@@ -1,7 +1,53 @@
+import _ from 'lodash';
 import test from 'tape';
-import { getShortestPath } from '../src/helpers/path';
+import { getShortestPath, GameState, __RewireAPI__ as PathRewireAPI } from '../src/helpers/path';
+
+
+test('test neighbors returns the right number of neighbors with diagonals off', t => {
+  const traversabilityCells = [
+    [1, 0, 1],
+    [1, 1, 0],
+    [0, 1, 1],
+  ];
+  PathRewireAPI.__Rewire__('diagonal', false);
+
+  let state = new GameState(1, 1);
+  t.is(state.neighbors(traversabilityCells).length, 2);
+
+  state = new GameState(1, 0);
+  t.is(state.neighbors(traversabilityCells).length, 2);
+
+  state = new GameState(0, 2);
+  t.is(state.neighbors(traversabilityCells).length, 0);
+
+  state = new GameState(2, 2);
+  t.is(state.neighbors(traversabilityCells).length, 1);
+
+  PathRewireAPI.__ResetDependency__('diagonal');
+  t.end();
+});
+
+
+test('test neighbors have correct g values', t => {
+  const traversabilityCells = [
+    [1, 0, 1],
+    [1, 1, 0],
+    [0, 1, 1],
+  ];
+  PathRewireAPI.__Rewire__('diagonal', false);
+
+  const state = new GameState(1, 1);
+  state.g = 12;
+  _.each(state.neighbors(traversabilityCells), n => {
+    t.is(n.g, 13);
+  });
+  PathRewireAPI.__ResetDependency__('diagonal');
+  t.end();
+});
+
 
 test('test getShortestPath returns shortest path without diagonals', t => {
+  PathRewireAPI.__Rewire__('diagonal', false);
   const inputMap = [
     [1, 0, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 1, 1, 1],
@@ -15,12 +61,14 @@ test('test getShortestPath returns shortest path without diagonals', t => {
     false,
   );
   t.equal(shortestPath.length, 14);
+  PathRewireAPI.__ResetDependency__('diagonal');
 
   t.end();
 });
 
 
 test('test getShortestPath returns shortest path with diagonals', t => {
+  PathRewireAPI.__Rewire__('diagonal', true);
   const inputMap = [
     [1, 0, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 1, 1, 1],
@@ -34,12 +82,14 @@ test('test getShortestPath returns shortest path with diagonals', t => {
     true,
   );
   t.equal(shortestDiagonalPath.length, 10);
+  PathRewireAPI.__ResetDependency__('diagonal');
 
   t.end();
 });
 
 
 test('test getShortestPath returns undefined when no path exists', t => {
+  PathRewireAPI.__Rewire__('diagonal', true);
   const impossibleMap = [
     [1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1],
@@ -56,6 +106,7 @@ test('test getShortestPath returns undefined when no path exists', t => {
   );
   t.notOk(impossiblePath);
 
+  PathRewireAPI.__ResetDependency__('diagonal');
   t.end();
 });
 
@@ -74,7 +125,6 @@ test('test getShortestPath throws error when inputs are out of bounds', t => {
       { xc: 6, yc: 3 },
       { xc: 3, yc: 6 },
       impossibleMap,
-      false,
     );
   });
   t.throws(() => {
