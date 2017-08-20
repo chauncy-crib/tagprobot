@@ -1,3 +1,7 @@
+/*
+ * Our A-star implementation is based on the pseudocode from this website:
+ * http://www.growingwiththeweb.com/2012/06/a-pathfinding-algorithm.html
+ */
 import _ from 'lodash';
 import FibonacciHeap from '@tyriar/fibonacci-heap';
 import { assert, assertGridInBounds } from '../../src/utils/asserts';
