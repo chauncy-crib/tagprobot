@@ -1,7 +1,7 @@
 import isEmpty from 'lodash/isEmpty';
 import { PPTL, CPTL, PPCL } from '../constants';
 import { assert, assertGridInBounds } from '../utils/asserts';
-import { getTileProperty, tileIsType } from '../tiles';
+import { getTileProperty, tileHasProperty, tileIsType } from '../tiles';
 
 const mapTraversabilityCells = [];
 // A list of x, y pairs, which are the locations in the map that might change
@@ -64,7 +64,7 @@ export function getTileTraversabilityInCells(tileID) {
     const midCell = (CPTL - 1.0) / 2.0;
     for (let i = 0; i < CPTL; i++) {
       for (let j = 0; j < CPTL; j++) {
-        if (getTileProperty(tileID, 'radius')) {
+        if (tileHasProperty(tileID, 'radius')) {
           const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
           const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
           const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
