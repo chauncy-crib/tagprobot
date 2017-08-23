@@ -5,6 +5,7 @@ import has from 'lodash/has';
 import { assert } from './utils/asserts';
 import { amBlue, amRed } from './helpers/player';
 
+
 const tileInfo = {};
 const tileNames = {};
 
@@ -67,14 +68,27 @@ export function computeTileInfo() {
   });
 }
 
+
+/*
+ * @param {number} tileID - the ID of the tile
+ * @param {String} property - the name of a property
+ * @return - if the corresponding tile has a value for this property
+ */
+export function tileHasProperty(tileID, property) {
+  const tileIDString = String(tileID);
+  assert(has(tileNames, tileIDString), `Unknown tileID: ${tileID}`);
+  const tileName = tileNames[tileID];
+  return has(tileInfo[tileName], property);
+}
+
+
 /*
  * @param {number} tileID - the ID of the tile whose property we want
  * @param {String} property - the name of a property stored in tileInfo
  * @return - the property for the input tile
  */
 export function getTileProperty(tileID, property) {
-  const tileIDString = String(tileID);
-  assert(has(tileNames, tileIDString), `Unknown tileID: ${tileID}`);
+  assert(tileHasProperty(tileID, property), `Unknown property for tile: ${tileID}, ${property}`);
   const tileName = tileNames[tileID];
   return tileInfo[tileName][property];
 }
