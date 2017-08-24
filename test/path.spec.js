@@ -1,6 +1,15 @@
 import _ from 'lodash';
 import test from 'tape';
-import { getShortestPath, GameState, __RewireAPI__ as PathRewireAPI } from '../src/helpers/path';
+import { getShortestPath, GameState, projectedLocation, __RewireAPI__ as PathRewireAPI } from '../src/helpers/path';
+
+
+test('test projectedLocation: returns correct final destinations', t => {
+  t.same(projectedLocation(1, -2, -3, 1, 2, 1, 2), {
+    x: -1,
+    y: 2,
+  });
+  t.end();
+})
 
 
 test('test neighbors returns the right number of neighbors with diagonals on', t => {
