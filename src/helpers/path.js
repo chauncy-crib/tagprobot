@@ -86,6 +86,19 @@ export class GameState {
   }
 }
 
+
+/*
+ * Uses the physics kinematics equations to calculate a projected x and y location.
+ * The numerator of all units should be equivalent (use pixels, pixels/sec, and pixels/sec^2 for
+ * example). The unit for timeStep should be the denominator on the `v` and `a` inputs.
+ */
+export function projectedLocation(x, y, vx, vy, ax, ay, timeStep) {
+  return {
+    x: x + (vx * timeStep) + (0.5 * ax * (timeStep ** 2)),
+    y: y + (vy * timeStep) + (0.5 * ay * (timeStep ** 2)),
+  };
+}
+
 /*
  * @param {GameState} finalState - the final target GameState object. Will use to construct the path
  *   by walking the parent pointers back to the start state. 
