@@ -12,7 +12,7 @@ import { setupTiles, teardownTiles } from './tiles.spec';
 import { getTileId } from '../src/tiles';
 
 
-test('init2dArray: returns correctly with varying inputs', t => {
+test('init2dArray: returns 2d array with that is correct size, and with correct value filled in', t => {
   let width = 5;
   let height = 3;
   let defaultVal = 1;
@@ -39,7 +39,7 @@ test('init2dArray: returns correctly with varying inputs', t => {
 });
 
 
-test('fillGridWithSubgrid: correctly fills larger grids', t => {
+test('fillGridWithSubgrid: fills smaller grid into larger grid', t => {
   let grid = [
     [0, 0, 0],
     [0, 0, 0],
@@ -82,7 +82,7 @@ test('fillGridWithSubgrid: correctly fills larger grids', t => {
 });
 
 
-test('fillGridWithSubgrid: throws errors for invalid inputs', t => {
+test('fillGridWithSubgrid: throws when subgrid runs out of bounds on the big grid', t => {
   const grid = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
