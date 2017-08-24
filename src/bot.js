@@ -8,8 +8,8 @@ import {
 } from './helpers/finders';
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe } from './helpers/player';
-import { getShortestPath, getTarget } from './helpers/path';
-import { move } from './utils/interface';
+import { getBestKeyPress } from './helpers/path';
+import { seekTowardDirection } from './utils/interface';
 import { updatePath } from './draw/drawings';
 
 
@@ -57,7 +57,7 @@ function getGoalPos() {
  * @return {Object} - an object with position of the next immediate place to
  * navigate to in pixels, x and y
  */
-function getNextTargetPos() {
+function getNextDirectionTowardTarget() {
   const goal = getGoalPos();
   const me = getMe();
   me.xc = Math.floor((me.x + (PPCL / 2)) / PPCL);
@@ -70,28 +70,14 @@ function getNextTargetPos() {
   // Runtime: O(E*CPTL^2) with visualizations on, O(E + S*CPTL^2) with visualizations off
   const traversableCells = getMapTraversabilityInCells(tagpro.map);
   // TODO: runtime of this? Call is O(R) for now
-  const shortestPath = getShortestPath(
-    { xc: me.xc, yc: me.yc },
-    { xc: finalTarget.xc, yc: finalTarget.yc },
-    traversableCells,
-  );
+  const keyPressObj = getBestKeyPress(traversableCells, finalTarget);
+  const shortestPath = keyPressObj.path;
   // Runtime: O(A), O(1) if visualizations off
   updatePath(shortestPath);
-
-  const nextTarget = getTarget(
-    { xc: me.xc, yc: me.yc },
-    shortestPath,
-  );
-  nextTarget.x = nextTarget.xc * PPCL;
-  nextTarget.y = nextTarget.yc * PPCL;
-
-  return {
-    x: nextTarget.x - (me.x + me.vx),
-    y: nextTarget.y - (me.y + me.vy),
-  };
+  return keyPressObj.direction;
 }
 
 
 export default function botLoop() {
-  move(getNextTargetPos());
+  seekTowardDirection(getNextDirectionTowardTarget());
 }
