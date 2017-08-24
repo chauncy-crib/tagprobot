@@ -151,7 +151,7 @@ test('tileHasProperty: checks if a tile has a property', t => {
 
 test('tileIsType: returns true when tileId and name match', t => {
   setupTiles(teams.BLUE);
-  t.ok(tileIsType(1.1, 'ANGLE_WALL_1'));
+  t.ok(tileIsType('1.1', 'ANGLE_WALL_1'));
   t.ok(tileIsType(4, 'BLUE_FLAG'));
   t.ok(tileIsType('5.1', 'SPEEDPAD_INACTIVE'));
   t.ok(tileIsType('16.1', 'YELLOW_FLAG_TAKEN'));

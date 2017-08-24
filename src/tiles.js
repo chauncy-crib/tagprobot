@@ -28,7 +28,7 @@ export function computeTileInfo() {
     BLUE_FLAG: { id: 4, traversable: true, permanent: false },
     BLUE_FLAG_TAKEN: { id: 4.1, traversable: true, permanent: false },
     SPEEDPAD_ACTIVE: { id: 5, traversable: false, radius: 15, permanent: false },
-    SPEEDPAD_INACTIVE: { id: '5.1', traversable: true, permanent: false },
+    SPEEDPAD_INACTIVE: { id: 5.1, traversable: true, permanent: false },
     POWERUP_SUBGROUP: { id: 6, traversable: false, radius: 15, permanent: false },
     JUKEJUICE: { id: 6.1, traversable: false, radius: 15, permanent: false },
     ROLLING_BOMB: { id: 6.2, traversable: false, radius: 15, permanent: false },
@@ -41,17 +41,17 @@ export function computeTileInfo() {
     RED_GATE: { id: 9.2, traversable: amRed(), permanent: false },
     BLUE_GATE: { id: 9.3, traversable: amBlue(), permanent: false },
     BOMB: { id: 10, traversable: false, radius: 15, permanent: false },
-    INACTIVE_BOMB: { id: '10.1', traversable: true, permanent: false },
+    INACTIVE_BOMB: { id: 10.1, traversable: true, permanent: false },
     RED_TEAMTILE: { id: 11, traversable: true, permanent: true },
     BLUE_TEAMTILE: { id: 12, traversable: true, permanent: true },
     ACTIVE_PORTAL: { id: 13, traversable: false, radius: 15, permanent: false },
-    INACTIVE_PORTAL: { id: '13.1', traversable: true, permanent: false },
+    INACTIVE_PORTAL: { id: 13.1, traversable: true, permanent: false },
     SPEEDPAD_RED_ACTIVE: { id: 14, traversable: false, radius: 15, permanent: false },
     SPEEDPAD_RED_INACTIVE: { id: 14.1, traversable: true, permanent: false },
     SPEEDPAD_BLUE_ACTIVE: { id: 15, traversable: false, radius: 15, permanent: false },
     SPEEDPAD_BLUE_INACTIVE: { id: 15.1, traversable: true, permanent: false },
     YELLOW_FLAG: { id: 16, traversable: true, permanent: false },
-    YELLOW_FLAG_TAKEN: { id: '16.1', traversable: true, permanent: false },
+    YELLOW_FLAG_TAKEN: { id: 16.1, traversable: true, permanent: false },
     RED_ENDZONE: { id: 17, traversable: true, permanent: true },
     BLUE_ENDZONE: { id: 18, traversable: true, permanent: true },
     RED_BALL: { id: 'redball', traversable: true, permanent: false },
@@ -92,12 +92,22 @@ export function getTileProperty(tileID, property) {
 
 
 /*
+ * Returns the Tagpro API tile ID for the specified tile name. The return is
+ * a number if the ID is a whole number and a String if the ID contains a
+ * decimal. This is because the Tagpro API stores decimal tile IDs as Strings.
+ *
  * @param {String} name - the name of a tile
  * @return the id for the input tile name
  */
 export function getTileId(name) {
   assert(_.has(tileInfo, name), `Unknown tileName: ${name}`);
-  return tileInfo[name].id;
+  const tileId = tileInfo[name].id;
+
+  if (!Number.isInteger(tileId)) {
+    return tileId.toString();
+  }
+
+  return tileId;
 }
 
 
