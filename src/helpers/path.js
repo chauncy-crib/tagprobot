@@ -124,20 +124,19 @@ function constructPath(finalState) {
  * represented as a grid of 1 and 0, where 1s are traversable and 0s are not. Uses A* to calculate
  * the best path
  *
- * @param {Object} me - object with bot's position in cells, xc and yc
+ * @param {number} myxc - the current bot x location in cells
+ * @param {number} myyc - the current bot y location in cells
  * @param {Object} target - object with target's position in cells, xc and yc
  * @param {number} traversabilityCells - 2D array of cells. Traversable cells are 1s, others are 0.
  */
-export function getShortestPath(me, target, traversabilityCells) {
-  assert(_.has(me, 'xc'));
-  assert(_.has(me, 'yc'));
+export function getShortestPath(myxc, myyc, target, traversabilityCells) {
   assert(_.has(target, 'xc'));
   assert(_.has(target, 'yc'));
 
-  assertGridInBounds(traversabilityCells, me.xc, me.yc);
+  assertGridInBounds(traversabilityCells, myxc, myyc);
   assertGridInBounds(traversabilityCells, target.xc, target.yc);
 
-  const startState = new GameState(me.xc, me.yc);
+  const startState = new GameState(myxc, myyc);
   const targetState = new GameState(target.xc, target.yc);
 
   // keep track of potential game states in a fibonacci heap, where the key is the f-cost for the
