@@ -63,20 +63,25 @@ export class GameState {
       new GameState(this.xc, this.yc - 1),
       new GameState(this.xc, this.yc + 1),
     ];
-    // diagonal neighbors
-    if (diagonal) {
-      potentialNeighbors = potentialNeighbors.concat([
-        new GameState(this.xc - 1, this.yc - 1),
-        new GameState(this.xc - 1, this.yc + 1),
-        new GameState(this.xc + 1, this.yc - 1),
-        new GameState(this.xc + 1, this.yc + 1),
-      ]);
-    }
-    // assign g values of neighbors
     _.each(potentialNeighbors, n => {
       n.g = this.g + 1; // eslint-disable-line no-param-reassign
       n.parent = this; // eslint-disable-line no-param-reassign
     });
+    // diagonal neighbors
+    if (diagonal) {
+      const diagNeighbors = [
+        new GameState(this.xc - 1, this.yc - 1),
+        new GameState(this.xc - 1, this.yc + 1),
+        new GameState(this.xc + 1, this.yc - 1),
+        new GameState(this.xc + 1, this.yc + 1),
+      ];
+      _.each(diagNeighbors, n => {
+        n.g = this.g + 1.4142; // eslint-disable-line no-param-reassign
+        n.parent = this; // eslint-disable-line no-param-reassign
+      });
+      potentialNeighbors = potentialNeighbors.concat(diagNeighbors);
+    }
+    // assign g values of neighbors
     // filter out out of bounds and NT neighbors
     return _.filter(potentialNeighbors, n => {
       if (n.xc < 0
