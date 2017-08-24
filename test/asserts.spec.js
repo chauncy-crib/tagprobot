@@ -18,7 +18,7 @@ test('assert: throws errors with condition=false', t => {
 });
 
 
-test('assertGridInBounds: does not throw errors with valid inputs', t => {
+test('assertGridInBounds: does not throw errors when inputs are in bounds', t => {
   const arr = [[0, 0, 0], [0, 0, 0]]; // a 2x3 array
   t.doesNotThrow(() => { assertGridInBounds(arr, 1, 1); });
 
@@ -26,7 +26,7 @@ test('assertGridInBounds: does not throw errors with valid inputs', t => {
 });
 
 
-test('assertGridInBounds: throws errors with invalid inputs', t => {
+test('assertGridInBounds: throws errors when inputs are not in bounds', t => {
   const arr = [[0, 0, 0], [0, 0, 0]]; // a 2x3 array
   t.throws(() => { assertGridInBounds(arr, -1, 0); });
   t.throws(() => { assertGridInBounds(arr, 2, 0); });

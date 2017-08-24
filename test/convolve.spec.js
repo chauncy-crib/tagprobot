@@ -70,7 +70,7 @@ test('getSubarrayFrom2dArray: returns correct subarray for varying inputs', t =>
 });
 
 
-test('multiplyCorrespondingElementsAndSum: returns correctly with valid input', t => {
+test('multiplyCorrespondingElementsAndSum: returns correctly with inputs that are same size', t => {
   const m1 = [
     [1, 2, 3],
     [4, 5, 6],
