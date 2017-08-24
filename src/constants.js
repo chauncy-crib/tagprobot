@@ -29,3 +29,4 @@ const framesPerSecond = 60;
 // export in tiles per second
 export const accelTilesPerSecond = acceleration * framesPerSecond * tilesPerMeter;
 export const maxSpeedTilesPerSecond = maxSpeed * tilesPerMeter;
+export const timeStep = 0.5; // second
