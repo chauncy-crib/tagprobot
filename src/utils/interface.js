@@ -91,34 +91,65 @@ export function onKeyDown(event) {
 
 
 /*
- * Sends key events to move to a destination.
+ * Takes in an integer from 0-8, representing one of 9 directions in the grid below:
  *
- * @param {Object} destination - object with the position to move to, in pixels,
- * x and y
+ * 0 | 1 | 2
+ * ---------
+ * 3 | 4 | 5
+ * ---------
+ * 6 | 7 | 8
+ *
+ * and send the corresponding keypress events to tagpro
+ *
  */
-export function move(destination) {
-  // TODO: address deadband variable with a comment
-  const deadband = 4;
-  if (destination.x > deadband) {
-    tagpro.sendKeyPress('left', true);
-    tagpro.sendKeyPress('right', false);
-  } else if (destination.x < -deadband) {
-    tagpro.sendKeyPress('right', true);
-    tagpro.sendKeyPress('left', false);
-  } else {
-    tagpro.sendKeyPress('right', true);
-    tagpro.sendKeyPress('left', true);
+export function seekTowardDirection(direction) {
+  const directions = [
+    // hold left, and up, nothing, down
+    { x: -1, y: -1 },
+    { x: -1, y: 0 },
+    { x: -1, y: 1 },
+    // hold nothing, and up, nothing, down
+    { x: 0, y: -1 },
+    { x: 0, y: 0 },
+    { x: 0, y: 1 },
+    // hold right, and up, nothing, down
+    { x: 1, y: -1 },
+    { x: 1, y: 0 },
+    { x: 1, y: 1 },
+  ];
+  // TODO: these keypresses seem backward from the directions listed above, but when running the
+  // bot, it seeks toward the correct thing.
+  switch (directions[direction].x) {
+    case 1:
+      tagpro.sendKeyPress('left', true);
+      tagpro.sendKeyPress('right', false);
+      break;
+    case 0:
+      tagpro.sendKeyPress('left', false);
+      tagpro.sendKeyPress('right', false);
+      break;
+    case -1:
+      tagpro.sendKeyPress('left', false);
+      tagpro.sendKeyPress('right', true);
+      break;
+    default:
+      throw new Error('Invalid seeking direction');
   }
-
-  if (destination.y > deadband) {
-    tagpro.sendKeyPress('up', true);
-    tagpro.sendKeyPress('down', false);
-  } else if (destination.y < -deadband) {
-    tagpro.sendKeyPress('down', true);
-    tagpro.sendKeyPress('up', false);
-  } else {
-    tagpro.sendKeyPress('up', true);
-    tagpro.sendKeyPress('down', true);
+  switch (directions[direction].y) {
+    case 1:
+      tagpro.sendKeyPress('up', true);
+      tagpro.sendKeyPress('down', false);
+      break;
+    case 0:
+      tagpro.sendKeyPress('up', false);
+      tagpro.sendKeyPress('down', false);
+      break;
+    case -1:
+      tagpro.sendKeyPress('up', false);
+      tagpro.sendKeyPress('down', true);
+      break;
+    default:
+      throw new Error('Invalid seeking direction');
   }
 }
 
