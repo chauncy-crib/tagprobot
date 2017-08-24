@@ -5,7 +5,8 @@
 import _ from 'lodash';
 import FibonacciHeap from '@tyriar/fibonacci-heap';
 import { assert, assertGridInBounds } from '../utils/asserts';
-import { timeStep } from '../constants';
+import { accelTilesPerSecond, tilesPerMeter, PPTL, timeStep, PPCL } from '../constants';
+import { getMe } from '../helpers/player';
 
 
 const diagonal = false;
@@ -194,40 +195,58 @@ export function getShortestPath(myxc, myyc, target, traversabilityCells) {
 
 
 /*
- * Takes in the current player's location, and a representation of the shortest
- * path as an array of cells returned by getShortestPath(), and returns the
- * position (in cells) that the player should seek toward.
- *
- * @param {Object} me - object with bot's position in cells, xc and yc
- * @return {Object} - object with target's position in cells, xc and yc
+ * @param {number} traversabilityCells - 2D array of cells. Traversable cells are 1s, others are 0.
+ * @param {Object} target - object with target's position in cells, xc and yc
  */
-export function getTarget(me, shortestPath) {
-  assert(shortestPath, 'shortestPath is null, there may be no traversable path to the target');
-  // Find the furthest cell in the direction of the next cell
-  let winner = 0;
-  let j = 0;
-  if (shortestPath.length > 1) {
-    const diff = {
-      xc: shortestPath[0].xc - me.xc,
-      yc: shortestPath[0].yc - me.yc,
-    };
-    const nDiff = {};
-    for (let i = 0; i < shortestPath.length; i++) {
-      nDiff.xc = shortestPath[i].xc - me.xc;
-      if (diff.xc === nDiff.xc) {
-        winner += 1;
-      } else {
-        break;
-      }
-    }
-    for (; j < winner; j++) {
-      nDiff.yc = shortestPath[j].yc - me.yc;
-      if (diff.yc !== nDiff.yc) {
-        winner = j;
-        break;
+export function getBestKeyPress(traversabilityCells, target) {
+  const me = getMe();
+  // my x and y in pixels
+  const myxp = me.x + (PPTL / 2);
+  const myyp = me.y + (PPTL / 2);
+  // my vx and vy in pixels
+  const myvxp = me.vx * tilesPerMeter; // me.vx is in meters/second
+  const myvyp = me.vy * tilesPerMeter;
+  const directions = [
+    // hold left, and up, nothing, down
+    { x: -1, y: -1 },
+    { x: -1, y: 0 },
+    { x: -1, y: 1 },
+    // hold nothing, and up, nothing, down
+    { x: 0, y: -1 },
+    { x: 0, y: 0 },
+    { x: 0, y: 1 },
+    // hold right, and up, nothing, down
+    { x: 1, y: -1 },
+    { x: 1, y: 0 },
+    { x: 1, y: 1 },
+  ];
+  let bestDirection;
+  let smallestDistance = Infinity;
+  let bestPath;
+  for (let i = 0; i < 9; i++) {
+    const loc = projectedLocation(
+      myxp, myyp, myvxp, myvyp,
+      // the accelerations from this keypress, in pixels per second
+      directions[i].x * accelTilesPerSecond * PPTL,
+      directions[i].y * accelTilesPerSecond * PPTL,
+      timeStep,
+    );
+    // calculate the length of the path from our projected location
+    // to the target
+    const path = getShortestPath(
+      Math.floor(loc.x / PPCL),
+      Math.floor(loc.y / PPCL),
+      target,
+      traversabilityCells);
+    // if this path exists and is shorter than a path we've found previously, store this keypress as
+    // the best one so far
+    if (path) {
+      if (path.length < smallestDistance) {
+        smallestDistance = path.length;
+        bestDirection = i;
+        bestPath = path;
       }
     }
   }
-  const next = shortestPath[j];
-  return { xc: next.xc, yc: next.yc };
+  return { direction: bestDirection, path: bestPath };
 }
