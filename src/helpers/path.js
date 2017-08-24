@@ -4,7 +4,8 @@
  */
 import _ from 'lodash';
 import FibonacciHeap from '@tyriar/fibonacci-heap';
-import { assert, assertGridInBounds } from '../../src/utils/asserts';
+import { assert, assertGridInBounds } from '../utils/asserts';
+import { timeStep } from '../constants';
 
 
 const diagonal = false;
@@ -90,14 +91,15 @@ export class GameState {
 /*
  * Uses the physics kinematics equations to calculate a projected x and y location.
  * The numerator of all units should be equivalent (use pixels, pixels/sec, and pixels/sec^2 for
- * example). The unit for timeStep should be the denominator on the `v` and `a` inputs.
+ * example). The unit for tStep should be the denominator on the `v` and `a` inputs.
  */
-export function projectedLocation(x, y, vx, vy, ax, ay, timeStep) {
+export function projectedLocation(x, y, vx, vy, ax, ay, tStep) {
   return {
-    x: x + (vx * timeStep) + (0.5 * ax * (timeStep ** 2)),
-    y: y + (vy * timeStep) + (0.5 * ay * (timeStep ** 2)),
+    x: x + (vx * tStep) + (0.5 * ax * (tStep ** 2)),
+    y: y + (vy * tStep) + (0.5 * ay * (tStep ** 2)),
   };
 }
+
 
 /*
  * @param {GameState} finalState
