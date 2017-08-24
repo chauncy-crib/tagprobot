@@ -54,8 +54,7 @@ function getGoalPos() {
 
 
 /*
- * @return {Object} - an object with position of the next immediate place to
- * navigate to in pixels, x and y
+ * @return {number} - the 0-8 direction our bot should seek toward
  */
 function getNextDirectionTowardTarget() {
   const goal = getGoalPos();
