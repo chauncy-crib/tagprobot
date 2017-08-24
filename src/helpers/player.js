@@ -36,8 +36,3 @@ export function getEnemyEndzoneTile() {
 export function isAllyFlagTaken() {
   return amBlue() ? tagpro.ui.blueFlagTaken : tagpro.ui.redFlagTaken;
 }
-
-// For testing purposes.  Sets me.team to input color
-export function mockMe(color) {
-  me = { team: color };
-}
