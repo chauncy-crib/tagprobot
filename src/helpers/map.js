@@ -149,26 +149,25 @@ export function getMapTraversabilityInCells(map) {
 
 
 /*
- * Returns the position (in pixels x,y and grid positions xg, yg)
- * of first of the specified tile types to appear starting in the
- * top left corner and moving in a page-reading fashion.
+ * Returns the position (in pixels x,y) of first of the specified tile types to
+ * appear starting in the top left corner and moving in a page-reading fashion.
  *
  * @param {(number | number[])} tiles - either a number representing a tileType,
  * or an array of such numbers
  */
-export function findTile(tiles) {
+export function findTile(map, tileIds) {
   // Force an array if the input is just one tile
-  const tileArray = [].concat(tiles);
+  const tileIdArray = [].concat(tileIds);
 
-  for (let x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
+  for (let x = 0, xl = map.length, yl = map[0].length; x < xl; x++) {
     for (let y = 0; y < yl; y++) {
-      for (let i = 0; i < tileArray.length; i++) {
-        const tile = tileArray[i];
-        if (tagpro.map[x][y] === tile) {
-          return { x: x * PPTL, y: y * PPTL, xg: x, yg: y };
+      for (let i = 0; i < tileIdArray.length; i++) {
+        const tileId = tileIdArray[i];
+        if (map[x][y] === tileId) {
+          return { x: x * PPTL, y: y * PPTL };
         }
       }
     }
   }
-  throw new Error(`Unable to find tile: ${tiles}`);
+  throw new Error(`Unable to find tile: ${tileIds}`);
 }
