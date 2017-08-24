@@ -63,7 +63,7 @@ function start() {
     // Call this function every time a tagpro animation frame gets drawn
     requestAnimationFrame(loop);
     if (isAutonomous()) {
-      botLoop();
+      botLoop(tagpro.map);
     }
   }
 

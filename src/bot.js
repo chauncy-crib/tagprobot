@@ -21,7 +21,7 @@ import { drawPlannedPath, drawNonTraversableCells } from './draw/drawings';
  *   If we have the flag, go to our endzone.
  *   Else, go to the flag station.
  */
-function getGoal() {
+function getGoal(map) {
   let goal;
   const me = getMe();
   // If the bot has the flag, go to the endzone
@@ -34,7 +34,7 @@ function getGoal() {
     //   goal.y = (2 * (me.y + me.vy)) - (chaser.y + chaser.vy);
     //   console.log('I have the flag. Fleeing enemy!');
     // }
-    goal = findMyEndzone();
+    goal = findMyEndzone(map);
     console.log('I have the flag. Seeking endzone!');
   } else {
     const enemyFC = findEnemyFC();
@@ -44,13 +44,13 @@ function getGoal() {
       goal.y = enemyFC.y + enemyFC.vy;
       console.log('I see an enemy with the flag. Chasing!');
     } else if (enemyTeamHasFlag()) {
-      goal = findEnemyEndzone();
+      goal = findEnemyEndzone(map);
       console.log('Enemy has the flag. Headed towards the Enemy Endzone.');
     } else if (myTeamHasFlag()) {
-      goal = findMyEndzone();
+      goal = findMyEndzone(map);
       console.log('We have the flag. Headed towards our Endzone.');
     } else {
-      goal = findFlagStation();
+      goal = findFlagStation(map);
       console.log("I don't know what to do. Going to central flag station!");
     }
   }
@@ -61,8 +61,8 @@ function getGoal() {
 /*
  * Gets the x and y displacement that we should move next
  */
-function getSeek() {
-  const goal = getGoal();
+function getSeek(map) {
+  const goal = getGoal(map);
   const me = getMe();
 
   // Version for attempting path-planning
@@ -74,7 +74,7 @@ function getSeek() {
     x: Math.floor(goal.x / PPTL),
     y: Math.floor(goal.y / PPTL),
   };
-  const traversableCells = getMapTraversabilityInCells(tagpro.map);
+  const traversableCells = getMapTraversabilityInCells(map);
   drawNonTraversableCells(traversableCells);
   const shortestPath = getShortestPath(
     gridPosition.x,
@@ -101,6 +101,6 @@ function getSeek() {
   };
 }
 
-export default function botLoop() {
-  move(getSeek());
+export default function botLoop(map) {
+  move(getSeek(map));
 }
