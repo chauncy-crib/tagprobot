@@ -36,7 +36,7 @@ export function setupTiles(teamColor) {
     BLUE_FLAG: { id: 4, traversable: true, permanent: false },
     BLUE_FLAG_TAKEN: { id: 4.1, traversable: true, permanent: false },
     SPEEDPAD_ACTIVE: { id: 5, traversable: false, radius: 15, permanent: false },
-    SPEEDPAD_INACTIVE: { id: '5.1', traversable: true, permanent: false },
+    SPEEDPAD_INACTIVE: { id: 5.1, traversable: true, permanent: false },
     POWERUP_SUBGROUP: { id: 6, traversable: false, radius: 15, permanent: false },
     JUKEJUICE: { id: 6.1, traversable: false, radius: 15, permanent: false },
     ROLLING_BOMB: { id: 6.2, traversable: false, radius: 15, permanent: false },
@@ -49,17 +49,17 @@ export function setupTiles(teamColor) {
     RED_GATE: { id: 9.2, traversable: teamColor === teams.RED, permanent: false },
     BLUE_GATE: { id: 9.3, traversable: teamColor === teams.BLUE, permanent: false },
     BOMB: { id: 10, traversable: false, radius: 15, permanent: false },
-    INACTIVE_BOMB: { id: '10.1', traversable: true, permanent: false },
+    INACTIVE_BOMB: { id: 10.1, traversable: true, permanent: false },
     RED_TEAMTILE: { id: 11, traversable: true, permanent: true },
     BLUE_TEAMTILE: { id: 12, traversable: true, permanent: true },
     ACTIVE_PORTAL: { id: 13, traversable: false, radius: 15, permanent: false },
-    INACTIVE_PORTAL: { id: '13.1', traversable: true, permanent: false },
+    INACTIVE_PORTAL: { id: 13.1, traversable: true, permanent: false },
     SPEEDPAD_RED_ACTIVE: { id: 14, traversable: false, radius: 15, permanent: false },
     SPEEDPAD_RED_INACTIVE: { id: 14.1, traversable: true, permanent: false },
     SPEEDPAD_BLUE_ACTIVE: { id: 15, traversable: false, radius: 15, permanent: false },
     SPEEDPAD_BLUE_INACTIVE: { id: 15.1, traversable: true, permanent: false },
     YELLOW_FLAG: { id: 16, traversable: true, permanent: false },
-    YELLOW_FLAG_TAKEN: { id: '16.1', traversable: true, permanent: false },
+    YELLOW_FLAG_TAKEN: { id: 16.1, traversable: true, permanent: false },
     RED_ENDZONE: { id: 17, traversable: true, permanent: true },
     BLUE_ENDZONE: { id: 18, traversable: true, permanent: true },
     RED_BALL: { id: 'redball', traversable: true, permanent: false },
@@ -153,8 +153,8 @@ test('tileIsType: returns true when tileId and name match', t => {
   setupTiles(teams.BLUE);
   t.ok(tileIsType(1.1, 'ANGLE_WALL_1'));
   t.ok(tileIsType(4, 'BLUE_FLAG'));
-  t.ok(tileIsType('5.1', 'SPEEDPAD_INACTIVE'));
-  t.ok(tileIsType('16.1', 'YELLOW_FLAG_TAKEN'));
+  t.ok(tileIsType(5.1, 'SPEEDPAD_INACTIVE'));
+  t.ok(tileIsType(16.1, 'YELLOW_FLAG_TAKEN'));
   t.ok(tileIsType(18, 'BLUE_ENDZONE'));
   teardownTiles();
 
@@ -166,8 +166,8 @@ test('tileIsType: returns false when tileId and name do not match', t => {
   setupTiles(teams.BLUE);
   t.notOk(tileIsType(1, 'ANGLE_WALL_1'));
   t.notOk(tileIsType(4, 'RED_FLAG'));
-  t.notOk(tileIsType(5.1, 'SPEEDPAD_INACTIVE'));
-  t.notOk(tileIsType('16', 'YELLOW_FLAG_TAKEN'));
+  t.notOk(tileIsType(5, 'SPEEDPAD_INACTIVE'));
+  t.notOk(tileIsType(16, 'YELLOW_FLAG_TAKEN'));
   t.notOk(tileIsType(17, 'BLUE_ENDZONE'));
   teardownTiles();
 
