@@ -11,9 +11,9 @@ import { getTileId } from '../tiles';
  * @return {Object} object with the endzone's position in pixels, x and y, and
  * in cells, xc and yc
  */
-export function findMyEndzone() {
+export function findMyEndzone(map) {
   // TODO: return closest endzone tile instead of first
-  return findTile(getMyEndzoneTile());
+  return findTile(map, getMyEndzoneTile());
 }
 
 
@@ -23,9 +23,9 @@ export function findMyEndzone() {
  * @return {Object} object with the endzone's position in pixels, x and y, and
  * in cells, xc and yc
  */
-export function findEnemyEndzone() {
+export function findEnemyEndzone(map) {
   // TODO: return closest endzone tile instead of first
-  return findTile(getEnemyEndzoneTile());
+  return findTile(map, getEnemyEndzoneTile());
 }
 
 
@@ -35,8 +35,8 @@ export function findEnemyEndzone() {
  * @return {Object} object with the flag station's position in pixels, x and
  * y, and in cells, xc and yc
  */
-export function findFlagStation() {
-  return findTile([getTileId('YELLOW_FLAG'), getTileId('YELLOW_FLAG_TAKEN')]);
+export function findFlagStation(map) {
+  return findTile(map, [getTileId('YELLOW_FLAG'), getTileId('YELLOW_FLAG_TAKEN')]);
 }
 
 

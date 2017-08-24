@@ -24,12 +24,12 @@ import { updatePath } from './draw/drawings';
  * @return {Object} - the position, in pixels, of the bot's goal, which is
  * determined by the current state of the game
  */
-function getGoalPos() {
+function getGoalPos(map) {
   let goal;
   const me = getMe();
   // If the bot has the flag, go to the endzone
   if (me.flag) {
-    goal = findMyEndzone();
+    goal = findMyEndzone(map);
     console.log('I have the flag. Seeking endzone!');
   } else {
     const enemyFC = findEnemyFC();
@@ -39,13 +39,13 @@ function getGoalPos() {
       goal.y = enemyFC.y + enemyFC.vy;
       console.log('I see an enemy with the flag. Chasing!');
     } else if (enemyTeamHasFlag()) {
-      goal = findEnemyEndzone();
+      goal = findEnemyEndzone(map);
       console.log('Enemy has the flag. Headed towards the Enemy Endzone.');
     } else if (myTeamHasFlag()) {
-      goal = findMyEndzone();
+      goal = findMyEndzone(map);
       console.log('We have the flag. Headed towards our Endzone.');
     } else {
-      goal = findFlagStation();
+      goal = findFlagStation(map);
       console.log("I don't know what to do. Going to central flag station!");
     }
   }
@@ -57,8 +57,8 @@ function getGoalPos() {
  * @return {Object} - an object with position of the next immediate place to
  * navigate to in pixels, x and y
  */
-function getNextTargetPos() {
-  const goal = getGoalPos();
+function getNextTargetPos(map) {
+  const goal = getGoalPos(map);
   const me = getMe();
   me.xc = Math.floor((me.x + (PPCL / 2)) / PPCL);
   me.yc = Math.floor((me.y + (PPCL / 2)) / PPCL);
@@ -68,7 +68,7 @@ function getNextTargetPos() {
     yc: Math.floor(goal.y / PPCL),
   };
   // Runtime: O(E*CPTL^2) with visualizations on, O(E + S*CPTL^2) with visualizations off
-  const traversableCells = getMapTraversabilityInCells(tagpro.map);
+  const traversableCells = getMapTraversabilityInCells(map);
   // TODO: runtime of this? Call is O(R) for now
   const shortestPath = getShortestPath(
     { xc: me.xc, yc: me.yc },
@@ -92,6 +92,6 @@ function getNextTargetPos() {
 }
 
 
-export default function botLoop() {
-  move(getNextTargetPos());
+export default function botLoop(map) {
+  move(getNextTargetPos(map));
 }
