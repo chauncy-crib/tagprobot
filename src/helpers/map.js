@@ -36,6 +36,34 @@ export function init2dArray(width, height, defaultVal = 0, inputMatrix = undefin
 }
 
 
+/*
+ * Initializes and returns a 4D array with the dimensions w, x, y, z
+ *
+ * Runtime: O(w * x * y * z)
+ *
+ * @param {number} w
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ * @param {number} defaultVal - the value to give each element in the initialized 4D array
+ */
+export function init4dArray(w, x, y, z, defaultVal = 0) {
+  const matrix = [];
+  for (let i = 0; i < w; i++) {
+    matrix[i] = new Array(x);
+    for (let j = 0; j < x; j++) {
+      matrix[i][j] = new Array(y);
+      for (let k = 0; k < y; k++) {
+        matrix[i][j][k] = new Array(z);
+        for (let l = 0; l < z; l++) {
+          matrix[i][j][k][l] = defaultVal;
+        }
+      }
+    }
+  }
+  return matrix;
+}
+
 /* eslint no-param-reassign: ["error", { "ignorePropertyModificationsFor": ["bigGrid"] }] */
 /*
  * place all values from smallGrid into bigGrid. Align the upper left corner at x, y
