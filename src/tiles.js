@@ -72,6 +72,8 @@ export function computeTileInfo() {
  * @return - if the corresponding tile has a value for this property
  */
 export function tileHasProperty(tileID, property) {
+  console.log('tileHasProperty');
+  console.log(`tileID: ${tileID}, property: ${property}`);
   const tileIDString = String(tileID);
   assert(_.has(tileNames, tileIDString), `Unknown tileID: ${tileID}`);
   const tileName = tileNames[tileID];
@@ -85,6 +87,8 @@ export function tileHasProperty(tileID, property) {
  * @return - the property for the input tile
  */
 export function getTileProperty(tileID, property) {
+  console.log('getTileProperty');
+  console.log(`tileID: ${tileID}, property: ${property}`);
   assert(tileHasProperty(tileID, property), `Unknown property for tile: ${tileID}, ${property}`);
   const tileName = tileNames[tileID];
   return tileInfo[tileName][property];
@@ -107,5 +111,7 @@ export function getTileId(name) {
  * @return - true if tileId is the id of the named tile
  */
 export function tileIsType(tileId, name) {
+  console.log('tileIsType');
+  console.log(`tileID: ${tileId}, name: ${name}`);
   return getTileId(name) === tileId;
 }
