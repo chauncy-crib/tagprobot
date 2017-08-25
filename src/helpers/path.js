@@ -96,6 +96,17 @@ export class GameState {
 
 
 /*
+ * @param {number[][]} traversabilityCells a grid of traversability cells
+ * @return {{xc: number, yc: number}[][][][]} shortestPaths: a 4d array of objects.
+ *   shortestPaths[x_start][y_start][x_end][y_end] is the next cell in traversabililtyCells along
+ *   the path from x_start, y_start to x_end, y_end
+ */
+export function precomputeAllShortestPaths(traversabilityCells) {
+
+}
+
+
+/*
  * Uses the physics kinematics equations to calculate a projected x and y location.
  * The numerator of all units should be equivalent (use pixels, pixels/sec, and pixels/sec^2 for
  * example). The unit for tStep should be the denominator on the `v` and `a` inputs.
