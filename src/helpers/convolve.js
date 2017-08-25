@@ -12,6 +12,7 @@ import { assert } from '../../src/utils/asserts';
  *
  * @param {number[][]} m1 the first matrix
  * @param {number[][]} m2 the second matrix (of the same dimensions as m1)
+ * @returns {number} the sum of the corresponding products
  */
 export function multiplyCorrespondingElementsAndSum(m1, m2) {
   assert(
@@ -51,6 +52,7 @@ export function multiplyCorrespondingElementsAndSum(m1, m2) {
  * @param {number[][]} m a 2D array, which will have a buffer added around its perimeter
  * @param {number} bufSize the size of buffer to add around the matrix
  * @param {number} bufVal the value to fill the buffer with
+ * @returns {number[][]}
  */
 export function addBufferTo2dArray(m, bufSize, bufVal) {
   const mWidth = m.length;
@@ -74,6 +76,7 @@ export function addBufferTo2dArray(m, bufSize, bufVal) {
  * @param {number} yCenter the y index of the center of the subarray
  * @param {number} width the width of the subarray (must be an odd number)
  * @param {number} height the height of the subarray (must be an odd number)
+ * @returns {number[][]}
  */
 export function getSubarrayFrom2dArray(array, xCenter, yCenter, width, height) {
   assert(width % 2 === 1, 'getSubarrayFrom2dArray: width is not odd');
@@ -104,6 +107,7 @@ export function getSubarrayFrom2dArray(array, xCenter, yCenter, width, height) {
  * @param {number[][]} m the first 2D array in the convolution
  * @param {number[][]} k the second 2D array in the convolution, also called the kernel (must
  *   have sides of equal length and the sides must have an odd length)
+ * @returns {number[][]} the convolution
  */
 export function convolve(m, k) {
   const kWidth = k.length;

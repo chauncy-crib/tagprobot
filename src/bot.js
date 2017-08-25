@@ -21,7 +21,7 @@ import { updatePath } from './draw/drawings';
  *   If we have the flag, go to our endzone.
  *   Else, go to the flag station.
  *
- * @return {Object} - the position, in pixels, of the bot's goal, which is
+ * @returns {Object} - the position, in pixels, of the bot's goal, which is
  * determined by the current state of the game
  */
 function getGoalPos() {
@@ -54,7 +54,7 @@ function getGoalPos() {
 
 
 /*
- * @return {number} - the 0-8 direction our bot should seek toward
+ * @returns {number} - the 0-8 direction our bot should seek toward
  */
 function getNextDirectionTowardTarget() {
   const goal = getGoalPos();

@@ -31,7 +31,7 @@ const permNTSprites = [];
  * @param {number} height height in pixels
  * @param {number} alpha 0-1, where 0 is transparent
  * @param {number} color a hex color
- * @return a PIXI.Graphics object
+ * @returns {PIXI.Graphics} a PIXI.Graphics object
  */
 function getPixiRect(x, y, width, height, alpha, color) {
   const pixiRect = new PIXI.Graphics();
