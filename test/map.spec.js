@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import {
   initMapTraversabilityCells,
   init2dArray,
+  init4dArray,
   fillGridWithSubgrid,
   getTileTraversabilityInCells,
   getMapTraversabilityInCells,
@@ -39,6 +40,13 @@ test('init2dArray: returns 2d array that is correct size, and with correct value
   t.end();
 });
 
+
+test('init4dArray: returns correct size 4d array with default values in it', t => {
+  t.same(init4dArray(2, 1, 3, 2, 4), [
+    [[[4, 4], [4, 4], [4, 4]]], [[[4, 4], [4, 4], [4, 4]]],
+  ]);
+  t.end();
+});
 
 test('fillGridWithSubgrid: fills smaller grid into larger grid', t => {
   let grid = [
