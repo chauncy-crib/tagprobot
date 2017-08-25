@@ -31,9 +31,9 @@ export class GameState {
   }
 
   /*
-   * @param {GameState} targetState - the GameState object we are calculating the heuristic distance
+   * @param {GameState} targetState the GameState object we are calculating the heuristic distance
    *   to
-   * @return - the heuristic distance from this state to the targetState
+   * @return the heuristic distance from this state to the targetState
    */
   heuristic(targetState) {
     const xdiff = Math.abs(this.xc - targetState.xc);
@@ -49,8 +49,8 @@ export class GameState {
   }
 
   /*
-   * @param traversabilityCells - 2d grid of cell traversabilities, 1 for traversable, 0 for NT
-   * @return {Array} - Array of neighboring GameStates, with g values initialized to current node's
+   * @param traversabilityCells 2d grid of cell traversabilities, 1 for traversable, 0 for NT
+   * @return {Array} Array of neighboring GameStates, with g values initialized to current node's
    *   g value + 1
    */
   neighbors(traversabilityCells) {
@@ -110,7 +110,7 @@ export function projectedLocation(x, y, vx, vy, ax, ay, tStep) {
 
 /*
  * @param {GameState} finalState
- * @returns {Array} list of GameStates from starting state to final state, not including the
+ * @return {Array} list of GameStates from starting state to final state, not including the
  *   starting state.
  */
 function constructPath(finalState) {
@@ -130,10 +130,10 @@ function constructPath(finalState) {
  * represented as a grid of 1 and 0, where 1s are traversable and 0s are not. Uses A* to calculate
  * the best path
  *
- * @param {number} myxc - the current bot x location in cells
- * @param {number} myyc - the current bot y location in cells
- * @param {Object} target - object with target's position in cells, xc and yc
- * @param {number} traversabilityCells - 2D array of cells. Traversable cells are 1s, others are 0.
+ * @param {number} myxc the current bot x location in cells
+ * @param {number} myyc the current bot y location in cells
+ * @param {Object} target object with target's position in cells, xc and yc
+ * @param {number} traversabilityCells 2D array of cells. Traversable cells are 1s, others are 0.
  */
 export function getShortestPath(myxc, myyc, target, traversabilityCells) {
   assert(_.has(target, 'xc'));
@@ -198,8 +198,8 @@ export function getShortestPath(myxc, myyc, target, traversabilityCells) {
 
 
 /*
- * @param {number} traversabilityCells - 2D array of cells. Traversable cells are 1s, others are 0.
- * @param {Object} target - object with target's position in cells, xc and yc
+ * @param {number} traversabilityCells 2D array of cells. Traversable cells are 1s, others are 0.
+ * @param {Object} target object with target's position in cells, xc and yc
  */
 export function getBestKeyPress(traversabilityCells, target) {
   const me = getMe();

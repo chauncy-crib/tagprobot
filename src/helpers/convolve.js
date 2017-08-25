@@ -10,8 +10,8 @@ import { assert } from '../../src/utils/asserts';
  *   multiplyCorrespondingElementsAndSum(a, b)
  *   (1*4) + (2*1) + (3*2) + (4*3) = 21
  *
- * @param {number[][]} m1 - the first matrix
- * @param {number[][]} m2 - the second matrix (of the same dimensions as m1)
+ * @param {number[][]} m1 the first matrix
+ * @param {number[][]} m2 the second matrix (of the same dimensions as m1)
  */
 export function multiplyCorrespondingElementsAndSum(m1, m2) {
   assert(
@@ -48,9 +48,9 @@ export function multiplyCorrespondingElementsAndSum(m1, m2) {
  *                                                 1 1 1 1 1 1 1
  *                                                 1 1 1 1 1 1 1
  *
- * @param {number[][]} m - a 2D array, which will have a buffer added around its perimeter
- * @param {number} bufSize - the size of buffer to add around the matrix
- * @param {number} bufVal - the value to fill the buffer with
+ * @param {number[][]} m a 2D array, which will have a buffer added around its perimeter
+ * @param {number} bufSize the size of buffer to add around the matrix
+ * @param {number} bufVal the value to fill the buffer with
  */
 export function addBufferTo2dArray(m, bufSize, bufVal) {
   const mWidth = m.length;
@@ -69,11 +69,11 @@ export function addBufferTo2dArray(m, bufSize, bufVal) {
 /*
  * Returns a specified section from a 2D array.
  *
- * @param {number[][]} array - the 2D array to get the subarray from
- * @param {number} xCenter - the x index of the center of the subarray
- * @param {number} yCenter - the y index of the center of the subarray
- * @param {number} width - the width of the subarray (must be an odd number)
- * @param {number} height - the height of the subarray (must be an odd number)
+ * @param {number[][]} array the 2D array to get the subarray from
+ * @param {number} xCenter the x index of the center of the subarray
+ * @param {number} yCenter the y index of the center of the subarray
+ * @param {number} width the width of the subarray (must be an odd number)
+ * @param {number} height the height of the subarray (must be an odd number)
  */
 export function getSubarrayFrom2dArray(array, xCenter, yCenter, width, height) {
   assert(width % 2 === 1, 'getSubarrayFrom2dArray: width is not odd');
@@ -101,8 +101,8 @@ export function getSubarrayFrom2dArray(array, xCenter, yCenter, width, height) {
 /*
  * Returns a 2D array that is the result of the convolution of m and k.
  *
- * @param {number[][]} m - the first 2D array in the convolution
- * @param {number[][]} k - the second 2D array in the convolution, also called the kernel (must
+ * @param {number[][]} m the first 2D array in the convolution
+ * @param {number[][]} k the second 2D array in the convolution, also called the kernel (must
  *   have sides of equal length and the sides must have an odd length)
  */
 export function convolve(m, k) {
