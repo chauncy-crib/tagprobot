@@ -1,7 +1,6 @@
 import { clearSprites, drawPermanentNTSprites } from '../draw/drawings';
 
 
-
 const KEY_CODES = {
   H: 72,
   Q: 81,
