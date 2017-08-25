@@ -19,6 +19,7 @@ const tilesToUpdateValues = []; // the values stored in those locations
  * @param {number} width the width of the initialized 2D array
  * @param {number} height the height of the initialized 2D array
  * @param {number} defaultVal the value to give each element in the initialized 2D array
+ * @returns {number[][]}
  */
 export function init2dArray(width, height, defaultVal = 0, inputMatrix = undefined) {
   let matrix = inputMatrix;
@@ -59,6 +60,7 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
  *
  * @param {number} tileID the ID of the tile that should be split into cells and
  *   parsed for traversability
+ * @returns {number[][]}
  */
 export function getTileTraversabilityInCells(tileID) {
   // Start with all cells being traversable
@@ -149,6 +151,7 @@ export function initMapTraversabilityCells(map) {
  * Runtime: O(E*CPTL^2) with drawings on, O(E + S*CPTL^2) with drawings off
  *
  * @param {number} map 2D array representing the Tagpro map
+ * @returns {number[][]}
  */
 export function getMapTraversabilityInCells(map) {
   assert(tilesToUpdate.length === tilesToUpdateValues.length,
@@ -174,14 +177,13 @@ export function getMapTraversabilityInCells(map) {
 
 
 /*
- * Returns the position x and y (in pixels) and xc, yc (in cells)
- * of the first of the specified tile types to appear starting in the
- * top left corner and moving in a page-reading fashion.
- *
  * Runtime: O(N^2)
  *
- * @param {(number | number[])} tiles either a number representing a tileType,
+ * @param {(number|number[])} tiles either a number representing a tileType,
  * or an array of such numbers
+ * @returns {{x: number, y: number, xc: number, yc: number}} the position x and y (in pixels) and
+ *   xc, yc (in cells) of the first of the specified tile types to appear starting in the top left
+ *   corner and moving in a page-reading fashion.
  */
 export function findTile(tiles) {
   // Force an array if the input is just one tile
