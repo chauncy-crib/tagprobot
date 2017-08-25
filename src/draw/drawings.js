@@ -31,7 +31,7 @@ const permNTSprites = [];
  * @param {number} height - height in pixels
  * @param {number} alpha - 0-1, where 0 is transparent
  * @param {number} color - a hex color
- * @return - a PIXI.Graphics object
+ * @return a PIXI.Graphics object
  */
 function getPixiRect(x, y, width, height, alpha, color) {
   const pixiRect = new PIXI.Graphics();
@@ -50,7 +50,7 @@ function getPixiRect(x, y, width, height, alpha, color) {
  * Creates a new path sprite for each cell in path
  * Adds each new sprite to pathSprites, and to the renderer
  * Runtime: O(A)
- * @param {Array} - an array of cells, likely returned by getShortestPath()
+ * @param {Array} path - an array of cells, likely returned by getShortestPath()
  */
 export function updatePath(path) {
   if (!areVisualsOn()) {
@@ -122,9 +122,9 @@ export function generatePermanentNTSprites(x, y, cellTraversabilities) {
  * it to the correct size as specified by the comment at the top of this file
  * Runtime: O(CPTL^2), O(1) if visualizations off
  *
- * @param {number} x: x location, in tiles
- * @param {number} y: y location, in tiles
- * @param cellTraversabilities: the cell-traversabilities of the tagpro map.
+ * @param {number} x - x location, in tiles
+ * @param {number} y - y location, in tiles
+ * @param {Array} cellTraversabilities - the cell-traversabilities of the tagpro map.
  */
 export function updateNTSprites(x, y, cellTraversabilities) {
   if (!areVisualsOn()) {

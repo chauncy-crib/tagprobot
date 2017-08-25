@@ -33,7 +33,7 @@ export class GameState {
   /*
    * @param {GameState} targetState - the GameState object we are calculating the heuristic distance
    *   to
-   * @return - the heuristic distance from this state to the targetState
+   * @return the heuristic distance from this state to the targetState
    */
   heuristic(targetState) {
     const xdiff = Math.abs(this.xc - targetState.xc);
@@ -49,8 +49,9 @@ export class GameState {
   }
 
   /*
-   * @param traversabilityCells - 2d grid of cell traversabilities, 1 for traversable, 0 for NT
-   * @return {Array} - Array of neighboring GameStates, with g values initialized to current node's
+   * @param {number[][]} traversabilityCells - 2d grid of cell traversabilities, 1 for traversable,
+   *   0 for NT
+   * @return {Array} Array of neighboring GameStates, with g values initialized to current node's
    *   g value + 1
    */
   neighbors(traversabilityCells) {
