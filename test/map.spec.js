@@ -9,6 +9,7 @@ import {
   __RewireAPI__ as MapRewireAPI,
 } from '../src/helpers/map';
 import { setupTiles, teardownTiles } from './tiles.spec';
+import { teams } from '../src/constants';
 import { getTileId } from '../src/tiles';
 
 
@@ -103,7 +104,7 @@ test('fillGridWithSubgrid: throws errors for invalid inputs', t => {
 
 
 test('getTileTraversabilityInCells: returns correctly with entirely traversable tile, CPTL=1', t => {
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   MapRewireAPI.__Rewire__('CPTL', 1);
   MapRewireAPI.__Rewire__('PPCL', 40);
   const expected = [
@@ -120,7 +121,7 @@ test('getTileTraversabilityInCells: returns correctly with entirely traversable 
 
 
 test('getTileTraversabilityInCells: returns correctly with entirely nontraversable tile, CPTL=1', t => {
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   MapRewireAPI.__Rewire__('CPTL', 1);
   MapRewireAPI.__Rewire__('PPCL', 40);
   const expected = [
@@ -137,7 +138,7 @@ test('getTileTraversabilityInCells: returns correctly with entirely nontraversab
 
 
 test('getTileTraversabilityInCells: returns correctly with entirely traversable tile, CPTL=4', t => {
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   MapRewireAPI.__Rewire__('CPTL', 4);
   MapRewireAPI.__Rewire__('PPCL', 10);
   const expected = [
@@ -159,7 +160,7 @@ test('getTileTraversabilityInCells: returns correctly with entirely traversable 
 test('getTileTraversabilityInCells: returns correctly with CNTO, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
   MapRewireAPI.__Rewire__('PPCL', 10);
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   const expected = [
     [1, 0, 0, 1],
     [0, 0, 0, 0],
@@ -179,7 +180,7 @@ test('getTileTraversabilityInCells: returns correctly with CNTO, CPTL=4', t => {
 test('getTileTraversabilityInCells: returns correctly with CNTO, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
   MapRewireAPI.__Rewire__('PPCL', 10);
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   const expected = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -198,7 +199,7 @@ test('getTileTraversabilityInCells: returns correctly with CNTO, CPTL=4', t => {
 
 test('getTileTraversabilityInCells: returns correctly with angled wall 1, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   const expected = [
     [0, 0, 0, 0],
     [1, 0, 0, 0],
@@ -216,7 +217,7 @@ test('getTileTraversabilityInCells: returns correctly with angled wall 1, CPTL=4
 
 test('getTileTraversabilityInCells: returns correctly with angled wall 2, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   const expected = [
     [0, 0, 0, 0],
     [0, 0, 0, 1],
@@ -234,7 +235,7 @@ test('getTileTraversabilityInCells: returns correctly with angled wall 2, CPTL=4
 
 test('getTileTraversabilityInCells: returns correctly with angled wall 3, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   const expected = [
     [0, 1, 1, 1],
     [0, 0, 1, 1],
@@ -252,7 +253,7 @@ test('getTileTraversabilityInCells: returns correctly with angled wall 3, CPTL=4
 
 test('getTileTraversabilityInCells: returns correctly with angled wall 4, CPTL=4', t => {
   MapRewireAPI.__Rewire__('CPTL', 4);
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   const expected = [
     [1, 1, 1, 0],
     [1, 1, 0, 0],
@@ -269,7 +270,7 @@ test('getTileTraversabilityInCells: returns correctly with angled wall 4, CPTL=4
 
 
 test('getTileTraversabilityInCells: returns correctly with nontraversable tile, CPTL=8', t => {
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   MapRewireAPI.__Rewire__('CPTL', 8);
   MapRewireAPI.__Rewire__('PPCL', 5);
   let expected = [
@@ -309,7 +310,7 @@ test('getTileTraversabilityInCells: returns correctly with nontraversable tile, 
 
 
 test('getTileTraversabilityInCells: throws errors for invalid inputs', t => {
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   t.throws(() => { getTileTraversabilityInCells(false); });
   t.throws(() => { getTileTraversabilityInCells(1.23); });
   t.throws(() => { getTileTraversabilityInCells(undefined); });
@@ -323,7 +324,7 @@ test('getTileTraversabilityInCells: throws errors for invalid inputs', t => {
 
 test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
   // initialize current player as blue
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   MapRewireAPI.__Rewire__('CPTL', 1);
   // create a dummy map from bombs, spikes, gates, and regular tiles
   const bomb = getTileId('BOMB');
@@ -406,7 +407,7 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
 
 
 test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
-  setupTiles(false);
+  setupTiles(teams.RED);
   // create a dummy map from bombs, spikes, gates, and regular tiles
   const bomb = getTileId('BOMB');
   const inactivebomb = getTileId('INACTIVE_BOMB');
@@ -509,7 +510,7 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
 
 test('initMapTraversabilityCells: stores correct values in mapTraversabilityCells, tilesToUpdate, and tilesToUpdateValues with CPT=2', t => {
   // initialize current player as blue
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   MapRewireAPI.__Rewire__('CPTL', 1);
   // create a dummy map from bombs, spikes, gates, and regular tiles
   const bomb = getTileId('BOMB');
