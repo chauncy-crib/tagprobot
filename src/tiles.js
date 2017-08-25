@@ -67,9 +67,9 @@ export function computeTileInfo() {
 
 
 /*
- * @param {number} tileID - the ID of the tile
- * @param {String} property - the name of a property
- * @return - if the corresponding tile has a value for this property
+ * @param {number} tileID the ID of the tile
+ * @param {String} property the name of a property
+ * @returns {boolean} if the corresponding tile has a value for this property
  */
 export function tileHasProperty(tileID, property) {
   const tileIDString = String(tileID);
@@ -80,9 +80,9 @@ export function tileHasProperty(tileID, property) {
 
 
 /*
- * @param {number} tileID - the ID of the tile whose property we want
- * @param {String} property - the name of a property stored in tileInfo
- * @return - the property for the input tile
+ * @param {number} tileID the ID of the tile whose property we want
+ * @param {String} property the name of a property stored in tileInfo
+ * @return the property for the input tile
  */
 export function getTileProperty(tileID, property) {
   assert(tileHasProperty(tileID, property), `Unknown property for tile: ${tileID}, ${property}`);
@@ -92,8 +92,8 @@ export function getTileProperty(tileID, property) {
 
 
 /*
- * @param {String} name - the name of a tile
- * @return - the id for the input tile name
+ * @param {String} name the name of a tile
+ * @return the id for the input tile name
  */
 export function getTileId(name) {
   assert(_.has(tileInfo, name), `Unknown tileName: ${name}`);
@@ -102,9 +102,9 @@ export function getTileId(name) {
 
 
 /*
- * @param {number} tileID - the id for a tile
- * @param {String} name - the name of a tile
- * @return - true if tileId is the id of the named tile
+ * @param {number} tileID the id for a tile
+ * @param {String} name the name of a tile
+ * @return true if tileId is the id of the named tile
  */
 export function tileIsType(tileId, name) {
   return getTileId(name) === tileId;

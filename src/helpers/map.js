@@ -16,9 +16,9 @@ const tilesToUpdateValues = []; // the values stored in those locations
  *
  * Runtime: O(width * height)
  *
- * @param {number} width - the width of the initialized 2D array
- * @param {number} height - the height of the initialized 2D array
- * @param {number} defaultVal - the value to give each element in the initialized 2D array
+ * @param {number} width the width of the initialized 2D array
+ * @param {number} height the height of the initialized 2D array
+ * @param {number} defaultVal the value to give each element in the initialized 2D array
  */
 export function init2dArray(width, height, defaultVal = 0, inputMatrix = undefined) {
   let matrix = inputMatrix;
@@ -57,7 +57,7 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
 /* Returns a 2d cell array of traversible (1) and blocked (0) cells inside a tile.
  * Runtime: O(CPTL^2)
  *
- * @param {number} tileID - the ID of the tile that should be split into cells and
+ * @param {number} tileID the ID of the tile that should be split into cells and
  *   parsed for traversability
  */
 export function getTileTraversabilityInCells(tileID) {
@@ -109,7 +109,7 @@ export function getTileTraversabilityInCells(tileID) {
  * for all permanent NT sprites.
  * Runtime: O(N^2 * CPTL^2)
  *
- * @param {number} map - 2D array representing the Tagpro map
+ * @param {number} map 2D array representing the Tagpro map
  */
 export function initMapTraversabilityCells(map) {
   assert(_.isEmpty(mapTraversabilityCells), 'map already has values stored in it when initializing');
@@ -148,7 +148,7 @@ export function initMapTraversabilityCells(map) {
  *
  * Runtime: O(E*CPTL^2) with drawings on, O(E + S*CPTL^2) with drawings off
  *
- * @param {number} map - 2D array representing the Tagpro map
+ * @param {number} map 2D array representing the Tagpro map
  */
 export function getMapTraversabilityInCells(map) {
   assert(tilesToUpdate.length === tilesToUpdateValues.length,
@@ -180,7 +180,7 @@ export function getMapTraversabilityInCells(map) {
  *
  * Runtime: O(N^2)
  *
- * @param {(number | number[])} tiles - either a number representing a tileType,
+ * @param {(number | number[])} tiles either a number representing a tileType,
  * or an array of such numbers
  */
 export function findTile(tiles) {
