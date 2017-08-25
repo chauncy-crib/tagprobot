@@ -37,7 +37,7 @@ export class GameState {
     const xdiff = Math.abs(this.xc - targetState.xc);
     const ydiff = Math.abs(this.yc - targetState.yc);
     if (diagonal) {
-      return Math.max(xdiff, ydiff);
+      return (1.4142 * Math.min(xdiff, ydiff)) + Math.abs(xdiff - ydiff);
     }
     return xdiff + ydiff;
   }
