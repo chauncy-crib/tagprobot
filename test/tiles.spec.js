@@ -4,6 +4,7 @@ import values from 'lodash/values';
 import forEach from 'lodash/forEach';
 import has from 'lodash/has';
 import sinon from 'sinon';
+import _ from 'lodash';
 
 import {
   computeTileInfo,
@@ -12,10 +13,17 @@ import {
   tileHasProperty,
   __RewireAPI__ as TileRewireAPI,
 } from '../src/tiles';
+import { teams } from '../src/constants';
+import { assert } from '../src/utils/asserts';
 
 // functions for setup and teardown tests begin here
 
-export function setupTiles(myColorIsBlue) {
+/*
+ * @param {number} teamColor 1 for red, 2 for blue
+ */
+export function setupTiles(teamColor) {
+  assert(_.includes([teams.RED, teams.BLUE], teamColor), `${teamColor} is not a team color`);
+  const myColorIsBlue = teamColor === teams.BLUE;
   const mockTileInfo = {
     EMPTY_SPACE: { id: 0, traversable: false, permanent: true },
     SQUARE_WALL: { id: 1, traversable: false, permanent: true },
@@ -98,7 +106,7 @@ test('computeTileInfo: stores info in tileInfo', t => {
 
 
 test('getTileProperty: returns correct properties', t => {
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   t.is(getTileProperty(1, 'traversable'), false);
   t.is(getTileProperty(2, 'traversable'), true);
   t.is(getTileProperty(13, 'radius'), 15);
@@ -109,7 +117,7 @@ test('getTileProperty: returns correct properties', t => {
 
 
 test('getTileProperty: throws error given tileIds that don\'t exist', t => {
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   t.throws(() => { getTileProperty(1.123, 'traversable'); });
   t.throws(() => { getTileProperty(-1, 'traversable'); });
   t.throws(() => { getTileProperty('potato', 'traversable'); });
@@ -121,7 +129,7 @@ test('getTileProperty: throws error given tileIds that don\'t exist', t => {
 
 
 test('getTileProperty: throws error given properties that don\'t exist', t => {
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   t.throws(() => { getTileProperty(5, 'potato'); });
   t.throws(() => { getTileProperty(4.1, 'radius'); });
   teardownTiles();
@@ -131,7 +139,7 @@ test('getTileProperty: throws error given properties that don\'t exist', t => {
 
 
 test('tileHasProperty: checks if a tile has a property', t => {
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   t.true(tileHasProperty(4.1, 'permanent'));
   t.true(tileHasProperty(6.1, 'radius'));
   t.false(tileHasProperty(0, 'radius'));
@@ -143,7 +151,7 @@ test('tileHasProperty: checks if a tile has a property', t => {
 
 
 test('tileIsType: returns true when tileId and name match', t => {
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   t.ok(tileIsType(1.1, 'ANGLE_WALL_1'));
   t.ok(tileIsType(4, 'BLUE_FLAG'));
   t.ok(tileIsType('5.1', 'SPEEDPAD_INACTIVE'));
@@ -156,7 +164,7 @@ test('tileIsType: returns true when tileId and name match', t => {
 
 
 test('tileIsType: returns false when tileId and name do not match', t => {
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   t.notOk(tileIsType(1, 'ANGLE_WALL_1'));
   t.notOk(tileIsType(4, 'RED_FLAG'));
   t.notOk(tileIsType(5.1, 'SPEEDPAD_INACTIVE'));
@@ -169,7 +177,7 @@ test('tileIsType: returns false when tileId and name do not match', t => {
 
 
 test('tileIsType: errors when name is not a tile', t => {
-  setupTiles(true);
+  setupTiles(teams.BLUE);
   t.throws(() => { tileIsType(1, undefined); });
   t.throws(() => { tileIsType(1, 'potato'); });
   t.throws(() => { tileIsType(1, 'toid'); });
