@@ -191,8 +191,9 @@ export function getShortestPath(me, target, traversabilityCells) {
 export function getTarget(me, shortestPath) {
   assert(shortestPath, 'shortestPath is null, there may be no traversable path to the target');
   // Find the furthest cell in the direction of the next cell
-  let winner = 0;
-  let j = 0;
+  // If we target the next cell in our path only, motion is very choppy
+  let winner = 0; // This will be the length of the longest straight path
+  let j = 0; // indexed here in case there is no path
   if (shortestPath.length > 1) {
     const diff = {
       xc: shortestPath[0].xc - me.xc,
@@ -200,6 +201,7 @@ export function getTarget(me, shortestPath) {
     };
     const nDiff = {};
     for (let i = 0; i < shortestPath.length; i++) {
+      // walk along the path in the x axis until it turns
       nDiff.xc = shortestPath[i].xc - me.xc;
       if (diff.xc === nDiff.xc) {
         winner += 1;
@@ -207,12 +209,15 @@ export function getTarget(me, shortestPath) {
         break;
       }
     }
-    for (; j < winner; j++) {
+    while (j < winner) {
+      // walk along the path in the y axis until it turns
+      // OR the x axis has already turned
       nDiff.yc = shortestPath[j].yc - me.yc;
       if (diff.yc !== nDiff.yc) {
         winner = j;
         break;
       }
+      j += 1;
     }
   }
   const next = shortestPath[j];
