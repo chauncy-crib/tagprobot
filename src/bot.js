@@ -3,7 +3,7 @@ import { getTileId } from './tiles';
 import { getMapTraversabilityInCells } from './helpers/map';
 import { findTile, findEnemyFC } from './helpers/finders';
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
-import { getMe, getMyEndzoneTile, getEnemyEndzoneTile } from './helpers/player';
+import { getMe, getAllyEndzoneTileId, getEnemyEndzoneTileId } from './helpers/player';
 import { getShortestPath, getTarget } from './helpers/path';
 import { move } from './utils/interface';
 import { updatePath } from './draw/drawings';
@@ -26,7 +26,7 @@ function getGoalPos() {
 
   // If the bot has the flag, go to the endzone
   if (me.flag) {
-    goal = findTile(getMyEndzoneTile());
+    goal = findTile(getAllyEndzoneTileId());
     console.log('I have the flag. Seeking endzone!');
   } else {
     const enemyFC = findEnemyFC();
@@ -36,10 +36,10 @@ function getGoalPos() {
       goal.y = enemyFC.y + enemyFC.vy;
       console.log('I see an enemy with the flag. Chasing!');
     } else if (enemyTeamHasFlag()) {
-      goal = findTile(getEnemyEndzoneTile());
+      goal = findTile(getEnemyEndzoneTileId());
       console.log('Enemy has the flag. Headed towards the Enemy Endzone.');
     } else if (myTeamHasFlag()) {
-      goal = findTile(getMyEndzoneTile());
+      goal = findTile(getAllyEndzoneTileId());
       console.log('We have the flag. Headed towards our Endzone.');
     } else {
       goal = findTile([getTileId('YELLOW_FLAG'), getTileId('YELLOW_FLAG_TAKEN')]);
