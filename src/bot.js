@@ -20,12 +20,13 @@ import { updatePath } from './draw/drawings';
  * @return {Object} - the position, in pixels, of the bot's goal, which is
  * determined by the current state of the game
  */
-function getGoalPos(map) {
-  let goal;
+function getGoalPos() {
   const me = getMe();
+  let goal;
+
   // If the bot has the flag, go to the endzone
   if (me.flag) {
-    goal = findTile(map, getMyEndzoneTile());
+    goal = findTile(getMyEndzoneTile());
     console.log('I have the flag. Seeking endzone!');
   } else {
     const enemyFC = findEnemyFC();
@@ -35,16 +36,17 @@ function getGoalPos(map) {
       goal.y = enemyFC.y + enemyFC.vy;
       console.log('I see an enemy with the flag. Chasing!');
     } else if (enemyTeamHasFlag()) {
-      goal = findTile(map, getEnemyEndzoneTile());
+      goal = findTile(getEnemyEndzoneTile());
       console.log('Enemy has the flag. Headed towards the Enemy Endzone.');
     } else if (myTeamHasFlag()) {
-      goal = findTile(map, getMyEndzoneTile());
+      goal = findTile(getMyEndzoneTile());
       console.log('We have the flag. Headed towards our Endzone.');
     } else {
-      goal = findTile(map, [getTileId('YELLOW_FLAG'), getTileId('YELLOW_FLAG_TAKEN')]);
+      goal = findTile([getTileId('YELLOW_FLAG'), getTileId('YELLOW_FLAG_TAKEN')]);
       console.log("I don't know what to do. Going to central flag station!");
     }
   }
+
   return goal;
 }
 
@@ -53,9 +55,11 @@ function getGoalPos(map) {
  * @return {Object} - an object with position of the next immediate place to
  * navigate to in pixels, x and y
  */
-function getNextTargetPos(map) {
-  const goal = getGoalPos(map);
+function getNextTargetPos() {
+  const map = tagpro.map;
   const me = getMe();
+
+  const goal = getGoalPos();
   me.xc = Math.floor((me.x + (PPCL / 2)) / PPCL);
   me.yc = Math.floor((me.y + (PPCL / 2)) / PPCL);
 
@@ -88,6 +92,6 @@ function getNextTargetPos(map) {
 }
 
 
-export default function botLoop(map) {
-  move(getNextTargetPos(map));
+export default function botLoop() {
+  move(getNextTargetPos());
 }

@@ -15,18 +15,18 @@ import { assert } from '../utils/asserts';
  * @param {(number | number[])} tiles - either a number representing a tileType,
  * or an array of such numbers
  */
-export function findTile(map, tileIds) {
-  assert(map, 'map is undefined');
+export function findTile(tileIds) {
   assert(tileIds, 'tileIds is undefined');
+  assert(tagpro.map, 'tagpro.map is undefined');
 
   // Force an array if the input is just one tile
   const tileIdArray = [].concat(tileIds);
 
-  for (let x = 0, xl = map.length, yl = map[0].length; x < xl; x++) {
+  for (let x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
     for (let y = 0; y < yl; y++) {
       for (let i = 0; i < tileIdArray.length; i++) {
         const tileId = tileIdArray[i];
-        if (map[x][y] === tileId) {
+        if (tagpro.map[x][y] === tileId) {
           return { x: x * PPTL, y: y * PPTL };
         }
       }
