@@ -104,7 +104,7 @@ export function getTileTraversabilityInCells(tileID) {
 
 /*
  * Initializes mapTraversabilityCells to a grid of size map.length * CPTL with
- * the correct values. Store all non-permanent locations in tilesToUpdate, and 
+ * the correct values. Store all non-permanent locations in tilesToUpdate, and
  * their corresponding values in tilesToUpdateValues. Initialize permanent sprites
  * for all permanent NT sprites.
  * Runtime: O(N^2 * CPTL^2)
@@ -112,7 +112,7 @@ export function getTileTraversabilityInCells(tileID) {
  * @param {number} map - 2D array representing the Tagpro map
  */
 export function initMapTraversabilityCells(map) {
-  assert(_.isEmpty(mapTraversabilityCells), 'map already has values stored in it when initializing');
+  assert(_.isEmpty(mapTraversabilityCells), 'map already has values when initializing');
   const xl = map.length;
   const yl = map[0].length;
   init2dArray(xl * CPTL, yl * CPTL, 0, mapTraversabilityCells);

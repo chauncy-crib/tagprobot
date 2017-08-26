@@ -195,6 +195,7 @@ test('generatePermanentNTSprites', tester => {
 
     t.end();
   });
+  tester.end();
 });
 
 
