@@ -5,7 +5,7 @@
 import _ from 'lodash';
 import FibonacciHeap from '@tyriar/fibonacci-heap';
 import { assert, assertGridInBounds } from '../utils/asserts';
-import { accelTilesPerSecond, tilesPerMeter, PPTL, timeStep, PPCL } from '../constants';
+import { accelTilesPerSecond, tilesPerMeter, PPTL, timeStep, PPCL, directions } from '../constants';
 import { getMe } from '../helpers/player';
 
 
@@ -212,24 +212,10 @@ export function getBestKeyPress(traversabilityCells, target) {
   // my vx and vy in pixels
   const myvxp = me.vx * tilesPerMeter; // me.vx is in meters/second
   const myvyp = me.vy * tilesPerMeter;
-  const directions = [
-    // hold left, and up, nothing, down
-    { x: -1, y: -1 },
-    { x: -1, y: 0 },
-    { x: -1, y: 1 },
-    // hold nothing, and up, nothing, down
-    { x: 0, y: -1 },
-    { x: 0, y: 0 },
-    { x: 0, y: 1 },
-    // hold right, and up, nothing, down
-    { x: 1, y: -1 },
-    { x: 1, y: 0 },
-    { x: 1, y: 1 },
-  ];
   let bestDirection;
   let smallestDistance = Infinity;
   let bestPath;
-  for (let i = 0; i < 9; i++) {
+  for (let i = 0; i < directions.length; i++) {
     const loc = projectedLocation(
       myxp, myyp, myvxp, myvyp,
       // the accelerations from this keypress, in pixels per second

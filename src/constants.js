@@ -30,3 +30,18 @@ const framesPerSecond = 60;
 export const accelTilesPerSecond = acceleration * framesPerSecond * tilesPerMeter;
 export const maxSpeedTilesPerSecond = maxSpeed * tilesPerMeter;
 export const timeStep = 0.5; // second
+
+export const directions = [
+  // hold left, and up, nothing, down
+  { x: -1, y: -1 },
+  { x: -1, y: 0 },
+  { x: -1, y: 1 },
+  // hold nothing, and up, nothing, down
+  { x: 0, y: -1 },
+  { x: 0, y: 0 },
+  { x: 0, y: 1 },
+  // hold right, and up, nothing, down
+  { x: 1, y: -1 },
+  { x: 1, y: 0 },
+  { x: 1, y: 1 },
+];
