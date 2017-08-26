@@ -20,9 +20,8 @@ import { updatePath } from './draw/drawings';
  * @return {Object} - the position, in pixels, of the bot's goal, which is
  * determined by the current state of the game
  */
-function getGoalPos(map) {
+function getGoalPos(map, me) {
   let goal;
-  const me = getMe();
   // If the bot has the flag, go to the endzone
   if (me.flag) {
     goal = findTile(map, getMyEndzoneTile());
@@ -53,9 +52,11 @@ function getGoalPos(map) {
  * @return {Object} - an object with position of the next immediate place to
  * navigate to in pixels, x and y
  */
-function getNextTargetPos(map) {
-  const goal = getGoalPos(map);
+function getNextTargetPos() {
+  const map = tagpro.map;
   const me = getMe();
+
+  const goal = getGoalPos(map, me);
   me.xc = Math.floor((me.x + (PPCL / 2)) / PPCL);
   me.yc = Math.floor((me.y + (PPCL / 2)) / PPCL);
 
@@ -88,6 +89,6 @@ function getNextTargetPos(map) {
 }
 
 
-export default function botLoop(map) {
-  move(getNextTargetPos(map));
+export default function botLoop() {
+  move(getNextTargetPos(tagpro.map, getMe()));
 }
