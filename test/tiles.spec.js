@@ -186,4 +186,3 @@ test('tileIsType: errors when name is not a tile', t => {
 
   t.end();
 });
-
