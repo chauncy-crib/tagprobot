@@ -203,6 +203,8 @@ export function getShortestPath(myxc, myyc, target, traversabilityCells) {
 /*
  * @param {number} traversabilityCells - 2D array of cells. Traversable cells are 1s, others are 0.
  * @param {Object} target - object with target's position in cells, xc and yc
+ * @return {{direction: number, path: Array}} an object containing both which keypress we should
+ *   hold and the path we are seeking toward
  */
 export function getBestKeyPress(traversabilityCells, target) {
   const me = getMe();
