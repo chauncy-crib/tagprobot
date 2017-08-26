@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import test from 'tape';
-import { getShortestPath, GameState, __RewireAPI__ as PathRewireAPI } from '../src/helpers/path';
+import { getShortestPath, GameState, __RewireAPI__ as PathRewireAPI } from '../../src/helpers/path';
 
 
 test('test neighbors returns the right number of neighbors with diagonals on', t => {
