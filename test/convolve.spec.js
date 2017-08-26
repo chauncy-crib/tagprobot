@@ -28,7 +28,7 @@ test('addBufferTo2dArray: correctly adds buffer to grid', t => {
 });
 
 
-test('getSubarrayFrom2dArray: returns correctly subarray for varying inputs', t => {
+test('getSubarrayFrom2dArray: returns the correct subarray for varying inputs', t => {
   let array = [
     [1, 2, 3, 4],
     [5, 6, 7, 8],
