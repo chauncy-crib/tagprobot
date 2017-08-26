@@ -41,10 +41,11 @@ export function areVisualsOn() {
 
 export function chatHelpMenu() {
   const menu = [
-    'Help Menu -',
-    'H: print this help menu',
-    'Q: toggle autonomous mode',
-    'V: toggle visual mode',
+    '--- Help Menu',
+    '--- H: print this help menu',
+    '--- Q: toggle autonomous mode',
+    '--- V: toggle visual mode',
+    '---',
   ];
   menu.forEach(item => {
     chat(item);
