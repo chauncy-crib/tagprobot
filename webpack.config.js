@@ -1,5 +1,4 @@
 var path = require('path');
-var glob = require('glob');
 
 var APP_DIR = path.resolve(__dirname, 'src/');
 
