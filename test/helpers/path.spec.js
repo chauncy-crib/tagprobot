@@ -1,5 +1,5 @@
 import test from 'tape';
-import { getShortestPath } from '../src/helpers/path';
+import { getShortestPath } from '../../src/helpers/path';
 
 test('test getShortestPath returns shortest path without diagonals', t => {
   const inputMap = [

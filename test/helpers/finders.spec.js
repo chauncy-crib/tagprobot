@@ -1,8 +1,8 @@
 import test from 'tape';
-import { findTile } from '../src/helpers/finders';
-import { setupTiles, teardownTiles } from './tiles.spec';
-import { getTileId } from '../src/tiles';
-import { PPTL } from '../src/constants';
+import { findTile } from '../../src/helpers/finders';
+import { setupTiles, teardownTiles } from '../tiles.spec';
+import { getTileId } from '../../src/tiles';
+import { PPTL } from '../../src/constants';
 
 
 test('findTile: returns correctly with orthogonal inputs', t => {

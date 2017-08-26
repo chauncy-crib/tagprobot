@@ -6,7 +6,7 @@ import { updatePath,
   drawPermanentNTSprites,
   generatePermanentNTSprites,
   updateNTSprites,
-  __RewireAPI__ as DrawRewireAPI } from '../src/draw/drawings';
+  __RewireAPI__ as DrawRewireAPI } from '../../src/draw/drawings';
 
 
 test('updatePath', tester => {
