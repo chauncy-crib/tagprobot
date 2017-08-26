@@ -34,12 +34,14 @@ export class GameState {
    * @return - the heuristic distance from this state to the targetState
    */
   heuristic(targetState) {
-    const xdiff = Math.abs(this.xc - targetState.xc);
-    const ydiff = Math.abs(this.yc - targetState.yc);
+    const xDiff = Math.abs(this.xc - targetState.xc);
+    const yDiff = Math.abs(this.yc - targetState.yc);
     if (diagonal) {
-      return (1.4142 * Math.min(xdiff, ydiff)) + Math.abs(xdiff - ydiff);
+      const diagDist = Math.sqrt(2) * Math.min(xDiff, yDiff);
+      const linDist = Math.abs(xDiff - yDiff);
+      return diagDist + linDist;
     }
-    return xdiff + ydiff;
+    return xDiff + yDiff;
   }
 
   equals(state) {
