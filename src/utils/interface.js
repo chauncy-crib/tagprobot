@@ -1,4 +1,5 @@
 import { clearSprites, drawPermanentNTSprites } from '../draw/drawings';
+import { directions } from '../constants';
 
 
 const KEY_CODES = {
@@ -103,20 +104,6 @@ export function onKeyDown(event) {
  *
  */
 export function seekTowardDirection(direction) {
-  const directions = [
-    // hold left, and up, nothing, down
-    { x: -1, y: -1 },
-    { x: -1, y: 0 },
-    { x: -1, y: 1 },
-    // hold nothing, and up, nothing, down
-    { x: 0, y: -1 },
-    { x: 0, y: 0 },
-    { x: 0, y: 1 },
-    // hold right, and up, nothing, down
-    { x: 1, y: -1 },
-    { x: 1, y: 0 },
-    { x: 1, y: 1 },
-  ];
   // TODO: these keypresses seem backward from the directions listed above, but when running the
   // bot, it seeks toward the correct thing.
   switch (directions[direction].x) {
