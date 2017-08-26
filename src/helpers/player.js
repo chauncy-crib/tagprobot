@@ -24,11 +24,11 @@ export function isOnMyTeam(player) {
   return player.team === me.team;
 }
 
-export function getMyEndzoneTile() {
+export function getAllyEndzoneTileId() {
   return amBlue() ? getTileId('BLUE_ENDZONE') : getTileId('RED_ENDZONE');
 }
 
-export function getEnemyEndzoneTile() {
+export function getEnemyEndzoneTileId() {
   return amBlue() ? getTileId('RED_ENDZONE') : getTileId('BLUE_ENDZONE');
 }
 
