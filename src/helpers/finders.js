@@ -1,7 +1,6 @@
 import _ from 'lodash';
 
-import { getMyEndzoneTile, getEnemyEndzoneTile, isOnMyTeam } from './player';
-import { getTileId } from '../tiles';
+import { isOnMyTeam } from './player';
 import { PPTL } from '../constants';
 import { assert } from '../utils/asserts';
 
@@ -34,41 +33,6 @@ export function findTile(map, tileIds) {
     }
   }
   throw new Error(`Unable to find tile: ${tileIds}`);
-}
-
-
-/*
- * Returns the position of the endzone you should return a the flag to.
- *
- * @return {Object} object with the endzone's position in pixels, x and y, and
- * in cells, xc and yc
- */
-export function findMyEndzone(map) {
-  // TODO: return closest endzone tile instead of first
-  return findTile(map, getMyEndzoneTile());
-}
-
-
-/*
- * Returns the position (in pixels) of the endzone you should defend
- *
- * @return {Object} object with the endzone's position in pixels, x and y, and
- * in cells, xc and yc
- */
-export function findEnemyEndzone(map) {
-  // TODO: return closest endzone tile instead of first
-  return findTile(map, getEnemyEndzoneTile());
-}
-
-
-/*
- * Returns the position (in pixels) of the specified flag station, even if empty
- *
- * @return {Object} object with the flag station's position in pixels, x and
- * y, and in cells, xc and yc
- */
-export function findFlagStation(map) {
-  return findTile(map, [getTileId('YELLOW_FLAG'), getTileId('YELLOW_FLAG_TAKEN')]);
 }
 
 
