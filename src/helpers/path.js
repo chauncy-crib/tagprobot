@@ -230,12 +230,10 @@ export function getBestKeyPress(traversabilityCells, target) {
       traversabilityCells);
     // if this path exists and is shorter than a path we've found previously, store this keypress as
     // the best one so far
-    if (path) {
-      if (path.length < smallestDistance) {
-        smallestDistance = path.length;
-        bestDirection = i;
-        bestPath = path;
-      }
+    if (path && path.length < smallestDistance) {
+      smallestDistance = path.length;
+      bestDirection = i;
+      bestPath = path;
     }
   }
   return { direction: bestDirection, path: bestPath };
