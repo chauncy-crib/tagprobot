@@ -107,7 +107,6 @@ test('convolve: returns correctly with kernel size 1x1', t => {
   k = [
     [2],
   ];
-  /* eslint-enable no-multi-spaces, array-bracket-spacing */
   t.same(convolve(m, k), [
     [2, 4, 6],
     [8, 10, 12],
@@ -129,7 +128,6 @@ test('convolve: returns correctly with kernel size 3x3', t => {
     [3, 4, 5],
     [6, 7, 8],
   ];
-  /* eslint-enable no-multi-spaces, array-bracket-spacing */
   t.same(convolve(m, k), [
     [112, 160, 193, 142],
     [131, 150, 129, 100],
