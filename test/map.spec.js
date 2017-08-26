@@ -6,13 +6,11 @@ import {
   fillGridWithSubgrid,
   getTileTraversabilityInCells,
   getMapTraversabilityInCells,
-  findTile,
   __RewireAPI__ as MapRewireAPI,
 } from '../src/helpers/map';
 import { setupTiles, teardownTiles } from './tiles.spec';
 import { teams } from '../src/constants';
 import { getTileId } from '../src/tiles';
-import { PPTL } from '../src/constants';
 
 
 test('init2dArray: returns 2d array that is correct size, and with correct value filled in', t => {
