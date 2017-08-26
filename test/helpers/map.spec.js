@@ -7,10 +7,10 @@ import {
   getTileTraversabilityInCells,
   getMapTraversabilityInCells,
   __RewireAPI__ as MapRewireAPI,
-} from '../src/helpers/map';
-import { setupTiles, teardownTiles } from './tiles.spec';
-import { teams } from '../src/constants';
-import { getTileId } from '../src/tiles';
+} from '../../src/helpers/map';
+import { setupTiles, teardownTiles } from '../tiles.spec';
+import { teams } from '../../src/constants';
+import { getTileId } from '../../src/tiles';
 
 
 test('init2dArray: returns 2d array that is correct size, and with correct value filled in', t => {

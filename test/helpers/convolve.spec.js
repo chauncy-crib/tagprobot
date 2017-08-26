@@ -2,7 +2,7 @@ import test from 'tape';
 import { multiplyCorrespondingElementsAndSum,
   getSubarrayFrom2dArray,
   addBufferTo2dArray,
-  convolve } from '../src/helpers/convolve';
+  convolve } from '../../src/helpers/convolve';
 
 
 test('addBufferTo2dArray: correctly adds buffer to grid', t => {
