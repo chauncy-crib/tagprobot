@@ -77,7 +77,7 @@ export class GameState {
       ];
       _.each(diagNeighbors, n => {
         // use sqrt(2) as heuristic distance for diagonals
-        n.g = this.g + 1.4142; // eslint-disable-line no-param-reassign
+        n.g = this.g + 1; // eslint-disable-line no-param-reassign
         n.parent = this; // eslint-disable-line no-param-reassign
       });
       potentialNeighbors = potentialNeighbors.concat(diagNeighbors);
