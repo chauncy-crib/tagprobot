@@ -41,10 +41,10 @@ _.each(_(review.discussions)
   .flatten()
   .filter({ resolved: false })
   .value(),
-d => { discussions[d.username] += 1; });
+  d => { discussions[d.username] += 1; });
 
 const unresolvedDiscussions = _.pick(discussions, o => o > 0);
-const completed = _(files)
+let completed = _(files)
   // no files have reviews remaining
   .values()
   .map('numReviewsLeft')
@@ -53,8 +53,8 @@ const completed = _(files)
   &&
   // no discussions are unresolved
   !_(discussions)
-    .values()
-    .some();
+  .values()
+  .some();
 
 const shortReasons = [];
 for (let i = 1; i <= numReviewersRequired; i++) {
@@ -74,12 +74,12 @@ const longReasons = [];
 
 _.each(chauncy, c => {
   const filesToReview = _(files)
-  .keys()
-  // files where this chauncy needs to review it
-  .filter(f => _.includes(files[f].neededReviewers, c))
-  // and there are reviews required
-  .filter(f => files[f].numReviewsLeft)
-  .value();
+    .keys()
+    // files where this chauncy needs to review it
+    .filter(f => _.includes(files[f].neededReviewers, c))
+    // and there are reviews required
+    .filter(f => files[f].numReviewsLeft)
+    .value();
   if (filesToReview.length) {
     longReasons.push(c + ' must review ' + filesToReview.length + ' file' + (filesToReview.length > 1 ? 's' : ''));
   }
@@ -88,9 +88,15 @@ _.each(chauncy, c => {
 _.each(_.keys(discussions),
   c => {
     if (discussions[c])
-    longReasons.push(c + ' must resolve ' + discussions[c] + ' discussion' + (discussions[c] > 1 ? 's' : ''));
+      longReasons.push(c + ' must resolve ' + discussions[c] + ' discussion' + (discussions[c] > 1 ? 's' : ''));
   }
 );
+
+if (review.pullRequest.target.branch !== 'master') {
+  completed = false;
+  shortReasons.push('target branch is not master');
+  longReasons.push('target branch is not master');
+}
 
 const reviewableStatus = {
   completed,
