@@ -4,7 +4,9 @@
  */
 import _ from 'lodash';
 import FibonacciHeap from '@tyriar/fibonacci-heap';
-import { assert, assertGridInBounds } from '../../src/utils/asserts';
+import { assert, assertGridInBounds } from '../utils/asserts';
+import { accelTilesPerSecond, tilesPerMeter, PPTL, timeStep, PPCL, directions } from '../constants';
+import { getMe } from '../helpers/player';
 
 
 const diagonal = false;
@@ -61,20 +63,26 @@ export class GameState {
       new GameState(this.xc, this.yc - 1),
       new GameState(this.xc, this.yc + 1),
     ];
-    // diagonal neighbors
-    if (diagonal) {
-      potentialNeighbors = potentialNeighbors.concat([
-        new GameState(this.xc - 1, this.yc - 1),
-        new GameState(this.xc - 1, this.yc + 1),
-        new GameState(this.xc + 1, this.yc - 1),
-        new GameState(this.xc + 1, this.yc + 1),
-      ]);
-    }
-    // assign g values of neighbors
     _.each(potentialNeighbors, n => {
       n.g = this.g + 1; // eslint-disable-line no-param-reassign
       n.parent = this; // eslint-disable-line no-param-reassign
     });
+    // diagonal neighbors
+    if (diagonal) {
+      const diagNeighbors = [
+        new GameState(this.xc - 1, this.yc - 1),
+        new GameState(this.xc - 1, this.yc + 1),
+        new GameState(this.xc + 1, this.yc - 1),
+        new GameState(this.xc + 1, this.yc + 1),
+      ];
+      _.each(diagNeighbors, n => {
+        // use sqrt(2) as heuristic distance for diagonals
+        n.g = this.g + 1; // eslint-disable-line no-param-reassign
+        n.parent = this; // eslint-disable-line no-param-reassign
+      });
+      potentialNeighbors = potentialNeighbors.concat(diagNeighbors);
+    }
+    // assign g values of neighbors
     // filter out out of bounds and NT neighbors
     return _.filter(potentialNeighbors, n => {
       if (n.xc < 0
@@ -87,6 +95,20 @@ export class GameState {
     });
   }
 }
+
+
+/*
+ * Uses the physics kinematics equations to calculate a projected x and y location.
+ * The numerator of all units should be equivalent (use pixels, pixels/sec, and pixels/sec^2 for
+ * example). The unit for tStep should be the denominator on the `v` and `a` inputs.
+ */
+export function projectedLocation(x, y, vx, vy, ax, ay, tStep) {
+  return {
+    x: x + (vx * tStep) + (0.5 * ax * (tStep ** 2)),
+    y: y + (vy * tStep) + (0.5 * ay * (tStep ** 2)),
+  };
+}
+
 
 /*
  * @param {GameState} finalState - the final target GameState object. Will use to construct the path
@@ -111,20 +133,19 @@ function constructPath(finalState) {
  * represented as a grid of 1 and 0, where 1s are traversable and 0s are not. Uses A* to calculate
  * the best path
  *
- * @param {Object} me - object with bot's position in cells, xc and yc
+ * @param {number} myxc - the current bot x location in cells
+ * @param {number} myyc - the current bot y location in cells
  * @param {Object} target - object with target's position in cells, xc and yc
  * @param {number} traversabilityCells - 2D array of cells. Traversable cells are 1s, others are 0.
  */
-export function getShortestPath(me, target, traversabilityCells) {
-  assert(_.has(me, 'xc'));
-  assert(_.has(me, 'yc'));
+export function getShortestPath(myxc, myyc, target, traversabilityCells) {
   assert(_.has(target, 'xc'));
   assert(_.has(target, 'yc'));
 
-  assertGridInBounds(traversabilityCells, me.xc, me.yc);
+  assertGridInBounds(traversabilityCells, myxc, myyc);
   assertGridInBounds(traversabilityCells, target.xc, target.yc);
 
-  const startState = new GameState(me.xc, me.yc);
+  const startState = new GameState(myxc, myyc);
   const targetState = new GameState(target.xc, target.yc);
 
   // keep track of potential game states in a fibonacci heap, where the key is the f-cost for the
@@ -180,40 +201,44 @@ export function getShortestPath(me, target, traversabilityCells) {
 
 
 /*
- * Takes in the current player's location, and a representation of the shortest
- * path as an array of cells returned by getShortestPath(), and returns the
- * position (in cells) that the player should seek toward.
- *
- * @param {Object} me - object with bot's position in cells, xc and yc
- * @return {Object} - object with target's position in cells, xc and yc
+ * @param {number} traversabilityCells - 2D array of cells. Traversable cells are 1s, others are 0.
+ * @param {Object} target - object with target's position in cells, xc and yc
+ * @return {{direction: number, path: Array}} an object containing both which keypress we should
+ *   hold and the path we are seeking toward
  */
-export function getTarget(me, shortestPath) {
-  assert(shortestPath, 'shortestPath is null, there may be no traversable path to the target');
-  // Find the furthest cell in the direction of the next cell
-  let winner = 0;
-  let j = 0;
-  if (shortestPath.length > 1) {
-    const diff = {
-      xc: shortestPath[0].xc - me.xc,
-      yc: shortestPath[0].yc - me.yc,
-    };
-    const nDiff = {};
-    for (let i = 0; i < shortestPath.length; i++) {
-      nDiff.xc = shortestPath[i].xc - me.xc;
-      if (diff.xc === nDiff.xc) {
-        winner += 1;
-      } else {
-        break;
-      }
-    }
-    for (; j < winner; j++) {
-      nDiff.yc = shortestPath[j].yc - me.yc;
-      if (diff.yc !== nDiff.yc) {
-        winner = j;
-        break;
-      }
+export function getBestKeyPress(traversabilityCells, target) {
+  const me = getMe();
+  // my x and y in pixels
+  const myxp = me.x + (PPTL / 2);
+  const myyp = me.y + (PPTL / 2);
+  // my vx and vy in pixels
+  const myvxp = me.vx * tilesPerMeter; // me.vx is in meters/second
+  const myvyp = me.vy * tilesPerMeter;
+  let bestDirection;
+  let smallestDistance = Infinity;
+  let bestPath;
+  for (let i = 0; i < directions.length; i++) {
+    const loc = projectedLocation(
+      myxp, myyp, myvxp, myvyp,
+      // the accelerations from this keypress, in pixels per second
+      directions[i].x * accelTilesPerSecond * PPTL,
+      directions[i].y * accelTilesPerSecond * PPTL,
+      timeStep,
+    );
+    // calculate the length of the path from our projected location
+    // to the target
+    const path = getShortestPath(
+      Math.floor(loc.x / PPCL),
+      Math.floor(loc.y / PPCL),
+      target,
+      traversabilityCells);
+    // if this path exists and is shorter than a path we've found previously, store this keypress as
+    // the best one so far
+    if (path && path.length < smallestDistance) {
+      smallestDistance = path.length;
+      bestDirection = i;
+      bestPath = path;
     }
   }
-  const next = shortestPath[j];
-  return { xc: next.xc, yc: next.yc };
+  return { direction: bestDirection, path: bestPath };
 }

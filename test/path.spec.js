@@ -1,6 +1,15 @@
 import _ from 'lodash';
 import test from 'tape';
-import { getShortestPath, GameState, __RewireAPI__ as PathRewireAPI } from '../src/helpers/path';
+import { getShortestPath, GameState, projectedLocation, __RewireAPI__ as PathRewireAPI } from '../src/helpers/path';
+
+
+test('test projectedLocation: returns correct final destinations', t => {
+  t.same(projectedLocation(1, -2, -3, 1, 2, 1, 2), {
+    x: -1,
+    y: 2,
+  });
+  t.end();
+});
 
 
 test('test neighbors returns the right number of neighbors with diagonals on', t => {
@@ -81,7 +90,7 @@ test('test getShortestPath returns shortest path without diagonals', t => {
     [1, 1, 1, 1, 1, 1, 1, 1],
   ];
   const shortestPath = getShortestPath(
-    { xc: 0, yc: 0 },
+    0, 0,
     { xc: 0, yc: 2 },
     inputMap,
   );
@@ -101,7 +110,7 @@ test('test getShortestPath returns shortest path with diagonals', t => {
     [1, 1, 1, 1, 1, 1, 1, 1],
   ];
   const shortestDiagonalPath = getShortestPath(
-    { xc: 0, yc: 0 },
+    0, 0,
     { xc: 0, yc: 2 },
     inputMap,
   );
@@ -123,7 +132,7 @@ test('test getShortestPath returns undefined when no path exists', t => {
     [1, 1, 1, 1, 1, 1, 1, 1],
   ];
   const impossiblePath = getShortestPath(
-    { xc: 0, yc: 4 },
+    0, 4,
     { xc: 5, yc: 5 },
     impossibleMap,
   );
@@ -145,14 +154,14 @@ test('test getShortestPath throws error when inputs are out of bounds', t => {
   ];
   t.throws(() => {
     getShortestPath(
-      { xc: 6, yc: 3 },
+      6, 3,
       { xc: 3, yc: 6 },
       impossibleMap,
     );
   });
   t.throws(() => {
     getShortestPath(
-      { xc: 2, yc: 3 },
+      2, 3,
       { xc: 3, yc: 8 },
       impossibleMap,
     );
@@ -186,7 +195,7 @@ test('test getShortestPath returns the shortest path when the greedy algorithm r
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ];
   const shortestDiagonalPath = getShortestPath(
-    { xc: 0, yc: 2 },
+    0, 2,
     { xc: 8, yc: 28 },
     map,
   );

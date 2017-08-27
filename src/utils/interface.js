@@ -1,4 +1,5 @@
 import { clearSprites, drawPermanentNTSprites } from '../draw/drawings';
+import { directions } from '../constants';
 
 
 const KEY_CODES = {
@@ -92,34 +93,51 @@ export function onKeyDown(event) {
 
 
 /*
- * Sends key events to move to a destination.
+ * Takes in an integer from 0-8, representing one of 9 directions in the grid below:
  *
- * @param {Object} destination - object with the position to move to, in pixels,
- * x and y
+ * 0 | 1 | 2
+ * ---------
+ * 3 | 4 | 5
+ * ---------
+ * 6 | 7 | 8
+ *
+ * and send the corresponding keypress events to tagpro
+ *
  */
-export function move(destination) {
-  // TODO: address deadband variable with a comment
-  const deadband = 4;
-  if (destination.x > deadband) {
-    tagpro.sendKeyPress('left', true);
-    tagpro.sendKeyPress('right', false);
-  } else if (destination.x < -deadband) {
-    tagpro.sendKeyPress('right', true);
-    tagpro.sendKeyPress('left', false);
-  } else {
-    tagpro.sendKeyPress('right', true);
-    tagpro.sendKeyPress('left', true);
+export function accelerateTowardDirection(direction) {
+  // TODO: these keypresses seem backward from the directions listed above, but when running the
+  // bot, it seeks toward the correct thing.
+  switch (directions[direction].x) {
+    case 1:
+      tagpro.sendKeyPress('left', true);
+      tagpro.sendKeyPress('right', false);
+      break;
+    case 0:
+      tagpro.sendKeyPress('left', false);
+      tagpro.sendKeyPress('right', false);
+      break;
+    case -1:
+      tagpro.sendKeyPress('left', false);
+      tagpro.sendKeyPress('right', true);
+      break;
+    default:
+      throw new Error('Invalid seeking direction');
   }
-
-  if (destination.y > deadband) {
-    tagpro.sendKeyPress('up', true);
-    tagpro.sendKeyPress('down', false);
-  } else if (destination.y < -deadband) {
-    tagpro.sendKeyPress('down', true);
-    tagpro.sendKeyPress('up', false);
-  } else {
-    tagpro.sendKeyPress('up', true);
-    tagpro.sendKeyPress('down', true);
+  switch (directions[direction].y) {
+    case 1:
+      tagpro.sendKeyPress('up', true);
+      tagpro.sendKeyPress('down', false);
+      break;
+    case 0:
+      tagpro.sendKeyPress('up', false);
+      tagpro.sendKeyPress('down', false);
+      break;
+    case -1:
+      tagpro.sendKeyPress('up', false);
+      tagpro.sendKeyPress('down', true);
+      break;
+    default:
+      throw new Error('Invalid seeking direction');
   }
 }
 
@@ -127,12 +145,12 @@ export function move(destination) {
 /*
  * Overriding this function to get a more accurate velocity of players.
  * Velocity is saved in player.vx and vy.
- * TODO: better documentation for this function. Explain why its necessary. What is 55?
+ * Units are in meters/second. 1 meter = 2.5 tiles.
  */
 export function setupVelocity() {
   Box2D.Dynamics.b2Body.prototype.GetLinearVelocity = function accurateVelocity() {
-    tagpro.players[this.player.id].vx = this.m_linearVelocity.x * 55;
-    tagpro.players[this.player.id].vy = this.m_linearVelocity.y * 55;
+    tagpro.players[this.player.id].vx = this.m_linearVelocity.x;
+    tagpro.players[this.player.id].vy = this.m_linearVelocity.y;
     return this.m_linearVelocity;
   };
 }
