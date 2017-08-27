@@ -104,7 +104,7 @@ export function onKeyDown(event) {
  * and send the corresponding keypress events to tagpro
  *
  */
-export function seekTowardDirection(direction) {
+export function accelerateTowardDirection(direction) {
   // TODO: these keypresses seem backward from the directions listed above, but when running the
   // bot, it seeks toward the correct thing.
   switch (directions[direction].x) {

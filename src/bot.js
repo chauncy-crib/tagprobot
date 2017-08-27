@@ -9,7 +9,7 @@ import {
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe } from './helpers/player';
 import { getBestKeyPress } from './helpers/path';
-import { seekTowardDirection } from './utils/interface';
+import { accelerateTowardDirection } from './utils/interface';
 import { updatePath } from './draw/drawings';
 
 
@@ -78,5 +78,5 @@ function getNextDirectionTowardTarget() {
 
 
 export default function botLoop() {
-  seekTowardDirection(getNextDirectionTowardTarget());
+  accelerateTowardDirection(getNextDirectionTowardTarget());
 }
