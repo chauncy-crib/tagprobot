@@ -5,7 +5,7 @@ import { findTile, findEnemyFC } from './helpers/finders';
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe, getAllyEndzoneTileId, getEnemyEndzoneTileId } from './helpers/player';
 import { getShortestPath, getTarget } from './helpers/path';
-import { move } from './utils/interface';
+import { isMobile, move } from './utils/interface';
 import { updatePath } from './draw/drawings';
 
 
@@ -93,5 +93,8 @@ function getNextTargetPos() {
 
 
 export default function botLoop() {
-  move(getNextTargetPos());
+  const nextTarget = getNextTargetPos();
+  if (isMobile()) {
+    move(nextTarget);
+  }
 }
