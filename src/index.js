@@ -1,17 +1,3 @@
-// ==UserScript==
-// @name          Chauncy TagProbot
-// @description   Limited example bot for TagPro.
-// @version       0.1
-// @grant         none
-// @include       http://tagpro-maptest.koalabeast.com:*
-// @include       http://tangent.jukejuice.com:*
-// @include       http://*.newcompte.fr:*
-// @author        Cflakes, snaps_, altodyte, shanek21, davidabrahams, billmwong
-// @namespace     http://www.reddit.com/user/snaps_
-// @license       2017
-// ==/UserScript==
-
-
 import botLoop from './bot';
 import { computeTileInfo } from './tiles';
 import { setupMe } from './helpers/player';
