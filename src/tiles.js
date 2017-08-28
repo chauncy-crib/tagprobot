@@ -18,28 +18,28 @@ export function computeTileInfo() {
   _.forOwn({
     EMPTY_SPACE: { id: 0, traversable: false, permanent: true },
     SQUARE_WALL: { id: 1, traversable: false, permanent: true },
-    ANGLE_WALL_1: { id: 1.1, traversable: false, permanent: true },
-    ANGLE_WALL_2: { id: 1.2, traversable: false, permanent: true },
-    ANGLE_WALL_3: { id: 1.3, traversable: false, permanent: true },
-    ANGLE_WALL_4: { id: 1.4, traversable: false, permanent: true },
+    ANGLE_WALL_1: { id: '1.1', traversable: false, permanent: true },
+    ANGLE_WALL_2: { id: '1.2', traversable: false, permanent: true },
+    ANGLE_WALL_3: { id: '1.3', traversable: false, permanent: true },
+    ANGLE_WALL_4: { id: '1.4', traversable: false, permanent: true },
     REGULAR_FLOOR: { id: 2, traversable: true, permanent: true },
     RED_FLAG: { id: 3, traversable: true, permanent: false },
-    RED_FLAG_TAKEN: { id: 3.1, traversable: true, permanent: false },
+    RED_FLAG_TAKEN: { id: '3.1', traversable: true, permanent: false },
     BLUE_FLAG: { id: 4, traversable: true, permanent: false },
-    BLUE_FLAG_TAKEN: { id: 4.1, traversable: true, permanent: false },
+    BLUE_FLAG_TAKEN: { id: '4.1', traversable: true, permanent: false },
     SPEEDPAD_ACTIVE: { id: 5, traversable: false, radius: 15, permanent: false },
     SPEEDPAD_INACTIVE: { id: '5.1', traversable: true, permanent: false },
     POWERUP_SUBGROUP: { id: 6, traversable: false, radius: 15, permanent: false },
-    JUKEJUICE: { id: 6.1, traversable: false, radius: 15, permanent: false },
-    ROLLING_BOMB: { id: 6.2, traversable: false, radius: 15, permanent: false },
-    TAGPRO: { id: 6.3, traversable: false, radius: 15, permanent: false },
-    MAX_SPEED: { id: 6.4, traversable: false, radius: 15, permanent: false },
+    JUKEJUICE: { id: '6.1', traversable: false, radius: 15, permanent: false },
+    ROLLING_BOMB: { id: '6.2', traversable: false, radius: 15, permanent: false },
+    TAGPRO: { id: '6.3', traversable: false, radius: 15, permanent: false },
+    MAX_SPEED: { id: '6.4', traversable: false, radius: 15, permanent: false },
     SPIKE: { id: 7, traversable: false, radius: 14, permanent: true },
     BUTTON: { id: 8, traversable: false, radius: 8, permanent: true },
     INACTIVE_GATE: { id: 9, traversable: true, permanent: false },
-    GREEN_GATE: { id: 9.1, traversable: false, permanent: false },
-    RED_GATE: { id: 9.2, traversable: amRed(), permanent: false },
-    BLUE_GATE: { id: 9.3, traversable: amBlue(), permanent: false },
+    GREEN_GATE: { id: '9.1', traversable: false, permanent: false },
+    RED_GATE: { id: '9.2', traversable: amRed(), permanent: false },
+    BLUE_GATE: { id: '9.3', traversable: amBlue(), permanent: false },
     BOMB: { id: 10, traversable: false, radius: 15, permanent: false },
     INACTIVE_BOMB: { id: '10.1', traversable: true, permanent: false },
     RED_TEAMTILE: { id: 11, traversable: true, permanent: true },
@@ -47,9 +47,9 @@ export function computeTileInfo() {
     ACTIVE_PORTAL: { id: 13, traversable: false, radius: 15, permanent: false },
     INACTIVE_PORTAL: { id: '13.1', traversable: true, permanent: false },
     SPEEDPAD_RED_ACTIVE: { id: 14, traversable: false, radius: 15, permanent: false },
-    SPEEDPAD_RED_INACTIVE: { id: 14.1, traversable: true, permanent: false },
+    SPEEDPAD_RED_INACTIVE: { id: '14.1', traversable: true, permanent: false },
     SPEEDPAD_BLUE_ACTIVE: { id: 15, traversable: false, radius: 15, permanent: false },
-    SPEEDPAD_BLUE_INACTIVE: { id: 15.1, traversable: true, permanent: false },
+    SPEEDPAD_BLUE_INACTIVE: { id: '15.1', traversable: true, permanent: false },
     YELLOW_FLAG: { id: 16, traversable: true, permanent: false },
     YELLOW_FLAG_TAKEN: { id: '16.1', traversable: true, permanent: false },
     RED_ENDZONE: { id: 17, traversable: true, permanent: true },
@@ -96,7 +96,6 @@ export function getTileProperty(tileID, property) {
  * @return the id for the input tile name
  */
 export function getTileId(name) {
-  assert(_.has(tileInfo, name), `Unknown tileName: ${name}`);
   return tileInfo[name].id;
 }
 
@@ -107,5 +106,6 @@ export function getTileId(name) {
  * @return true if tileId is the id of the named tile
  */
 export function tileIsType(tileId, name) {
-  return getTileId(name) === tileId;
+  assert(_.has(tileInfo, name), `Unknown tileName: ${name}`);
+  return tileId === tileInfo[name].id;
 }
