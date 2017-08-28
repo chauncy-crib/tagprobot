@@ -6,7 +6,6 @@ import {
   onKeyDown,
   setupVelocity,
   chatHelpMenu,
-  isAutonomous,
 } from './utils/interface';
 
 import { drawPermanentNTSprites } from './draw/drawings';
@@ -50,9 +49,7 @@ function start() {
   function loop() {
     // Call this function every time a tagpro animation frame gets drawn
     requestAnimationFrame(loop);
-    if (isAutonomous()) {
-      botLoop();
-    }
+    botLoop();
   }
 
   loop();
