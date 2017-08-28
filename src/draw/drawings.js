@@ -11,7 +11,7 @@
 import _ from 'lodash';
 import { PPCL, CPTL, pathAlpha, pathColor, ntAlpha, ntColor } from '../constants';
 import { init2dArray } from '../helpers/map';
-import { areVisualsOn } from '../utils/interface';
+import { isVisualMode } from '../utils/interface';
 import { assertGridInBounds } from '../utils/asserts';
 
 let pathSprites = []; // a list of the current path sprites drawn
@@ -54,7 +54,7 @@ function getPixiRect(x, y, width, height, alpha, color) {
  * @param {Array} path - an array of cells, likely returned by getShortestPath()
  */
 export function updatePath(path) {
-  if (!areVisualsOn()) {
+  if (!isVisualMode()) {
     return;
   }
   _.forEach(pathSprites, p => tagpro.renderer.layers.background.removeChild(p));
@@ -128,7 +128,7 @@ export function generatePermanentNTSprites(x, y, cellTraversabilities) {
  * @param {Array} cellTraversabilities - the cell-traversabilities of the tagpro map.
  */
 export function updateNTSprites(x, y, cellTraversabilities) {
-  if (!areVisualsOn()) {
+  if (!isVisualMode()) {
     return;
   }
   if (_.isEmpty(tempNTSprites)) {

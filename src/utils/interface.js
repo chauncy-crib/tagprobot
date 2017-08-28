@@ -28,13 +28,13 @@ export function chat(chatMessage) {
 
 
 let autonomous = true;
-export function isAutonomous() {
+export function isAutonomousMode() {
   return autonomous;
 }
 
 
 let visuals = true;
-export function areVisualsOn() {
+export function isVisualMode() {
   return visuals;
 }
 
@@ -44,7 +44,7 @@ export function chatHelpMenu() {
     '--- Help Menu',
     '--- H: print this help menu',
     '--- Q: toggle autonomous mode',
-    '--- V: toggle visual mode',
+    '--- V: toggle visuals',
     '---',
   ];
   menu.forEach(item => {
@@ -53,32 +53,37 @@ export function chatHelpMenu() {
 }
 
 
+/*
+ * Set the state of all arrow keys to no longer be pressed
+ */
+export function releaseArrowKeys() {
+  tagpro.sendKeyPress('up', true);
+  tagpro.sendKeyPress('down', true);
+  tagpro.sendKeyPress('left', true);
+  tagpro.sendKeyPress('right', true);
+}
+
+
 export function onKeyDown(event) {
   switch (event.keyCode) {
-    case KEY_CODES.H: // chat the help menu
+    // Chat the help menu
+    case KEY_CODES.H: {
       chatHelpMenu();
       break;
+    }
     // If letter pressed is Q, toggle autonomous controls
     case KEY_CODES.Q: {
       autonomous = !autonomous;
-      visuals = autonomous;
-      if (!visuals) {
-        clearSprites();
-      } else {
-        drawPermanentNTSprites();
-      }
-      tagpro.sendKeyPress('up', true);
-      tagpro.sendKeyPress('down', true);
-      tagpro.sendKeyPress('left', true);
-      tagpro.sendKeyPress('right', true);
-      const autonomyMode = autonomous ? 'autonomous' : 'MANUAL';
-      chat(`Autonomy Mode updated: now ${autonomyMode}!`);
+      releaseArrowKeys();
+      const autonomyMode = autonomous ? 'AUTONOMOUS' : 'MANUAL';
+      chat(`Autonomy mode updated: now ${autonomyMode}!`);
       break;
     }
-    case KEY_CODES.V: { // toggle visuals
+    // Toggle visuals
+    case KEY_CODES.V: {
       visuals = !visuals;
-      const chatMsg = visuals ? 'enabled' : 'disabled';
-      chat(`Visuals ${chatMsg}`);
+      const chatMsg = visuals ? 'ENABLED' : 'DISABLED';
+      chat(`Visual mode update: now ${chatMsg}!`);
       if (!visuals) {
         clearSprites();
       } else {

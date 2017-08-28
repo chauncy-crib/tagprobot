@@ -10,9 +10,9 @@ import { updatePath,
 
 
 test('updatePath', tester => {
-  tester.test('checks areVisualsOn', t => {
+  tester.test('checks isVisualMode', t => {
     const mockAreVisualsOn = sinon.stub().returns(false);
-    DrawRewireAPI.__Rewire__('areVisualsOn', mockAreVisualsOn);
+    DrawRewireAPI.__Rewire__('isVisualMode', mockAreVisualsOn);
     updatePath();
     t.true(mockAreVisualsOn.calledOnce);
     t.end();
@@ -25,7 +25,7 @@ test('updatePath', tester => {
     global.tagpro = { renderer: { layers: { background:
       { removeChild: mockRemoveChild, addChild: () => {} } } } };
 
-    DrawRewireAPI.__Rewire__('areVisualsOn', mockAreVisualsOn);
+    DrawRewireAPI.__Rewire__('isVisualMode', mockAreVisualsOn);
     DrawRewireAPI.__Rewire__('pathSprites', mockPathSprites);
 
     updatePath();
@@ -35,7 +35,7 @@ test('updatePath', tester => {
     t.ok(mockRemoveChild.getCall(1).calledWithExactly('sprite2'));
     t.ok(mockRemoveChild.getCall(2).calledWithExactly('sprite3'));
 
-    DrawRewireAPI.__ResetDependency__('areVisualsOn');
+    DrawRewireAPI.__ResetDependency__('isVisualMode');
     DrawRewireAPI.__ResetDependency__('pathSprites');
 
     t.end();
@@ -51,7 +51,7 @@ test('updatePath', tester => {
     global.tagpro = { renderer: { layers: { background:
       { removeChild: () => {}, addChild: mockAddChild } } } };
 
-    DrawRewireAPI.__Rewire__('areVisualsOn', mockAreVisualsOn);
+    DrawRewireAPI.__Rewire__('isVisualMode', mockAreVisualsOn);
     DrawRewireAPI.__Rewire__('pathSprites', mockPathSprites);
     DrawRewireAPI.__Rewire__('getPixiRect', mockGetPixiRect);
     DrawRewireAPI.__Rewire__('PPCL', 1);
@@ -69,7 +69,7 @@ test('updatePath', tester => {
     t.ok(mockAddChild.calledWithExactly('rect2'));
     t.same(mockPathSprites, ['rect1', 'rect2']);
 
-    DrawRewireAPI.__ResetDependency__('areVisualsOn');
+    DrawRewireAPI.__ResetDependency__('isVisualMode');
     DrawRewireAPI.__ResetDependency__('pathSprites');
     DrawRewireAPI.__ResetDependency__('getPixiRect');
     DrawRewireAPI.__ResetDependency__('PPCL');
