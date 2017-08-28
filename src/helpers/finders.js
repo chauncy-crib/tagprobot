@@ -1,12 +1,13 @@
 import _ from 'lodash';
 
+import { getTileName } from '../tiles';
 import { isOnMyTeam } from './player';
 import { PPTL } from '../constants';
 import { assert } from '../utils/asserts';
 
 
 /*
- * Returns the position x and y (in pixels) of the first of the specified tile
+ * Returns the position xt and yt (in pixels) of the first of the specified tile
  * types to appear starting in the top left corner and moving in a page-reading
  * fashion.
  *
@@ -15,24 +16,24 @@ import { assert } from '../utils/asserts';
  * @param {(number | number[])} tiles - either a number representing a tileType,
  * or an array of such numbers
  */
-export function findTile(tileIds) {
-  assert(tileIds, 'tileIds is undefined');
+export function findTile(tileNames) {
+  assert(tileNames, 'tileNames is undefined');
   assert(tagpro.map, 'tagpro.map is undefined');
 
   // Force an array if the input is just one tile
-  const tileIdArray = [].concat(tileIds);
+  const tileNameArray = [].concat(tileNames);
 
-  for (let x = 0, xl = tagpro.map.length, yl = tagpro.map[0].length; x < xl; x++) {
-    for (let y = 0; y < yl; y++) {
-      for (let i = 0; i < tileIdArray.length; i++) {
-        const tileId = tileIdArray[i];
-        if (tagpro.map[x][y] === tileId) {
-          return { x: x * PPTL, y: y * PPTL };
+  for (let xt = 0, xl = tagpro.map.length; xt < xl; xt++) {
+    for (let yt = 0, yl = tagpro.map[0].length; yt < yl; yt++) {
+      for (let i = 0; i < tileNameArray.length; i++) {
+        if (tileNameArray[i] === getTileName(tagpro.map[xt][yt])) {
+          return { x: xt * PPTL, y: yt * PPTL };
         }
       }
     }
   }
-  throw new Error(`Unable to find tile: ${tileIds}`);
+
+  throw new Error(`Unable to find tile: ${tileNames}`);
 }
 
 

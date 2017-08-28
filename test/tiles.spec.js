@@ -9,7 +9,6 @@ import _ from 'lodash';
 import {
   computeTileInfo,
   getTileProperty,
-  tileIsType,
   tileHasProperty,
   __RewireAPI__ as TileRewireAPI,
 } from '../src/tiles';
@@ -32,9 +31,9 @@ export function setupTiles(teamColor) {
     ANGLE_WALL_4: { id: 1.4, traversable: false, permanent: true },
     REGULAR_FLOOR: { id: 2, traversable: true, permanent: true },
     RED_FLAG: { id: 3, traversable: true, permanent: false },
-    RED_FLAG_TAKEN: { id: 3.1, traversable: true, permanent: false },
+    RED_FLAG_TAKEN: { id: '3.1', traversable: true, permanent: false },
     BLUE_FLAG: { id: 4, traversable: true, permanent: false },
-    BLUE_FLAG_TAKEN: { id: 4.1, traversable: true, permanent: false },
+    BLUE_FLAG_TAKEN: { id: '4.1', traversable: true, permanent: false },
     SPEEDPAD_ACTIVE: { id: 5, traversable: false, radius: 15, permanent: false },
     SPEEDPAD_INACTIVE: { id: '5.1', traversable: true, permanent: false },
     POWERUP_SUBGROUP: { id: 6, traversable: false, radius: 15, permanent: false },
@@ -55,9 +54,9 @@ export function setupTiles(teamColor) {
     ACTIVE_PORTAL: { id: 13, traversable: false, radius: 15, permanent: false },
     INACTIVE_PORTAL: { id: '13.1', traversable: true, permanent: false },
     SPEEDPAD_RED_ACTIVE: { id: 14, traversable: false, radius: 15, permanent: false },
-    SPEEDPAD_RED_INACTIVE: { id: 14.1, traversable: true, permanent: false },
+    SPEEDPAD_RED_INACTIVE: { id: '14.1', traversable: true, permanent: false },
     SPEEDPAD_BLUE_ACTIVE: { id: 15, traversable: false, radius: 15, permanent: false },
-    SPEEDPAD_BLUE_INACTIVE: { id: 15.1, traversable: true, permanent: false },
+    SPEEDPAD_BLUE_INACTIVE: { id: '15.1', traversable: true, permanent: false },
     YELLOW_FLAG: { id: 16, traversable: true, permanent: false },
     YELLOW_FLAG_TAKEN: { id: '16.1', traversable: true, permanent: false },
     RED_ENDZONE: { id: 17, traversable: true, permanent: true },
@@ -106,9 +105,9 @@ test('computeTileInfo: stores info in tileInfo', t => {
 
 test('getTileProperty: returns correct properties', t => {
   setupTiles(teams.BLUE);
-  t.is(getTileProperty(1, 'traversable'), false);
-  t.is(getTileProperty(2, 'traversable'), true);
-  t.is(getTileProperty(13, 'radius'), 15);
+  t.is(getTileProperty('SQUARE_WALL', 'traversable'), false);
+  t.is(getTileProperty('REGULAR_FLOOR', 'traversable'), true);
+  t.is(getTileProperty('ACTIVE_PORTAL', 'radius'), 15);
   teardownTiles();
 
   t.end();
@@ -120,7 +119,7 @@ test('getTileProperty: throws error given tileIds that don\'t exist', t => {
   t.throws(() => { getTileProperty(1.123, 'traversable'); });
   t.throws(() => { getTileProperty(-1, 'traversable'); });
   t.throws(() => { getTileProperty('potato', 'traversable'); });
-  t.throws(() => { getTileProperty(undefined, 'traversable'); });
+  t.throws(() => { getTileProperty('NONEXISTANT_TILE', 'traversable'); });
   teardownTiles();
 
   t.end();
@@ -129,8 +128,8 @@ test('getTileProperty: throws error given tileIds that don\'t exist', t => {
 
 test('getTileProperty: throws error given properties that don\'t exist', t => {
   setupTiles(teams.BLUE);
-  t.throws(() => { getTileProperty(5, 'potato'); });
-  t.throws(() => { getTileProperty(4.1, 'radius'); });
+  t.throws(() => { getTileProperty('SPEEDPAD_ACTIVE', 'potato'); });
+  t.throws(() => { getTileProperty('BLUE_FLAG_TAKEN', 'radius'); });
   teardownTiles();
 
   t.end();
@@ -139,49 +138,10 @@ test('getTileProperty: throws error given properties that don\'t exist', t => {
 
 test('tileHasProperty: checks if a tile has a property', t => {
   setupTiles(teams.BLUE);
-  t.true(tileHasProperty(4.1, 'permanent'));
-  t.true(tileHasProperty(6.1, 'radius'));
-  t.false(tileHasProperty(0, 'radius'));
-  t.false(tileHasProperty(1, 'radius'));
-  teardownTiles();
-
-  t.end();
-});
-
-
-test('tileIsType: returns true when tileId and name match', t => {
-  setupTiles(teams.BLUE);
-  t.ok(tileIsType(1.1, 'ANGLE_WALL_1'));
-  t.ok(tileIsType(4, 'BLUE_FLAG'));
-  t.ok(tileIsType('5.1', 'SPEEDPAD_INACTIVE'));
-  t.ok(tileIsType('16.1', 'YELLOW_FLAG_TAKEN'));
-  t.ok(tileIsType(18, 'BLUE_ENDZONE'));
-  teardownTiles();
-
-  t.end();
-});
-
-
-test('tileIsType: returns false when tileId and name do not match', t => {
-  setupTiles(teams.BLUE);
-  t.notOk(tileIsType(1, 'ANGLE_WALL_1'));
-  t.notOk(tileIsType(4, 'RED_FLAG'));
-  t.notOk(tileIsType(5.1, 'SPEEDPAD_INACTIVE'));
-  t.notOk(tileIsType('16', 'YELLOW_FLAG_TAKEN'));
-  t.notOk(tileIsType(17, 'BLUE_ENDZONE'));
-  teardownTiles();
-
-  t.end();
-});
-
-
-test('tileIsType: errors when name is not a tile', t => {
-  setupTiles(teams.BLUE);
-  t.throws(() => { tileIsType(1, undefined); });
-  t.throws(() => { tileIsType(1, 'potato'); });
-  t.throws(() => { tileIsType(1, 'toid'); });
-  t.throws(() => { tileIsType(1, ''); });
-  t.throws(() => { tileIsType(1, 1); });
+  t.true(tileHasProperty('BLUE_FLAG_TAKEN', 'permanent'));
+  t.true(tileHasProperty('JUKEJUICE', 'radius'));
+  t.false(tileHasProperty('EMPTY_SPACE', 'radius'));
+  t.false(tileHasProperty('REGULAR_FLOOR', 'radius'));
   teardownTiles();
 
   t.end();

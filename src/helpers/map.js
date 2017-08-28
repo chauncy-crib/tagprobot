@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { CPTL, PPCL } from '../constants';
 import { assert, assertGridInBounds } from '../utils/asserts';
-import { getTileProperty, tileHasProperty, tileIsType } from '../tiles';
+import { getTileName, getTileProperty, tileHasProperty } from '../tiles';
 import { updateNTSprites, generatePermanentNTSprites } from '../draw/drawings';
 
 const mapTraversabilityCells = [];
@@ -57,38 +57,39 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
 /* Returns a 2d cell array of traversible (1) and blocked (0) cells inside a tile.
  * Runtime: O(CPTL^2)
  *
- * @param {number} tileID - the ID of the tile that should be split into cells and
- *   parsed for traversability
+ * @param {number} tileName - the name of the tile that should be split into cells and
+ * parsed for traversability
  */
-export function getTileTraversabilityInCells(tileID) {
+export function getTileTraversabilityInCells(tileName) {
   // Start with all cells being traversable
   const gridTile = init2dArray(CPTL, CPTL, 1);
 
-  if (!getTileProperty(tileID, 'traversable')) { // tile is not fully traversable
+  if (!getTileProperty(tileName, 'traversable')) { // tile is not fully traversable
     const midCell = (CPTL - 1.0) / 2.0;
     for (let i = 0; i < CPTL; i++) {
       for (let j = 0; j < CPTL; j++) {
-        if (tileHasProperty(tileID, 'radius')) {
+        if (tileHasProperty(tileName, 'radius')) { // tile is CNTO
           const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
           const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
           const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
           const pixelDist = cellDist * PPCL;
-          if (pixelDist <= getTileProperty(tileID, 'radius')) {
+          if (pixelDist <= getTileProperty(tileName, 'radius')) {
             gridTile[i][j] = 0;
-          } // tile is noncircular and nontraversable
-        } else if (tileIsType(tileID, 'ANGLE_WALL_1')) {
+          }
+        // tile is noncircular and partially nontraversable (this leaves angled walls)
+        } else if (tileName === 'ANGLE_WALL_1') {
           if (j - i >= 0) {
             gridTile[i][j] = 0;
           }
-        } else if (tileIsType(tileID, 'ANGLE_WALL_2')) {
+        } else if (tileName === 'ANGLE_WALL_2') {
           if (i + j <= CPTL - 1) {
             gridTile[i][j] = 0;
           }
-        } else if (tileIsType(tileID, 'ANGLE_WALL_3')) {
+        } else if (tileName === 'ANGLE_WALL_3') {
           if (j - i <= 0) {
             gridTile[i][j] = 0;
           }
-        } else if (tileIsType(tileID, 'ANGLE_WALL_4')) {
+        } else if (tileName === 'ANGLE_WALL_4') {
           if (i + j >= CPTL - 1) {
             gridTile[i][j] = 0;
           }
@@ -98,6 +99,7 @@ export function getTileTraversabilityInCells(tileID) {
       }
     }
   }
+
   return gridTile;
 }
 
@@ -118,19 +120,21 @@ export function initMapTraversabilityCells(map) {
   init2dArray(xl * CPTL, yl * CPTL, 0, mapTraversabilityCells);
   for (let x = 0; x < xl; x++) {
     for (let y = 0; y < yl; y++) {
+      const tileId = map[x][y];
+      const tileName = getTileName(tileId);
       fillGridWithSubgrid(
         mapTraversabilityCells,
-        getTileTraversabilityInCells(map[x][y]),
+        getTileTraversabilityInCells(tileName),
         x * CPTL,
         y * CPTL,
       );
-      if (!getTileProperty(map[x][y], 'permanent')) {
+      if (!getTileProperty(tileName, 'permanent')) {
         tilesToUpdate.push({ x, y });
         tilesToUpdateValues.push(map[x][y]);
-        if (!getTileProperty(map[x][y], 'traversable')) {
+        if (!getTileProperty(tileName, 'traversable')) {
           updateNTSprites(x, y, mapTraversabilityCells);
         }
-      } else if (!getTileProperty(map[x][y], 'traversable')) {
+      } else if (!getTileProperty(tileName, 'traversable')) {
         generatePermanentNTSprites(x, y, mapTraversabilityCells);
       }
     }
@@ -160,7 +164,7 @@ export function getMapTraversabilityInCells(map) {
       // O(CTPL^2)
       fillGridWithSubgrid(
         mapTraversabilityCells,
-        getTileTraversabilityInCells(map[xy.x][xy.y]),
+        getTileTraversabilityInCells(getTileName(map[xy.x][xy.y])),
         xy.x * CPTL,
         xy.y * CPTL,
       );

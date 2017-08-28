@@ -10,7 +10,6 @@ import {
 } from '../../src/helpers/map';
 import { setupTiles, teardownTiles } from '../tiles.spec';
 import { teams } from '../../src/constants';
-import { getTileId } from '../../src/tiles';
 
 
 test('init2dArray: returns 2d array that is correct size, and with correct value filled in', t => {
@@ -104,7 +103,7 @@ test('getTileTraversabilityInCells() ', tester => {
     setupTiles(teams.BLUE);
     MapRewireAPI.__Rewire__('CPTL', 1);
     MapRewireAPI.__Rewire__('PPCL', 40);
-    t.same(getTileTraversabilityInCells(getTileId('REGULAR_FLOOR')), [
+    t.same(getTileTraversabilityInCells('REGULAR_FLOOR'), [
       [1],
     ]);
 
@@ -120,7 +119,7 @@ test('getTileTraversabilityInCells() ', tester => {
     setupTiles(teams.BLUE);
     MapRewireAPI.__Rewire__('CPTL', 1);
     MapRewireAPI.__Rewire__('PPCL', 40);
-    t.same(getTileTraversabilityInCells(getTileId('SQUARE_WALL')), [
+    t.same(getTileTraversabilityInCells('SQUARE_WALL'), [
       [0],
     ]);
 
@@ -136,7 +135,7 @@ test('getTileTraversabilityInCells() ', tester => {
     setupTiles(teams.BLUE);
     MapRewireAPI.__Rewire__('CPTL', 4);
     MapRewireAPI.__Rewire__('PPCL', 10);
-    t.same(getTileTraversabilityInCells(getTileId('INACTIVE_PORTAL')), [
+    t.same(getTileTraversabilityInCells('INACTIVE_PORTAL'), [
       [1, 1, 1, 1],
       [1, 1, 1, 1],
       [1, 1, 1, 1],
@@ -155,7 +154,7 @@ test('getTileTraversabilityInCells() ', tester => {
     MapRewireAPI.__Rewire__('CPTL', 4);
     MapRewireAPI.__Rewire__('PPCL', 10);
     setupTiles(teams.BLUE);
-    t.same(getTileTraversabilityInCells(getTileId('SPIKE')), [
+    t.same(getTileTraversabilityInCells('SPIKE'), [
       [1, 0, 0, 1],
       [0, 0, 0, 0],
       [0, 0, 0, 0],
@@ -174,7 +173,7 @@ test('getTileTraversabilityInCells() ', tester => {
     MapRewireAPI.__Rewire__('CPTL', 4);
     MapRewireAPI.__Rewire__('PPCL', 10);
     setupTiles(teams.BLUE);
-    t.same(getTileTraversabilityInCells(getTileId('ACTIVE_PORTAL')), [
+    t.same(getTileTraversabilityInCells('ACTIVE_PORTAL'), [
       [0, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0, 0],
@@ -192,7 +191,7 @@ test('getTileTraversabilityInCells() ', tester => {
   tester.test('returns correctly with angled wall 1, CPTL=4', t => {
     MapRewireAPI.__Rewire__('CPTL', 4);
     setupTiles(teams.BLUE);
-    t.same(getTileTraversabilityInCells(getTileId('ANGLE_WALL_1')), [
+    t.same(getTileTraversabilityInCells('ANGLE_WALL_1'), [
       [0, 0, 0, 0],
       [1, 0, 0, 0],
       [1, 1, 0, 0],
@@ -209,7 +208,7 @@ test('getTileTraversabilityInCells() ', tester => {
   tester.test('returns correctly with angled wall 2, CPTL=4', t => {
     MapRewireAPI.__Rewire__('CPTL', 4);
     setupTiles(teams.BLUE);
-    t.same(getTileTraversabilityInCells(getTileId('ANGLE_WALL_2')), [
+    t.same(getTileTraversabilityInCells('ANGLE_WALL_2'), [
       [0, 0, 0, 0],
       [0, 0, 0, 1],
       [0, 0, 1, 1],
@@ -226,7 +225,7 @@ test('getTileTraversabilityInCells() ', tester => {
   tester.test('returns correctly with angled wall 3, CPTL=4', t => {
     MapRewireAPI.__Rewire__('CPTL', 4);
     setupTiles(teams.BLUE);
-    t.same(getTileTraversabilityInCells(getTileId('ANGLE_WALL_3')), [
+    t.same(getTileTraversabilityInCells('ANGLE_WALL_3'), [
       [0, 1, 1, 1],
       [0, 0, 1, 1],
       [0, 0, 0, 1],
@@ -243,7 +242,7 @@ test('getTileTraversabilityInCells() ', tester => {
   tester.test('returns correctly with angled wall 4, CPTL=4', t => {
     MapRewireAPI.__Rewire__('CPTL', 4);
     setupTiles(teams.BLUE);
-    t.same(getTileTraversabilityInCells(getTileId('ANGLE_WALL_4')), [
+    t.same(getTileTraversabilityInCells('ANGLE_WALL_4'), [
       [1, 1, 1, 0],
       [1, 1, 0, 0],
       [1, 0, 0, 0],
@@ -261,7 +260,7 @@ test('getTileTraversabilityInCells() ', tester => {
     setupTiles(teams.BLUE);
     MapRewireAPI.__Rewire__('CPTL', 8);
     MapRewireAPI.__Rewire__('PPCL', 5);
-    t.same(getTileTraversabilityInCells(getTileId('BUTTON')), [
+    t.same(getTileTraversabilityInCells('BUTTON'), [
       [1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 0, 0, 0, 0, 1, 1],
@@ -276,7 +275,7 @@ test('getTileTraversabilityInCells() ', tester => {
 
     MapRewireAPI.__Rewire__('CPTL', 8);
     MapRewireAPI.__Rewire__('PPCL', 5);
-    t.same(getTileTraversabilityInCells(getTileId('SPIKE')), [
+    t.same(getTileTraversabilityInCells('SPIKE'), [
       [1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 0, 0, 0, 0, 1, 1],
       [1, 0, 0, 0, 0, 0, 0, 1],
@@ -315,12 +314,12 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
   setupTiles(teams.BLUE);
   MapRewireAPI.__Rewire__('CPTL', 1);
   // create a dummy map from bombs, spikes, gates, and regular tiles
-  const bomb = getTileId('BOMB');
-  const inactivebomb = getTileId('INACTIVE_BOMB');
-  const spike = getTileId('SPIKE');
-  const redgate = getTileId('RED_GATE');
-  const bluegate = getTileId('BLUE_GATE');
-  const blank = getTileId('REGULAR_FLOOR');
+  const bomb = 10;
+  const inactivebomb = '10.1';
+  const spike = 7;
+  const redgate = 9.2;
+  const bluegate = 9.3;
+  const blank = 2;
 
   const mockTilesToUpdateValues = [bomb, redgate, redgate, bluegate, bomb];
   MapRewireAPI.__Rewire__('mapTraversabilityCells', [
@@ -394,12 +393,12 @@ test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
 test('getMapTraversabilityInCells: returns correctly with CPTL=2', t => {
   setupTiles(teams.RED);
   // create a dummy map from bombs, spikes, gates, and regular tiles
-  const bomb = getTileId('BOMB');
-  const inactivebomb = getTileId('INACTIVE_BOMB');
-  const spike = getTileId('SPIKE');
-  const redgate = getTileId('RED_GATE');
-  const bluegate = getTileId('BLUE_GATE');
-  const blank = getTileId('REGULAR_FLOOR');
+  const bomb = 10;
+  const inactivebomb = '10.1';
+  const spike = 7;
+  const redgate = 9.2;
+  const bluegate = 9.3;
+  const blank = 2;
 
   let mockTilesToUpdateValues = [inactivebomb, redgate, bluegate, redgate, bomb];
   MapRewireAPI.__Rewire__('mapTraversabilityCells', [
@@ -497,11 +496,11 @@ test('initMapTraversabilityCells()', tester => {
     setupTiles(teams.BLUE);
     MapRewireAPI.__Rewire__('CPTL', 1);
     // create a dummy map from bombs, spikes, gates, and regular tiles
-    const bomb = getTileId('BOMB');
-    const spike = getTileId('SPIKE');
-    const redgate = getTileId('RED_GATE');
-    const bluegate = getTileId('BLUE_GATE');
-    const blank = getTileId('REGULAR_FLOOR');
+    const bomb = 10;
+    const spike = 7;
+    const redgate = 9.2;
+    const bluegate = 9.3;
+    const blank = 2;
 
     const mockMapTraversabilityCells = [];
     const mockTilesToUpdate = [];
