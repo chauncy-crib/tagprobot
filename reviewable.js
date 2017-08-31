@@ -18,6 +18,19 @@ _.each(review.files, file => {
     .map('username')
     .without(review.pullRequest.author.username)
     .value();
+
+  // iterate over revisions for each file
+  _.each(file.revisions, revision => {
+    // calculate number of reviewers this revision by dropping pr author and taking length of
+    // reviewers
+    const reviewersThisRevision = _(revision.reviewers)
+      .map('username')
+      .without(review.pullRequest.author.username)
+      .value();
+    // mark this revision as unreviewed the number of reviews is not high enough
+    revision.reviewed = reviewersThisRevision.length >= numReviewersRequired;
+  });
+
   const neededReviewers = [];
   if (reviewers.length < numReviewersRequired) {
     // place all non-author chauncy members who haven't reviewed the file and add them
@@ -102,6 +115,7 @@ const reviewableStatus = {
   completed,
   description: longReasons.join(', '),
   shortDescription: shortReasons.join(', '),
+  files: review.files,
 };
 
 return reviewableStatus;
