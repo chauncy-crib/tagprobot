@@ -16,11 +16,13 @@ test('findTile: returns correctly with orthogonal inputs', t => {
   const blank = getTileId('REGULAR_FLOOR');
 
   /* eslint-disable no-multi-spaces, array-bracket-spacing */
-  global.tagpro.map = [
-    [bomb,    blank,    redgate],
-    [redgate, bluegate, blank  ],
-    [blank,   spike,    bomb   ],
-  ];
+  global.tagpro = {
+    map: [
+      [bomb,    blank,    redgate],
+      [redgate, bluegate, blank  ],
+      [blank,   spike,    bomb   ],
+    ],
+  };
   /* eslint-enable no-multi-spaces, array-bracket-spacing */
 
   t.same(findTile(bomb), { x: 0 * PPTL, y: 0 * PPTL });
