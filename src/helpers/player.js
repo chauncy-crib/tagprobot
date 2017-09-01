@@ -1,5 +1,4 @@
 import { teams } from '../constants';
-import { getTileId } from '../tiles';
 
 let me;
 
@@ -24,12 +23,12 @@ export function isOnMyTeam(player) {
   return player.team === me.team;
 }
 
-export function getAllyEndzoneTileId() {
-  return amBlue() ? getTileId('BLUE_ENDZONE') : getTileId('RED_ENDZONE');
+export function getAllyEndzoneTileName() {
+  return amBlue() ? 'BLUE_ENDZONE' : 'RED_ENDZONE';
 }
 
-export function getEnemyEndzoneTileId() {
-  return amBlue() ? getTileId('RED_ENDZONE') : getTileId('BLUE_ENDZONE');
+export function getEnemyEndzoneTileName() {
+  return amBlue() ? 'RED_ENDZONE' : 'BLUE_ENDZONE';
 }
 
 // Returns whether or not ally team's flag is taken

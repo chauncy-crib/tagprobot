@@ -25,9 +25,9 @@ test('findTile: returns correctly with orthogonal inputs', t => {
   };
   /* eslint-enable no-multi-spaces, array-bracket-spacing */
 
-  t.same(findTile(bomb), { x: 0 * PPTL, y: 0 * PPTL });
-  t.same(findTile(redgate), { x: 0 * PPTL, y: 2 * PPTL });
-  t.same(findTile(spike), { x: 2 * PPTL, y: 1 * PPTL });
+  t.same(findTile('BOMB'), { x: 0 * PPTL, y: 0 * PPTL });
+  t.same(findTile('RED_GATE'), { x: 0 * PPTL, y: 2 * PPTL });
+  t.same(findTile('SPIKE'), { x: 2 * PPTL, y: 1 * PPTL });
 
   teardownTiles();
 
