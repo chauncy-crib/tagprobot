@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { tileIsType } from '../tiles';
+import { tileHasName } from '../tiles';
 import { isOnMyTeam } from './player';
 import { PPTL } from '../constants';
 import { assert } from '../utils/asserts';
@@ -26,7 +26,7 @@ export function findTile(tileNames) {
   for (let xt = 0, xl = tagpro.map.length; xt < xl; xt++) {
     for (let yt = 0, yl = tagpro.map[0].length; yt < yl; yt++) {
       for (let i = 0; i < tileNameArray.length; i++) {
-        if (tileIsType(tagpro.map[xt][yt], tileNameArray[i])) {
+        if (tileHasName(tagpro.map[xt][yt], tileNameArray[i])) {
           return { x: xt * PPTL, y: yt * PPTL };
         }
       }
