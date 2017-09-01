@@ -123,11 +123,11 @@ export function generatePermanentNTSprites(x, y, cellTraversabilities) {
  * it to the correct size as specified by the comment at the top of this file
  * Runtime: O(CPTL^2), O(1) if visualizations off
  *
- * @param {number} x - x location, in tiles
- * @param {number} y - y location, in tiles
+ * @param {number} xt - x location, in tiles
+ * @param {number} yt - y location, in tiles
  * @param {Array} cellTraversabilities - the cell-traversabilities of the tagpro map.
  */
-export function updateNTSprites(x, y, cellTraversabilities) {
+export function updateNTSprites(xt, yt, cellTraversabilities) {
   if (!isVisualMode()) {
     return;
   }
@@ -138,8 +138,8 @@ export function updateNTSprites(x, y, cellTraversabilities) {
       null,
     );
   }
-  for (let i = x * CPTL; i < (x + 1) * CPTL; i++) {
-    for (let j = y * CPTL; j < (y + 1) * CPTL; j++) {
+  for (let i = xt * CPTL; i < (xt + 1) * CPTL; i++) {
+    for (let j = yt * CPTL; j < (yt + 1) * CPTL; j++) {
       // if we don't have a sprite already there and there should be one,
       // draw it
       if (_.isNull(tempNTSprites[i][j]) && !cellTraversabilities[i][j]) {
