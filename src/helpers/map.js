@@ -120,23 +120,23 @@ export function initMapTraversabilityCells(map) {
   const xl = map.length;
   const yl = map[0].length;
   init2dArray(xl * CPTL, yl * CPTL, 0, mapTraversabilityCells);
-  for (let x = 0; x < xl; x++) {
-    for (let y = 0; y < yl; y++) {
-      const tileId = map[x][y];
+  for (let xt = 0; xt < xl; xt++) {
+    for (let yt = 0; yt < yl; yt++) {
+      const tileId = map[xt][yt];
       fillGridWithSubgrid(
         mapTraversabilityCells,
         getTileTraversabilityInCells(tileId),
-        x * CPTL,
-        y * CPTL,
+        xt * CPTL,
+        yt * CPTL,
       );
       if (!getTileProperty(tileId, 'permanent')) {
-        tilesToUpdate.push({ x, y });
-        tilesToUpdateValues.push(map[x][y]);
+        tilesToUpdate.push({ x: xt, y: yt });
+        tilesToUpdateValues.push(map[xt][yt]);
         if (!getTileProperty(tileId, 'traversable')) {
-          updateNTSprites(x, y, mapTraversabilityCells);
+          updateNTSprites(xt, yt, mapTraversabilityCells);
         }
       } else if (!getTileProperty(tileId, 'traversable')) {
-        generatePermanentNTSprites(x, y, mapTraversabilityCells);
+        generatePermanentNTSprites(xt, yt, mapTraversabilityCells);
       }
     }
   }
