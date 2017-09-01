@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { CPTL, PPCL } from '../constants';
 import { assert, assertGridInBounds } from '../utils/asserts';
-import { tileIsType, getTileProperty, tileHasProperty } from '../tiles';
+import { tileHasName, getTileProperty, tileHasProperty } from '../tiles';
 import { updateNTSprites, generatePermanentNTSprites } from '../draw/drawings';
 
 const mapTraversabilityCells = [];
@@ -68,7 +68,8 @@ export function getTileTraversabilityInCells(tileId) {
     const midCell = (CPTL - 1.0) / 2.0;
     for (let i = 0; i < CPTL; i++) {
       for (let j = 0; j < CPTL; j++) {
-        if (tileHasProperty(tileId, 'radius')) { // tile is CNTO
+        // tile is circular non-traversable object
+        if (tileHasProperty(tileId, 'radius')) {
           const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
           const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
           const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
@@ -76,24 +77,25 @@ export function getTileTraversabilityInCells(tileId) {
           if (pixelDist <= getTileProperty(tileId, 'radius')) {
             gridTile[i][j] = 0;
           }
-        // tile is noncircular and partially nontraversable (this leaves angled walls)
-        } else if (tileIsType(tileId, 'ANGLE_WALL_1')) {
+        // tile is noncircular and partially nontraversable (angled walls)
+        } else if (tileHasName(tileId, 'ANGLE_WALL_1')) {
           if (j - i >= 0) {
             gridTile[i][j] = 0;
           }
-        } else if (tileIsType(tileId, 'ANGLE_WALL_2')) {
+        } else if (tileHasName(tileId, 'ANGLE_WALL_2')) {
           if (i + j <= CPTL - 1) {
             gridTile[i][j] = 0;
           }
-        } else if (tileIsType(tileId, 'ANGLE_WALL_3')) {
+        } else if (tileHasName(tileId, 'ANGLE_WALL_3')) {
           if (j - i <= 0) {
             gridTile[i][j] = 0;
           }
-        } else if (tileIsType(tileId, 'ANGLE_WALL_4')) {
+        } else if (tileHasName(tileId, 'ANGLE_WALL_4')) {
           if (i + j >= CPTL - 1) {
             gridTile[i][j] = 0;
           }
-        } else { // tile is entirely nontraversable
+        // tile is entirely nontraversable
+        } else {
           return init2dArray(CPTL, CPTL, 0);
         }
       }
