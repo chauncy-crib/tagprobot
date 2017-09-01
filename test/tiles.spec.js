@@ -9,8 +9,8 @@ import _ from 'lodash';
 import {
   computeTileInfo,
   getTileProperty,
+  tileHasName,
   tileHasProperty,
-  tileIsType,
   __RewireAPI__ as TileRewireAPI,
 } from '../src/tiles';
 import { teams } from '../src/constants';
@@ -120,7 +120,7 @@ test('getTileProperty: throws error given tileIds that don\'t exist', t => {
   t.throws(() => { getTileProperty(1.123, 'traversable'); });
   t.throws(() => { getTileProperty(-1, 'traversable'); });
   t.throws(() => { getTileProperty('potato', 'traversable'); });
-  t.throws(() => { getTileProperty('NONEXISTANT_TILE', 'traversable'); });
+  t.throws(() => { getTileProperty('NONEXISTENT_TILE', 'traversable'); });
   teardownTiles();
 
   t.end();
@@ -171,39 +171,39 @@ test('tileHasProperty: throws error when input id is wrong data type', t => {
 });
 
 
-test('tileIsType: returns true when tileId and name match', t => {
+test('tileHasName: returns true when tileId and name match', t => {
   setupTiles(teams.BLUE);
-  t.ok(tileIsType(1.1, 'ANGLE_WALL_1'));
-  t.ok(tileIsType(4, 'BLUE_FLAG'));
-  t.ok(tileIsType('5.1', 'SPEEDPAD_INACTIVE'));
-  t.ok(tileIsType('16.1', 'YELLOW_FLAG_TAKEN'));
-  t.ok(tileIsType(18, 'BLUE_ENDZONE'));
+  t.ok(tileHasName(1.1, 'ANGLE_WALL_1'));
+  t.ok(tileHasName(4, 'BLUE_FLAG'));
+  t.ok(tileHasName('5.1', 'SPEEDPAD_INACTIVE'));
+  t.ok(tileHasName('16.1', 'YELLOW_FLAG_TAKEN'));
+  t.ok(tileHasName(18, 'BLUE_ENDZONE'));
   teardownTiles();
 
   t.end();
 });
 
 
-test('tileIsType: returns false when tileId and name do not match', t => {
+test('tileHasName: returns false when tileId and name do not match', t => {
   setupTiles(teams.BLUE);
-  t.notOk(tileIsType(1, 'ANGLE_WALL_1'));
-  t.notOk(tileIsType(4, 'RED_FLAG'));
-  t.notOk(tileIsType(5.1, 'SPEEDPAD_INACTIVE'));
-  t.notOk(tileIsType('16', 'YELLOW_FLAG_TAKEN'));
-  t.notOk(tileIsType(17, 'BLUE_ENDZONE'));
+  t.notOk(tileHasName(1, 'ANGLE_WALL_1'));
+  t.notOk(tileHasName(4, 'RED_FLAG'));
+  t.notOk(tileHasName(5.1, 'SPEEDPAD_INACTIVE'));
+  t.notOk(tileHasName('16', 'YELLOW_FLAG_TAKEN'));
+  t.notOk(tileHasName(17, 'BLUE_ENDZONE'));
   teardownTiles();
 
   t.end();
 });
 
 
-test('tileIsType: errors when name is not a tile', t => {
+test('tileHasName: errors when name is not a tile', t => {
   setupTiles(teams.BLUE);
-  t.throws(() => { tileIsType(1, undefined); });
-  t.throws(() => { tileIsType(1, 'potato'); });
-  t.throws(() => { tileIsType(1, 'toid'); });
-  t.throws(() => { tileIsType(1, ''); });
-  t.throws(() => { tileIsType(1, 1); });
+  t.throws(() => { tileHasName(1, undefined); });
+  t.throws(() => { tileHasName(1, 'potato'); });
+  t.throws(() => { tileHasName(1, 'toid'); });
+  t.throws(() => { tileHasName(1, ''); });
+  t.throws(() => { tileHasName(1, 1); });
   teardownTiles();
 
   t.end();

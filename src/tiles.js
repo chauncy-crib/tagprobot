@@ -67,56 +67,49 @@ export function computeTileInfo() {
 
 
 /*
- * @param {String} name - the name of a tile
- * @return {(number|String)} the id for the input tile name
- */
-function getTileId(name) {
-  assert(_.has(tileInfo, name), `Unknown tileName: ${name}`);
-  return tileInfo[name].id;
-}
-
-
-/*
  * @param {number} tileID - the id for a tile
  * @param {String} name - the name of a tile
- * @return true if tileId is the id of the named tile, using a type-sensative comparison
+ * @return true if id is the id of the named tile, using a type-sensitive comparison
  */
-export function tileIsType(tileId, name) {
-  return getTileId(name) === tileId;
+export function tileHasName(id, name) {
+  assert(_.has(tileInfo, name), `Unknown tileName: ${name}`);
+  return tileInfo[name].id === id;
 }
 
 /*
- * @param {(number|String)} tileId - the id of a tile
+ * @param {(number|String)} id - the id of a tile
  * @return {String} the name for the input tile id
  */
-function getTileName(tileId) {
-  assert(_.has(tileNames, tileId), `Unknown tileId: ${tileId}`);
-  const name = tileNames[tileId];
-  assert(tileIsType(tileId, name), `Input id:${tileId} was wrong data type.`);
+function getTileName(id) {
+  assert(_.has(tileNames, id), `Unknown id: ${id}`);
+  const name = tileNames[id];
+  assert(tileHasName(id, name), `Input id:${id} was wrong data type.`);
   return name;
 }
 
 
 /*
- * @param {String} tileId - the id of the tile
+ * @param {String} id - the id of the tile
  * @param {String} property - the name of a property
  * @return {boolean} if the corresponding tile has a value for this property
  */
-export function tileHasProperty(tileId, property) {
-  const name = getTileName(tileId);
+export function tileHasProperty(id, property) {
+  const name = getTileName(id);
   return _.has(tileInfo[name], property);
 }
 
 
 /*
- * @param {String} tileId - the id of the tile whose property we want
+ * @param {String} id - the id of the tile whose property we want
  * @param {String} property - the name of a property stored in tileInfo
  * @return the property for the input tile
  */
-export function getTileProperty(tileId, property) {
-  const name = getTileName(tileId);
-  assert(tileHasProperty(tileId, property),
-    `Tile does not have property: ${name}, ${property}`);
+export function getTileProperty(id, property) {
+  const name = getTileName(id);
+  assert(
+    tileHasProperty(id, property),
+    `Tile does not have property: ${name}, ${property}`,
+  );
   return tileInfo[name][property];
 }
 
