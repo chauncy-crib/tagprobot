@@ -54,13 +54,44 @@ export function chatHelpMenu() {
 
 
 /*
- * Set the state of all arrow keys to no longer be pressed
+ * Sends key events to move in a list of directions.
+ *
+ * @param {Object} directions - directions to move
+ * @param {(string|undefined)} directions.x - either 'RIGHT', 'LEFT', or undefined
+ * @param {(string|undefined)} directions.y - either 'DOWN', 'UP', or undefined
  */
-export function releaseArrowKeys() {
-  tagpro.sendKeyPress('up', true);
-  tagpro.sendKeyPress('down', true);
-  tagpro.sendKeyPress('left', true);
-  tagpro.sendKeyPress('right', true);
+function press(directions) {
+  switch (directions.x) {
+    case 'RIGHT':
+      tagpro.sendKeyPress('right', false);
+      tagpro.sendKeyPress('left', true);
+      break;
+    case 'LEFT':
+      tagpro.sendKeyPress('left', false);
+      tagpro.sendKeyPress('right', true);
+      break;
+
+    default:
+      tagpro.sendKeyPress('left', true);
+      tagpro.sendKeyPress('right', true);
+      break;
+  }
+
+  switch (directions.y) {
+    case 'DOWN':
+      tagpro.sendKeyPress('down', false);
+      tagpro.sendKeyPress('up', true);
+      break;
+    case 'UP':
+      tagpro.sendKeyPress('up', false);
+      tagpro.sendKeyPress('down', true);
+      break;
+
+    default:
+      tagpro.sendKeyPress('up', true);
+      tagpro.sendKeyPress('down', true);
+      break;
+  }
 }
 
 
@@ -74,7 +105,7 @@ export function onKeyDown(event) {
     // If letter pressed is Q, toggle autonomous controls
     case KEY_CODES.Q: {
       autonomous = !autonomous;
-      releaseArrowKeys();
+      press({}); // Release all keys
       const autonomyMode = autonomous ? 'AUTONOMOUS' : 'MANUAL';
       chat(`Autonomy mode updated: now ${autonomyMode}!`);
       break;
@@ -105,27 +136,21 @@ export function onKeyDown(event) {
 export function move(destination) {
   // TODO: address deadband variable with a comment
   const deadband = 4;
+  const directions = {};
+
   if (destination.x > deadband) {
-    tagpro.sendKeyPress('left', true);
-    tagpro.sendKeyPress('right', false);
+    directions.x = 'RIGHT';
   } else if (destination.x < -deadband) {
-    tagpro.sendKeyPress('right', true);
-    tagpro.sendKeyPress('left', false);
-  } else {
-    tagpro.sendKeyPress('right', true);
-    tagpro.sendKeyPress('left', true);
+    directions.x = 'LEFT';
   }
 
   if (destination.y > deadband) {
-    tagpro.sendKeyPress('up', true);
-    tagpro.sendKeyPress('down', false);
+    directions.y = 'DOWN';
   } else if (destination.y < -deadband) {
-    tagpro.sendKeyPress('down', true);
-    tagpro.sendKeyPress('up', false);
-  } else {
-    tagpro.sendKeyPress('up', true);
-    tagpro.sendKeyPress('down', true);
+    directions.y = 'UP';
   }
+
+  press(directions);
 }
 
 
