@@ -75,35 +75,34 @@ export function getTileTraversabilityInCells(tileId) {
     return init2dArray(CPTL, CPTL, 0);
   }
 
-
   // tile is partially traversable
-  const gridTile = init2dArray(CPTL, CPTL, 1);
+  const tile = init2dArray(CPTL, CPTL, 1);
   const midCell = (CPTL - 1.0) / 2.0;
-  for (let i = 0; i < CPTL; i++) {
-    for (let j = 0; j < CPTL; j++) {
+  for (let xc = 0; xc < CPTL; xc++) {
+    for (let yc = 0; yc < CPTL; yc++) {
       if (tileHasProperty(tileId, 'radius')) { // tile is circular
-        const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
-        const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
+        const xDiff = Math.max(Math.abs(xc - midCell) - 0.5, 0);
+        const yDiff = Math.max(Math.abs(yc - midCell) - 0.5, 0);
         const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
         const pixelDist = cellDist * PPCL;
         if (pixelDist <= getTileProperty(tileId, 'radius')) {
-          gridTile[i][j] = 0;
+          tile[xc][yc] = 0;
         }
       } else { // tile is angled wall
         // eslint-disable-next-line no-lonely-if
-        if (tileHasName(tileId, 'ANGLE_WALL_1') && j - i >= 0) {
-          gridTile[i][j] = 0;
-        } else if (tileHasName(tileId, 'ANGLE_WALL_2') && i + j <= CPTL - 1) {
-          gridTile[i][j] = 0;
-        } else if (tileHasName(tileId, 'ANGLE_WALL_3') && j - i <= 0) {
-          gridTile[i][j] = 0;
-        } else if (tileHasName(tileId, 'ANGLE_WALL_4') && i + j >= CPTL - 1) {
-          gridTile[i][j] = 0;
+        if (tileHasName(tileId, 'ANGLE_WALL_1') && yc - xc >= 0) {
+          tile[xc][yc] = 0;
+        } else if (tileHasName(tileId, 'ANGLE_WALL_2') && xc + yc <= CPTL - 1) {
+          tile[xc][yc] = 0;
+        } else if (tileHasName(tileId, 'ANGLE_WALL_3') && yc - xc <= 0) {
+          tile[xc][yc] = 0;
+        } else if (tileHasName(tileId, 'ANGLE_WALL_4') && xc + yc >= CPTL - 1) {
+          tile[xc][yc] = 0;
         }
       }
     }
   }
-  return gridTile;
+  return tile;
 }
 
 
