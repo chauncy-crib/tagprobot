@@ -11,6 +11,7 @@ import {
   getTileProperty,
   tileHasName,
   tileHasProperty,
+  tileIsOneOf,
   __RewireAPI__ as TileRewireAPI,
 } from '../src/tiles';
 import { teams } from '../src/constants';
@@ -204,6 +205,28 @@ test('tileHasName: errors when name is not a tile', t => {
   t.throws(() => { tileHasName(1, 'toid'); });
   t.throws(() => { tileHasName(1, ''); });
   t.throws(() => { tileHasName(1, 1); });
+  teardownTiles();
+
+  t.end();
+});
+
+
+test('tileIsOneOf: returns true when tile\'s name is in names', t => {
+  setupTiles(teams.BLUE);
+  t.ok(tileIsOneOf(0, ['EMPTY_SPACE', 'SPIKE', 'INACTIVE_PORTAL']));
+  t.ok(tileIsOneOf(7, ['EMPTY_SPACE', 'SPIKE', 'INACTIVE_PORTAL']));
+  t.ok(tileIsOneOf('13.1', ['EMPTY_SPACE', 'SPIKE', 'INACTIVE_PORTAL']));
+  teardownTiles();
+
+  t.end();
+});
+
+
+test('tileIsOneOf: returns false when tile\'s name is in names', t => {
+  setupTiles(teams.BLUE);
+  t.notOk(tileIsOneOf(2, ['EMPTY_SPACE', 'SPIKE', 'INACTIVE_PORTAL']));
+  t.notOk(tileIsOneOf(8, ['EMPTY_SPACE', 'SPIKE', 'INACTIVE_PORTAL']));
+  t.notOk(tileIsOneOf(13.1, ['EMPTY_SPACE', 'SPIKE', 'INACTIVE_PORTAL']));
   teardownTiles();
 
   t.end();

@@ -10,7 +10,7 @@ const tileNames = {}; // map from id to name
  * Stores all information we need about tiles in the tileInfo object, and creates the tileNames
  * object so that we can quickly map from an id to a name. This function depends on amBlue and
  * amRed, so the current player must be defined. We call this function once, after our player has an
- * id. All tile ids are stored as the data type they are in the tagpro api. 
+ * id. All tile ids are stored as the data type they are in the tagpro api.
  */
 export function computeTileInfo() {
   assert(_.isEmpty(tileInfo), 'tileInfo is not an empty object');
@@ -67,7 +67,7 @@ export function computeTileInfo() {
 
 
 /*
- * @param {number} tileID - the id for a tile
+ * @param {number} id - the id for a tile
  * @param {String} name - the name of a tile
  * @return true if id is the id of the named tile, using a type-sensitive comparison
  */
@@ -113,3 +113,11 @@ export function getTileProperty(id, property) {
   return tileInfo[name][property];
 }
 
+export function tileIsOneOf(id, names) {
+  for (let i = 0; i < names.length; i++) {
+    if (tileHasName(id, names[i])) {
+      return true;
+    }
+  }
+  return false;
+}
