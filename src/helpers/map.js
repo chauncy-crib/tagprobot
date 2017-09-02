@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { CPTL, PPCL } from '../constants';
 import { assert, assertGridInBounds } from '../utils/asserts';
-import { tileHasName, getTileProperty, tileHasProperty } from '../tiles';
+import { tileHasName, getTileProperty, tileHasProperty, tileIsOneOf } from '../tiles';
 import { updateNTSprites, generatePermanentNTSprites } from '../draw/drawings';
 
 const mapTraversabilityCells = [];
@@ -62,46 +62,47 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
  */
 export function getTileTraversabilityInCells(tileId) {
   // Start with all cells being traversable
-  const gridTile = init2dArray(CPTL, CPTL, 1);
 
-  if (!getTileProperty(tileId, 'traversable')) { // tile is not fully traversable
-    const midCell = (CPTL - 1.0) / 2.0;
-    for (let i = 0; i < CPTL; i++) {
-      for (let j = 0; j < CPTL; j++) {
-        // tile is circular non-traversable object
-        if (tileHasProperty(tileId, 'radius')) {
-          const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
-          const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
-          const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
-          const pixelDist = cellDist * PPCL;
-          if (pixelDist <= getTileProperty(tileId, 'radius')) {
-            gridTile[i][j] = 0;
-          }
-        // tile is noncircular and partially nontraversable (angled walls)
-        } else if (tileHasName(tileId, 'ANGLE_WALL_1')) {
-          if (j - i >= 0) {
-            gridTile[i][j] = 0;
-          }
-        } else if (tileHasName(tileId, 'ANGLE_WALL_2')) {
-          if (i + j <= CPTL - 1) {
-            gridTile[i][j] = 0;
-          }
-        } else if (tileHasName(tileId, 'ANGLE_WALL_3')) {
-          if (j - i <= 0) {
-            gridTile[i][j] = 0;
-          }
-        } else if (tileHasName(tileId, 'ANGLE_WALL_4')) {
-          if (i + j >= CPTL - 1) {
-            gridTile[i][j] = 0;
-          }
-        // tile is entirely nontraversable
-        } else {
-          return init2dArray(CPTL, CPTL, 0);
+  if (getTileProperty(tileId, 'traversable')) { // tile is fully traversable
+    return init2dArray(CPTL, CPTL, 1);
+  }
+
+  // if tile has no radius and is not an angle wall, return full non-traversable tile
+  if (
+    !tileHasProperty(tileId, 'radius') &&
+    !tileIsOneOf(tileId, ['ANGLE_WALL_1', 'ANGLE_WALL_2', 'ANGLE_WALL_3', 'ANGLE_WALL_4'])
+  ) {
+    return init2dArray(CPTL, CPTL, 0);
+  }
+
+
+  // tile is partially traversable
+  const gridTile = init2dArray(CPTL, CPTL, 1);
+  const midCell = (CPTL - 1.0) / 2.0;
+  for (let i = 0; i < CPTL; i++) {
+    for (let j = 0; j < CPTL; j++) {
+      if (tileHasProperty(tileId, 'radius')) { // tile is circular
+        const xDiff = Math.max(Math.abs(i - midCell) - 0.5, 0);
+        const yDiff = Math.max(Math.abs(j - midCell) - 0.5, 0);
+        const cellDist = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
+        const pixelDist = cellDist * PPCL;
+        if (pixelDist <= getTileProperty(tileId, 'radius')) {
+          gridTile[i][j] = 0;
+        }
+      } else { // tile is angled wall
+        // eslint-disable-next-line no-lonely-if
+        if (tileHasName(tileId, 'ANGLE_WALL_1') && j - i >= 0) {
+          gridTile[i][j] = 0;
+        } else if (tileHasName(tileId, 'ANGLE_WALL_2') && i + j <= CPTL - 1) {
+          gridTile[i][j] = 0;
+        } else if (tileHasName(tileId, 'ANGLE_WALL_3') && j - i <= 0) {
+          gridTile[i][j] = 0;
+        } else if (tileHasName(tileId, 'ANGLE_WALL_4') && i + j >= CPTL - 1) {
+          gridTile[i][j] = 0;
         }
       }
     }
   }
-
   return gridTile;
 }
 
