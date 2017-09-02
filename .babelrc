@@ -1,4 +1,4 @@
 {
-  "plugins": ["lodash", "rewire"],
+  "plugins": ["lodash", "babel-plugin-rewire"],
   "presets": ["es2015"]
 }
