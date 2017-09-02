@@ -72,7 +72,9 @@ export function computeTileInfo() {
  * @return true if id is the id of the named tile, using a type-sensitive comparison
  */
 export function tileHasName(id, name) {
-  assert(_.has(tileInfo, name), `Unknown tileName: ${name}`);
+  if (!_.has(tileInfo, name)) {
+    return false;
+  }
   return tileInfo[name].id === id;
 }
 

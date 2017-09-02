@@ -74,6 +74,19 @@ export function setupTiles(teamColor) {
   TileRewireAPI.__Rewire__('tileNames', mockTileNames);
 }
 
+function setup() {
+  TileRewireAPI.__Rewire__('tileInfo', {
+    NAME_1: { id: 1, a: '1', b: '2' },
+    NAME_2: { id: '2', c: '3', d: '4' },
+  });
+  TileRewireAPI.__Rewire__('tileNames', { 1: 'NAME_1', 2: 'NAME_2' });
+}
+
+function teardown() {
+  TileRewireAPI.__ResetDependency__('tileInfo');
+  TileRewireAPI.__ResetDependency__('tileNames');
+}
+
 export function teardownTiles() {
   TileRewireAPI.__ResetDependency__('tileInfo');
   TileRewireAPI.__ResetDependency__('tileNames');
@@ -88,146 +101,140 @@ test('computeTileInfo: stores info in tileInfo', t => {
   TileRewireAPI.__Rewire__('amBlue', mockAmBlue);
   TileRewireAPI.__Rewire__('amRed', mockAmRed);
   TileRewireAPI.__Rewire__('tileInfo', mockTileInfo);
+
   computeTileInfo();
-  // Check that 40 tiles were stored
+
+  // 40 tiles were stored
   t.is(keys(mockTileInfo).length, 40);
-  // Check that all values in tileInfo have an id
+  // that all values in tileInfo have an id
   forEach(values(mockTileInfo), value => {
     t.true(has(value, 'id'));
   });
+  // specific values are correct in tileInfo
   t.is(mockTileInfo.SPEEDPAD_RED_ACTIVE.radius, 15);
   t.is(mockTileInfo.ANGLE_WALL_2.traversable, false);
   t.is(mockTileInfo.RED_GATE.traversable, false);
   t.is(mockTileInfo.BLUE_GATE.traversable, true);
+  // tileInfo dependent on team color
   t.true(mockAmRed.calledOnce);
   t.true(mockAmBlue.calledOnce);
+
+  TileRewireAPI.__ResetDependency__('amBlue');
+  TileRewireAPI.__ResetDependency__('amRed');
+  TileRewireAPI.__ResetDependency__('tileInfo');
   t.end();
 });
 
 
 test('getTileProperty: returns correct properties', t => {
-  setupTiles(teams.BLUE);
-  t.is(getTileProperty(1, 'traversable'), false); // square wall
-  t.is(getTileProperty(2, 'traversable'), true); // regular floor
-  t.is(getTileProperty(13, 'radius'), 15); // active portal
-  teardownTiles();
+  setup();
 
+  t.is(getTileProperty(1, 'a'), '1');
+  t.is(getTileProperty(1, 'b'), '2');
+  t.is(getTileProperty('2', 'c'), '3');
+  t.is(getTileProperty('2', 'd'), '4');
+
+  teardown();
   t.end();
 });
 
 
 test('getTileProperty: throws error given tileIds that don\'t exist', t => {
-  setupTiles(teams.BLUE);
-  t.throws(() => { getTileProperty(1.123, 'traversable'); });
-  t.throws(() => { getTileProperty(-1, 'traversable'); });
-  t.throws(() => { getTileProperty('potato', 'traversable'); });
-  t.throws(() => { getTileProperty('NONEXISTENT_TILE', 'traversable'); });
-  teardownTiles();
+  setup();
 
+  t.throws(() => { getTileProperty(3, 'a'); });
+
+  teardown();
   t.end();
 });
 
 
 test('getTileProperty: throws error given properties that don\'t exist', t => {
-  setupTiles(teams.BLUE);
-  t.throws(() => { getTileProperty(0, 'potato'); });
-  t.throws(() => { getTileProperty('4.1', 'radius'); }); // blue flag taken
-  teardownTiles();
+  setup();
 
+  t.throws(() => { getTileProperty(1, 'c'); });
+  t.throws(() => { getTileProperty('2', 'a'); });
+
+  teardown();
   t.end();
 });
 
 
 test('getTileProperty: throws error when input id is wrong data type', t => {
-  setupTiles(teams.BLUE);
-  t.throws(() => { getTileProperty('1', 'traversable'); });
-  t.throws(() => { getTileProperty('1.1', 'traversable'); });
-  t.throws(() => { getTileProperty(5.1, 'traversable'); });
-  teardownTiles();
+  setup();
 
+  t.throws(() => { getTileProperty('1', 'a'); });
+  t.throws(() => { getTileProperty(2, 'c'); });
+
+  teardown();
   t.end();
 });
 
 
 test('tileHasProperty: checks if a tile has a property', t => {
-  setupTiles(teams.BLUE);
-  t.true(tileHasProperty('4.1', 'permanent')); // blue flag taken
-  t.true(tileHasProperty(6.1, 'radius')); // juke juice
-  t.false(tileHasProperty(0, 'radius')); // empty space
-  t.false(tileHasProperty(2, 'radius')); // regular floor
-  teardownTiles();
+  setup();
 
+  t.true(tileHasProperty(1, 'a'));
+  t.true(tileHasProperty('2', 'd'));
+  t.false(tileHasProperty(1, 'c'));
+  t.false(tileHasProperty('2', 'b'));
+
+  teardown();
   t.end();
 });
 
 
 test('tileHasProperty: throws error when input id is wrong data type', t => {
-  setupTiles(teams.BLUE);
-  t.throws(() => { tileHasProperty('1', 'traversable'); });
-  t.throws(() => { tileHasProperty('1.1', 'traversable'); });
-  t.throws(() => { tileHasProperty(5.1, 'traversable'); });
-  teardownTiles();
+  setup();
 
+  t.throws(() => { tileHasProperty('1', 'a'); });
+  t.throws(() => { tileHasProperty(2, 'c'); });
+
+  teardown();
   t.end();
 });
 
 
 test('tileHasName: returns true when tileId and name match', t => {
-  setupTiles(teams.BLUE);
-  t.ok(tileHasName(1.1, 'ANGLE_WALL_1'));
-  t.ok(tileHasName(4, 'BLUE_FLAG'));
-  t.ok(tileHasName('5.1', 'SPEEDPAD_INACTIVE'));
-  t.ok(tileHasName('16.1', 'YELLOW_FLAG_TAKEN'));
-  t.ok(tileHasName(18, 'BLUE_ENDZONE'));
-  teardownTiles();
+  setup();
 
+  t.ok(tileHasName(1, 'NAME_1'));
+  t.ok(tileHasName('2', 'NAME_2'));
+
+  teardown();
   t.end();
 });
 
 
 test('tileHasName: returns false when tileId and name do not match', t => {
-  setupTiles(teams.BLUE);
-  t.notOk(tileHasName(1, 'ANGLE_WALL_1'));
-  t.notOk(tileHasName(4, 'RED_FLAG'));
-  t.notOk(tileHasName(5.1, 'SPEEDPAD_INACTIVE'));
-  t.notOk(tileHasName('16', 'YELLOW_FLAG_TAKEN'));
-  t.notOk(tileHasName(17, 'BLUE_ENDZONE'));
-  teardownTiles();
+  setup();
 
-  t.end();
-});
+  t.notOk(tileHasName(1, 'NAME_2'));
+  t.notOk(tileHasName('2', 'NAME_1'));
 
-
-test('tileHasName: errors when name is not a tile', t => {
-  setupTiles(teams.BLUE);
-  t.throws(() => { tileHasName(1, undefined); });
-  t.throws(() => { tileHasName(1, 'potato'); });
-  t.throws(() => { tileHasName(1, 'toid'); });
-  t.throws(() => { tileHasName(1, ''); });
-  t.throws(() => { tileHasName(1, 1); });
-  teardownTiles();
-
+  teardown();
   t.end();
 });
 
 
 test('tileIsOneOf: returns true when tile\'s name is in names', t => {
-  setupTiles(teams.BLUE);
-  t.ok(tileIsOneOf(0, ['EMPTY_SPACE', 'SPIKE', 'INACTIVE_PORTAL'])); // empty space
-  t.ok(tileIsOneOf(7, ['EMPTY_SPACE', 'SPIKE', 'INACTIVE_PORTAL'])); // spike
-  t.ok(tileIsOneOf('13.1', ['EMPTY_SPACE', 'SPIKE', 'INACTIVE_PORTAL'])); // inactive_portal
-  teardownTiles();
+  setup();
 
+  t.ok(tileIsOneOf(1, ['NAME_1', 'SHANE', 'BILL']));
+  t.ok(tileIsOneOf('2', ['SHANE', 'NAME_2', 'BILL']));
+
+  teardown();
   t.end();
 });
 
 
 test('tileIsOneOf: returns false when tile\'s name is in names', t => {
-  setupTiles(teams.BLUE);
-  t.notOk(tileIsOneOf(2, ['EMPTY_SPACE', 'SPIKE', 'INACTIVE_PORTAL']));
-  t.notOk(tileIsOneOf(8, ['EMPTY_SPACE', 'SPIKE', 'INACTIVE_PORTAL']));
-  t.notOk(tileIsOneOf(13.1, ['EMPTY_SPACE', 'SPIKE', 'INACTIVE_PORTAL']));
-  teardownTiles();
+  setup();
 
+  t.notOk(tileIsOneOf('2', ['NAME_1', 'SHANE', 'BILL']));
+  t.notOk(tileIsOneOf(1, ['SHANE', 'NAME_2', 'BILL']));
+  t.notOk(tileIsOneOf('1', ['SHANE', 'NAME_1', 'BILL']));
+
+  teardown();
   t.end();
 });
