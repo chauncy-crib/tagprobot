@@ -1,5 +1,4 @@
 import test from 'tape';
-import sinon from 'sinon';
 import {
   chat,
   dequeueMessages,
@@ -27,15 +26,15 @@ test('chat()', tester => {
 test('dequeueMessages()', tester => {
   tester.test('chats with correct delay between calls', t => {
     const callTimes = [];
-    const emitSpy = sinon.stub().callsFake(() => {
+    const mockEmit = () => {
       callTimes.push(new Date());
-    });
+    };
     const mockQueue = ['one', 'two', 'three'];
     const mockDelay = 50; // To make this test faster
 
     RewireAPI.__Rewire__('messageQueue', mockQueue);
     RewireAPI.__Rewire__('chatDelay', mockDelay);
-    global.tagpro = { socket: { emit: emitSpy } };
+    global.tagpro = { socket: { emit: mockEmit } };
 
     // Call dequeueMessages in a loop to simulate the botLoop
     const mockLoop = setInterval(() => {
