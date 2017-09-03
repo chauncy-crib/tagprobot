@@ -17,7 +17,7 @@ test('chat()', tester => {
     chat('three');
     chat('four');
 
-    t.deepEqual(mockQueue, ['one', 'two', 'three', 'four']);
+    t.same(mockQueue, ['one', 'two', 'three', 'four']);
     RewireAPI.__ResetDependency__('messageQueue');
     t.end();
   });
