@@ -1,3 +1,4 @@
+import differenceInMilliseconds from 'date-fns/difference_in_milliseconds';
 import { clearSprites, drawPermanentNTSprites } from '../draw/drawings';
 
 
@@ -8,21 +9,39 @@ const KEY_CODES = {
 };
 
 
-let lastMessage = 0;
-export function chat(chatMessage) {
-  // Seems that TagPro keeps you from sending a chat message faster than every
-  // 500ms. This limit accounts for that plus a 100ms buffer.
-  const limit = 500 + 100;
+// FIFO queue for delaying chat messages
+const messageQueue = [];
+
+/*
+ * Enqueues the message in the message queue to be chatted when appropriate.
+ * @param {string} message - the message to chat
+ */
+export function chat(message) {
+  messageQueue.push(message);
+}
+
+
+// TagPro keeps you from sending a chat message faster than every
+// 500ms. This delay accounts for that plus a 100ms buffer.
+const chatDelay = 500 + 100;
+
+// Keep track of the time the last message was sent
+let lastMessageTime = 0;
+
+/*
+ * Checks if we've waited long enough since the last message was chatted, and
+ * if so chats the first thing in the queue if it exists.
+ */
+export function dequeueChatMessages() {
   const now = new Date();
-  const timeDiff = now - lastMessage;
-  if (timeDiff > limit) {
+  const timeDiff = differenceInMilliseconds(now, lastMessageTime);
+
+  if (messageQueue.length && timeDiff > chatDelay) {
     tagpro.socket.emit('chat', {
-      message: chatMessage,
+      message: messageQueue.shift(), // Dequeue the first message
       toAll: 0,
     });
-    lastMessage = new Date();
-  } else if (timeDiff >= 0) {
-    setTimeout(chat, limit - timeDiff, chatMessage);
+    lastMessageTime = now;
   }
 }
 

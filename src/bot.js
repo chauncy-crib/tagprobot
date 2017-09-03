@@ -5,7 +5,7 @@ import { findTile, findEnemyFC } from './helpers/finders';
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe, getAllyEndzoneTileId, getEnemyEndzoneTileId } from './helpers/player';
 import { getShortestPath, getTarget } from './helpers/path';
-import { isAutonomousMode, isVisualMode, move } from './utils/interface';
+import { isAutonomousMode, isVisualMode, move, dequeueChatMessages } from './utils/interface';
 import { updatePath } from './draw/drawings';
 
 
@@ -93,6 +93,7 @@ function getNextTargetPos() {
 
 
 export default function botLoop() {
+  dequeueChatMessages();
   if (isAutonomousMode()) {
     move(getNextTargetPos());
   } else if (isVisualMode()) {
