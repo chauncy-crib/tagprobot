@@ -42,7 +42,7 @@ test('dequeueMessages()', tester => {
     }));
     t.same(mockQueue, ['two', 'three']);
 
-    global.tagpro = {};
+    global.tagpro = undefined;
     RewireAPI.__ResetDependency__('messageQueue');
     t.end();
   });
@@ -64,7 +64,7 @@ test('dequeueMessages()', tester => {
     }));
     t.same(mockQueue, ['two', 'three']);
 
-    global.tagpro = {};
+    global.tagpro = undefined;
     RewireAPI.__ResetDependency__('messageQueue');
     RewireAPI.__ResetDependency__('lastMessageTime');
     t.end();
@@ -84,7 +84,7 @@ test('dequeueMessages()', tester => {
     t.true(mockEmit.notCalled);
     t.same(mockQueue, ['one', 'two', 'three']);
 
-    global.tagpro = {};
+    global.tagpro = undefined;
     RewireAPI.__ResetDependency__('messageQueue');
     RewireAPI.__ResetDependency__('lastMessageTime');
     t.end();
