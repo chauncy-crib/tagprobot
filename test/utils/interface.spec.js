@@ -1,4 +1,5 @@
 import test from 'tape';
+import sinon from 'sinon';
 import {
   chat,
   dequeueMessages,
@@ -24,33 +25,67 @@ test('chat()', tester => {
 });
 
 test('dequeueMessages()', tester => {
-  tester.test('chats with correct delay between calls', t => {
-    const callTimes = [];
-    const mockEmit = () => {
-      callTimes.push(new Date());
-    };
+  tester.test('chats first message of the program and dequeues the queue', t => {
     const mockQueue = ['one', 'two', 'three'];
-    const mockDelay = 50; // To make this test faster
+    const mockEmit = sinon.spy();
 
     RewireAPI.__Rewire__('messageQueue', mockQueue);
-    RewireAPI.__Rewire__('chatDelay', mockDelay);
     global.tagpro = { socket: { emit: mockEmit } };
 
-    // Call dequeueMessages in a loop to simulate the botLoop
-    const mockLoop = setInterval(() => {
-      dequeueMessages();
-      if (!mockQueue.length) {
-        // Check if adjacent calls are made with minimum delay (1ms buffer for rounding)
-        t.true(callTimes[1] - callTimes[0] > mockDelay - 1);
-        t.true(callTimes[2] - callTimes[1] > mockDelay - 1);
+    dequeueMessages();
 
-        global.tagpro = {};
-        RewireAPI.__ResetDependency__('messageQueue');
-        RewireAPI.__ResetDependency__('chatDelay');
-        clearInterval(mockLoop);
-        t.end();
-      }
-    }, 0);
+    t.true(mockEmit.calledWith('chat', {
+      message: 'one',
+      toAll: 0,
+    }));
+    t.same(mockQueue, ['two', 'three']);
+
+    global.tagpro = {};
+    RewireAPI.__ResetDependency__('messageQueue');
+    t.end();
+  });
+
+  tester.test('chats if lastMessageTime is >600ms ago', t => {
+    const mockQueue = ['one', 'two', 'three'];
+    const mockLastMessageTime = new Date(new Date() - 5000); // 5s in the past
+    const mockEmit = sinon.spy();
+
+    RewireAPI.__Rewire__('messageQueue', mockQueue);
+    RewireAPI.__Rewire__('lastMessageTime', mockLastMessageTime);
+    global.tagpro = { socket: { emit: mockEmit } };
+
+    dequeueMessages();
+
+    t.true(mockEmit.calledWith('chat', {
+      message: 'one',
+      toAll: 0,
+    }));
+    t.same(mockQueue, ['two', 'three']);
+
+    global.tagpro = {};
+    RewireAPI.__ResetDependency__('messageQueue');
+    RewireAPI.__ResetDependency__('lastMessageTime');
+    t.end();
+  });
+
+  tester.test('does not chat if lastMessageTime is <600ms ago', t => {
+    const mockQueue = ['one', 'two', 'three'];
+    const mockLastMessageTime = new Date(new Date() + 5000); // 5s in the future
+    const mockEmit = sinon.spy();
+
+    RewireAPI.__Rewire__('messageQueue', mockQueue);
+    RewireAPI.__Rewire__('lastMessageTime', mockLastMessageTime);
+    global.tagpro = { socket: { emit: mockEmit } };
+
+    dequeueMessages();
+
+    t.true(mockEmit.notCalled);
+    t.same(mockQueue, ['one', 'two', 'three']);
+
+    global.tagpro = {};
+    RewireAPI.__ResetDependency__('messageQueue');
+    RewireAPI.__ResetDependency__('lastMessageTime');
+    t.end();
   });
   tester.end();
 });
