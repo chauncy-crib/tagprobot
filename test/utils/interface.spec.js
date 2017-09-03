@@ -1,5 +1,7 @@
 import test from 'tape';
 import sinon from 'sinon';
+import addMilliseconds from 'date-fns/add_milliseconds';
+import subMilliseconds from 'date-fns/sub_milliseconds';
 import {
   chat,
   dequeueMessages,
@@ -47,7 +49,7 @@ test('dequeueMessages()', tester => {
 
   tester.test('chats if lastMessageTime is >600ms ago', t => {
     const mockQueue = ['one', 'two', 'three'];
-    const mockLastMessageTime = new Date(new Date() - 5000); // 5s in the past
+    const mockLastMessageTime = subMilliseconds(new Date(), 5000); // 5s in the past
     const mockEmit = sinon.spy();
 
     RewireAPI.__Rewire__('messageQueue', mockQueue);
@@ -70,7 +72,7 @@ test('dequeueMessages()', tester => {
 
   tester.test('does not chat if lastMessageTime is <600ms ago', t => {
     const mockQueue = ['one', 'two', 'three'];
-    const mockLastMessageTime = new Date(new Date() + 5000); // 5s in the future
+    const mockLastMessageTime = addMilliseconds(new Date(), 5000); // 5s in the future
     const mockEmit = sinon.spy();
 
     RewireAPI.__Rewire__('messageQueue', mockQueue);

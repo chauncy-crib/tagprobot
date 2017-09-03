@@ -1,3 +1,4 @@
+import differenceInMilliseconds from 'date-fns/difference_in_milliseconds';
 import { clearSprites, drawPermanentNTSprites } from '../draw/drawings';
 
 
@@ -33,7 +34,7 @@ let lastMessageTime = 0;
  */
 export function dequeueMessages() {
   const now = new Date();
-  const timeDiff = now - lastMessageTime;
+  const timeDiff = differenceInMilliseconds(now, lastMessageTime);
 
   if (messageQueue.length && timeDiff > chatDelay) {
     tagpro.socket.emit('chat', {
