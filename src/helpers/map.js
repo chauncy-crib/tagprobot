@@ -89,6 +89,9 @@ export function getTileTraversabilityInCells(tileId) {
           tile[xc][yc] = 0;
         }
       } else { // tile is angled wall
+        assert(
+          tileIsOneOf(tileId, ['ANGLE_WALL_1', 'ANGLE_WALL_2', 'ANGLE_WALL_3', 'ANGLE_WALL_4']),
+          'tile expected to be angle wall');
         // eslint-disable-next-line no-lonely-if
         if (tileHasName(tileId, 'ANGLE_WALL_1') && yc - xc >= 0) {
           tile[xc][yc] = 0;
