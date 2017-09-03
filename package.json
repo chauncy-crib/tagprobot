@@ -6,7 +6,7 @@
     "start": "http-server",
     "lint": "eslint 'src/**/*.js' 'test/**/*.js'",
     "lint:fix": "eslint 'src/**/*.js' 'test/**/*.js' --fix",
-    "test": "babel-tape-runner test/**/*.js",
+    "test": "babel-tape-runner test/**/*.js | tap-difflet --pessimistic",
     "build": "webpack --watch",
     "build:once": "webpack"
   },
@@ -34,9 +34,10 @@
     "eslint-config-airbnb-base": "^11.3.2",
     "eslint-loader": "^1.9.0",
     "eslint-plugin-import": "^2.7.0",
+    "sinon": "^2.4.1",
+    "tap-difflet": "^0.7.0",
     "tap-webpack-plugin": "^2.0.0",
     "tape": "^4.7.0",
-    "sinon": "^2.4.1",
     "webpack": "^3.1.0"
   },
   "dependencies": {
