@@ -128,7 +128,7 @@ test('getShortestPath()', tester => {
       { xc: 5, yc: 5 },
       impossibleMap,
     );
-    t.notOk(impossiblePath);
+    t.false(impossiblePath);
 
     PathRewireAPI.__ResetDependency__('diagonal');
     t.end();
