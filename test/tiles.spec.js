@@ -135,8 +135,8 @@ test('tileHasProperty: throws error when input id is wrong data type', t => {
 test('tileHasName: returns true when tileId and name match', t => {
   setup();
 
-  t.ok(tileHasName(1, 'NAME_1'));
-  t.ok(tileHasName('2', 'NAME_2'));
+  t.true(tileHasName(1, 'NAME_1'));
+  t.true(tileHasName('2', 'NAME_2'));
 
   teardown();
   t.end();
@@ -146,8 +146,8 @@ test('tileHasName: returns true when tileId and name match', t => {
 test('tileHasName: returns false when tileId and name do not match', t => {
   setup();
 
-  t.notOk(tileHasName(1, 'NAME_2'));
-  t.notOk(tileHasName('2', 'NAME_1'));
+  t.false(tileHasName(1, 'NAME_2'));
+  t.false(tileHasName('2', 'NAME_1'));
 
   teardown();
   t.end();
