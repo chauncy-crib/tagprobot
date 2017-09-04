@@ -8,6 +8,7 @@ import {
   getMapTraversabilityInCells,
   __RewireAPI__ as MapRewireAPI,
 } from '../../src/helpers/map';
+import { teardownTiles } from '../tiles.spec';
 
 
 test('init2dArray: returns 2d array that is correct size, and with correct value filled in', t => {

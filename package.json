@@ -6,7 +6,7 @@
     "start": "http-server",
     "lint": "eslint 'src/**/*.js' 'test/**/*.js'",
     "lint:fix": "eslint 'src/**/*.js' 'test/**/*.js' --fix",
-    "test": "babel-tape-runner test/**/*.js | tap-difflet --pessimistic",
+    "test": "babel-tape-runner test/**/*.js | tap-difflet",
     "build": "webpack --watch",
     "build:once": "webpack"
   },
