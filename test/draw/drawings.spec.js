@@ -30,10 +30,10 @@ test('updatePath', tester => {
 
     updatePath();
 
-    t.ok(mockRemoveChild.calledThrice);
-    t.ok(mockRemoveChild.getCall(0).calledWithExactly('sprite1'));
-    t.ok(mockRemoveChild.getCall(1).calledWithExactly('sprite2'));
-    t.ok(mockRemoveChild.getCall(2).calledWithExactly('sprite3'));
+    t.true(mockRemoveChild.calledThrice);
+    t.true(mockRemoveChild.getCall(0).calledWithExactly('sprite1'));
+    t.true(mockRemoveChild.getCall(1).calledWithExactly('sprite2'));
+    t.true(mockRemoveChild.getCall(2).calledWithExactly('sprite3'));
 
     DrawRewireAPI.__ResetDependency__('isVisualMode');
     DrawRewireAPI.__ResetDependency__('pathSprites');
@@ -61,12 +61,12 @@ test('updatePath', tester => {
       { xc: 2, yc: 3 },
     ]);
 
-    t.ok(mockGetPixiRect.calledTwice);
-    t.ok(mockAddChild.calledTwice);
-    t.ok(mockGetPixiRect.calledWith(0, 1));
-    t.ok(mockGetPixiRect.calledWith(2, 3));
-    t.ok(mockAddChild.calledWithExactly('rect1'));
-    t.ok(mockAddChild.calledWithExactly('rect2'));
+    t.true(mockGetPixiRect.calledTwice);
+    t.true(mockAddChild.calledTwice);
+    t.true(mockGetPixiRect.calledWith(0, 1));
+    t.true(mockGetPixiRect.calledWith(2, 3));
+    t.true(mockAddChild.calledWithExactly('rect1'));
+    t.true(mockAddChild.calledWithExactly('rect2'));
     t.same(mockPathSprites, ['rect1', 'rect2']);
 
     DrawRewireAPI.__ResetDependency__('isVisualMode');
@@ -93,12 +93,12 @@ test('clearSprites', tester => {
     clearSprites();
 
     t.is(mockRemoveChild.callCount, 6);
-    t.ok(mockRemoveChild.calledWithExactly(1));
-    t.ok(mockRemoveChild.calledWithExactly(2));
-    t.ok(mockRemoveChild.calledWithExactly(3));
-    t.ok(mockRemoveChild.calledWithExactly(4));
-    t.ok(mockRemoveChild.calledWithExactly(5));
-    t.ok(mockRemoveChild.calledWithExactly(6));
+    t.true(mockRemoveChild.calledWithExactly(1));
+    t.true(mockRemoveChild.calledWithExactly(2));
+    t.true(mockRemoveChild.calledWithExactly(3));
+    t.true(mockRemoveChild.calledWithExactly(4));
+    t.true(mockRemoveChild.calledWithExactly(5));
+    t.true(mockRemoveChild.calledWithExactly(6));
 
     DrawRewireAPI.__ResetDependency__('permNTSprites');
     DrawRewireAPI.__ResetDependency__('pathSprites');
@@ -119,9 +119,9 @@ test('drawPermanentNTSprites', tester => {
     drawPermanentNTSprites();
 
     t.is(mockAddChild.callCount, 3);
-    t.ok(mockAddChild.calledWithExactly('sprite1'));
-    t.ok(mockAddChild.calledWithExactly('sprite2'));
-    t.ok(mockAddChild.calledWithExactly('sprite3'));
+    t.true(mockAddChild.calledWithExactly('sprite1'));
+    t.true(mockAddChild.calledWithExactly('sprite2'));
+    t.true(mockAddChild.calledWithExactly('sprite3'));
 
     DrawRewireAPI.__ResetDependency__('permNTSprites');
 
@@ -156,7 +156,7 @@ test('generatePermanentNTSprites', tester => {
     t.notok(mockGetPixiRect.called);
 
     generatePermanentNTSprites(0, 1, [[1, 0, 1]]);
-    t.ok(mockGetPixiRect.calledOnce);
+    t.true(mockGetPixiRect.calledOnce);
     t.same(mockPermNTSprites, ['rect']);
 
     DrawRewireAPI.__ResetDependency__('permNTSprites');
@@ -185,7 +185,7 @@ test('generatePermanentNTSprites', tester => {
 
     generatePermanentNTSprites(0, 1, [[1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 1, 1]]);
 
-    t.ok(mockGetPixiRect.calledTwice);
+    t.true(mockGetPixiRect.calledTwice);
     t.same(mockPermNTSprites, ['rect1', 'rect4']);
 
     DrawRewireAPI.__ResetDependency__('permNTSprites');
