@@ -617,7 +617,7 @@ test('initMapTraversabilityCells()', tester => {
       { x: 2, y: 1 },
     ]);
     t.same(mockTilesToUpdateValues, [tempNT, tempT, tempT, tempNT]);
-    t.ok(mockGeneratePermanentNTSprites.calledThrice); // three permNT objects
+    t.true(mockGeneratePermanentNTSprites.calledThrice); // three permNT objects
     t.is(mockUpdateNTSprites.callCount, 2); // two non-permanent NT objects
 
     MapRewireAPI.__ResetDependency__('CPTL');

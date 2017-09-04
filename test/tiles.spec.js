@@ -135,8 +135,8 @@ test('tileHasProperty: throws error when input id is wrong data type', t => {
 test('tileHasName: returns true when tileId and name match', t => {
   setup();
 
-  t.ok(tileHasName(1, 'NAME_1'));
-  t.ok(tileHasName('2', 'NAME_2'));
+  t.true(tileHasName(1, 'NAME_1'));
+  t.true(tileHasName('2', 'NAME_2'));
 
   teardown();
   t.end();
@@ -146,8 +146,8 @@ test('tileHasName: returns true when tileId and name match', t => {
 test('tileHasName: returns false when tileId and name do not match', t => {
   setup();
 
-  t.notOk(tileHasName(1, 'NAME_2'));
-  t.notOk(tileHasName('2', 'NAME_1'));
+  t.false(tileHasName(1, 'NAME_2'));
+  t.false(tileHasName('2', 'NAME_1'));
 
   teardown();
   t.end();
@@ -157,8 +157,8 @@ test('tileHasName: returns false when tileId and name do not match', t => {
 test('tileIsOneOf: returns true when tile\'s name is in names', t => {
   setup();
 
-  t.ok(tileIsOneOf(1, ['NAME_1', 'SHANE', 'BILL']));
-  t.ok(tileIsOneOf('2', ['SHANE', 'NAME_2', 'BILL']));
+  t.true(tileIsOneOf(1, ['NAME_1', 'SHANE', 'BILL']));
+  t.true(tileIsOneOf('2', ['SHANE', 'NAME_2', 'BILL']));
 
   teardown();
   t.end();
@@ -168,9 +168,9 @@ test('tileIsOneOf: returns true when tile\'s name is in names', t => {
 test('tileIsOneOf: returns false when tile\'s name is in names', t => {
   setup();
 
-  t.notOk(tileIsOneOf('2', ['NAME_1', 'SHANE', 'BILL']));
-  t.notOk(tileIsOneOf(1, ['SHANE', 'NAME_2', 'BILL']));
-  t.notOk(tileIsOneOf('1', ['SHANE', 'NAME_1', 'BILL']));
+  t.false(tileIsOneOf('2', ['NAME_1', 'SHANE', 'BILL']));
+  t.false(tileIsOneOf(1, ['SHANE', 'NAME_2', 'BILL']));
+  t.false(tileIsOneOf('1', ['SHANE', 'NAME_1', 'BILL']));
 
   teardown();
   t.end();
