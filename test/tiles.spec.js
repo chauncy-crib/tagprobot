@@ -14,9 +14,9 @@ import {
   __RewireAPI__ as TileRewireAPI,
 } from '../src/tiles';
 
-// functions for setup and teardown tests begin here
+// functions for setupTiles and teardownTiles tests begin here
 
-function setup() {
+function setupTiles() {
   TileRewireAPI.__Rewire__('tileInfo', {
     NAME_1: { id: 1, a: '1', b: '2' },
     NAME_2: { id: '2', c: '3', d: '4' },
@@ -24,7 +24,7 @@ function setup() {
   TileRewireAPI.__Rewire__('tileNames', { 1: 'NAME_1', 2: 'NAME_2' });
 }
 
-function teardown() {
+function teardownTiles() {
   TileRewireAPI.__ResetDependency__('tileInfo');
   TileRewireAPI.__ResetDependency__('tileNames');
 }
@@ -64,114 +64,114 @@ test('computeTileInfo: stores info in tileInfo', t => {
 
 
 test('getTileProperty: returns correct properties', t => {
-  setup();
+  setupTiles();
 
   t.is(getTileProperty(1, 'a'), '1');
   t.is(getTileProperty(1, 'b'), '2');
   t.is(getTileProperty('2', 'c'), '3');
   t.is(getTileProperty('2', 'd'), '4');
 
-  teardown();
+  teardownTiles();
   t.end();
 });
 
 
 test('getTileProperty: throws error given tileIds that don\'t exist', t => {
-  setup();
+  setupTiles();
 
   t.throws(() => { getTileProperty(3, 'a'); });
 
-  teardown();
+  teardownTiles();
   t.end();
 });
 
 
 test('getTileProperty: throws error given properties that don\'t exist', t => {
-  setup();
+  setupTiles();
 
   t.throws(() => { getTileProperty(1, 'c'); });
   t.throws(() => { getTileProperty('2', 'a'); });
 
-  teardown();
+  teardownTiles();
   t.end();
 });
 
 
 test('getTileProperty: throws error when input id is wrong data type', t => {
-  setup();
+  setupTiles();
 
   t.throws(() => { getTileProperty('1', 'a'); });
   t.throws(() => { getTileProperty(2, 'c'); });
 
-  teardown();
+  teardownTiles();
   t.end();
 });
 
 
 test('tileHasProperty: checks if a tile has a property', t => {
-  setup();
+  setupTiles();
 
   t.true(tileHasProperty(1, 'a'));
   t.true(tileHasProperty('2', 'd'));
   t.false(tileHasProperty(1, 'c'));
   t.false(tileHasProperty('2', 'b'));
 
-  teardown();
+  teardownTiles();
   t.end();
 });
 
 
 test('tileHasProperty: throws error when input id is wrong data type', t => {
-  setup();
+  setupTiles();
 
   t.throws(() => { tileHasProperty('1', 'a'); });
   t.throws(() => { tileHasProperty(2, 'c'); });
 
-  teardown();
+  teardownTiles();
   t.end();
 });
 
 
 test('tileHasName: returns true when tileId and name match', t => {
-  setup();
+  setupTiles();
 
   t.true(tileHasName(1, 'NAME_1'));
   t.true(tileHasName('2', 'NAME_2'));
 
-  teardown();
+  teardownTiles();
   t.end();
 });
 
 
 test('tileHasName: returns false when tileId and name do not match', t => {
-  setup();
+  setupTiles();
 
   t.false(tileHasName(1, 'NAME_2'));
   t.false(tileHasName('2', 'NAME_1'));
 
-  teardown();
+  teardownTiles();
   t.end();
 });
 
 
 test('tileIsOneOf: returns true when tile\'s name is in names', t => {
-  setup();
+  setupTiles();
 
   t.true(tileIsOneOf(1, ['NAME_1', 'NAME_2']));
   t.true(tileIsOneOf('2', ['NAME_1', 'NAME_2']));
 
-  teardown();
+  teardownTiles();
   t.end();
 });
 
 
 test('tileIsOneOf: returns false when tile\'s name is in names', t => {
-  setup();
+  setupTiles();
 
   t.false(tileIsOneOf('2', ['NAME_1']));
   t.false(tileIsOneOf(1, ['NAME_2']));
   t.false(tileIsOneOf('1', ['NAME_1', 'NAME_2']));
 
-  teardown();
+  teardownTiles();
   t.end();
 });
