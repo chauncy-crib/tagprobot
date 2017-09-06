@@ -53,8 +53,8 @@ test('computeTileInfo: stores info in tileInfo', t => {
   t.is(mockTileInfo.RED_GATE.traversable, false);
   t.is(mockTileInfo.BLUE_GATE.traversable, true);
   // tileInfo dependent on team color
-  t.true(mockAmRed.calledOnce);
-  t.true(mockAmBlue.calledOnce);
+  t.is(mockAmRed.callCount, 1);
+  t.is(mockAmBlue.callCount, 1);
 
   TileRewireAPI.__ResetDependency__('amBlue');
   TileRewireAPI.__ResetDependency__('amRed');
