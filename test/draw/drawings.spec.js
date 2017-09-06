@@ -14,7 +14,7 @@ test('updatePath', tester => {
     const mockAreVisualsOn = sinon.stub().returns(false);
     DrawRewireAPI.__Rewire__('isVisualMode', mockAreVisualsOn);
     updatePath();
-    t.true(mockAreVisualsOn.calledOnce);
+    t.is(mockAreVisualsOn.callCount, 1);
     t.end();
   });
 
@@ -30,7 +30,7 @@ test('updatePath', tester => {
 
     updatePath();
 
-    t.true(mockRemoveChild.calledThrice);
+    t.is(mockRemoveChild.callCount, 3);
     t.true(mockRemoveChild.getCall(0).calledWithExactly('sprite1'));
     t.true(mockRemoveChild.getCall(1).calledWithExactly('sprite2'));
     t.true(mockRemoveChild.getCall(2).calledWithExactly('sprite3'));
@@ -61,8 +61,8 @@ test('updatePath', tester => {
       { xc: 2, yc: 3 },
     ]);
 
-    t.true(mockGetPixiRect.calledTwice);
-    t.true(mockAddChild.calledTwice);
+    t.is(mockGetPixiRect.callCount, 2);
+    t.is(mockAddChild.callCount, 2);
     t.true(mockGetPixiRect.calledWith(0, 1));
     t.true(mockGetPixiRect.calledWith(2, 3));
     t.true(mockAddChild.calledWithExactly('rect1'));
@@ -156,7 +156,7 @@ test('generatePermanentNTSprites', tester => {
     t.notok(mockGetPixiRect.called);
 
     generatePermanentNTSprites(0, 1, [[1, 0, 1]]);
-    t.true(mockGetPixiRect.calledOnce);
+    t.is(mockGetPixiRect.callCount, 1);
     t.same(mockPermNTSprites, ['rect']);
 
     DrawRewireAPI.__ResetDependency__('permNTSprites');
@@ -185,7 +185,7 @@ test('generatePermanentNTSprites', tester => {
 
     generatePermanentNTSprites(0, 1, [[1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 1, 1]]);
 
-    t.true(mockGetPixiRect.calledTwice);
+    t.is(mockGetPixiRect.callCount, 2);
     t.same(mockPermNTSprites, ['rect1', 'rect4']);
 
     DrawRewireAPI.__ResetDependency__('permNTSprites');
