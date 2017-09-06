@@ -98,11 +98,12 @@ test('fillGridWithSubgrid: throws when subgrid runs out of bounds on the big gri
 
 test('getTileTraversabilityInCells() ', tester => {
   tester.test('returns correctly with entirely traversable tile, CPTL=1', t => {
-    const mockGetTileProperty = sinon.stub().withArgs('tileId', 'traversable').returns(true);
+    // is entirely traversable
+    const mockGetTileProperty = sinon.stub().withArgs('mockTileId', 'traversable').returns(true);
     MapRewireAPI.__Rewire__('CPTL', 1);
     MapRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
 
-    t.same(getTileTraversabilityInCells('tileId'), [
+    t.same(getTileTraversabilityInCells('mockTileId'), [
       [1],
     ]);
 
@@ -113,10 +114,10 @@ test('getTileTraversabilityInCells() ', tester => {
 
 
   tester.test('returns correctly with entirely nontraversable tile, CPTL=1', t => {
-    // not fully traversable
-    const mockGetTileProperty = sinon.stub().withArgs('tileId', 'traversable').returns(false);
+    // not entirely traversable
+    const mockGetTileProperty = sinon.stub().withArgs('mockTileId', 'traversable').returns(false);
     // has no radius
-    const mockTileHasProperty = sinon.stub().withArgs('tileId', 'radius').returns(false);
+    const mockTileHasProperty = sinon.stub().withArgs('mockTileId', 'radius').returns(false);
     // is not angle wall
     const mockTileIsOneOf = sinon.stub().returns(false);
     MapRewireAPI.__Rewire__('CPTL', 1);
@@ -124,7 +125,7 @@ test('getTileTraversabilityInCells() ', tester => {
     MapRewireAPI.__Rewire__('tileHasProperty', mockTileHasProperty);
     MapRewireAPI.__Rewire__('tileIsOneOf', mockTileIsOneOf);
 
-    t.same(getTileTraversabilityInCells('tileId'), [
+    t.same(getTileTraversabilityInCells('mockTileId'), [
       [0],
     ]);
 
@@ -136,11 +137,11 @@ test('getTileTraversabilityInCells() ', tester => {
   });
 
 
-  tester.test('returns correctly with entirely traversable tile, CPTL=4', t => {
-    // not fully traversable
-    const mockGetTileProperty = sinon.stub().withArgs('tileId', 'traversable').returns(false);
+  tester.test('returns correctly with entirely nontraversable tile, CPTL=4', t => {
+    // not entirely traversable
+    const mockGetTileProperty = sinon.stub().withArgs('mockTileId', 'traversable').returns(false);
     // has no radius
-    const mockTileHasProperty = sinon.stub().withArgs('tileId', 'radius').returns(false);
+    const mockTileHasProperty = sinon.stub().withArgs('mockTileId', 'radius').returns(false);
     // is not angle wall
     const mockTileIsOneOf = sinon.stub().returns(false);
     MapRewireAPI.__Rewire__('CPTL', 4);
@@ -148,7 +149,7 @@ test('getTileTraversabilityInCells() ', tester => {
     MapRewireAPI.__Rewire__('tileHasProperty', mockTileHasProperty);
     MapRewireAPI.__Rewire__('tileIsOneOf', mockTileIsOneOf);
 
-    t.same(getTileTraversabilityInCells('tileId'), [
+    t.same(getTileTraversabilityInCells('mockTileId'), [
       [0, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0, 0],
@@ -163,14 +164,14 @@ test('getTileTraversabilityInCells() ', tester => {
   });
 
 
-  tester.test('returns correctly with CNTO and small radius, CPTL=4', t => {
+  tester.test('returns correctly with CNTO, radius=14, CPTL=4', t => {
     const mockGetTileProperty = sinon.stub();
-    // not fully traversable
-    mockGetTileProperty.withArgs('tileId', 'traversable').returns(false);
+    // not entirely traversable
+    mockGetTileProperty.withArgs('mockTileId', 'traversable').returns(false);
     // radius of 14
-    mockGetTileProperty.withArgs('tileId', 'radius').returns(14);
+    mockGetTileProperty.withArgs('mockTileId', 'radius').returns(14);
     // has radius
-    const mockTileHasProperty = sinon.stub().withArgs('tileId', 'radius').returns(true);
+    const mockTileHasProperty = sinon.stub().withArgs('mockTileId', 'radius').returns(true);
     // is not angle wall
     const mockTileIsOneOf = sinon.stub().returns(false);
     MapRewireAPI.__Rewire__('CPTL', 4);
@@ -179,7 +180,7 @@ test('getTileTraversabilityInCells() ', tester => {
     MapRewireAPI.__Rewire__('tileHasProperty', mockTileHasProperty);
     MapRewireAPI.__Rewire__('tileIsOneOf', mockTileIsOneOf);
 
-    t.same(getTileTraversabilityInCells('tileId'), [
+    t.same(getTileTraversabilityInCells('mockTileId'), [
       [1, 0, 0, 1],
       [0, 0, 0, 0],
       [0, 0, 0, 0],
@@ -195,14 +196,14 @@ test('getTileTraversabilityInCells() ', tester => {
   });
 
 
-  tester.test('returns correctly with CNTO and false radius, CPTL=4', t => {
+  tester.test('returns correctly with CNTO, radius=15, CPTL=4', t => {
     const mockGetTileProperty = sinon.stub();
-    // not fully traversable
-    mockGetTileProperty.withArgs('tileId', 'traversable').returns(false);
+    // not entirely traversable
+    mockGetTileProperty.withArgs('mockTileId', 'traversable').returns(false);
     // radius of 15
-    mockGetTileProperty.withArgs('tileId', 'radius').returns(15);
+    mockGetTileProperty.withArgs('mockTileId', 'radius').returns(15);
     // has radius
-    const mockTileHasProperty = sinon.stub().withArgs('tileId', 'radius').returns(true);
+    const mockTileHasProperty = sinon.stub().withArgs('mockTileId', 'radius').returns(true);
     // is not angle wall
     const mockTileIsOneOf = sinon.stub().returns(false);
     MapRewireAPI.__Rewire__('CPTL', 4);
@@ -210,11 +211,56 @@ test('getTileTraversabilityInCells() ', tester => {
     MapRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
     MapRewireAPI.__Rewire__('tileHasProperty', mockTileHasProperty);
     MapRewireAPI.__Rewire__('tileIsOneOf', mockTileIsOneOf);
-    t.same(getTileTraversabilityInCells('tileId'), [
+
+    t.same(getTileTraversabilityInCells('mockTileId'), [
       [0, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0, 0],
+    ]);
+
+    MapRewireAPI.__ResetDependency__('CPTL');
+    MapRewireAPI.__ResetDependency__('PPCL');
+    MapRewireAPI.__ResetDependency__('getTileProperty');
+    MapRewireAPI.__ResetDependency__('tileHasProperty');
+    MapRewireAPI.__ResetDependency__('tileIsOneOf');
+    t.end();
+  });
+
+
+  tester.test('returns correctly with CNTO, radius=8, CPTL=8', t => {
+    const mockGetTileProperty = sinon.stub();
+    // not entirely traversable
+    mockGetTileProperty.withArgs('mockTileId', 'traversable').returns(false);
+    mockGetTileProperty.withArgs('mockTileId', 'radius').returns(8);
+    const mockTileHasProperty = sinon.stub().withArgs('mockTileId', 'radius').returns(true);
+    const mockTileIsOneOf = sinon.stub().returns(false);
+    MapRewireAPI.__Rewire__('CPTL', 8);
+    MapRewireAPI.__Rewire__('PPCL', 5);
+    MapRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+    MapRewireAPI.__Rewire__('tileHasProperty', mockTileHasProperty);
+    MapRewireAPI.__Rewire__('tileIsOneOf', mockTileIsOneOf);
+
+    t.same(getTileTraversabilityInCells('mockTileId'), [ // button
+      [1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 0, 0, 0, 0, 1, 1],
+      [1, 1, 0, 0, 0, 0, 1, 1],
+      [1, 1, 0, 0, 0, 0, 1, 1],
+      [1, 1, 0, 0, 0, 0, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1],
+    ]);
+    mockGetTileProperty.withArgs('mockTileId', 'radius').returns(14);
+    t.same(getTileTraversabilityInCells('mockTileId'), [ // spike
+      [1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 0, 0, 0, 0, 1, 1],
+      [1, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 1],
+      [1, 1, 0, 0, 0, 0, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1],
     ]);
 
     MapRewireAPI.__ResetDependency__('CPTL');
@@ -227,24 +273,25 @@ test('getTileTraversabilityInCells() ', tester => {
 
 
   tester.test('returns correctly with angled wall 1, CPTL=4', t => {
-    // not fully traversable
-    const mockGetTileProperty = sinon.stub().withArgs('tileId', 'traversable').returns(false);
-    // does not has radius
-    const mockTileHasProperty = sinon.stub().withArgs('tileId', 'radius').returns(false);
+    // not entirely traversable
+    const mockGetTileProperty = sinon.stub().withArgs('mockTileId', 'traversable').returns(false);
+    // does not have radius
+    const mockTileHasProperty = sinon.stub().withArgs('mockTileId', 'radius').returns(false);
     // is angle wall
     const mockTileIsOneOf = sinon.stub().withArgs(
-      'tileId',
+      'mockTileId',
       ['ANGLE_WALL_1', 'ANGLE_WALL_2', 'ANGLE_WALL_3', 'ANGLE_WALL_4'],
     ).returns(true);
     // is angle wall 1
     const mockTileHasName = sinon.stub().returns(false);
-    mockTileHasName.withArgs('tileId', 'ANGLE_WALL_1').returns(true);
+    mockTileHasName.withArgs('mockTileId', 'ANGLE_WALL_1').returns(true);
     MapRewireAPI.__Rewire__('CPTL', 4);
     MapRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
     MapRewireAPI.__Rewire__('tileHasProperty', mockTileHasProperty);
     MapRewireAPI.__Rewire__('tileIsOneOf', mockTileIsOneOf);
     MapRewireAPI.__Rewire__('tileHasName', mockTileHasName);
-    t.same(getTileTraversabilityInCells('tileId'), [
+
+    t.same(getTileTraversabilityInCells('mockTileId'), [
       [0, 0, 0, 0],
       [1, 0, 0, 0],
       [1, 1, 0, 0],
@@ -261,24 +308,25 @@ test('getTileTraversabilityInCells() ', tester => {
 
 
   tester.test('returns correctly with angled wall 2, CPTL=4', t => {
-    // not fully traversable
-    const mockGetTileProperty = sinon.stub().withArgs('tileId', 'traversable').returns(false);
-    // does not has radius
-    const mockTileHasProperty = sinon.stub().withArgs('tileId', 'radius').returns(false);
+    // not entirely traversable
+    const mockGetTileProperty = sinon.stub().withArgs('mockTileId', 'traversable').returns(false);
+    // does not have radius
+    const mockTileHasProperty = sinon.stub().withArgs('mockTileId', 'radius').returns(false);
     // is angle wall
     const mockTileIsOneOf = sinon.stub().withArgs(
-      'tileId',
+      'mockTileId',
       ['ANGLE_WALL_1', 'ANGLE_WALL_2', 'ANGLE_WALL_3', 'ANGLE_WALL_4'],
     ).returns(true);
     // is angle wall 2
     const mockTileHasName = sinon.stub().returns(false);
-    mockTileHasName.withArgs('tileId', 'ANGLE_WALL_2').returns(true);
+    mockTileHasName.withArgs('mockTileId', 'ANGLE_WALL_2').returns(true);
     MapRewireAPI.__Rewire__('CPTL', 4);
     MapRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
     MapRewireAPI.__Rewire__('tileHasProperty', mockTileHasProperty);
     MapRewireAPI.__Rewire__('tileIsOneOf', mockTileIsOneOf);
     MapRewireAPI.__Rewire__('tileHasName', mockTileHasName);
-    t.same(getTileTraversabilityInCells('tileId'), [
+
+    t.same(getTileTraversabilityInCells('mockTileId'), [
       [0, 0, 0, 0],
       [0, 0, 0, 1],
       [0, 0, 1, 1],
@@ -295,24 +343,25 @@ test('getTileTraversabilityInCells() ', tester => {
 
 
   tester.test('returns correctly with angled wall 3, CPTL=4', t => {
-    // not fully traversable
-    const mockGetTileProperty = sinon.stub().withArgs('tileId', 'traversable').returns(false);
-    // does not has radius
-    const mockTileHasProperty = sinon.stub().withArgs('tileId', 'radius').returns(false);
+    // not entirely traversable
+    const mockGetTileProperty = sinon.stub().withArgs('mockTileId', 'traversable').returns(false);
+    // does not have radius
+    const mockTileHasProperty = sinon.stub().withArgs('mockTileId', 'radius').returns(false);
     // is angle wall
     const mockTileIsOneOf = sinon.stub().withArgs(
-      'tileId',
+      'mockTileId',
       ['ANGLE_WALL_1', 'ANGLE_WALL_2', 'ANGLE_WALL_3', 'ANGLE_WALL_4'],
     ).returns(true);
     // is angle wall 3
     const mockTileHasName = sinon.stub().returns(false);
-    mockTileHasName.withArgs('tileId', 'ANGLE_WALL_3').returns(true);
+    mockTileHasName.withArgs('mockTileId', 'ANGLE_WALL_3').returns(true);
     MapRewireAPI.__Rewire__('CPTL', 4);
     MapRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
     MapRewireAPI.__Rewire__('tileHasProperty', mockTileHasProperty);
     MapRewireAPI.__Rewire__('tileIsOneOf', mockTileIsOneOf);
     MapRewireAPI.__Rewire__('tileHasName', mockTileHasName);
-    t.same(getTileTraversabilityInCells('tileId'), [
+
+    t.same(getTileTraversabilityInCells('mockTileId'), [
       [0, 1, 1, 1],
       [0, 0, 1, 1],
       [0, 0, 0, 1],
@@ -329,24 +378,25 @@ test('getTileTraversabilityInCells() ', tester => {
 
 
   tester.test('returns correctly with angled wall 4, CPTL=4', t => {
-    // not fully traversable
-    const mockGetTileProperty = sinon.stub().withArgs('tileId', 'traversable').returns(false);
-    // does not has radius
-    const mockTileHasProperty = sinon.stub().withArgs('tileId', 'radius').returns(false);
+    // not entirely traversable
+    const mockGetTileProperty = sinon.stub().withArgs('mockTileId', 'traversable').returns(false);
+    // does not have radius
+    const mockTileHasProperty = sinon.stub().withArgs('mockTileId', 'radius').returns(false);
     // is angle wall
     const mockTileIsOneOf = sinon.stub().withArgs(
-      'tileId',
+      'mockTileId',
       ['ANGLE_WALL_1', 'ANGLE_WALL_2', 'ANGLE_WALL_3', 'ANGLE_WALL_4'],
     ).returns(true);
     // is angle wall 4
     const mockTileHasName = sinon.stub().returns(false);
-    mockTileHasName.withArgs('tileId', 'ANGLE_WALL_4').returns(true);
+    mockTileHasName.withArgs('mockTileId', 'ANGLE_WALL_4').returns(true);
     MapRewireAPI.__Rewire__('CPTL', 4);
     MapRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
     MapRewireAPI.__Rewire__('tileHasProperty', mockTileHasProperty);
     MapRewireAPI.__Rewire__('tileIsOneOf', mockTileIsOneOf);
     MapRewireAPI.__Rewire__('tileHasName', mockTileHasName);
-    t.same(getTileTraversabilityInCells('tileId'), [
+
+    t.same(getTileTraversabilityInCells('mockTileId'), [
       [1, 1, 1, 0],
       [1, 1, 0, 0],
       [1, 0, 0, 0],
@@ -358,50 +408,6 @@ test('getTileTraversabilityInCells() ', tester => {
     MapRewireAPI.__ResetDependency__('tileHasProperty');
     MapRewireAPI.__ResetDependency__('tileIsOneOf');
     MapRewireAPI.__ResetDependency__('tileHasName');
-    t.end();
-  });
-
-
-  tester.test('returns correctly with nontraversable tile, CPTL=8', t => {
-    const mockGetTileProperty = sinon.stub();
-    // not fully traversable
-    mockGetTileProperty.withArgs('tileId', 'traversable').returns(false);
-    mockGetTileProperty.withArgs('tileId', 'radius').returns(8);
-    const mockTileHasProperty = sinon.stub().withArgs('tileId', 'radius').returns(true);
-    const mockTileIsOneOf = sinon.stub().returns(false);
-    MapRewireAPI.__Rewire__('CPTL', 8);
-    MapRewireAPI.__Rewire__('PPCL', 5);
-    MapRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
-    MapRewireAPI.__Rewire__('tileHasProperty', mockTileHasProperty);
-    MapRewireAPI.__Rewire__('tileIsOneOf', mockTileIsOneOf);
-
-    t.same(getTileTraversabilityInCells('tileId'), [ // button
-      [1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 0, 0, 0, 0, 1, 1],
-      [1, 1, 0, 0, 0, 0, 1, 1],
-      [1, 1, 0, 0, 0, 0, 1, 1],
-      [1, 1, 0, 0, 0, 0, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1],
-    ]);
-    mockGetTileProperty.withArgs('tileId', 'radius').returns(14);
-    t.same(getTileTraversabilityInCells('tileId'), [ // spike
-      [1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 0, 0, 0, 0, 1, 1],
-      [1, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 1],
-      [1, 1, 0, 0, 0, 0, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1],
-    ]);
-
-    MapRewireAPI.__ResetDependency__('CPTL');
-    MapRewireAPI.__ResetDependency__('PPCL');
-    MapRewireAPI.__ResetDependency__('getTileProperty');
-    MapRewireAPI.__ResetDependency__('tileHasProperty');
-    MapRewireAPI.__ResetDependency__('tileIsOneOf');
     t.end();
   });
 
@@ -420,144 +426,154 @@ test('getTileTraversabilityInCells() ', tester => {
 });
 
 
-test('getMapTraversabilityInCells: returns correctly with CPTL=1', t => {
-  MapRewireAPI.__Rewire__('CPTL', 1);
+test('getMapTraversabilityInCells', tester => {
+  tester.test('getMapTraversabilityInCells: stores correct values in tilesToUpdateValues. Calls' +
+    ' updateNTSprites once for each non-permanent tile. Returns correct traversability grid.' +
+    ' CPTL=1', t => {
+    const permNT = 'permNT';
+    const tempNT = 'tempNT';
+    const permT = 'permT';
+    const tempT = 'tempT';
 
-  const permNT = 'permNT';
-  const tempNT = 'tempNT';
-  const permT = 'permT';
-  const tempT = 'tempT';
+    // mock the results of getTileTraversabilityInCells
+    const mockGetTileTraversabilityInCells = sinon.stub();
+    mockGetTileTraversabilityInCells.withArgs(permNT).returns([['PERM_NT']]);
+    mockGetTileTraversabilityInCells.withArgs(tempNT).returns([['TEMP_NT']]);
+    mockGetTileTraversabilityInCells.withArgs(permT).returns([['PERM_T']]);
+    mockGetTileTraversabilityInCells.withArgs(tempT).returns([['TEMP_T']]);
 
-  // mock the results of getTileTraversabilityInCells
-  const mockGetTileTraversabilityInCells = sinon.stub();
-  mockGetTileTraversabilityInCells.withArgs(permNT).returns([['PERM_NT']]);
-  mockGetTileTraversabilityInCells.withArgs(tempNT).returns([['TEMP_NT']]);
-  mockGetTileTraversabilityInCells.withArgs(permT).returns([['PERM_T']]);
-  mockGetTileTraversabilityInCells.withArgs(tempT).returns([['TEMP_T']]);
-  MapRewireAPI.__Rewire__('getTileTraversabilityInCells', mockGetTileTraversabilityInCells);
+    /* eslint-disable no-multi-spaces, array-bracket-spacing */
+    const mockMap = [
+      [ tempNT, permT,  tempNT ],
+      [ tempNT, tempT,  permT  ],
+      [ permT,  permNT, tempNT ],
+    ];
+    const mockTilesToUpdateValues = [tempNT, tempNT, tempNT, tempT, tempNT];
+    let mockUpdateNTSprites = sinon.spy();
+    MapRewireAPI.__Rewire__('CPTL', 1);
+    MapRewireAPI.__Rewire__('getTileTraversabilityInCells', mockGetTileTraversabilityInCells);
+    // the locations of temp tiles
+    MapRewireAPI.__Rewire__('tilesToUpdate', [
+      { x: 0, y: 0 },
+      { x: 0, y: 2 },
+      { x: 1, y: 0 },
+      { x: 1, y: 1 },
+      { x: 2, y: 2 },
+    ]);
+    // the current traversability cells
+    MapRewireAPI.__Rewire__('mapTraversabilityCells', [
+      [ 'TEMP_NT', 'PERM_T',  'TEMP_NT' ],
+      [ 'TEMP_NT', 'TEMP_T',  'PERM_T'  ],
+      [ 'PERM_T',  'PERM_NT', 'TEMP_NT' ],
+    ]);
+    MapRewireAPI.__Rewire__('tilesToUpdateValues', mockTilesToUpdateValues);
+    MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
+    t.same(getMapTraversabilityInCells(mockMap), [
+      [ 'TEMP_NT', 'PERM_T',  'TEMP_NT' ],
+      [ 'TEMP_NT', 'TEMP_T',  'PERM_T'  ],
+      [ 'PERM_T',  'PERM_NT', 'TEMP_NT' ],
+    ]);
 
-  /* eslint-disable no-multi-spaces, array-bracket-spacing */
-  const mockMap = [
-    [ tempNT, permT,  tempNT ],
-    [ tempNT, tempT,  permT  ],
-    [ permT,  permNT, tempNT ],
-  ];
-  // the locations of temp tiles
-  MapRewireAPI.__Rewire__('tilesToUpdate', [
-    { x: 0, y: 0 },
-    { x: 0, y: 2 },
-    { x: 1, y: 0 },
-    { x: 1, y: 1 },
-    { x: 2, y: 2 },
-  ]);
-  // the current traversability cells
-  MapRewireAPI.__Rewire__('mapTraversabilityCells', [
-    [ 'TEMP_NT', 'PERM_T',  'TEMP_NT' ],
-    [ 'TEMP_NT', 'TEMP_T',  'PERM_T'  ],
-    [ 'PERM_T',  'PERM_NT', 'TEMP_NT' ],
-  ]);
-  const mockTilesToUpdateValues = [tempNT, tempNT, tempNT, tempT, tempNT];
-  MapRewireAPI.__Rewire__('tilesToUpdateValues', mockTilesToUpdateValues);
-  let mockUpdateNTSprites = sinon.spy();
-  MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
+    t.same(mockTilesToUpdateValues, [tempNT, tempNT, tempNT, tempT, tempNT]);
+    t.is(mockUpdateNTSprites.callCount, 5);
 
-  t.same(getMapTraversabilityInCells(mockMap), [
-    [ 'TEMP_NT', 'PERM_T',  'TEMP_NT' ],
-    [ 'TEMP_NT', 'TEMP_T',  'PERM_T'  ],
-    [ 'PERM_T',  'PERM_NT', 'TEMP_NT' ],
-  ]);
-  t.same(mockTilesToUpdateValues, [tempNT, tempNT, tempNT, tempT, tempNT]);
-  t.is(mockUpdateNTSprites.callCount, 5);
+    mockUpdateNTSprites = sinon.spy();
+    MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
+    mockMap[0][0] = tempT;
+    t.same(getMapTraversabilityInCells(mockMap), [
+      [ 'TEMP_T', 'PERM_T',  'TEMP_NT' ],
+      [ 'TEMP_NT', 'TEMP_T',  'PERM_T'  ],
+      [ 'PERM_T',  'PERM_NT', 'TEMP_NT' ],
+    ]);
+    t.same(mockTilesToUpdateValues, [tempT, tempNT, tempNT, tempT, tempNT]);
+    t.is(mockUpdateNTSprites.callCount, 5);
 
-  mockUpdateNTSprites = sinon.spy();
-  MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
-  mockMap[0][0] = tempT;
-  t.same(getMapTraversabilityInCells(mockMap), [
-    [ 'TEMP_T', 'PERM_T',  'TEMP_NT' ],
-    [ 'TEMP_NT', 'TEMP_T',  'PERM_T'  ],
-    [ 'PERM_T',  'PERM_NT', 'TEMP_NT' ],
-  ]);
-  t.same(mockTilesToUpdateValues, [tempT, tempNT, tempNT, tempT, tempNT]);
-  t.is(mockUpdateNTSprites.callCount, 5);
+    mockUpdateNTSprites = sinon.spy();
+    MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
+    // change the gate colors
+    mockMap[0][2] = tempT;
+    mockMap[1][0] = tempT;
+    mockMap[1][1] = tempNT;
+    t.same(getMapTraversabilityInCells(mockMap), [
+      [ 'TEMP_T', 'PERM_T',  'TEMP_T' ],
+      [ 'TEMP_T', 'TEMP_NT',  'PERM_T'  ],
+      [ 'PERM_T',  'PERM_NT', 'TEMP_NT' ],
+    ]);
+    t.same(mockTilesToUpdateValues, [tempT, tempT, tempT, tempNT, tempNT]);
+    t.is(mockUpdateNTSprites.callCount, 5);
 
-  mockUpdateNTSprites = sinon.spy();
-  MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
-  // change the gate colors
-  mockMap[0][2] = tempT;
-  mockMap[1][0] = tempT;
-  mockMap[1][1] = tempNT;
-  t.same(getMapTraversabilityInCells(mockMap), [
-    [ 'TEMP_T', 'PERM_T',  'TEMP_T' ],
-    [ 'TEMP_T', 'TEMP_NT',  'PERM_T'  ],
-    [ 'PERM_T',  'PERM_NT', 'TEMP_NT' ],
-  ]);
-  t.same(mockTilesToUpdateValues, [tempT, tempT, tempT, tempNT, tempNT]);
-  t.is(mockUpdateNTSprites.callCount, 5);
+    MapRewireAPI.__ResetDependency__('CPTL');
+    MapRewireAPI.__ResetDependency__('mapTraversabilityCells');
+    MapRewireAPI.__ResetDependency__('tilesToUpdate');
+    MapRewireAPI.__ResetDependency__('tilesToUpdateValues');
+    MapRewireAPI.__ResetDependency__('updateNTSprites');
+    MapRewireAPI.__ResetDependency__('getTileTraversabilityInCells');
 
-  MapRewireAPI.__ResetDependency__('CPTL');
-  MapRewireAPI.__ResetDependency__('mapTraversabilityCells');
-  MapRewireAPI.__ResetDependency__('tilesToUpdate');
-  MapRewireAPI.__ResetDependency__('tilesToUpdateValues');
-  MapRewireAPI.__ResetDependency__('updateNTSprites');
-  MapRewireAPI.__ResetDependency__('getTileTraversabilityInCells');
+    /* eslint-enable no-multi-spaces, array-bracket-spacing */
+    t.end();
+  });
 
-  /* eslint-enable no-multi-spaces, array-bracket-spacing */
-  t.end();
-});
+  tester.test('getMapTraversabilityInCells: stores correct values in tilesToUpdateValues. Calls' +
+    ' updateNTSprites once for each non-permanent tile. Returns correct traversability grid.' +
+    ' CPTL=4', t => {
+    // create a dummy map. Assume all objects are non-permanent
+    const tempNT = 'tempNT';
+    const tempT = 'tempT';
 
+    /* eslint-disable no-multi-spaces, array-bracket-spacing */
+    const mockGetTileTraversabilityInCells = sinon.stub();
+    mockGetTileTraversabilityInCells.withArgs(tempNT).returns([
+      ['b', 'b', 'b', 'b'],
+      ['b', 'a', 'a', 'b'],
+      ['b', 'a', 'a', 'b'],
+      ['b', 'b', 'b', 'b'],
+    ]);
+    mockGetTileTraversabilityInCells.withArgs(tempT).returns([
+      ['c', 'c', 'c', 'c'],
+      ['c', 'd', 'd', 'c'],
+      ['c', 'd', 'd', 'c'],
+      ['c', 'c', 'c', 'c'],
+    ]);
+    const mockMap = [[tempNT, tempT]];
+    const mockTilesToUpdateValues = [tempT, tempNT];
+    const mockUpdateNTSprites = sinon.spy();
 
-test('getMapTraversabilityInCells: returns correctly with CPTL=3', t => {
-  MapRewireAPI.__Rewire__('CPTL', 3);
-  // create a dummy map. Assume all objects 
-  const tempNT = 'tempNT';
-  const tempT = 'tempT';
+    MapRewireAPI.__Rewire__('CPTL', 4);
+    MapRewireAPI.__Rewire__('getTileTraversabilityInCells', mockGetTileTraversabilityInCells);
+    MapRewireAPI.__Rewire__('tilesToUpdate', [
+      { x: 0, y: 0 },
+      { x: 0, y: 1 },
+    ]);
+    MapRewireAPI.__Rewire__('mapTraversabilityCells', [
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+    ]);
+    MapRewireAPI.__Rewire__('tilesToUpdateValues', mockTilesToUpdateValues);
+    MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
 
-  /* eslint-disable no-multi-spaces, array-bracket-spacing */
-  const mockGetTileTraversabilityInCells = sinon.stub();
-  mockGetTileTraversabilityInCells.withArgs(tempNT).returns([
-    ['b', 'b', 'b'],
-    ['b', 'a', 'b'],
-    ['b', 'b', 'b'],
-  ]);
-  mockGetTileTraversabilityInCells.withArgs(tempT).returns([
-    ['c', 'c', 'c'],
-    ['c', 'd', 'c'],
-    ['c', 'c', 'c'],
-  ]);
-  MapRewireAPI.__Rewire__('getTileTraversabilityInCells', mockGetTileTraversabilityInCells);
+    t.same(getMapTraversabilityInCells(mockMap), [
+      ['b', 'b', 'b', 'b', 'c', 'c', 'c', 'c'],
+      ['b', 'a', 'a', 'b', 'c', 'd', 'd', 'c'],
+      ['b', 'a', 'a', 'b', 'c', 'd', 'd', 'c'],
+      ['b', 'b', 'b', 'b', 'c', 'c', 'c', 'c'],
+    ]);
 
-  const mockMap = [[tempNT, tempT]];
-  MapRewireAPI.__Rewire__('tilesToUpdate', [
-    { x: 0, y: 0 },
-    { x: 0, y: 1 },
-  ]);
-  MapRewireAPI.__Rewire__('mapTraversabilityCells', [
-    [null, null, null, null, null, null],
-    [null, null, null, null, null, null],
-    [null, null, null, null, null, null],
-  ]);
-  const mockTilesToUpdateValues = [tempT, tempNT];
-  MapRewireAPI.__Rewire__('tilesToUpdateValues', mockTilesToUpdateValues);
-  const mockUpdateNTSprites = sinon.spy();
-  MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
+    t.same(mockTilesToUpdateValues, [tempNT, tempT]);
+    t.is(mockUpdateNTSprites.callCount, 2);
 
-  t.same(getMapTraversabilityInCells(mockMap), [
-    ['b', 'b', 'b', 'c', 'c', 'c'],
-    ['b', 'a', 'b', 'c', 'd', 'c'],
-    ['b', 'b', 'b', 'c', 'c', 'c'],
-  ]);
-  t.same(mockTilesToUpdateValues, [tempNT, tempT]);
-  t.is(mockUpdateNTSprites.callCount, 2);
+    MapRewireAPI.__ResetDependency__('CPTL');
+    MapRewireAPI.__ResetDependency__('mapTraversabilityCells');
+    MapRewireAPI.__ResetDependency__('tilesToUpdate');
+    MapRewireAPI.__ResetDependency__('tilesToUpdateValues');
+    MapRewireAPI.__ResetDependency__('updateNTSprites');
+    MapRewireAPI.__ResetDependency__('getTileTraversabilityInCells');
+    /* eslint-enable no-multi-spaces, array-bracket-spacing */
+    t.end();
+  });
 
-  MapRewireAPI.__ResetDependency__('CPTL');
-  MapRewireAPI.__ResetDependency__('mapTraversabilityCells');
-  MapRewireAPI.__ResetDependency__('tilesToUpdate');
-  MapRewireAPI.__ResetDependency__('tilesToUpdateValues');
-  MapRewireAPI.__ResetDependency__('updateNTSprites');
-  MapRewireAPI.__ResetDependency__('getTileTraversabilityInCells');
-
-  /* eslint-enable no-multi-spaces, array-bracket-spacing */
-  t.end();
+  tester.end();
 });
 
 
@@ -617,7 +633,7 @@ test('initMapTraversabilityCells()', tester => {
       { x: 2, y: 1 },
     ]);
     t.same(mockTilesToUpdateValues, [tempNT, tempT, tempT, tempNT]);
-    t.true(mockGeneratePermanentNTSprites.calledThrice); // three permNT objects
+    t.is(mockGeneratePermanentNTSprites.callCount, 3); // three permNT objects
     t.is(mockUpdateNTSprites.callCount, 2); // two non-permanent NT objects
 
     MapRewireAPI.__ResetDependency__('CPTL');
