@@ -123,14 +123,48 @@ export function convolve(m, k) {
   const bufVal = 1;
   const mWithBuf = addBufferTo2dArray(m, bufSize, bufVal);
 
-  let mSubarray = init2dArray(kSize, kSize, 0);
+  let mSubarray;
   const convolution = init2dArray(mWidth, mHeight, 0);
   for (let x = 0; x < mWidth; x++) {
     for (let y = 0; y < mHeight; y++) {
-      mSubarray = getSubarrayFrom2dArray(mWithBuf, x + bufSize, y + bufSize, kWidth, kWidth);
+      mSubarray = getSubarrayFrom2dArray(
+        mWithBuf,
+        x + bufSize,
+        y + bufSize,
+        kWidth,
+        kWidth,
+      );
       convolution[x][y] = multiplyCorrespondingElementsAndSum(mSubarray, k);
     }
   }
 
   return convolution;
+}
+
+
+/*
+ * @param {number[][]} m - a binary 2d array to be inverted
+ * @return {number[][]} - the original m, but with 0 and 1 values switched
+ */
+export function invertBinary2dArray(m) {
+  const width = m.length;
+  const height = m[0].length;
+  const invertedM = init2dArray(width, height, null);
+
+  for (let x = 0; x < width; x++) {
+    for (let y = 0; y < height; y++) {
+      switch (m[x][y]) {
+        case 0:
+          invertedM[x][y] = 1;
+          break;
+        case 1:
+          invertedM[x][y] = 0;
+          break;
+        default:
+          throw new Error(`A non binary value found in matrix: ${m[x][y]}`);
+      }
+    }
+  }
+
+  return invertedM;
 }
