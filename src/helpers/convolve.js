@@ -102,13 +102,14 @@ export function getSubarrayFrom2dArray(array, xCenter, yCenter, width, height) {
  * Returns a 2D array that is the result of the convolution of m and k.
  *
  * @param {number[][]} m - the first 2D array in the convolution
- * @param {number[][]} k - the second 2D array in the convolution, also called the kernel (must
- *   have sides of equal length and the sides must have an odd length)
+ * @param {number[][]} k - the second 2D array in the convolution, also called
+ * the kernel (must have sides of equal length and the sides must have an odd
+ * length)
  */
 export function convolve(m, k) {
   const kWidth = k.length;
   const kHeight = k[0].length;
-  assert(kWidth === kHeight, 'convolve: kernel\'s width is not equal to kernel\'s height');
+  assert(kWidth === kHeight, 'convolve: kernel\'s width is not equal to its height');
   assert(kWidth % 2 === 1, 'convolve: kernel\'s width is not odd');
 
   const mWidth = m.length;

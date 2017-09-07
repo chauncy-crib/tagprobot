@@ -454,11 +454,11 @@ test('getMapTraversabilityInCells', tester => {
     MapRewireAPI.__Rewire__('getTileTraversabilityInCells', mockGetTileTraversabilityInCells);
     // the locations of temp tiles
     MapRewireAPI.__Rewire__('tilesToUpdate', [
-      { x: 0, y: 0 },
-      { x: 0, y: 2 },
-      { x: 1, y: 0 },
-      { x: 1, y: 1 },
-      { x: 2, y: 2 },
+      { xt: 0, yt: 0 },
+      { xt: 0, yt: 2 },
+      { xt: 1, yt: 0 },
+      { xt: 1, yt: 1 },
+      { xt: 2, yt: 2 },
     ]);
     // the current traversability cells
     MapRewireAPI.__Rewire__('mapTraversabilityCells', [
@@ -541,8 +541,8 @@ test('getMapTraversabilityInCells', tester => {
     MapRewireAPI.__Rewire__('CPTL', 4);
     MapRewireAPI.__Rewire__('getTileTraversabilityInCells', mockGetTileTraversabilityInCells);
     MapRewireAPI.__Rewire__('tilesToUpdate', [
-      { x: 0, y: 0 },
-      { x: 0, y: 1 },
+      { xt: 0, yt: 0 },
+      { xt: 0, yt: 1 },
     ]);
     MapRewireAPI.__Rewire__('mapTraversabilityCells', [
       [null, null, null, null, null, null, null, null],
@@ -627,10 +627,10 @@ test('initMapTraversabilityCells()', tester => {
       ['a', 'b', 'c'],
     ]);
     t.same(mockTilesToUpdate, [
-      { x: 0, y: 1 },
-      { x: 1, y: 0 },
-      { x: 1, y: 1 },
-      { x: 2, y: 1 },
+      { xt: 0, yt: 1 },
+      { xt: 1, yt: 0 },
+      { xt: 1, yt: 1 },
+      { xt: 2, yt: 1 },
     ]);
     t.same(mockTilesToUpdateValues, [tempNT, tempT, tempT, tempNT]);
     t.is(mockGeneratePermanentNTSprites.callCount, 3); // three permNT objects

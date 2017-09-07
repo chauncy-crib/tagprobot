@@ -117,6 +117,7 @@ export function generatePermanentNTSprites(x, y, cellTraversabilities) {
   }
 }
 
+
 /*
  * Takes in an grid of cellTraversabilities, and the x, y tile location that we should check for
  * updates, and updates the sprites drawn on the tagpro map. If tempNTSprites is empty, initialize
