@@ -121,11 +121,11 @@ export function getTileTraversabilityInCells(tileId) {
  */
 export function initMapTraversabilityCells(map) {
   assert(_.isEmpty(mapTraversabilityCells), 'map already has values when initializing');
-  const xl = map.length;
-  const yl = map[0].length;
-  init2dArray(xl * CPTL, yl * CPTL, 0, mapTraversabilityCells);
-  for (let xt = 0; xt < xl; xt++) {
-    for (let yt = 0; yt < yl; yt++) {
+  const xtl = map.length;
+  const ytl = map[0].length;
+  init2dArray(xtl * CPTL, ytl * CPTL, 0, mapTraversabilityCells);
+  for (let xt = 0; xt < xtl; xt++) {
+    for (let yt = 0; yt < ytl; yt++) {
       const tileId = map[xt][yt];
       fillGridWithSubgrid(
         mapTraversabilityCells,
@@ -134,7 +134,7 @@ export function initMapTraversabilityCells(map) {
         yt * CPTL,
       );
       if (!getTileProperty(tileId, 'permanent')) {
-        tilesToUpdate.push({ x: xt, y: yt });
+        tilesToUpdate.push({ xt, yt });
         tilesToUpdateValues.push(tileId);
         if (!getTileProperty(tileId, 'traversable')) {
           updateNTSprites(xt, yt, mapTraversabilityCells);
@@ -166,19 +166,19 @@ export function getMapTraversabilityInCells(map) {
   );
   for (let i = 0; i < tilesToUpdate.length; i++) {
     const xy = tilesToUpdate[i];
-    if (map[xy.x][xy.y] !== tilesToUpdateValues[i]) {
-      tilesToUpdateValues[i] = map[xy.x][xy.y];
+    if (map[xy.xt][xy.yt] !== tilesToUpdateValues[i]) {
+      tilesToUpdateValues[i] = map[xy.xt][xy.yt];
       // O(CTPL^2)
       fillGridWithSubgrid(
         mapTraversabilityCells,
-        getTileTraversabilityInCells(map[xy.x][xy.y]),
-        xy.x * CPTL,
-        xy.y * CPTL,
+        getTileTraversabilityInCells(map[xy.xt][xy.yt]),
+        xy.xt * CPTL,
+        xy.yt * CPTL,
       );
     }
     // O(CTPL^2).
     // TODO: We can optimize this by only calling updateNTSprites when a cell changes.
-    updateNTSprites(xy.x, xy.y, mapTraversabilityCells);
+    updateNTSprites(xy.xt, xy.yt, mapTraversabilityCells);
   }
   return mapTraversabilityCells;
 }
