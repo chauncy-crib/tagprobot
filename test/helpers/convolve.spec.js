@@ -2,6 +2,7 @@ import test from 'tape';
 import { multiplyCorrespondingElementsAndSum,
   getSubarrayFrom2dArray,
   addBufferTo2dArray,
+  invertBinary2dArray,
   convolve } from '../../src/helpers/convolve';
 
 
@@ -81,6 +82,37 @@ test('multiplyCorrespondingElementsAndSum: returns correctly with inputs that ar
   t.is(multiplyCorrespondingElementsAndSum(m1, m2), 165);
 
   t.end();
+});
+
+
+test('invertBinary2dArray', tester => {
+  tester.test('returns correctly with valid input', t => {
+    const m = [
+      [1, 1, 1],
+      [1, 0, 1],
+      [0, 1, 0],
+      [0, 0, 0],
+    ];
+    t.same(invertBinary2dArray(m), [
+      [0, 0, 0],
+      [0, 1, 0],
+      [1, 0, 1],
+      [1, 1, 1],
+    ]);
+
+    t.end();
+  });
+
+
+  tester.test('throws errors with non-binary input', t => {
+    t.throws(() => { invertBinary2dArray([[7]]); });
+    t.throws(() => { invertBinary2dArray([[0.5]]); });
+    t.throws(() => { invertBinary2dArray([['a']]); });
+
+    t.end();
+  });
+
+  tester.end();
 });
 
 
