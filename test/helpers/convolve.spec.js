@@ -3,6 +3,7 @@ import { multiplyCorrespondingElementsAndSum,
   getSubarrayFrom2dArray,
   addBufferTo2dArray,
   invertBinary2dArray,
+  addNTBuffer,
   convolve } from '../../src/helpers/convolve';
 
 
@@ -108,6 +109,42 @@ test('invertBinary2dArray', tester => {
     t.throws(() => { invertBinary2dArray([[7]]); });
     t.throws(() => { invertBinary2dArray([[0.5]]); });
     t.throws(() => { invertBinary2dArray([['a']]); });
+
+    t.end();
+  });
+
+  tester.end();
+});
+
+
+test('addNTBuffer', tester => {
+  tester.test('returns correctly with large matrix', t => {
+    const traversabilityGrid = [
+      [1, 1, 1, 1, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 0, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 0, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 0, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1],
+    ];
+    const kernel = [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+    ];
+
+    t.same(addNTBuffer(traversabilityGrid, kernel), [
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 1, 1, 0, 0],
+      [0, 0, 0, 0, 1, 0, 0, 0],
+      [0, 0, 0, 0, 1, 0, 0, 0],
+      [0, 1, 1, 1, 1, 0, 0, 0],
+      [0, 1, 1, 1, 0, 0, 0, 0],
+      [0, 1, 1, 1, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+    ]);
 
     t.end();
   });

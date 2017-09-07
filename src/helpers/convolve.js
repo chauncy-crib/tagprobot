@@ -1,5 +1,5 @@
 import { init2dArray, fillGridWithSubgrid } from './map';
-import { assert } from '../../src/utils/asserts';
+import { assert } from '../utils/asserts';
 
 
 /*
@@ -167,4 +167,33 @@ export function invertBinary2dArray(m) {
   }
 
   return invertedM;
+}
+
+
+/*
+ * Adds a buffer around all nontraversable cells in the given 2D array. The
+ * given parameters are inverted such that traversable is 0 and nontraversable
+ * is 1. This makes the math easier, then the resulting 2D array is inverted
+ * again to undo the original inversion.
+ *
+ * @param {number[][]} m - the matrix that will have the kernel applied to it
+ * @param {number[][]} k - the kernel that will be applied to the matrix
+ * @return {number[][]} - the result of convolving m and k, then truncating
+ * any nontraversable values to 0
+ */
+export function addNTBuffer(m, k) {
+  assert(k.length === k[0].length, 'the kernel is not square');
+
+  const convolution = convolve(invertBinary2dArray(m), invertBinary2dArray(k));
+  const width = convolution.length;
+  const height = convolution[0].length;
+  for (let x = 0; x < width; x++) {
+    for (let y = 0; y < height; y++) {
+      if (convolution[x][y] > 0) {
+        convolution[x][y] = 1;
+      }
+    }
+  }
+
+  return invertBinary2dArray(convolution);
 }
