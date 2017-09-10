@@ -1,10 +1,12 @@
 import test from 'tape';
-import { multiplyCorrespondingElementsAndSum,
+import {
+  multiplyCorrespondingElementsAndSum,
   getSubarrayFrom2dArray,
   addBufferTo2dArray,
   invertBinary2dArray,
   addNTBuffer,
-  convolve } from '../../src/helpers/convolve';
+  convolve,
+} from '../../src/helpers/convolve';
 
 
 test('addBufferTo2dArray: correctly adds buffer to grid', t => {
@@ -29,43 +31,51 @@ test('addBufferTo2dArray: correctly adds buffer to grid', t => {
 });
 
 
-test('getSubarrayFrom2dArray: returns the correct subarray for varying inputs', t => {
-  let array = [
-    [1, 2, 3, 4],
-    [5, 6, 7, 8],
-    [9, 0, 1, 2],
-    [3, 4, 5, 6],
-  ];
-  let xCenter = 2;
-  let yCenter = 2;
-  let width = 3;
-  let height = 3;
-  t.same(getSubarrayFrom2dArray(array, xCenter, yCenter, width, height), [
-    [6, 7, 8],
-    [0, 1, 2],
-    [4, 5, 6],
-  ]);
+test('getSubarrayFrom2dArray', tester => {
+  tester.test('returns the correct subarray for 4x4 array', t => {
+    const array = [
+      [1, 2, 3, 4],
+      [5, 6, 7, 8],
+      [9, 0, 1, 2],
+      [3, 4, 5, 6],
+    ];
+    const xMin = 1;
+    const yMin = 1;
+    const xMax = 3;
+    const yMax = 3;
+    t.same(getSubarrayFrom2dArray(array, xMin, yMin, xMax, yMax), [
+      [6, 7, 8],
+      [0, 1, 2],
+      [4, 5, 6],
+    ]);
 
-  array = [
-    [1, 2, 3, 4, 5, 6],
-    [7, 8, 9, 0, 1, 2],
-    [3, 4, 5, 6, 7, 8],
-    [9, 0, 1, 2, 3, 4],
-    [5, 6, 7, 8, 9, 0],
-  ];
-  xCenter = 2;
-  yCenter = 1;
-  width = 5;
-  height = 3;
-  t.same(getSubarrayFrom2dArray(array, xCenter, yCenter, width, height), [
-    [1, 2, 3],
-    [7, 8, 9],
-    [3, 4, 5],
-    [9, 0, 1],
-    [5, 6, 7],
-  ]);
+    t.end();
+  });
 
-  t.end();
+
+  tester.test('returns the correct subarray for 6x5 array', t => {
+    const array = [
+      [1, 2, 3, 4, 5, 6],
+      [7, 8, 9, 0, 1, 2],
+      [3, 4, 5, 6, 7, 8],
+      [9, 0, 1, 2, 3, 4],
+      [5, 6, 7, 8, 9, 0],
+    ];
+    const xMin = 0;
+    const yMin = 0;
+    const xMax = 3;
+    const yMax = 2;
+    t.same(getSubarrayFrom2dArray(array, xMin, yMin, xMax, yMax), [
+      [1, 2, 3],
+      [7, 8, 9],
+      [3, 4, 5],
+      [9, 0, 1],
+    ]);
+
+    t.end();
+  });
+
+  tester.end();
 });
 
 
@@ -153,55 +163,64 @@ test('addNTBuffer', tester => {
 });
 
 
-test('convolve: returns correctly with kernel size 1x1', t => {
-  let m = [
-    [1, 2, 3],
-    [4, 5, 6],
-    [7, 8, 9],
-  ];
-  let k = [
-    [1],
-  ];
-  t.same(convolve(m, k), [
-    [1, 2, 3],
-    [4, 5, 6],
-    [7, 8, 9],
-  ]);
+test('convolve', tester => {
+  tester.test('returns correctly with kernel size 1x1, k=[[1]]', t => {
+    const m = [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+    ];
+    const k = [
+      [1],
+    ];
+    t.same(convolve(m, k), [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+    ]);
 
-  m = [
-    [1, 2, 3],
-    [4, 5, 6],
-    [7, 8, 9],
-  ];
-  k = [
-    [2],
-  ];
-  t.same(convolve(m, k), [
-    [2, 4, 6],
-    [8, 10, 12],
-    [14, 16, 18],
-  ]);
-
-  t.end();
-});
+    t.end();
+  });
 
 
-test('convolve: returns correctly with kernel size 3x3', t => {
-  const m = [
-    [1, 2, 3, 4],
-    [5, 6, 7, 8],
-    [9, 0, 1, 2],
-  ];
-  const k = [
-    [1, 2, 3],
-    [3, 4, 5],
-    [6, 7, 8],
-  ];
-  t.same(convolve(m, k), [
-    [112, 160, 193, 142],
-    [131, 150, 129, 100],
-    [89, 91, 79, 63],
-  ]);
+  tester.test('returns correctly with kernel size 1x1, k=[[2]]', t => {
+    const m = [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+    ];
+    const k = [
+      [2],
+    ];
+    t.same(convolve(m, k), [
+      [2, 4, 6],
+      [8, 10, 12],
+      [14, 16, 18],
+    ]);
 
-  t.end();
+    t.end();
+  });
+
+
+  tester.test('returns correctly with kernel size 3x3', t => {
+    const m = [
+      [1, 2, 3, 4],
+      [5, 6, 7, 8],
+      [9, 0, 1, 2],
+    ];
+    const k = [
+      [1, 2, 3],
+      [3, 4, 5],
+      [6, 7, 8],
+    ];
+    t.same(convolve(m, k), [
+      [112, 160, 193, 142],
+      [131, 150, 129, 100],
+      [89, 91, 79, 63],
+    ]);
+
+    t.end();
+  });
+
+  tester.end();
 });
