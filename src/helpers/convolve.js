@@ -1,5 +1,5 @@
 import { init2dArray, fillGridWithSubgrid } from './map';
-import { assert } from '../utils/asserts';
+import { assert, assertGridInBounds } from '../utils/asserts';
 
 
 /*
@@ -70,27 +70,22 @@ export function addBufferTo2dArray(m, bufSize, bufVal) {
  * Returns a specified section from a 2D array.
  *
  * @param {number[][]} array - the 2D array to get the subarray from
- * @param {number} xCenter - the x index of the center of the subarray
- * @param {number} yCenter - the y index of the center of the subarray
- * @param {number} width - the width of the subarray (must be an odd number)
- * @param {number} height - the height of the subarray (must be an odd number)
+ * @param {number} xMin - the left-most index of the desired subarray
+ * @param {number} yMin - the top-most index of the desired subarray
+ * @param {number} xMax - the right-most index of the desired subarray
+ * @param {number} yMax - the bottom-most index of the desired subarray
  */
-export function getSubarrayFrom2dArray(array, xCenter, yCenter, width, height) {
-  assert(width % 2 === 1, 'getSubarrayFrom2dArray: width is not odd');
-  assert(height % 2 === 1, 'getSubarrayFrom2dArray: height is not odd');
+export function getSubarrayFrom2dArray(array, xMin, yMin, xMax, yMax) {
+  assertGridInBounds(array, xMin, yMin);
+  assertGridInBounds(array, xMax, yMax);
 
-  const halfWidth = (width - 1) / 2;
-  const halfHeight = (height - 1) / 2;
-  const leftEdge = xCenter - halfWidth;
-  const rightEdge = xCenter + halfWidth;
-  const topEdge = yCenter - halfHeight;
-  const botEdge = yCenter + halfHeight;
-
+  const width = (xMax - xMin) + 1;
+  const height = (yMax - yMin) + 1;
   const initVal = 0;
   const subarray = init2dArray(width, height, initVal);
-  for (let x = leftEdge; x <= rightEdge; x++) {
-    for (let y = topEdge; y <= botEdge; y++) {
-      subarray[x - leftEdge][y - topEdge] = array[x][y];
+  for (let x = xMin; x <= xMax; x++) {
+    for (let y = yMin; y <= yMax; y++) {
+      subarray[x - xMin][y - yMin] = array[x][y];
     }
   }
 
@@ -124,15 +119,16 @@ export function convolve(m, k) {
   const mWithBuf = addBufferTo2dArray(m, bufSize, bufVal);
 
   let mSubarray;
+  const halfKWidth = (kWidth - 1) / 2;
   const convolution = init2dArray(mWidth, mHeight, 0);
   for (let x = 0; x < mWidth; x++) {
     for (let y = 0; y < mHeight; y++) {
       mSubarray = getSubarrayFrom2dArray(
         mWithBuf,
-        x + bufSize,
-        y + bufSize,
-        kWidth,
-        kWidth,
+        (x + bufSize) - halfKWidth,
+        (y + bufSize) - halfKWidth,
+        (x + bufSize) + halfKWidth,
+        (y + bufSize) + halfKWidth,
       );
       convolution[x][y] = multiplyCorrespondingElementsAndSum(mSubarray, k);
     }
