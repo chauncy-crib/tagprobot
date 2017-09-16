@@ -1,9 +1,9 @@
 {
   "name": "tagprobot",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "A bot to play TagPro",
   "scripts": {
-    "start": "http-server",
+    "start": "webpack --watch",
     "lint": "eslint 'src/**/*.js' 'test/**/*.js'",
     "lint:fix": "eslint 'src/**/*.js' 'test/**/*.js' --fix",
     "test": "babel-tape-runner \"test/**/*.js\" | tap-difflet --pessimistic",
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/altodyte/tagprobot.git"
+    "url": "git+https://github.com/chauncy-crib/tagprobot.git"
   },
   "author": "chauncy",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/altodyte/tagprobot/issues"
+    "url": "https://github.com/chauncy-crib/tagprobot/issues"
   },
-  "homepage": "https://github.com/altodyte/tagprobot#readme",
+  "homepage": "https://github.com/chauncy-crib/tagprobot#readme",
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-core": "^6.25.0",
