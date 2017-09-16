@@ -1,1 +1,1 @@
-# tagprobot [![Build Status](https://travis-ci.org/chauncy-crib/tagprobot.svg?branch=master)](https://travis-ci.org/chauncy-crib/tagprobot)
+# tagprobot [![Build Status](https://travis-ci.org/chauncy-crib/tagprobot.svg?branch=master)](https://travis-ci.org/chauncy-crib/tagprobot) [![dependencies Status](https://david-dm.org/chauncy-crib/tagprobot/status.svg)](https://david-dm.org/chauncy-crib/tagprobot) [![devDependencies Status](https://david-dm.org/chauncy-crib/tagprobot/dev-status.svg)](https://david-dm.org/chauncy-crib/tagprobot?type=dev)
