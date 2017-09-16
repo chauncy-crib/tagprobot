@@ -160,8 +160,10 @@ export function initMapTraversabilityCells(map) {
  * @param {number} map - 2D array representing the Tagpro map
  */
 export function getMapTraversabilityInCells(map) {
-  assert(tilesToUpdate.length === tilesToUpdateValues.length,
-    'the number of tiles to update and the number of values stored for them are not equal');
+  assert(
+    tilesToUpdate.length === tilesToUpdateValues.length,
+    'the number of tiles to update and the number of values stored for them are not equal',
+  );
   for (let i = 0; i < tilesToUpdate.length; i++) {
     const xy = tilesToUpdate[i];
     if (map[xy.x][xy.y] !== tilesToUpdateValues[i]) {

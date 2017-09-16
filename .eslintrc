@@ -9,6 +9,10 @@
     "arrow-parens": ["error", "as-needed"],
     "no-underscore-dangle": "off",
     "max-len": ["error", 100, 2],
+    "object-curly-newline": ["error", {
+      ObjectExpression: { minProperties: 5, multiline: true, consistent: true },
+      ObjectPattern: { minProperties: 5, multiline: true, consistent: true }
+    }],
   },
   // these are globals made available through either the tagpro API or by
   // requiring them in src/index.js

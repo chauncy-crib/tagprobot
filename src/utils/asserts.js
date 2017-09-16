@@ -19,8 +19,12 @@ export function assertGridInBounds(grid, x, y) {
   const height = grid[0].length;
   assert(x >= 0, `Grid out of bounds error: x<0. x=${x}`);
   assert(y >= 0, `Grid out of bounds error: y<0. y=${y}`);
-  assert(x < width,
-    `Grid out of bounds error: x>= width of input grid. x=${x}, width=${width}`);
-  assert(y < height,
-    `Grid out of bounds error: y>= height of input grid. y=${y}, height=${height}`);
+  assert(
+    x < width,
+    `Grid out of bounds error: x>= width of input grid. x=${x}, width=${width}`,
+  );
+  assert(
+    y < height,
+    `Grid out of bounds error: y>= height of input grid. y=${y}, height=${height}`,
+  );
 }

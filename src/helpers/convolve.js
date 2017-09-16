@@ -114,8 +114,10 @@ export function convolve(m, k) {
   const mWidth = m.length;
   const mHeight = m[0].length;
   const kSize = kWidth;
-  assert(kSize <= mWidth && kSize <= mHeight,
-    'kernal size is larger than either matrix width or matrix height');
+  assert(
+    kSize <= mWidth && kSize <= mHeight,
+    'kernal size is larger than either matrix width or matrix height',
+  );
   const bufSize = (kSize - 1) / 2;
   const bufVal = 1;
   const mWithBuf = addBufferTo2dArray(m, bufSize, bufVal);
