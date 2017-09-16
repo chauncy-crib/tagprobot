@@ -91,7 +91,7 @@ export class GameState {
 
 /*
  * @param {GameState} finalState - the final target GameState object. Will use to construct the path
- *   by walking the parent pointers back to the start state. 
+ *   by walking the parent pointers back to the start state.
  * @return {Array} list of GameStates from starting state to final state, not including the
  *   starting state.
  */

@@ -22,8 +22,13 @@ test('updatePath', tester => {
     const mockAreVisualsOn = sinon.stub().returns(true);
     const mockRemoveChild = sinon.spy();
     const mockPathSprites = ['sprite1', 'sprite2', 'sprite3'];
-    global.tagpro = { renderer: { layers: { background:
-      { removeChild: mockRemoveChild, addChild: () => {} } } } };
+    global.tagpro = {
+      renderer: {
+        layers: {
+          background: { removeChild: mockRemoveChild, addChild: () => {} },
+        },
+      },
+    };
 
     DrawRewireAPI.__Rewire__('isVisualMode', mockAreVisualsOn);
     DrawRewireAPI.__Rewire__('pathSprites', mockPathSprites);
@@ -48,8 +53,13 @@ test('updatePath', tester => {
     const mockGetPixiRect = sinon.stub();
     mockGetPixiRect.onCall(0).returns('rect1');
     mockGetPixiRect.onCall(1).returns('rect2');
-    global.tagpro = { renderer: { layers: { background:
-      { removeChild: () => {}, addChild: mockAddChild } } } };
+    global.tagpro = {
+      renderer: {
+        layers: {
+          background: { removeChild: () => {}, addChild: mockAddChild },
+        },
+      },
+    };
 
     DrawRewireAPI.__Rewire__('isVisualMode', mockAreVisualsOn);
     DrawRewireAPI.__Rewire__('pathSprites', mockPathSprites);
@@ -217,8 +227,13 @@ test('updateNTSprites', tester => {
 
     const mockAddChild = sinon.spy();
     const mockRemoveChild = sinon.spy();
-    global.tagpro = { renderer: { layers: { background: {
-      addChild: mockAddChild, removeChild: mockRemoveChild } } } };
+    global.tagpro = {
+      renderer: {
+        layers: {
+          background: { addChild: mockAddChild, removeChild: mockRemoveChild },
+        },
+      },
+    };
 
     DrawRewireAPI.__Rewire__('CPTL', 2);
     DrawRewireAPI.__Rewire__('PPCL', 20);

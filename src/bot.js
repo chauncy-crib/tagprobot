@@ -55,7 +55,7 @@ function getGoalPos() {
  * navigate to in pixels, x and y
  */
 function getNextTargetPos() {
-  const map = tagpro.map;
+  const { map } = tagpro;
   const me = getMe();
 
   const goal = getGoalPos();
