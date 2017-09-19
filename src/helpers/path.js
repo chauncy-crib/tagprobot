@@ -22,10 +22,8 @@ export class GameState {
 
     // the GameState we came from
     this.parent = undefined;
-  }
 
-  key() {
-    return [this.xc, this.yc].join(',');
+    this.key = `${xc},${yc}`;
   }
 
   /*
@@ -78,10 +76,12 @@ export class GameState {
     });
     // filter out out of bounds and NT neighbors
     return _.filter(potentialNeighbors, n => {
-      if (n.xc < 0
+      if (
+        n.xc < 0
         || n.yc < 0
         || n.xc >= traversabilityCells.length
-        || n.yc >= traversabilityCells[0].length) {
+        || n.yc >= traversabilityCells[0].length
+      ) {
         return false;
       }
       return traversabilityCells[n.xc][n.yc];
@@ -148,24 +148,24 @@ export function getShortestPath(me, target, traversabilityCells) {
       return constructPath(currState);
     }
     // move current state from openList to closedList
-    openList.delete(currState.key());
-    closedList.add(currState.key());
+    openList.delete(currState.key);
+    closedList.add(currState.key);
     // iterate over neighbors
     _.each(currState.neighbors(traversabilityCells), neighbor => {
       // if the neighbor has been closed, don't add it to the fib heap
-      if (closedList.has(neighbor.key())) {
+      if (closedList.has(neighbor.key)) {
         return;
       }
       // assign neighbor's f-cost
       // eslint-disable-next-line no-param-reassign
       neighbor.f = neighbor.g + neighbor.heuristic(targetState);
       // if neighbor not in openList, add it
-      if (!openList.has(neighbor.key())) {
+      if (!openList.has(neighbor.key)) {
         const neighborNode = fibHeap.insert(neighbor.f, neighbor);
-        openList.set(neighbor.key(), neighborNode);
+        openList.set(neighbor.key, neighborNode);
       // else, if we've found a faster route to the neighbor, update the f-cost in openList
       } else {
-        const openNeighbor = openList.get(neighbor.key());
+        const openNeighbor = openList.get(neighbor.key);
         const openNeighborState = openNeighbor.value;
         if (neighbor.g < openNeighborState.g) {
           openNeighborState.g = neighbor.g;
