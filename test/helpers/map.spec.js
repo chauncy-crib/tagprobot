@@ -4,6 +4,7 @@ import {
   initMapTraversabilityCells,
   init2dArray,
   fillGridWithSubgrid,
+  getTraversabilityFromNumNTO,
   getTileTraversabilityInCells,
   getMapTraversabilityInCells,
   __RewireAPI__ as MapRewireAPI,
@@ -93,6 +94,62 @@ test('fillGridWithSubgrid: throws when subgrid runs out of bounds on the big gri
   t.throws(() => { fillGridWithSubgrid(subgrid, grid, 0, 0); });
 
   t.end();
+});
+
+
+test('getTraversabilityFromNumNTO', tester => {
+  tester.test('returns correctly with fully updated 3x3 grid', t => {
+    const numNTO = [
+      [1, 2, 3],
+      [0, 1, 1],
+      [2, 0, 9],
+    ];
+    const traversability = [
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+    ];
+    const xMin = 0;
+    const yMin = 0;
+    const xMax = 2;
+    const yMax = 2;
+
+    t.same(getTraversabilityFromNumNTO(numNTO, traversability, xMin, yMin, xMax, yMax), [
+      [0, 0, 0],
+      [1, 0, 0],
+      [0, 1, 0],
+    ]);
+
+    t.end();
+  });
+
+
+  tester.test('only updates elements within the specified area', t => {
+    const numNTO = [
+      [0, 0, 0],
+      [1, 2, 3],
+      [0, 0, 0],
+    ];
+    const traversability = [
+      [1, 0, 1],
+      [1, 0, 1],
+      [1, 0, 1],
+    ];
+    const xMin = 1;
+    const yMin = 1;
+    const xMax = 2;
+    const yMax = 2;
+
+    t.same(getTraversabilityFromNumNTO(numNTO, traversability, xMin, yMin, xMax, yMax), [
+      [1, 0, 1],
+      [1, 0, 0],
+      [1, 1, 1],
+    ]);
+
+    t.end();
+  });
+
+  tester.end();
 });
 
 

@@ -54,6 +54,29 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
 }
 
 
+/*
+ * @param numNTO {number[][]} - a count of nontraversable objects in cells
+ * @param traversability {number[][]} - a binary 2D array of traversability in cells
+ * @param xMin {number} - the minimum x value to update
+ * @param yMin {number} - the minimum y value to update
+ * @param xMax {number} - the maximum x value to update
+ * @param yMax {number} - the maximum y value to update
+ * @return {number[][]} a traversability grid in cells
+ */
+export function getTraversabilityFromNumNTO(numNTO, traversability, xMin, yMin, xMax, yMax) {
+  assertGridInBounds(numNTO, xMin, yMin);
+  assertGridInBounds(numNTO, xMax, yMax);
+
+  for (let xc = xMin; xc <= xMax; xc++) {
+    for (let yc = yMin; yc <= yMax; yc++) {
+      // if there are no NTO here, define it as traversable
+      traversability[xc][yc] = numNTO[xc][yc] === 0 ? 1 : 0;
+    }
+  }
+  return traversability;
+}
+
+
 /* Returns a 2d cell array of traversible (1) and blocked (0) cells inside a tile.
  * Runtime: O(CPTL^2)
  *
