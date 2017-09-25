@@ -16,11 +16,11 @@ import { assert, assertGridInBounds } from '../utils/asserts';
 export function multiplyCorrespondingElementsAndSum(m1, m2) {
   assert(
     m1.length === m2.length,
-    'multiplyCorrespondingElementsAndSum: m1 and m2 are not the same width',
+    `m1 and m2 are not the same width, ${m1.length} and ${m2.length}`,
   );
   assert(
     m1[0].length === m2[0].length,
-    'multiplyCorrespondingElementsAndSum: m1 and m2 are not the same height',
+    `m1 and m2 are not the same height, ${m1[0].length} and ${m2[0].length}`,
   );
 
   const mWidth = m1.length;
@@ -104,8 +104,8 @@ export function getSubarrayFrom2dArray(array, xMin, yMin, xMax, yMax) {
 export function convolve(m, k) {
   const kWidth = k.length;
   const kHeight = k[0].length;
-  assert(kWidth === kHeight, 'convolve: kernel\'s width is not equal to its height');
-  assert(kWidth % 2 === 1, 'convolve: kernel\'s width is not odd');
+  assert(kWidth === kHeight, 'kernel\'s width is not equal to its height');
+  assert(kWidth % 2 === 1, 'kernel\'s width is not odd');
 
   const mWidth = m.length;
   const mHeight = m[0].length;

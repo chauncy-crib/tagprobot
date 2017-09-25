@@ -134,6 +134,35 @@ export function getTileTraversabilityInCells(tileId) {
 
 
 /*
+ * Updates the numNTO grid in the area affected by a single tile changing its traversability state
+ *
+ * @param {number[][]} numNTO - the count of NTO within the affected area of the NTKernel
+ * @param xMin {number} - the minimum x value to update
+ * @param yMin {number} - the minimum y value to update
+ * @param xMax {number} - the maximum x value to update
+ * @param yMax {number} - the maximum y value to update
+ * @param {boolean} tileTraversability - the traversability for the tile that was updated and is
+ * now affecting the numNTO grid
+ */
+export function updateNumNTO(numNTO, xMin, yMin, xMax, yMax, tileTraversability) {
+  assertGridInBounds(numNTO, xMin, yMin);
+  assertGridInBounds(numNTO, xMax, yMax);
+
+  // Decrese numNTO if tile was NT and is now T, increase numNTO if tile was T and is now NT
+  const numNTOChange = tileTraversability ? -1 : 1;
+  for (let xc = xMin; xc <= xMax; xc++) {
+    for (let yc = yMin; yc <= yMax; yc++) {
+      const newNumNTO = numNTO[xc][yc] + numNTOChange;
+      if (newNumNTO < 0) {
+        throw new Error(`numNTO is below zero at cell: (${xc}, ${yc})`);
+      }
+      numNTO[xc][yc] = newNumNTO; // eslint-disable-line no-param-reassign
+    }
+  }
+}
+
+
+/*
  * Initializes mapTraversabilityCells to a grid of size map.length * CPTL with
  * the correct values. Store all non-permanent locations in tilesToUpdate, and
  * their corresponding values in tilesToUpdateValues. Initialize permanent sprites
