@@ -1,5 +1,6 @@
 import { assert } from '../src/utils/asserts';
 
+
 export const teams = {
   RED: 1,
   BLUE: 2,
@@ -14,6 +15,9 @@ assert(PPTL % CPTL === 0, 'CPTL does not divide evenly into PPTL');
 
 // Pixels per cell length
 export const PPCL = PPTL / CPTL;
+
+// Size of the Tagpro ball
+export const BRP = 19; // ball radius, in pixels
 
 export const pathAlpha = 0.25;
 export const pathColor = 0x00ff00;
