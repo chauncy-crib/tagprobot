@@ -4,6 +4,7 @@ import {
   initMapTraversabilityCells,
   init2dArray,
   fillGridWithSubgrid,
+  updateNumNTO,
   getTraversabilityFromNumNTO,
   getTileTraversabilityInCells,
   getMapTraversabilityInCells,
@@ -627,6 +628,109 @@ test('getMapTraversabilityInCells', tester => {
     MapRewireAPI.__ResetDependency__('updateNTSprites');
     MapRewireAPI.__ResetDependency__('getTileTraversabilityInCells');
     /* eslint-enable no-multi-spaces, array-bracket-spacing */
+    t.end();
+  });
+
+  tester.end();
+});
+
+
+test('updateNumNTO', tester => {
+  tester.test('correctly updates only affected area when numNTO is 5x5, CPTL=1, NTKernel is 3x3,' +
+    ' tileTraversability=1', t => {
+    MapRewireAPI.__Rewire__('CPTL', 1);
+    MapRewireAPI.__Rewire__('NTKernel', [
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+    ]);
+    const numNTO = [
+      [1, 2, 3, 4, 5],
+      [6, 7, 8, 9, 1],
+      [2, 3, 4, 5, 6],
+      [7, 8, 9, 1, 2],
+      [3, 4, 5, 6, 7],
+    ];
+    const xMin = 1;
+    const yMin = 1;
+    const xMax = 3;
+    const yMax = 3;
+    const tileTraversability = 1;
+
+    updateNumNTO(numNTO, xMin, yMin, xMax, yMax, tileTraversability);
+    t.same(numNTO, [
+      [1, 2, 3, 4, 5],
+      [6, 6, 7, 8, 1],
+      [2, 2, 3, 4, 6],
+      [7, 7, 8, 0, 2],
+      [3, 4, 5, 6, 7],
+    ]);
+
+    MapRewireAPI.__ResetDependency__('CPTL');
+    MapRewireAPI.__ResetDependency__('NTKernel');
+    t.end();
+  });
+
+
+  tester.test('correctly updates only affected area when numNTO is 5x5, CPTL=2, NTKernel is 3x3,' +
+    ' tileTraversability=0', t => {
+    MapRewireAPI.__Rewire__('CPTL', 2);
+    MapRewireAPI.__Rewire__('NTKernel', [
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+    ]);
+    const numNTO = [
+      [1, 2, 3, 4, 5],
+      [6, 7, 8, 1, 2],
+      [3, 4, 5, 6, 7],
+      [8, 1, 2, 3, 4],
+      [5, 6, 7, 8, 1],
+    ];
+    const xMin = 1;
+    const yMin = 1;
+    const xMax = 4;
+    const yMax = 4;
+    const tileTraversability = 0;
+
+    updateNumNTO(numNTO, xMin, yMin, xMax, yMax, tileTraversability);
+    t.same(numNTO, [
+      [1, 2, 3, 4, 5],
+      [6, 8, 9, 2, 3],
+      [3, 5, 6, 7, 8],
+      [8, 2, 3, 4, 5],
+      [5, 7, 8, 9, 2],
+    ]);
+
+    MapRewireAPI.__ResetDependency__('CPTL');
+    MapRewireAPI.__ResetDependency__('NTKernel');
+    t.end();
+  });
+
+
+  tester.test('correctly throws error when numNTO becomes < 0, numNTO is 3x3, CPTL=1, NTKernel' +
+    ' is  3x3, tileTraversability=1', t => {
+    MapRewireAPI.__Rewire__('CPTL', 1);
+    MapRewireAPI.__Rewire__('NTKernel', [
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+    ]);
+    const numNTO = [
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 0],
+    ];
+    const xMin = 1;
+    const yMin = 1;
+    const xMax = 3;
+    const yMax = 3;
+    const tileTraversability = 1;
+
+    t.throws(() => { updateNumNTO(numNTO, xMin, yMin, xMax, yMax, tileTraversability); });
+
+    MapRewireAPI.__ResetDependency__('CPTL');
+    MapRewireAPI.__ResetDependency__('NTKernel');
     t.end();
   });
 
