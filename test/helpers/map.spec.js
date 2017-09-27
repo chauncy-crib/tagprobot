@@ -299,7 +299,7 @@ test('getTileTraversabilityInCells() ', tester => {
     MapRewireAPI.__Rewire__('tileHasProperty', mockTileHasProperty);
     MapRewireAPI.__Rewire__('tileIsOneOf', mockTileIsOneOf);
 
-    t.same(getTileTraversabilityInCells('mockTileId'), [ // button
+    t.same(getTileTraversabilityInCells('mockTileId'), [// button
       [1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 0, 0, 0, 0, 1, 1],
@@ -310,7 +310,7 @@ test('getTileTraversabilityInCells() ', tester => {
       [1, 1, 1, 1, 1, 1, 1, 1],
     ]);
     mockGetTileProperty.withArgs('mockTileId', 'radius').returns(14);
-    t.same(getTileTraversabilityInCells('mockTileId'), [ // spike
+    t.same(getTileTraversabilityInCells('mockTileId'), [// spike
       [1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 0, 0, 0, 0, 1, 1],
       [1, 0, 0, 0, 0, 0, 0, 1],
@@ -492,24 +492,33 @@ test('getMapTraversabilityInCells', tester => {
     const tempNT = 'tempNT';
     const permT = 'permT';
     const tempT = 'tempT';
-
     // mock the results of getTileTraversabilityInCells
     const mockGetTileTraversabilityInCells = sinon.stub();
-    mockGetTileTraversabilityInCells.withArgs(permNT).returns([['PERM_NT']]);
-    mockGetTileTraversabilityInCells.withArgs(tempNT).returns([['TEMP_NT']]);
-    mockGetTileTraversabilityInCells.withArgs(permT).returns([['PERM_T']]);
-    mockGetTileTraversabilityInCells.withArgs(tempT).returns([['TEMP_T']]);
-
+    mockGetTileTraversabilityInCells.withArgs(permNT).returns([[0]]);
+    mockGetTileTraversabilityInCells.withArgs(tempNT).returns([[0]]);
+    mockGetTileTraversabilityInCells.withArgs(permT).returns([[1]]);
+    mockGetTileTraversabilityInCells.withArgs(tempT).returns([[1]]);
+    MapRewireAPI.__Rewire__('getTileTraversabilityInCells', mockGetTileTraversabilityInCells);
+    // Mock the results of getTileProperty
+    const mockGetTileProperty = sinon.stub();
+    mockGetTileProperty.withArgs('permT', 'traversable').returns(true);
+    mockGetTileProperty.withArgs('tempT', 'traversable').returns(true);
+    mockGetTileProperty.withArgs('permNT', 'traversable').returns(false);
+    mockGetTileProperty.withArgs('tempNT', 'traversable').returns(false);
+    mockGetTileProperty.withArgs('permT', 'permanent').returns(true);
+    mockGetTileProperty.withArgs('permNT', 'permanent').returns(true);
+    mockGetTileProperty.withArgs('tempT', 'permanent').returns(false);
+    mockGetTileProperty.withArgs('tempT', 'permanent').returns(false);
+    MapRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
     /* eslint-disable no-multi-spaces, array-bracket-spacing */
-    const mockMap = [
-      [ tempNT, permT,  tempNT ],
-      [ tempNT, tempT,  permT  ],
-      [ permT,  permNT, tempNT ],
+    let mockMap = [
+      [tempT, permT,  tempT],
+      [tempT, tempNT, permT],
+      [permT, permT,  tempT],
     ];
-    const mockTilesToUpdateValues = [tempNT, tempNT, tempNT, tempT, tempNT];
+    const mockTilesToUpdateValues = [tempT, tempT, tempT, tempNT, tempT];
     let mockUpdateNTSprites = sinon.spy();
     MapRewireAPI.__Rewire__('CPTL', 1);
-    MapRewireAPI.__Rewire__('getTileTraversabilityInCells', mockGetTileTraversabilityInCells);
     // the locations of temp tiles
     MapRewireAPI.__Rewire__('tilesToUpdate', [
       { xt: 0, yt: 0 },
@@ -520,113 +529,73 @@ test('getMapTraversabilityInCells', tester => {
     ]);
     // the current traversability cells
     MapRewireAPI.__Rewire__('mapTraversabilityCells', [
-      [ 'TEMP_NT', 'PERM_T',  'TEMP_NT' ],
-      [ 'TEMP_NT', 'TEMP_T',  'PERM_T'  ],
-      [ 'PERM_T',  'PERM_NT', 'TEMP_NT' ],
+      [1, 1, 1],
+      [1, 0, 1],
+      [1, 1, 1],
+    ]);
+    MapRewireAPI.__Rewire__('numNTOWithinBufCells', [
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+    ]);
+    MapRewireAPI.__Rewire__('mapTraversabilityCellsWithBuf', [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
     ]);
     MapRewireAPI.__Rewire__('tilesToUpdateValues', mockTilesToUpdateValues);
     MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
-    t.same(getMapTraversabilityInCells(mockMap), [
-      [ 'TEMP_NT', 'PERM_T',  'TEMP_NT' ],
-      [ 'TEMP_NT', 'TEMP_T',  'PERM_T'  ],
-      [ 'PERM_T',  'PERM_NT', 'TEMP_NT' ],
-    ]);
 
-    t.same(mockTilesToUpdateValues, [tempNT, tempNT, tempNT, tempT, tempNT]);
+    t.same(getMapTraversabilityInCells(mockMap), [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+    ]);
+    t.same(mockTilesToUpdateValues, [tempT, tempT, tempT, tempNT, tempT]);
     t.is(mockUpdateNTSprites.callCount, 5);
 
     mockUpdateNTSprites = sinon.spy();
     MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
-    mockMap[0][0] = tempT;
+    mockMap = [
+      [tempT, permT, tempT],
+      [tempT, tempT, permT],
+      [permT, permT, tempT],
+    ];
     t.same(getMapTraversabilityInCells(mockMap), [
-      [ 'TEMP_T', 'PERM_T',  'TEMP_NT' ],
-      [ 'TEMP_NT', 'TEMP_T',  'PERM_T'  ],
-      [ 'PERM_T',  'PERM_NT', 'TEMP_NT' ],
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
     ]);
-    t.same(mockTilesToUpdateValues, [tempT, tempNT, tempNT, tempT, tempNT]);
+    t.same(mockTilesToUpdateValues, [tempT, tempT, tempT, tempT, tempT]);
     t.is(mockUpdateNTSprites.callCount, 5);
 
     mockUpdateNTSprites = sinon.spy();
     MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
     // change the gate colors
-    mockMap[0][2] = tempT;
-    mockMap[1][0] = tempT;
-    mockMap[1][1] = tempNT;
+    mockMap = [
+      [tempT, permT, tempT],
+      [tempT,  tempNT, permT],
+      [permT,  permT, tempT],
+    ];
     t.same(getMapTraversabilityInCells(mockMap), [
-      [ 'TEMP_T', 'PERM_T',  'TEMP_T' ],
-      [ 'TEMP_T', 'TEMP_NT',  'PERM_T'  ],
-      [ 'PERM_T',  'PERM_NT', 'TEMP_NT' ],
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
     ]);
-    t.same(mockTilesToUpdateValues, [tempT, tempT, tempT, tempNT, tempNT]);
+
+    t.same(mockTilesToUpdateValues, [tempT, tempT, tempT, tempNT, tempT]);
     t.is(mockUpdateNTSprites.callCount, 5);
 
     MapRewireAPI.__ResetDependency__('CPTL');
     MapRewireAPI.__ResetDependency__('mapTraversabilityCells');
+    MapRewireAPI.__ResetDependency__('numNTOWithinBufCells');
+    MapRewireAPI.__ResetDependency__('mapTraversabilityCellsWithBuf');
     MapRewireAPI.__ResetDependency__('tilesToUpdate');
     MapRewireAPI.__ResetDependency__('tilesToUpdateValues');
     MapRewireAPI.__ResetDependency__('updateNTSprites');
     MapRewireAPI.__ResetDependency__('getTileTraversabilityInCells');
+    MapRewireAPI.__ResetDependency__('getTileProperty');
 
-    /* eslint-enable no-multi-spaces, array-bracket-spacing */
-    t.end();
-  });
-
-  tester.test('getMapTraversabilityInCells: stores correct values in tilesToUpdateValues. Calls' +
-    ' updateNTSprites once for each non-permanent tile. Returns correct traversability grid.' +
-    ' CPTL=4', t => {
-    // create a dummy map. Assume all objects are non-permanent
-    const tempNT = 'tempNT';
-    const tempT = 'tempT';
-
-    /* eslint-disable no-multi-spaces, array-bracket-spacing */
-    const mockGetTileTraversabilityInCells = sinon.stub();
-    mockGetTileTraversabilityInCells.withArgs(tempNT).returns([
-      ['b', 'b', 'b', 'b'],
-      ['b', 'a', 'a', 'b'],
-      ['b', 'a', 'a', 'b'],
-      ['b', 'b', 'b', 'b'],
-    ]);
-    mockGetTileTraversabilityInCells.withArgs(tempT).returns([
-      ['c', 'c', 'c', 'c'],
-      ['c', 'd', 'd', 'c'],
-      ['c', 'd', 'd', 'c'],
-      ['c', 'c', 'c', 'c'],
-    ]);
-    const mockMap = [[tempNT, tempT]];
-    const mockTilesToUpdateValues = [tempT, tempNT];
-    const mockUpdateNTSprites = sinon.spy();
-
-    MapRewireAPI.__Rewire__('CPTL', 4);
-    MapRewireAPI.__Rewire__('getTileTraversabilityInCells', mockGetTileTraversabilityInCells);
-    MapRewireAPI.__Rewire__('tilesToUpdate', [
-      { xt: 0, yt: 0 },
-      { xt: 0, yt: 1 },
-    ]);
-    MapRewireAPI.__Rewire__('mapTraversabilityCells', [
-      [null, null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null, null],
-    ]);
-    MapRewireAPI.__Rewire__('tilesToUpdateValues', mockTilesToUpdateValues);
-    MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
-
-    t.same(getMapTraversabilityInCells(mockMap), [
-      ['b', 'b', 'b', 'b', 'c', 'c', 'c', 'c'],
-      ['b', 'a', 'a', 'b', 'c', 'd', 'd', 'c'],
-      ['b', 'a', 'a', 'b', 'c', 'd', 'd', 'c'],
-      ['b', 'b', 'b', 'b', 'c', 'c', 'c', 'c'],
-    ]);
-
-    t.same(mockTilesToUpdateValues, [tempNT, tempT]);
-    t.is(mockUpdateNTSprites.callCount, 2);
-
-    MapRewireAPI.__ResetDependency__('CPTL');
-    MapRewireAPI.__ResetDependency__('mapTraversabilityCells');
-    MapRewireAPI.__ResetDependency__('tilesToUpdate');
-    MapRewireAPI.__ResetDependency__('tilesToUpdateValues');
-    MapRewireAPI.__ResetDependency__('updateNTSprites');
-    MapRewireAPI.__ResetDependency__('getTileTraversabilityInCells');
     /* eslint-enable no-multi-spaces, array-bracket-spacing */
     t.end();
   });
@@ -745,20 +714,27 @@ test('initMapTraversabilityCells()', tester => {
     const permT = 'permT';
     const tempT = 'tempT';
     const mockGetTileTraversabilityInCells = sinon.stub();
-    mockGetTileTraversabilityInCells.withArgs('permNT').returns([['a']]);
-    mockGetTileTraversabilityInCells.withArgs('tempNT').returns([['b']]);
-    mockGetTileTraversabilityInCells.withArgs('permT').returns([['c']]);
-    mockGetTileTraversabilityInCells.withArgs('tempT').returns([['d']]);
+    mockGetTileTraversabilityInCells.withArgs('permNT').returns([[0]]);
+    mockGetTileTraversabilityInCells.withArgs('tempNT').returns([[0]]);
+    mockGetTileTraversabilityInCells.withArgs('permT').returns([[1]]);
+    mockGetTileTraversabilityInCells.withArgs('tempT').returns([[1]]);
+    MapRewireAPI.__Rewire__('getTileTraversabilityInCells', mockGetTileTraversabilityInCells);
     const mockGetTileProperty = sinon.stub();
     mockGetTileProperty.withArgs('permT', 'traversable').returns(true);
     mockGetTileProperty.withArgs('tempT', 'traversable').returns(true);
+    mockGetTileProperty.withArgs('permNT', 'traversable').returns(false);
+    mockGetTileProperty.withArgs('tempNT', 'traversable').returns(false);
     mockGetTileProperty.withArgs('permT', 'permanent').returns(true);
     mockGetTileProperty.withArgs('permNT', 'permanent').returns(true);
-    mockGetTileProperty.returns(false);
+    mockGetTileProperty.withArgs('tempT', 'permanent').returns(false);
+    mockGetTileProperty.withArgs('tempNT', 'permanent').returns(false);
+    MapRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
     const mockUpdateNTSprites = sinon.spy();
     const mockGeneratePermanentNTSprites = sinon.spy();
 
     const mockMapTraversabilityCells = [];
+    const mockMapTraversabilityCellsWithBuf = [];
+    const mockNumNTOWithinBufCells = [];
     const mockTilesToUpdate = [];
     const mockTilesToUpdateValues = [];
 
@@ -771,21 +747,21 @@ test('initMapTraversabilityCells()', tester => {
     /* eslint-enable no-multi-spaces, array-bracket-spacing */
 
     MapRewireAPI.__Rewire__('CPTL', 1);
-    MapRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
-    MapRewireAPI.__Rewire__('getTileTraversabilityInCells', mockGetTileTraversabilityInCells);
     MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
     MapRewireAPI.__Rewire__('generatePermanentNTSprites', mockGeneratePermanentNTSprites);
     MapRewireAPI.__Rewire__('tilesToUpdate', mockTilesToUpdate);
     MapRewireAPI.__Rewire__('tilesToUpdateValues', mockTilesToUpdateValues);
     MapRewireAPI.__Rewire__('mapTraversabilityCells', mockMapTraversabilityCells);
+    MapRewireAPI.__Rewire__('mapTraversabilityCellsWithBuf', mockMapTraversabilityCellsWithBuf);
+    MapRewireAPI.__Rewire__('numNTOWithinBufCells', mockNumNTOWithinBufCells);
 
 
     initMapTraversabilityCells(mockMap);
 
     t.same(mockMapTraversabilityCells, [
-      ['a', 'b', 'c'],
-      ['d', 'd', 'a'],
-      ['a', 'b', 'c'],
+      [0, 0, 1],
+      [1, 1, 0],
+      [0, 0, 1],
     ]);
     t.same(mockTilesToUpdate, [
       { xt: 0, yt: 1 },

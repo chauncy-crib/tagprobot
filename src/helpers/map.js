@@ -1,10 +1,21 @@
 import _ from 'lodash';
-import { CPTL, PPCL } from '../constants';
+import { CPTL, PPCL, NTKernel } from '../constants';
 import { assert, assertGridInBounds } from '../utils/asserts';
 import { tileHasName, getTileProperty, tileHasProperty, tileIsOneOf } from '../tiles';
 import { updateNTSprites, generatePermanentNTSprites } from '../draw/drawings';
+import { invertBinary2dArray, convolve } from './convolve';
 
-const mapTraversabilityCells = [];
+
+// A 2D array of size tagpro.map.length*CPTL by tagpro.map[0].length*CPTL. Value
+// in each entry is 1 if the cell is fully traversable or 0 if the cell is not
+// fully traversable.
+const mapTraversabilityCells = []; // before NT buffer
+const mapTraversabilityCellsWithBuf = []; // after NT buffer
+// A 2D array of size tagpro.map.length*CPTL by tagpro.map[0].length*CPTL. Value
+// in each entry is the number of cells within the reach of the NTBuffer that are
+// not fully traversable. Values of 0 can be traversed safely, values of 1 or
+// more cannot be traversed safely.
+let numNTOWithinBufCells = [];
 // A list of x, y pairs, which are the locations in the map that might change
 const tilesToUpdate = [];
 const tilesToUpdateValues = []; // the values stored in those locations
@@ -172,7 +183,9 @@ export function updateNumNTO(numNTO, xMin, yMin, xMax, yMax, tileTraversability)
  * @param {number} map - 2D array representing the Tagpro map
  */
 export function initMapTraversabilityCells(map) {
-  assert(_.isEmpty(mapTraversabilityCells), 'map already has values when initializing');
+  assert(_.isEmpty(mapTraversabilityCells), 'map not empty when initializing');
+  assert(_.isEmpty(numNTOWithinBufCells), 'numNTO map not empty when initializing');
+  assert(_.isEmpty(mapTraversabilityCellsWithBuf), 'map with buf not empty when initializing');
   const xtl = map.length;
   const ytl = map[0].length;
   init2dArray(xtl * CPTL, ytl * CPTL, 0, mapTraversabilityCells);
@@ -196,6 +209,19 @@ export function initMapTraversabilityCells(map) {
       }
     }
   }
+  numNTOWithinBufCells = convolve(
+    invertBinary2dArray(mapTraversabilityCells),
+    NTKernel,
+  );
+  init2dArray(xtl * CPTL, ytl * CPTL, 0, mapTraversabilityCellsWithBuf);
+  getTraversabilityFromNumNTO(
+    numNTOWithinBufCells,
+    mapTraversabilityCellsWithBuf,
+    0,
+    0,
+    numNTOWithinBufCells.length - 1,
+    numNTOWithinBufCells[0].length - 1,
+  );
 }
 
 /*
@@ -218,19 +244,44 @@ export function getMapTraversabilityInCells(map) {
   );
   for (let i = 0; i < tilesToUpdate.length; i++) {
     const xy = tilesToUpdate[i];
-    if (map[xy.xt][xy.yt] !== tilesToUpdateValues[i]) {
-      tilesToUpdateValues[i] = map[xy.xt][xy.yt];
-      // O(CTPL^2)
-      fillGridWithSubgrid(
-        mapTraversabilityCells,
-        getTileTraversabilityInCells(map[xy.xt][xy.yt]),
-        xy.xt * CPTL,
-        xy.yt * CPTL,
+    const tileId = map[xy.xt][xy.yt];
+    const tileTraversability = getTileProperty(tileId, 'traversable');
+    // if the traversability of the tile in this location has changed since the last state
+    if (tileTraversability !== getTileProperty(tilesToUpdateValues[i], 'traversable')) {
+      tilesToUpdateValues[i] = tileId;
+      // Index of the top-left cell in the tile that just updated
+      const xFirstCell = xy.xt * CPTL;
+      const yFirstCell = xy.yt * CPTL;
+
+      // When a tile's traversability is changed, everything within the reach of the NTKernel will
+      // be changed as well. Here, we define the affected area so that we know where to dynamically
+      // update numNTOWithinBufCells and mapTraversabilityCellsWithBuf.
+      const NTKernelReach = Math.floor(NTKernel.length / 2);
+      const minXCell = xFirstCell - NTKernelReach;
+      const minYCell = yFirstCell - NTKernelReach;
+      const maxXCell = xFirstCell + (CPTL - 1) + NTKernelReach;
+      const maxYCell = yFirstCell + (CPTL - 1) + NTKernelReach;
+
+      updateNumNTO(
+        numNTOWithinBufCells,
+        minXCell,
+        minYCell,
+        maxXCell,
+        maxYCell,
+        tileTraversability,
+      );
+      getTraversabilityFromNumNTO(
+        numNTOWithinBufCells,
+        mapTraversabilityCellsWithBuf,
+        minXCell,
+        minYCell,
+        maxXCell,
+        maxYCell,
       );
     }
     // O(CTPL^2).
     // TODO: We can optimize this by only calling updateNTSprites when a cell changes.
-    updateNTSprites(xy.xt, xy.yt, mapTraversabilityCells);
+    updateNTSprites(xy.xt, xy.yt, mapTraversabilityCellsWithBuf);
   }
-  return mapTraversabilityCells;
+  return mapTraversabilityCellsWithBuf;
 }

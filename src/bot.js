@@ -1,8 +1,10 @@
-import { PPCL } from './constants';
+import { PPCL, BRP } from './constants';
 import { getMapTraversabilityInCells } from './helpers/map';
 import { findTile, findEnemyFC } from './helpers/finders';
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
-import { getMe, getAllyEndzoneTileName, getEnemyEndzoneTileName } from './helpers/player';
+// TODO: swap
+import { getMe, amBlue, amRed } from './helpers/player';
+// import { getMe, getAllyEndzoneTileName, getEnemyEndzoneTileName } from './helpers/player';
 import { getShortestPath, getTarget } from './helpers/path';
 import { isAutonomousMode, isVisualMode, move, dequeueChatMessages } from './utils/interface';
 import { updatePath } from './draw/drawings';
@@ -25,7 +27,10 @@ function getGoalPos() {
 
   // If the bot has the flag, go to the endzone
   if (me.flag) {
-    goal = findTile(getAllyEndzoneTileName());
+    // TODO: remove hardcode
+    goal = amRed() ? { x: 1320, y: 1360 } : { x: 440, y: 400 };
+    // goal = findTile(getAllyEndzoneTileName());
+
     console.log('I have the flag. Seeking endzone!');
   } else {
     const enemyFC = findEnemyFC();
@@ -35,10 +40,14 @@ function getGoalPos() {
       goal.y = enemyFC.y + enemyFC.vy;
       console.log('I see an enemy with the flag. Chasing!');
     } else if (enemyTeamHasFlag()) {
-      goal = findTile(getEnemyEndzoneTileName());
+      // TODO: remove hardcode
+      goal = amBlue() ? { x: 1360, y: 1360 } : { x: 400, y: 400 };
+      // goal = findTile(getEnemyEndzoneTileName());
       console.log('Enemy has the flag. Headed towards the Enemy Endzone.');
     } else if (myTeamHasFlag()) {
-      goal = findTile(getAllyEndzoneTileName());
+      // TODO: remove hardcode
+      goal = amRed() ? { x: 1360, y: 1360 } : { x: 400, y: 400 };
+      // goal = findTile(getAllyEndzoneTileName());
       console.log('We have the flag. Headed towards our Endzone.');
     } else {
       goal = findTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
@@ -68,6 +77,7 @@ function getNextTargetPos() {
   };
   // Runtime: O(E*CPTL^2) with visualizations on, O(E + S*CPTL^2) with visualizations off
   const traversableCells = getMapTraversabilityInCells(map);
+
   // TODO: runtime of this? Call is O(R) for now
   const shortestPath = getShortestPath(
     { xc: me.xc, yc: me.yc },
@@ -81,8 +91,9 @@ function getNextTargetPos() {
     { xc: me.xc, yc: me.yc },
     shortestPath,
   );
-  nextTarget.x = nextTarget.xc * PPCL;
-  nextTarget.y = nextTarget.yc * PPCL;
+  // Math to move the center of the TPB ball to the center of the target cell
+  nextTarget.x = ((nextTarget.xc * PPCL) + (PPCL / 2)) - BRP;
+  nextTarget.y = ((nextTarget.yc * PPCL) + (PPCL / 2)) - BRP;
 
   return {
     x: nextTarget.x - (me.x + me.vx),
