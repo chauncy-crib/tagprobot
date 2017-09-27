@@ -1,3 +1,4 @@
+import { getNTKernel } from './helpers/constants';
 import { assert } from '../src/utils/asserts';
 
 
@@ -18,6 +19,9 @@ export const PPCL = PPTL / CPTL;
 
 // Size of the Tagpro ball
 export const BRP = 19; // ball radius, in pixels
+
+// Nontraversable kernel, which applies a buffer around NTOs on the map
+export const NTKernel = getNTKernel();
 
 export const pathAlpha = 0.25;
 export const pathColor = 0x00ff00;
