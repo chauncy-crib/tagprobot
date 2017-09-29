@@ -66,15 +66,15 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
 
 
 /*
+ * Updates the traversability grid in a selected area from the num NTO grid
  * @param numNTO {number[][]} - a count of nontraversable objects in cells
  * @param traversability {number[][]} - a binary 2D array of traversability in cells
  * @param xMin {number} - the minimum x value to update
  * @param yMin {number} - the minimum y value to update
  * @param xMax {number} - the maximum x value to update
  * @param yMax {number} - the maximum y value to update
- * @return {number[][]} a traversability grid in cells
  */
-export function getTraversabilityFromNumNTO(numNTO, traversability, xMin, yMin, xMax, yMax) {
+export function updateTraversabilityFromNumNTO(numNTO, traversability, xMin, yMin, xMax, yMax) {
   assertGridInBounds(numNTO, xMin, yMin);
   assertGridInBounds(numNTO, xMax, yMax);
 
@@ -84,7 +84,6 @@ export function getTraversabilityFromNumNTO(numNTO, traversability, xMin, yMin, 
       traversability[xc][yc] = numNTO[xc][yc] === 0 ? 1 : 0;
     }
   }
-  return traversability;
 }
 
 
@@ -159,7 +158,7 @@ export function updateNumNTO(numNTO, xMin, yMin, xMax, yMax, tileTraversability)
   assertGridInBounds(numNTO, xMin, yMin);
   assertGridInBounds(numNTO, xMax, yMax);
 
-  // Decrese numNTO if tile was NT and is now T, increase numNTO if tile was T and is now NT
+  // Decrease numNTO if tile was NT and is now T, increase numNTO if tile was T and is now NT
   const numNTOChange = tileTraversability ? -1 : 1;
   for (let xc = xMin; xc <= xMax; xc++) {
     for (let yc = yMin; yc <= yMax; yc++) {
@@ -214,7 +213,7 @@ export function initMapTraversabilityCells(map) {
     NTKernel,
   );
   init2dArray(xtl * CPTL, ytl * CPTL, 0, mapTraversabilityCellsWithBuf);
-  getTraversabilityFromNumNTO(
+  updateTraversabilityFromNumNTO(
     numNTOWithinBufCells,
     mapTraversabilityCellsWithBuf,
     0,
@@ -270,7 +269,7 @@ export function getMapTraversabilityInCells(map) {
         maxYCell,
         tileTraversability,
       );
-      getTraversabilityFromNumNTO(
+      updateTraversabilityFromNumNTO(
         numNTOWithinBufCells,
         mapTraversabilityCellsWithBuf,
         minXCell,

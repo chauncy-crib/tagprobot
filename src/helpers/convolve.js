@@ -149,16 +149,9 @@ export function invertBinary2dArray(m) {
 
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height; y++) {
-      switch (m[x][y]) {
-        case 0:
-          invertedM[x][y] = 1;
-          break;
-        case 1:
-          invertedM[x][y] = 0;
-          break;
-        default:
-          throw new Error(`A non binary value found in matrix: ${m[x][y]}`);
-      }
+      const currVal = m[x][y];
+      assert(currVal === 0 || currVal === 1, `a non binary value found in matrix: ${m[x][y]}`);
+      invertedM[x][y] = 1 - currVal;
     }
   }
 

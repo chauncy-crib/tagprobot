@@ -5,7 +5,7 @@ import {
   init2dArray,
   fillGridWithSubgrid,
   updateNumNTO,
-  getTraversabilityFromNumNTO,
+  updateTraversabilityFromNumNTO,
   getTileTraversabilityInCells,
   getMapTraversabilityInCells,
   __RewireAPI__ as MapRewireAPI,
@@ -98,7 +98,7 @@ test('fillGridWithSubgrid: throws when subgrid runs out of bounds on the big gri
 });
 
 
-test('getTraversabilityFromNumNTO', tester => {
+test('updateTraversabilityFromNumNTO', tester => {
   tester.test('returns correctly with fully updated 3x3 grid', t => {
     const numNTO = [
       [1, 2, 3],
@@ -115,7 +115,8 @@ test('getTraversabilityFromNumNTO', tester => {
     const xMax = 2;
     const yMax = 2;
 
-    t.same(getTraversabilityFromNumNTO(numNTO, traversability, xMin, yMin, xMax, yMax), [
+    updateTraversabilityFromNumNTO(numNTO, traversability, xMin, yMin, xMax, yMax);
+    t.same(traversability, [
       [0, 0, 0],
       [1, 0, 0],
       [0, 1, 0],
@@ -141,7 +142,8 @@ test('getTraversabilityFromNumNTO', tester => {
     const xMax = 2;
     const yMax = 2;
 
-    t.same(getTraversabilityFromNumNTO(numNTO, traversability, xMin, yMin, xMax, yMax), [
+    updateTraversabilityFromNumNTO(numNTO, traversability, xMin, yMin, xMax, yMax);
+    t.same(traversability, [
       [1, 0, 1],
       [1, 0, 0],
       [1, 1, 1],
