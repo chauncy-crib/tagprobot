@@ -42,7 +42,6 @@ export function init2dArray(width, height, defaultVal = 0, inputMatrix = undefin
       matrix[x][y] = defaultVal;
     }
   }
-
   return matrix;
 }
 
@@ -66,25 +65,24 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
 
 
 /*
+ * Updates the traversability grid in a selected area from the num NTO grid
  * @param numNTO {number[][]} - a count of nontraversable objects in cells
  * @param traversability {number[][]} - a binary 2D array of traversability in cells
- * @param xMin {number} - the minimum x value to update
- * @param yMin {number} - the minimum y value to update
- * @param xMax {number} - the maximum x value to update
- * @param yMax {number} - the maximum y value to update
- * @return {number[][]} a traversability grid in cells
+ * @param xMin {number} - the minimum x value to update (inclusive)
+ * @param yMin {number} - the minimum y value to update (inclusive)
+ * @param xMax {number} - the maximum x value to update (exclusive)
+ * @param yMax {number} - the maximum y value to update (exclusive)
  */
-export function getTraversabilityFromNumNTO(numNTO, traversability, xMin, yMin, xMax, yMax) {
+export function updateTraversabilityFromNumNTO(numNTO, traversability, xMin, yMin, xMax, yMax) {
   assertGridInBounds(numNTO, xMin, yMin);
-  assertGridInBounds(numNTO, xMax, yMax);
+  assertGridInBounds(numNTO, xMax - 1, yMax - 1);
 
-  for (let xc = xMin; xc <= xMax; xc++) {
-    for (let yc = yMin; yc <= yMax; yc++) {
+  for (let xc = xMin; xc < xMax; xc++) {
+    for (let yc = yMin; yc < yMax; yc++) {
       // if there are no NTO here, define it as traversable
       traversability[xc][yc] = numNTO[xc][yc] === 0 ? 1 : 0;
     }
   }
-  return traversability;
 }
 
 
@@ -148,25 +146,23 @@ export function getTileTraversabilityInCells(tileId) {
  * Updates the numNTO grid in the area affected by a single tile changing its traversability state
  *
  * @param {number[][]} numNTO - the count of NTO within the affected area of the NTKernel
- * @param xMin {number} - the minimum x value to update
- * @param yMin {number} - the minimum y value to update
- * @param xMax {number} - the maximum x value to update
- * @param yMax {number} - the maximum y value to update
+ * @param xMin {number} - the minimum x value to update (inclusive)
+ * @param yMin {number} - the minimum y value to update (inclusive)
+ * @param xMax {number} - the maximum x value to update (exclusive)
+ * @param yMax {number} - the maximum y value to update (exclusive)
  * @param {boolean} tileTraversability - the traversability for the tile that was updated and is
  * now affecting the numNTO grid
  */
 export function updateNumNTO(numNTO, xMin, yMin, xMax, yMax, tileTraversability) {
   assertGridInBounds(numNTO, xMin, yMin);
-  assertGridInBounds(numNTO, xMax, yMax);
+  assertGridInBounds(numNTO, xMax - 1, yMax - 1);
 
-  // Decrese numNTO if tile was NT and is now T, increase numNTO if tile was T and is now NT
+  // Decrease numNTO if tile was NT and is now T, increase numNTO if tile was T and is now NT
   const numNTOChange = tileTraversability ? -1 : 1;
-  for (let xc = xMin; xc <= xMax; xc++) {
-    for (let yc = yMin; yc <= yMax; yc++) {
+  for (let xc = xMin; xc < xMax; xc++) {
+    for (let yc = yMin; yc < yMax; yc++) {
       const newNumNTO = numNTO[xc][yc] + numNTOChange;
-      if (newNumNTO < 0) {
-        throw new Error(`numNTO is below zero at cell: (${xc}, ${yc})`);
-      }
+      assert(newNumNTO >= 0, `numNTO is below zero at cell: (${xc}, ${yc})`);
       numNTO[xc][yc] = newNumNTO; // eslint-disable-line no-param-reassign
     }
   }
@@ -210,17 +206,17 @@ export function initMapTraversabilityCells(map) {
     }
   }
   numNTOWithinBufCells = convolve(
-    invertBinary2dArray(mapTraversabilityCells),
+    invertBinary2dArray(mapTraversabilityCells), // invert so that NTOs are represented by 1s
     NTKernel,
   );
   init2dArray(xtl * CPTL, ytl * CPTL, 0, mapTraversabilityCellsWithBuf);
-  getTraversabilityFromNumNTO(
-    numNTOWithinBufCells,
-    mapTraversabilityCellsWithBuf,
-    0,
-    0,
-    numNTOWithinBufCells.length - 1,
-    numNTOWithinBufCells[0].length - 1,
+  updateTraversabilityFromNumNTO(
+    numNTOWithinBufCells, // numNTO
+    mapTraversabilityCellsWithBuf, // traversability
+    0, // xMin
+    0, // yMin
+    numNTOWithinBufCells.length - 1, // xMax
+    numNTOWithinBufCells[0].length - 1, // yMax
   );
 }
 
@@ -259,8 +255,8 @@ export function getMapTraversabilityInCells(map) {
       const NTKernelReach = Math.floor(NTKernel.length / 2);
       const minXCell = xFirstCell - NTKernelReach;
       const minYCell = yFirstCell - NTKernelReach;
-      const maxXCell = xFirstCell + (CPTL - 1) + NTKernelReach;
-      const maxYCell = yFirstCell + (CPTL - 1) + NTKernelReach;
+      const maxXCell = xFirstCell + CPTL + NTKernelReach;
+      const maxYCell = yFirstCell + CPTL + NTKernelReach;
 
       updateNumNTO(
         numNTOWithinBufCells,
@@ -270,7 +266,7 @@ export function getMapTraversabilityInCells(map) {
         maxYCell,
         tileTraversability,
       );
-      getTraversabilityFromNumNTO(
+      updateTraversabilityFromNumNTO(
         numNTOWithinBufCells,
         mapTraversabilityCellsWithBuf,
         minXCell,
