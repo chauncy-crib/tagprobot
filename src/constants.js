@@ -11,7 +11,7 @@ export const teams = {
 export const PPTL = 40;
 
 // Cells per tile length
-export const CPTL = 1;
+export const CPTL = 2;
 assert(PPTL % CPTL === 0, 'CPTL does not divide evenly into PPTL');
 
 // Pixels per cell length

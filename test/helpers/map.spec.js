@@ -5,13 +5,14 @@ import {
   init2dArray,
   fillGridWithSubgrid,
   updateNumNTO,
-  getTraversabilityFromNumNTO,
+  updateTraversabilityFromNumNTO,
   getTileTraversabilityInCells,
   getMapTraversabilityInCells,
   __RewireAPI__ as MapRewireAPI,
 } from '../../src/helpers/map';
 
 
+/* eslint-disable no-multi-spaces, array-bracket-spacing */
 test('init2dArray: returns 2d array that is correct size, and with correct value filled in', t => {
   let width = 5;
   let height = 3;
@@ -98,7 +99,7 @@ test('fillGridWithSubgrid: throws when subgrid runs out of bounds on the big gri
 });
 
 
-test('getTraversabilityFromNumNTO', tester => {
+test('updateTraversabilityFromNumNTO', tester => {
   tester.test('returns correctly with fully updated 3x3 grid', t => {
     const numNTO = [
       [1, 2, 3],
@@ -112,10 +113,11 @@ test('getTraversabilityFromNumNTO', tester => {
     ];
     const xMin = 0;
     const yMin = 0;
-    const xMax = 2;
-    const yMax = 2;
+    const xMax = 3;
+    const yMax = 3;
 
-    t.same(getTraversabilityFromNumNTO(numNTO, traversability, xMin, yMin, xMax, yMax), [
+    updateTraversabilityFromNumNTO(numNTO, traversability, xMin, yMin, xMax, yMax);
+    t.same(traversability, [
       [0, 0, 0],
       [1, 0, 0],
       [0, 1, 0],
@@ -138,10 +140,11 @@ test('getTraversabilityFromNumNTO', tester => {
     ];
     const xMin = 1;
     const yMin = 1;
-    const xMax = 2;
-    const yMax = 2;
+    const xMax = 3;
+    const yMax = 3;
 
-    t.same(getTraversabilityFromNumNTO(numNTO, traversability, xMin, yMin, xMax, yMax), [
+    updateTraversabilityFromNumNTO(numNTO, traversability, xMin, yMin, xMax, yMax);
+    t.same(traversability, [
       [1, 0, 1],
       [1, 0, 0],
       [1, 1, 1],
@@ -510,7 +513,6 @@ test('getMapTraversabilityInCells', tester => {
     mockGetTileProperty.withArgs('tempT', 'permanent').returns(false);
     mockGetTileProperty.withArgs('tempT', 'permanent').returns(false);
     MapRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
-    /* eslint-disable no-multi-spaces, array-bracket-spacing */
     let mockMap = [
       [tempT, permT,  tempT],
       [tempT, tempNT, permT],
@@ -595,8 +597,6 @@ test('getMapTraversabilityInCells', tester => {
     MapRewireAPI.__ResetDependency__('updateNTSprites');
     MapRewireAPI.__ResetDependency__('getTileTraversabilityInCells');
     MapRewireAPI.__ResetDependency__('getTileProperty');
-
-    /* eslint-enable no-multi-spaces, array-bracket-spacing */
     t.end();
   });
 
@@ -622,8 +622,8 @@ test('updateNumNTO', tester => {
     ];
     const xMin = 1;
     const yMin = 1;
-    const xMax = 3;
-    const yMax = 3;
+    const xMax = 4;
+    const yMax = 4;
     const tileTraversability = 1;
 
     updateNumNTO(numNTO, xMin, yMin, xMax, yMax, tileTraversability);
@@ -658,8 +658,8 @@ test('updateNumNTO', tester => {
     ];
     const xMin = 1;
     const yMin = 1;
-    const xMax = 4;
-    const yMax = 4;
+    const xMax = 5;
+    const yMax = 5;
     const tileTraversability = 0;
 
     updateNumNTO(numNTO, xMin, yMin, xMax, yMax, tileTraversability);
@@ -692,8 +692,8 @@ test('updateNumNTO', tester => {
     ];
     const xMin = 1;
     const yMin = 1;
-    const xMax = 3;
-    const yMax = 3;
+    const xMax = 4;
+    const yMax = 4;
     const tileTraversability = 1;
 
     t.throws(() => { updateNumNTO(numNTO, xMin, yMin, xMax, yMax, tileTraversability); });
@@ -738,13 +738,11 @@ test('initMapTraversabilityCells()', tester => {
     const mockTilesToUpdate = [];
     const mockTilesToUpdateValues = [];
 
-    /* eslint-disable no-multi-spaces, array-bracket-spacing */
     const mockMap = [
       [permNT, tempNT, permT],
       [tempT,  tempT,  permNT],
       [permNT, tempNT, permT],
     ];
-    /* eslint-enable no-multi-spaces, array-bracket-spacing */
 
     MapRewireAPI.__Rewire__('CPTL', 1);
     MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);

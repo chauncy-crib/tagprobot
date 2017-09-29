@@ -32,7 +32,6 @@ export function multiplyCorrespondingElementsAndSum(m1, m2) {
       sum += m1[x][y] * m2[x][y];
     }
   }
-
   return sum;
 }
 
@@ -88,7 +87,6 @@ export function getSubarrayFrom2dArray(array, xMin, yMin, xMax, yMax) {
       subarray[x - xMin][y - yMin] = array[x][y];
     }
   }
-
   return subarray;
 }
 
@@ -98,8 +96,8 @@ export function getSubarrayFrom2dArray(array, xMin, yMin, xMax, yMax) {
  *
  * @param {number[][]} m - the first 2D array in the convolution
  * @param {number[][]} k - the second 2D array in the convolution, also called
- * the kernel (must have sides of equal length and the sides must have an odd
- * length)
+ *   the kernel (must have sides of equal length and the sides must have an odd
+ *   length)
  */
 export function convolve(m, k) {
   const kWidth = k.length;
@@ -133,7 +131,6 @@ export function convolve(m, k) {
       convolution[x][y] = multiplyCorrespondingElementsAndSum(mSubarray, k);
     }
   }
-
   return convolution;
 }
 
@@ -149,19 +146,11 @@ export function invertBinary2dArray(m) {
 
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height; y++) {
-      switch (m[x][y]) {
-        case 0:
-          invertedM[x][y] = 1;
-          break;
-        case 1:
-          invertedM[x][y] = 0;
-          break;
-        default:
-          throw new Error(`A non binary value found in matrix: ${m[x][y]}`);
-      }
+      const currVal = m[x][y];
+      assert(currVal === 0 || currVal === 1, `a non binary value found in matrix: ${m[x][y]}`);
+      invertedM[x][y] = 1 - currVal;
     }
   }
-
   return invertedM;
 }
 
@@ -190,6 +179,5 @@ export function addNTBuffer(m, k) {
       }
     }
   }
-
   return invertBinary2dArray(convolution);
 }
