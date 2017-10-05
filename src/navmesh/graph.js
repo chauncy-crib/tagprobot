@@ -1,3 +1,4 @@
+import _ from 'lodash';
 
 export class Point {
   constructor(x, y) {
@@ -35,7 +36,11 @@ export class Graph {
   }
 
   addVertex(point) {
-    this.vertices.add(point);
+    if (_.some(_.map(this.getVertices(), v => v.x === point.x && v.y === point.y))) {
+      // vertex already exists
+      return;
+    }
+    this.vertices.push(point);
   }
 
   /**
