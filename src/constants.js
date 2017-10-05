@@ -27,3 +27,6 @@ export const pathAlpha = 0.25;
 export const pathColor = 0x00ff00;
 export const ntAlpha = 0.4;
 export const ntColor = 0xff8c00;
+export const keyColor = 0x753daf; // purple
+export const keyOnAlpha = 0.75;
+export const keyOffAlpha = 0.2;
