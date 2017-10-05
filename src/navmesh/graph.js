@@ -1,3 +1,4 @@
+import _ from 'lodash';
 
 export class Point {
   constructor(x, y) {
