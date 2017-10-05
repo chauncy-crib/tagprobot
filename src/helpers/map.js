@@ -229,7 +229,7 @@ export function initMapTraversabilityCells(map) {
  * that column, with 1s and 0s.  empty_tiles[0][0] is the upper-left corner
  * tile.
  *
- * Runtime: O(E*CPTL^2) with drawings on, O(E + S*CPTL^2) with drawings off
+ * Runtime: O(M*CPTL^2) with drawings on, O(M + S*CPTL^2) with drawings off
  *
  * @param {number} map - 2D array representing the Tagpro map
  */
