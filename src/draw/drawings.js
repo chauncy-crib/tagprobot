@@ -47,6 +47,20 @@ function getPixiRect(x, y, width, height, alpha, color) {
 
 
 /*
+ * @param {number} x - top left x, in pixels
+ * @param {number} y - top left y, in pixels
+ * @param {number} size - side length in pixels
+ * @param {number} alpha - 0-1, where 0 is transparent
+ * @param {number} color - a hex color
+ * @return {PIXI.Graphics} a PIXI.Graphics rectangle object with the specified x, y, size,
+ *   alpha, and color
+ */
+function getPixiSquare(x, y, size, alpha, color) {
+  return getPixiRect(x, y, size, size, alpha, color);
+}
+
+
+/*
  * Erases all spirtes in pathSprites from the renderer
  * Creates a new path sprite for each cell in path
  * Adds each new sprite to pathSprites, and to the renderer
@@ -60,7 +74,7 @@ export function updatePath(path) {
   _.forEach(pathSprites, p => tagpro.renderer.layers.background.removeChild(p));
   pathSprites.splice(0, pathSprites.length);
   _.forEach(path, cell => {
-    const sprite = getPixiRect(cell.xc * PPCL, cell.yc * PPCL, PPCL, PPCL, pathAlpha, pathColor);
+    const sprite = getPixiSquare(cell.xc * PPCL, cell.yc * PPCL, PPCL, pathAlpha, pathColor);
     pathSprites.push(sprite);
     tagpro.renderer.layers.background.addChild(sprite);
   });
@@ -110,7 +124,7 @@ export function generatePermanentNTSprites(x, y, cellTraversabilities) {
       // if we don't have a sprite already there and there should be one,
       // draw it
       if (!cellTraversabilities[i][j]) {
-        const sprite = getPixiRect(i * PPCL, j * PPCL, PPCL, PPCL, ntAlpha, ntColor);
+        const sprite = getPixiSquare(i * PPCL, j * PPCL, PPCL, ntAlpha, ntColor);
         permNTSprites.push(sprite);
       }
     }
@@ -144,7 +158,7 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
       // if we don't have a sprite already there and there should be one,
       // draw it
       if (_.isNull(tempNTSprites[i][j]) && !cellTraversabilities[i][j]) {
-        const sprite = getPixiRect(i * PPCL, j * PPCL, PPCL, PPCL, ntAlpha, ntColor);
+        const sprite = getPixiSquare(i * PPCL, j * PPCL, PPCL, ntAlpha, ntColor);
         tempNTSprites[i][j] = sprite;
         tagpro.renderer.layers.background.addChild(sprite);
       // else if we already have a sprite there and there shouldn't be one,
