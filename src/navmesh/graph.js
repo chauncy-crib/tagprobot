@@ -18,23 +18,39 @@ export class Graph {
   }
 
   addEdge(point1, point2) {
+    if (this.isConnected(point1, point2)) {
+      return;
+    }
     this.edges.push({ point1, point2 });
   }
 
 
-  connected(point1, point2) {
+  removeEdge(point1, point2) {
+    this.edges = _.reject(this.edges, e =>
+      // remove edges between the two points
+      (e.point1.equal(point1) && e.point2.equal(point2)) ||
+        (e.point1.equal(point2) && e.point2.equal(point1)));
+  }
+
+
+  // user is responsible for clearing edges comming from vertex
+  removeVertex(vertex) {
+    this.vertices = _.reject(this.vertices, v => vertex.equal(v));
+  }
+
+
+  isConnected(point1, point2) {
     const N = this.neighbors(point1);
     return _.some(_.map(N, n => n.equal(point2)));
   }
 
   /**
-   * Return neighbors of the vertex at x, y
+   * Return neighbors of the point
    *
    * @returns {Point[]}
    */
-  neighbors(x, y) {
+  neighbors(p) {
     const res = [];
-    const p = Point(x, y);
     for (let i = 0; i < this.edges.length; i += 1) {
       const e = this.edges[i];
       if (e.point1.equal(p)) {
