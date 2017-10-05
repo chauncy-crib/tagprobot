@@ -3,6 +3,16 @@ import { Graph, Point } from './graph';
 import { getTileProperty } from '../tiles';
 import { PPTL } from '../../src/constants';
 
+function threePointsInLine(p1, p2, p3) {
+  if (p1.x === p2.x && p2.x === p3.x) {
+    return true;
+  }
+  if (p1.y === p2.y && p2.y === p3.y) {
+    return true;
+  }
+  return false;
+}
+
 /**
  * Get a list of tiles which are on the edge of the traversability space.
  *
@@ -15,7 +25,7 @@ import { PPTL } from '../../src/constants';
  *   01101111110
  *   00000000000
  *
- * output (with returned tiles represneted as 1s)
+ * output (with returned tiles represented as 1s)
  *
  *   00000000000
  *   01001111110
@@ -61,47 +71,61 @@ export function mapToEdgeTiles(map) {
   return res;
 }
 
-export function polygonsFromTagproMap(map) {
+export function unmergedGraphFromTagproMap(map) {
   const edgeTiles = mapToEdgeTiles(map);
   const graph = new Graph();
   _.each(edgeTiles, tile => {
     const { x, y } = tile;
     const xp = x * PPTL;
     const yp = y * PPTL;
+    const topLeft = new Point(xp, yp);
+    const topRight = new Point(xp + PPTL, yp);
+    const bottomLeft = new Point(xp, yp + PPTL);
+    const bottomRight = new Point(xp + PPTL, yp + PPTL);
     if (x === 0 || !getTileProperty(map[x - 1][y], 'traversable')) {
-      // point on top-left
-      const p1 = new Point(xp, yp);
-      // point on bottom-left
-      const p2 = new Point(xp, yp + PPTL);
-      graph.addVertex(p1);
-      graph.addVertex(p2);
-      graph.addEdge(p1, p2);
-    } else if (x === map.length - 1 || !getTileProperty(map[x + 1][y], 'traversable')) {
-      // point on top-right
-      const p1 = new Point(xp + PPTL, yp);
-      // point on bottom-right
-      const p2 = new Point(xp + PPTL, yp + PPTL);
-      graph.addVertex(p1);
-      graph.addVertex(p2);
-      graph.addEdge(p1, p2);
-    } else if (y === 0 || !getTileProperty(map[x][y - 1], 'traversable')) {
-      // point on top-left
-      const p1 = new Point(xp, yp);
-      // point on top-right
-      const p2 = new Point(xp + PPTL, yp);
-      graph.addVertex(p1);
-      graph.addVertex(p2);
-      graph.addEdge(p1, p2);
+      // edge on left
+      graph.addVertex(topLeft);
+      graph.addVertex(bottomLeft);
+      graph.addEdge(topLeft, bottomLeft);
+    } if (x === map.length - 1 || !getTileProperty(map[x + 1][y], 'traversable')) {
+      // edge on right
+      graph.addVertex(topRight);
+      graph.addVertex(bottomRight);
+      graph.addEdge(topRight, bottomRight);
+    } if (y === 0 || !getTileProperty(map[x][y - 1], 'traversable')) {
+      // edge above
+      graph.addVertex(topLeft);
+      graph.addVertex(topRight);
+      graph.addEdge(topLeft, topRight);
       // add line above
-    } else if (y === map[0].length - 1 || !getTileProperty(map[x][y + 1], 'traversable')) {
-      // point on bottom-left
-      const p1 = new Point(xp, yp + PPTL);
-      // point on bottom-right
-      const p2 = new Point(xp + PPTL, yp + PPTL);
-      graph.addVertex(p1);
-      graph.addVertex(p2);
-      graph.addEdge(p1, p2);
+    } if (y === map[0].length - 1 || !getTileProperty(map[x][y + 1], 'traversable')) {
+      // edge below
+      graph.addVertex(bottomLeft);
+      graph.addVertex(bottomRight);
+      graph.addEdge(bottomLeft, bottomRight);
     }
   });
+
   return graph;
+}
+
+
+export function graphFromTagproMap(map) {
+  const unmergedGraph = unmergedGraphFromTagproMap(map);
+  let i = 0;
+  while (i < unmergedGraph.vertices.length) {
+    const v = unmergedGraph.vertices[i];
+    const neighbors = unmergedGraph.neighbors(v);
+    if (neighbors.length === 2) {
+      if (threePointsInLine(v, neighbors[0], neighbors[1])) {
+        unmergedGraph.removeVertex(v);
+        unmergedGraph.removeEdge(v, neighbors[0]);
+        unmergedGraph.removeEdge(v, neighbors[1]);
+        unmergedGraph.addEdge(neighbors[0], neighbors[1]);
+        i -= 1;
+      }
+    }
+    i += 1;
+  }
+  return unmergedGraph;
 }

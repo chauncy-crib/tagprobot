@@ -2,8 +2,9 @@ import test from 'tape';
 import sinon from 'sinon';
 import {
   mapToEdgeTiles,
-  polygonsFromTagproMap,
-  __RewireAPI__ as PolygonRewireAPI} from '../../src/navmesh/polygon';
+  unmergedGraphFromTagproMap,
+  graphFromTagproMap,
+  __RewireAPI__ as PolygonRewireAPI } from '../../src/navmesh/polygon';
 
 test('mapToEdgeTiles returns edges of traversability', t => {
   const mockGetTileProperty = sinon.stub();
@@ -48,6 +49,57 @@ test('mapToEdgeTiles returns edges of traversability', t => {
     { x: 4, y: 8 },
     { x: 4, y: 9 },
   ]);
+
+  PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  t.end();
+});
+
+test('unmergedGraphFromTagproMap', t => {
+  const mockGetTileProperty = sinon.stub();
+  mockGetTileProperty.withArgs(1, 'traversable').returns(true);
+  mockGetTileProperty.withArgs(0, 'traversable').returns(false);
+  PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+
+  const map = [
+    [0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 0, 0],
+    [0, 1, 0, 1, 0, 0],
+    [0, 1, 1, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0],
+  ];
+  const graph = unmergedGraphFromTagproMap(map);
+  t.is(graph.edges.length, 16);
+  t.is(graph.vertices.length, 16);
+
+  PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  t.end();
+});
+
+
+test('graphFromTagproMap', t => {
+  const mockGetTileProperty = sinon.stub();
+  mockGetTileProperty.withArgs(1, 'traversable').returns(true);
+  mockGetTileProperty.withArgs(0, 'traversable').returns(false);
+  PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+
+  let map = [
+    [0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 0, 0, 0],
+  ];
+  let graph = graphFromTagproMap(map);
+  t.is(graph.vertices.length, 4);
+  t.is(graph.edges.length, 4);
+
+  map = [
+    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0],
+    [0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0],
+    [0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0],
+    [0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ];
+  graph = graphFromTagproMap(map);
+  t.is(graph.edges.length, 14);
 
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
   t.end();
