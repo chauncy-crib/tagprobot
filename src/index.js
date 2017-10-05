@@ -8,7 +8,11 @@ import {
   chatHelpMenu,
 } from './utils/interface';
 
-import { drawPermanentNTSprites } from './draw/drawings';
+import {
+  drawPermanentNTSprites,
+  initKeyPressesVisualization,
+  initUiUpdateProcess,
+} from './draw/drawings';
 
 // Handle keypress and related events for manual/auto toggle
 window.onkeydown = onKeyDown;
@@ -45,6 +49,8 @@ function start() {
   chatHelpMenu();
   initMapTraversabilityCells(tagpro.map);
   drawPermanentNTSprites();
+  initKeyPressesVisualization();
+  initUiUpdateProcess();
 
   function loop() {
     // Call this function every time a tagpro animation frame gets drawn

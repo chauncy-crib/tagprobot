@@ -1,8 +1,17 @@
 import differenceInMilliseconds from 'date-fns/difference_in_milliseconds';
-import { clearSprites, drawPermanentNTSprites } from '../draw/drawings';
+import {
+  clearSprites,
+  drawPermanentNTSprites,
+  drawKeyPresses,
+  currKeyPresses,
+} from '../draw/drawings';
 
 
 const KEY_CODES = {
+  LEFT: 37,
+  UP: 38,
+  RIGHT: 39,
+  DOWN: 40,
   H: 72,
   Q: 81,
   V: 86,
@@ -111,6 +120,12 @@ function press(directions) {
       tagpro.sendKeyPress('down', true);
       break;
   }
+
+  drawKeyPresses(directions);
+
+  // Update the global key presses state
+  currKeyPresses.x = directions.x;
+  currKeyPresses.y = directions.y;
 }
 
 
@@ -124,7 +139,7 @@ export function onKeyDown(event) {
     // If letter pressed is Q, toggle autonomous controls
     case KEY_CODES.Q: {
       autonomous = !autonomous;
-      press({}); // Release all keys
+      press({ x: undefined, y: undefined }); // Release all keys
       const autonomyMode = autonomous ? 'AUTONOMOUS' : 'MANUAL';
       chat(`Autonomy mode updated: now ${autonomyMode}!`);
       break;
