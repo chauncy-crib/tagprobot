@@ -218,8 +218,8 @@ export function initMapTraversabilityCells(map) {
  * Returns a 2D array of traversable (1) and blocked (0) cells. Size of return grid is map.length *
  *   CPTL. The 2D array is an array of the columns in the game. empty_tiles[0] is the left-most
  *   column. Each column array is an array of the tiles in that column, with 1s and 0s.
- *   empty_tiles[0][0] is the upper-left corner tile. Runtime: O(E*CPTL^2) with drawings on,
- *   O(E + S*CPTL^2) with drawings off
+ *   empty_tiles[0][0] is the upper-left corner tile. Runtime: O(M*CPTL^2) with drawings on,
+ *   O(M + S*CPTL^2) with drawings off
  * @param {number} map - 2D array representing the Tagpro map
  */
 export function getMapTraversabilityInCells(map) {

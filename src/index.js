@@ -7,11 +7,12 @@ import {
   setupVelocity,
   chatHelpMenu,
 } from './utils/interface';
-
+import { graphFromTagproMap } from './navmesh/polygon';
 import {
   drawPermanentNTSprites,
   initKeyPressesVisualization,
   initUiUpdateProcess,
+  drawNavMesh,
 } from './draw/drawings';
 
 // Handle keypress and related events for manual/auto toggle
@@ -60,6 +61,9 @@ function start() {
   drawPermanentNTSprites();
   initKeyPressesVisualization();
   initUiUpdateProcess();
+
+  const graph = graphFromTagproMap(tagpro.map);
+  drawNavMesh(graph);
 
   // Run the bot
   loop();
