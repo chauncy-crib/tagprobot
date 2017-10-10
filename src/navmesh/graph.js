@@ -24,7 +24,6 @@ export class Graph {
     this.edges.push({ point1, point2 });
   }
 
-
   removeEdge(point1, point2) {
     this.edges = _.reject(this.edges, e =>
       // remove edges between the two points
