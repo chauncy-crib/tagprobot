@@ -8,10 +8,6 @@ import {
 
 
 const KEY_CODES = {
-  LEFT: 37,
-  UP: 38,
-  RIGHT: 39,
-  DOWN: 40,
   H: 72,
   Q: 81,
   V: 86,
@@ -89,39 +85,17 @@ export function chatHelpMenu() {
  * @param {(string|undefined)} directions.y - either 'DOWN', 'UP', or undefined
  */
 function press(directions) {
-  switch (directions.x) {
-    case 'RIGHT':
-      tagpro.sendKeyPress('right', false);
-      tagpro.sendKeyPress('left', true);
-      break;
-    case 'LEFT':
-      tagpro.sendKeyPress('left', false);
-      tagpro.sendKeyPress('right', true);
-      break;
-
-    default:
-      tagpro.sendKeyPress('left', true);
-      tagpro.sendKeyPress('right', true);
-      break;
+  if (directions.x !== currKeyPresses.x) {
+    tagpro.sendKeyPress('left', directions.x !== 'LEFT');
+    tagpro.sendKeyPress('right', directions.x !== 'RIGHT');
   }
 
-  switch (directions.y) {
-    case 'DOWN':
-      tagpro.sendKeyPress('down', false);
-      tagpro.sendKeyPress('up', true);
-      break;
-    case 'UP':
-      tagpro.sendKeyPress('up', false);
-      tagpro.sendKeyPress('down', true);
-      break;
-
-    default:
-      tagpro.sendKeyPress('up', true);
-      tagpro.sendKeyPress('down', true);
-      break;
+  if (directions.y !== currKeyPresses.y) {
+    tagpro.sendKeyPress('down', directions.y !== 'DOWN');
+    tagpro.sendKeyPress('up', directions.y !== 'UP');
   }
 
-  drawKeyPresses(directions);
+  drawKeyPresses(directions); // only updates drawings that need to be updated
 
   // Update the global key presses state
   currKeyPresses.x = directions.x;
@@ -139,7 +113,7 @@ export function onKeyDown(event) {
     // If letter pressed is Q, toggle autonomous controls
     case KEY_CODES.Q: {
       autonomous = !autonomous;
-      press({ x: undefined, y: undefined }); // Release all keys
+      press({ x: null, y: null }); // Release all keys
       const autonomyMode = autonomous ? 'AUTONOMOUS' : 'MANUAL';
       chat(`Autonomy mode updated: now ${autonomyMode}!`);
       break;
