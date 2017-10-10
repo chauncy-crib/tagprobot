@@ -112,9 +112,10 @@ export function unmergedGraphFromTagproMap(map) {
 
 export function graphFromTagproMap(map) {
   const unmergedGraph = unmergedGraphFromTagproMap(map);
+  const vertices = unmergedGraph.getVertices();
   let i = 0;
-  while (i < unmergedGraph.vertices.length) {
-    const v = unmergedGraph.vertices[i];
+  while (i < vertices.length) {
+    const v = vertices[i];
     const neighbors = unmergedGraph.neighbors(v);
     if (neighbors.length === 2) {
       if (threePointsInLine(v, neighbors[0], neighbors[1])) {
@@ -122,7 +123,6 @@ export function graphFromTagproMap(map) {
         unmergedGraph.removeEdge(v, neighbors[0]);
         unmergedGraph.removeEdge(v, neighbors[1]);
         unmergedGraph.addEdge(neighbors[0], neighbors[1]);
-        i -= 1;
       }
     }
     i += 1;
