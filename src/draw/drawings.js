@@ -34,7 +34,9 @@ let tempNTSprites = [];
 const permNTSprites = [];
 
 // The current state of the keys being pressed
-export const currKeyPresses = { x: undefined, y: undefined };
+export const currKeyPresses = { x: null, y: null };
+// PIXI object that holds the key press visualizations
+let keyPressesVis;
 // Index of specific keys inside of the graphics container's children array
 const leftKeyIndex = 0;
 const downKeyIndex = 1;
@@ -90,8 +92,8 @@ function centerKeyPressesVis() {
   const screenWidth = viewport.width();
   const screenHeight = viewport.height();
 
-  tagpro.ui.sprites.keyPressesVis.x = screenWidth / 2; // in the middle of the screen
-  tagpro.ui.sprites.keyPressesVis.y = screenHeight - keySize - 60; // just above the game timer
+  keyPressesVis.x = screenWidth / 2; // in the middle of the screen
+  keyPressesVis.y = screenHeight - keySize - 60; // just above the game timer
 }
 
 
@@ -114,23 +116,59 @@ export function initUiUpdateProcess() {
  * Creates the PIXI object that holds the key press visualizations and draws the initial keys.
  */
 export function initKeyPressesVisualization() {
-  tagpro.ui.sprites.keyPressesVis = new PIXI.DisplayObjectContainer();
-  tagpro.renderer.layers.ui.addChild(tagpro.ui.sprites.keyPressesVis);
-  tagpro.ui.sprites.keyPressesVis.addChildAt(
-    getPixiSquare((1.5 * -keySize) - keyGap, 0, keySize, keyOffAlpha, keyColor),
+  keyPressesVis = new PIXI.DisplayObjectContainer();
+  tagpro.renderer.layers.ui.addChild(keyPressesVis);
+  keyPressesVis.addChildAt(
+    getPixiSquare(-(1.5 * keySize) - keyGap, 0, keySize, keyOffAlpha, keyColor),
     leftKeyIndex,
   );
-  tagpro.ui.sprites.keyPressesVis.addChildAt(
-    getPixiSquare((0.5 * -keySize), 0, keySize, keyOffAlpha, keyColor),
+  keyPressesVis.addChildAt(
+    getPixiSquare(-(0.5 * keySize), 0, keySize, keyOffAlpha, keyColor),
     downKeyIndex,
   );
-  tagpro.ui.sprites.keyPressesVis.addChildAt(
+  keyPressesVis.addChildAt(
     getPixiSquare((0.5 * keySize) + keyGap, 0, keySize, keyOffAlpha, keyColor),
     rightKeyIndex,
   );
-  tagpro.ui.sprites.keyPressesVis.addChildAt(
-    getPixiSquare((0.5 * -keySize), -keySize - keyGap, keySize, keyOffAlpha, keyColor),
+  keyPressesVis.addChildAt(
+    getPixiSquare(-(0.5 * keySize), -keySize - keyGap, keySize, keyOffAlpha, keyColor),
     upKeyIndex,
+  );
+}
+
+
+/*
+ * @param keyIndex - the index within the keyPressesVis PIXI object of the key that should be
+ *   updated
+ * @param newAlpha - the alpha value to set the new key drawing to
+ */
+function updateKeyDrawing(keyIndex, newAlpha) {
+  let x;
+  let y;
+  switch (keyIndex) {
+    case leftKeyIndex:
+      x = -(1.5 * keySize) - keyGap;
+      y = 0;
+      break;
+    case downKeyIndex:
+      x = -(0.5 * keySize);
+      y = 0;
+      break;
+    case rightKeyIndex:
+      x = (0.5 * keySize) + keyGap;
+      y = 0;
+      break;
+    case upKeyIndex:
+      x = -(0.5 * keySize);
+      y = -keySize - keyGap;
+      break;
+    default:
+      throw new Error(`Given key index does not exist: ${keyIndex}`);
+  }
+  keyPressesVis.removeChildAt(keyIndex);
+  keyPressesVis.addChildAt(
+    getPixiSquare(x, y, keySize, newAlpha, keyColor),
+    keyIndex,
   );
 }
 
@@ -138,66 +176,29 @@ export function initKeyPressesVisualization() {
 /*
  * Draw the given state of the key presses.
  *
- * @param {Object} directions - directions to move
+ * @param {Object} directions - directions to draw
  * @param {(string|undefined)} directions.x - either 'RIGHT', 'LEFT', or undefined
  * @param {(string|undefined)} directions.y - either 'DOWN', 'UP', or undefined
  */
 export function drawKeyPresses(directions) {
   if (directions.x !== currKeyPresses.x) {
-    let leftAlpha;
-    let rightAlpha;
-    switch (directions.x) {
-      case 'LEFT':
-        leftAlpha = keyOnAlpha;
-        rightAlpha = keyOffAlpha;
-        break;
-      case 'RIGHT':
-        leftAlpha = keyOffAlpha;
-        rightAlpha = keyOnAlpha;
-        break;
-      default:
-        leftAlpha = keyOffAlpha;
-        rightAlpha = keyOffAlpha;
-        break;
-    }
-    tagpro.ui.sprites.keyPressesVis.removeChildAt(leftKeyIndex);
-    tagpro.ui.sprites.keyPressesVis.addChildAt(
-      getPixiSquare((1.5 * -keySize) - keyGap, 0, keySize, leftAlpha, keyColor),
-      leftKeyIndex,
-    );
-    tagpro.ui.sprites.keyPressesVis.removeChildAt(rightKeyIndex);
-    tagpro.ui.sprites.keyPressesVis.addChildAt(
-      getPixiSquare((0.5 * keySize) + keyGap, 0, keySize, rightAlpha, keyColor),
-      rightKeyIndex,
-    );
+    // Find new alpha values for left/right keys
+    const leftAlpha = directions.x === 'LEFT' ? keyOnAlpha : keyOffAlpha;
+    const rightAlpha = directions.x === 'RIGHT' ? keyOnAlpha : keyOffAlpha;
+
+    // Update left/right key drawings
+    updateKeyDrawing(leftKeyIndex, leftAlpha);
+    updateKeyDrawing(rightKeyIndex, rightAlpha);
   }
+
   if (directions.y !== currKeyPresses.y) {
-    let downAlpha;
-    let upAlpha;
-    switch (directions.y) {
-      case 'DOWN':
-        downAlpha = keyOnAlpha;
-        upAlpha = keyOffAlpha;
-        break;
-      case 'UP':
-        downAlpha = keyOffAlpha;
-        upAlpha = keyOnAlpha;
-        break;
-      default:
-        downAlpha = keyOffAlpha;
-        upAlpha = keyOffAlpha;
-        break;
-    }
-    tagpro.ui.sprites.keyPressesVis.removeChildAt(downKeyIndex);
-    tagpro.ui.sprites.keyPressesVis.addChildAt(
-      getPixiSquare((0.5 * -keySize), 0, keySize, downAlpha, keyColor),
-      downKeyIndex,
-    );
-    tagpro.ui.sprites.keyPressesVis.removeChildAt(upKeyIndex);
-    tagpro.ui.sprites.keyPressesVis.addChildAt(
-      getPixiSquare((0.5 * -keySize), -keySize - keyGap, keySize, upAlpha, keyColor),
-      upKeyIndex,
-    );
+    // Find new alpha values for down/up keys
+    const downAlpha = directions.y === 'DOWN' ? keyOnAlpha : keyOffAlpha;
+    const upAlpha = directions.y === 'UP' ? keyOnAlpha : keyOffAlpha;
+
+    // Update down/up key drawings
+    updateKeyDrawing(downKeyIndex, downAlpha);
+    updateKeyDrawing(upKeyIndex, upAlpha);
   }
 }
 
