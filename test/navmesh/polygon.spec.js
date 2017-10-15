@@ -5,12 +5,14 @@ import {
   unmergedGraphFromTagproMap,
   graphFromTagproMap,
   __RewireAPI__ as PolygonRewireAPI } from '../../src/navmesh/polygon';
+import { __RewireAPI__ as TileRewireAPI } from '../../src/tiles';
 
 test('mapToEdgeTiles returns edges of traversability', t => {
   const mockGetTileProperty = sinon.stub();
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
   mockGetTileProperty.withArgs(0, 'traversable').returns(false);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  PolygonRewireAPI.__Rewire__('tileIsOneOf', sinon.stub().returns(false));
 
   const map = [
     [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -51,14 +53,81 @@ test('mapToEdgeTiles returns edges of traversability', t => {
   ]);
 
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  PolygonRewireAPI.__ResetDependency__('tileIsOneOf');
   t.end();
 });
 
-test('unmergedGraphFromTagproMap', t => {
+
+test('mapToEdgeTiles: correct number of tiles with diagonals', t => {
+  const mockGetTileProperty = sinon.stub();
+  mockGetTileProperty.withArgs(1, 'traversable').returns(true);
+  mockGetTileProperty.returns(false);
+  const mockTileHasName = sinon.stub();
+  mockTileHasName.withArgs(1.1, 'ANGLE_WALL_1').returns(true);
+  mockTileHasName.withArgs(1.2, 'ANGLE_WALL_2').returns(true);
+  mockTileHasName.withArgs(1.3, 'ANGLE_WALL_3').returns(true);
+  mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
+  mockTileHasName.returns(false);
+  PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
+
+  // this is an NT diamond in the middle of the map.
+  /* eslint-disable no-multi-spaces */
+  const map = [
+    [1, 1,   1,   1,   1,   1],
+    [1, 1,   1.4, 1.3, 1,   1],
+    [1, 1.4, 0,   0,   1.3, 1],
+    [1, 1.1, 0,   0,   1.2, 1],
+    [1, 1,   1.1, 1.2, 1,   1],
+    [1, 1,   1,   1,   1,   1],
+  ];
+  /* eslint-enable no-multi-spaces */
+
+  const edges = mapToEdgeTiles(map);
+  t.is(edges.length, 28);
+  t.same(edges, [
+    { x: 0, y: 0 },
+    { x: 0, y: 1 },
+    { x: 0, y: 2 },
+    { x: 0, y: 3 },
+    { x: 0, y: 4 },
+    { x: 0, y: 5 },
+    { x: 1, y: 0 },
+    { x: 1, y: 2 },
+    { x: 1, y: 3 },
+    { x: 1, y: 5 },
+    { x: 2, y: 0 },
+    { x: 2, y: 1 },
+    { x: 2, y: 4 },
+    { x: 2, y: 5 },
+    { x: 3, y: 0 },
+    { x: 3, y: 1 },
+    { x: 3, y: 4 },
+    { x: 3, y: 5 },
+    { x: 4, y: 0 },
+    { x: 4, y: 2 },
+    { x: 4, y: 3 },
+    { x: 4, y: 5 },
+    { x: 5, y: 0 },
+    { x: 5, y: 1 },
+    { x: 5, y: 2 },
+    { x: 5, y: 3 },
+    { x: 5, y: 4 },
+    { x: 5, y: 5 },
+  ]);
+
+  PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  TileRewireAPI.__ResetDependency__('tileHasName');
+  t.end();
+});
+
+
+test('unmergedGraphFromTagproMap: T and NT tiles', t => {
   const mockGetTileProperty = sinon.stub();
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
   mockGetTileProperty.withArgs(0, 'traversable').returns(false);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  PolygonRewireAPI.__Rewire__('tileIsOneOf', sinon.stub().returns(false));
 
   const map = [
     [0, 0, 0, 0, 0, 0],
@@ -72,6 +141,7 @@ test('unmergedGraphFromTagproMap', t => {
   t.is(graph.getVertices().length, 16);
 
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  PolygonRewireAPI.__ResetDependency__('tileIsOneOf');
   t.end();
 });
 
@@ -81,6 +151,7 @@ test('graphFromTagproMap works for simple case', t => {
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
   mockGetTileProperty.withArgs(0, 'traversable').returns(false);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  PolygonRewireAPI.__Rewire__('tileIsOneOf', sinon.stub().returns(false));
 
   const map = [
     [0, 0, 0, 0, 0, 0],
@@ -91,6 +162,7 @@ test('graphFromTagproMap works for simple case', t => {
   t.is(graph.getEdges().length, 4);
 
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  PolygonRewireAPI.__ResetDependency__('tileIsOneOf');
   t.end();
 });
 
@@ -100,6 +172,7 @@ test('graphFromTagproMap works for small square case', t => {
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
   mockGetTileProperty.withArgs(0, 'traversable').returns(false);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  PolygonRewireAPI.__Rewire__('tileIsOneOf', sinon.stub().returns(false));
 
   const map = [
     [0, 0, 0, 0],
@@ -125,6 +198,7 @@ test('graphFromTagproMap works for small square case', t => {
 
 
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  PolygonRewireAPI.__ResetDependency__('tileIsOneOf');
   t.end();
 });
 
@@ -134,6 +208,7 @@ test('graphFromTagproMap works for hollow square case', t => {
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
   mockGetTileProperty.withArgs(0, 'traversable').returns(false);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  PolygonRewireAPI.__Rewire__('tileIsOneOf', sinon.stub().returns(false));
 
   const map = [
     [0, 0, 0, 0, 0, 0, 0],
@@ -149,6 +224,7 @@ test('graphFromTagproMap works for hollow square case', t => {
   t.is(graph.getEdges().length, 8);
 
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  PolygonRewireAPI.__ResetDependency__('tileIsOneOf');
   t.end();
 });
 
@@ -157,6 +233,7 @@ test('graphFromTagproMap works for diagonal case', t => {
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
   mockGetTileProperty.withArgs(0, 'traversable').returns(false);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  PolygonRewireAPI.__Rewire__('tileIsOneOf', sinon.stub().returns(false));
 
   const map = [
     [0, 0, 0, 0, 0, 0, 0],
@@ -171,6 +248,7 @@ test('graphFromTagproMap works for diagonal case', t => {
   t.is(graph.getEdges().length, 8);
 
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  PolygonRewireAPI.__ResetDependency__('tileIsOneOf');
   t.end();
 });
 
@@ -180,6 +258,8 @@ test('graphFromTagproMap works for complicated graph', t => {
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
   mockGetTileProperty.withArgs(0, 'traversable').returns(false);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  PolygonRewireAPI.__Rewire__('tileIsOneOf', sinon.stub().returns(false));
+
   const map = [
     [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0],
@@ -193,6 +273,7 @@ test('graphFromTagproMap works for complicated graph', t => {
   t.is(graph.getEdges().length, 14);
 
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  PolygonRewireAPI.__ResetDependency__('tileIsOneOf');
   t.end();
 });
 
@@ -202,6 +283,7 @@ test('graphFromTagproMap works for large graph', t => {
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
   mockGetTileProperty.withArgs(0, 'traversable').returns(false);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  PolygonRewireAPI.__Rewire__('tileIsOneOf', sinon.stub().returns(false));
   const map = [
     [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -224,5 +306,6 @@ test('graphFromTagproMap works for large graph', t => {
   t.is(graph.getEdges().length, 22);
 
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  PolygonRewireAPI.__ResetDependency__('tileIsOneOf');
   t.end();
 });

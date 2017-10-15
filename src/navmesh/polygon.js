@@ -1,17 +1,68 @@
 import _ from 'lodash';
 import { Graph, Point } from './graph';
-import { getTileProperty } from '../tiles';
+import { getTileProperty, tileIsOneOf } from '../tiles';
 import { PPTL } from '../../src/constants';
 
 function threePointsInLine(p1, p2, p3) {
-  if (p1.x === p2.x && p2.x === p3.x) {
-    return true;
+  const x1 = p2.x - p1.x;
+  const x2 = p2.x - p3.x;
+  const y1 = p2.y - p1.y;
+  const y2 = p2.y - p3.y;
+  if (x1 === 0 || x2 === 0) {
+    return x1 === x2;
   }
-  if (p1.y === p2.y && p2.y === p3.y) {
-    return true;
-  }
-  return false;
+  // use line slopes to calculate if all three points are in a line
+  return y1 * x2 === y2 * x1;
 }
+
+
+function wallOnLeft(map, x, y) {
+  if (x === 0) {
+    return true;
+  }
+  const id = map[x - 1][y];
+  if (tileIsOneOf(id, ['ANGLE_WALL_1', 'ANGLE_WALL_2'])) {
+    return false;
+  }
+  return !getTileProperty(id, 'traversable');
+}
+
+
+function wallOnRight(map, x, y) {
+  if (x === map.length - 1) {
+    return true;
+  }
+  const id = map[x + 1][y];
+  if (tileIsOneOf(id, ['ANGLE_WALL_3', 'ANGLE_WALL_4'])) {
+    return false;
+  }
+  return !getTileProperty(id, 'traversable');
+}
+
+
+function wallOnTop(map, x, y) {
+  if (y === 0) {
+    return true;
+  }
+  const id = map[x][y - 1];
+  if (tileIsOneOf(id, ['ANGLE_WALL_2', 'ANGLE_WALL_3'])) {
+    return false;
+  }
+  return !getTileProperty(id, 'traversable');
+}
+
+
+function wallOnBottom(map, x, y) {
+  if (y === map[0].length - 1) {
+    return true;
+  }
+  const id = map[x][y + 1];
+  if (tileIsOneOf(id, ['ANGLE_WALL_1', 'ANGLE_WALL_4'])) {
+    return false;
+  }
+  return !getTileProperty(id, 'traversable');
+}
+
 
 /**
  * Get a list of tiles which are on the edge of the traversability space.
@@ -41,29 +92,23 @@ export function mapToEdgeTiles(map) {
   const res = [];
   for (let x = 0; x < map.length; x++) {
     for (let y = 0; y < map[0].length; y++) {
-      // only store edges of traversable tiles
-      if (!getTileProperty(map[x][y], 'traversable')) {
-        continue; // eslint-disable-line no-continue
-      }
-      let edge = x === 0 || x === map.length - 1 || y === 0 || y === map[0].length;
-      if (edge) {
+      // angle walls have a traversability edge
+      if (tileIsOneOf(
+        map[x][y],
+        ['ANGLE_WALL_1', 'ANGLE_WALL_2', 'ANGLE_WALL_3', 'ANGLE_WALL_4'],
+      )) {
         res.push({ x, y });
         continue; // eslint-disable-line no-continue
       }
-      if (!getTileProperty(map[x - 1][y], 'traversable')) {
-        // NT or edge on the left
-        edge = true;
-      } else if (!getTileProperty(map[x + 1][y], 'traversable')) {
-        // NT or edge on the right
-        edge = true;
-      } else if (!getTileProperty(map[x][y - 1], 'traversable')) {
-        // NT or edge above
-        edge = true;
-      } else if (!getTileProperty(map[x][y + 1], 'traversable')) {
-        // NT or edge below
-        edge = true;
-      }
-      if (edge) {
+      if (
+        // only store edges of traversable tiles
+        getTileProperty(map[x][y], 'traversable') && (
+          wallOnLeft(map, x, y) ||
+          wallOnRight(map, x, y) ||
+          wallOnTop(map, x, y) ||
+          wallOnBottom(map, x, y)
+        )
+      ) {
         res.push({ x, y });
       }
     }
@@ -82,23 +127,35 @@ export function unmergedGraphFromTagproMap(map) {
     const topRight = new Point(xp + PPTL, yp);
     const bottomLeft = new Point(xp, yp + PPTL);
     const bottomRight = new Point(xp + PPTL, yp + PPTL);
-    if (x === 0 || !getTileProperty(map[x - 1][y], 'traversable')) {
+    if (tileIsOneOf(map[x][y], ['ANGLE_WALL_1', 'ANGLE_WALL_3'])) {
+      graph.addVertex(topLeft);
+      graph.addVertex(bottomRight);
+      graph.addEdge(topLeft, bottomLeft);
+    } else if (tileIsOneOf(map[x][y], ['ANGLE_WALL_2', 'ANGLE_WALL_4'])) {
+      graph.addVertex(bottomLeft);
+      graph.addVertex(topRight);
+      graph.addEdge(bottomLeft, topRight);
+    }
+    if ((x === 0 || !getTileProperty(map[x - 1][y], 'traversable')) &&
+      !tileIsOneOf(map[x][y], ['ANGLE_WALL_1', 'ANGLE_WALL_2'])) {
       // edge on left
       graph.addVertex(topLeft);
       graph.addVertex(bottomLeft);
       graph.addEdge(topLeft, bottomLeft);
-    } if (x === map.length - 1 || !getTileProperty(map[x + 1][y], 'traversable')) {
+    } if ((x === map.length - 1 || !getTileProperty(map[x + 1][y], 'traversable')) &&
+      !tileIsOneOf(map[x][y], ['ANGLE_WALL_3', 'ANGLE_WALL_4'])) {
       // edge on right
       graph.addVertex(topRight);
       graph.addVertex(bottomRight);
       graph.addEdge(topRight, bottomRight);
-    } if (y === 0 || !getTileProperty(map[x][y - 1], 'traversable')) {
+    } if ((y === 0 || !getTileProperty(map[x][y - 1], 'traversable')) &&
+      !tileIsOneOf(map[x][y], ['ANGLE_WALL_2', 'ANGLE_WALL_3'])) {
       // edge above
       graph.addVertex(topLeft);
       graph.addVertex(topRight);
       graph.addEdge(topLeft, topRight);
-      // add line above
-    } if (y === map[0].length - 1 || !getTileProperty(map[x][y + 1], 'traversable')) {
+    } if ((y === map[0].length - 1 || !getTileProperty(map[x][y + 1], 'traversable')) &&
+      !tileIsOneOf(map[x][y], ['ANGLE_WALL_1', 'ANGLE_WALL_4'])) {
       // edge below
       graph.addVertex(bottomLeft);
       graph.addVertex(bottomRight);
