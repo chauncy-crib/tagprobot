@@ -323,26 +323,28 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
 }
 
 /*
- * Draws edges of a graph class with a certain thickness and color.
+ * Draws edges and vertices of a graph class with a certain thickness and color.
  * Runtime: O(E)
  *
  * @param {Graph} graph - graph to draw
  * @param {number} thickness - thickness of the lines in pixels
  * @param {number} color - a hex color
  */
-function drawGraphEdges(graph, thickness, color) {
+function drawGraph(graph, thickness, color) {
   assert(_.isNil(graphSprite), 'graphSprite is not null');
-  const edgeGraphics = new PIXI.Graphics();
+  const graphGraphics = new PIXI.Graphics().lineStyle(thickness, color);
 
   _.forEach(graph.getEdges(), edge => {
-    edgeGraphics
-      .lineStyle(thickness, color)
+    graphGraphics
       .moveTo(edge.point1.x, edge.point1.y)
       .lineTo(edge.point2.x, edge.point2.y);
   });
+  _.forEach(graph.getVertices(), vertex => {
+    graphGraphics.drawCircle(vertex.x, vertex.y, thickness / 2);
+  });
 
-  tagpro.renderer.layers.background.addChild(edgeGraphics);
-  graphSprite = edgeGraphics;
+  tagpro.renderer.layers.background.addChild(graphGraphics);
+  graphSprite = graphGraphics;
 }
 
 /*
@@ -355,5 +357,5 @@ export function drawNavMesh(graph) {
   if (!isVisualMode()) {
     return;
   }
-  drawGraphEdges(graph, navMeshThickness, navMeshColor);
+  drawGraph(graph, navMeshThickness, navMeshColor);
 }
