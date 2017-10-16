@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import { Graph, Point } from './graph';
-import { getTileProperty, tileIsOneOf } from '../tiles';
-import { PPTL } from '../../src/constants';
+import { getTileProperty, tileIsOneOf, tileHasName } from '../tiles';
+import { PPTL } from '../constants';
+import { assert } from '../utils/asserts';
 
 function threePointsInLine(p1, p2, p3) {
   const x1 = p2.x - p1.x;
@@ -64,6 +65,42 @@ function wallOnBottom(map, x, y) {
 }
 
 
+function traversableInDirection(map, x, y, direction) {
+  switch (direction) {
+    case 'UP':
+      return y !== 0 && getTileProperty(map[x][y - 1], 'traversable');
+    case 'DOWN':
+      return y !== map[0].length - 1 && getTileProperty(map[x][y + 1], 'traversable');
+    case 'LEFT':
+      return x !== 0 && getTileProperty(map[x - 1][y], 'traversable');
+    case 'RIGHT':
+      return x !== map.length - 1 && getTileProperty(map[x + 1][y], 'traversable');
+    default:
+      assert(false, `${direction} not in UP, DOWN, LEFT, RIGHT`);
+      return null;
+  }
+}
+
+
+function isAngleWallTraversable(map, x, y) {
+  const id = map[x][y];
+  if (tileHasName(id, 'ANGLE_WALL_1')) {
+    return traversableInDirection(map, x, y, 'UP') || traversableInDirection(map, x, y, 'RIGHT');
+  }
+  if (tileHasName(id, 'ANGLE_WALL_2')) {
+    return traversableInDirection(map, x, y, 'DOWN') || traversableInDirection(map, x, y, 'RIGHT');
+  }
+  if (tileHasName(id, 'ANGLE_WALL_3')) {
+    return traversableInDirection(map, x, y, 'DOWN') || traversableInDirection(map, x, y, 'LEFT');
+  }
+  if (tileHasName(id, 'ANGLE_WALL_4')) {
+    return traversableInDirection(map, x, y, 'UP') || traversableInDirection(map, x, y, 'LEFT');
+  }
+  assert(false, `Tile at ${x}, ${y} was not an angle wall`);
+  return null;
+}
+
+
 /**
  * Get a list of tiles which are on the edge of the traversability space.
  *
@@ -97,7 +134,9 @@ export function mapToEdgeTiles(map) {
         map[x][y],
         ['ANGLE_WALL_1', 'ANGLE_WALL_2', 'ANGLE_WALL_3', 'ANGLE_WALL_4'],
       )) {
-        res.push({ x, y });
+        if (isAngleWallTraversable(map, x, y)) {
+          res.push({ x, y });
+        }
         continue; // eslint-disable-line no-continue
       }
       if (
