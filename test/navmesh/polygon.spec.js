@@ -9,6 +9,15 @@ import { __RewireAPI__ as TileRewireAPI } from '../../src/tiles';
 
 /* eslint-disable no-multi-spaces */
 
+
+function fakeTileHasName(id, name) {
+  if (id === 1.1 && name === 'ANGLE_WALL_1') return true;
+  if (id === 1.2 && name === 'ANGLE_WALL_2') return true;
+  if (id === 1.3 && name === 'ANGLE_WALL_3') return true;
+  if (id === 1.4 && name === 'ANGLE_WALL_4') return true;
+  return false;
+}
+
 test('mapToEdgeTiles returns edges of traversability', t => {
   const mockGetTileProperty = sinon.stub();
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
@@ -64,12 +73,7 @@ test('mapToEdgeTiles: correct number of tiles with diagonals', t => {
   const mockGetTileProperty = sinon.stub();
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
   mockGetTileProperty.returns(false);
-  const mockTileHasName = sinon.stub();
-  mockTileHasName.withArgs(1.1, 'ANGLE_WALL_1').returns(true);
-  mockTileHasName.withArgs(1.2, 'ANGLE_WALL_2').returns(true);
-  mockTileHasName.withArgs(1.3, 'ANGLE_WALL_3').returns(true);
-  mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
-  mockTileHasName.returns(false);
+  const mockTileHasName = sinon.stub().callsFake(fakeTileHasName);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
   PolygonRewireAPI.__Rewire__('tileHasName', mockTileHasName);
   TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
@@ -128,12 +132,7 @@ test('mapToEdgeTiles: diagonal edge of map edge case', t => {
   const mockGetTileProperty = sinon.stub();
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
   mockGetTileProperty.returns(false);
-  const mockTileHasName = sinon.stub();
-  mockTileHasName.withArgs(1.1, 'ANGLE_WALL_1').returns(true);
-  mockTileHasName.withArgs(1.2, 'ANGLE_WALL_2').returns(true);
-  mockTileHasName.withArgs(1.3, 'ANGLE_WALL_3').returns(true);
-  mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
-  mockTileHasName.returns(false);
+  const mockTileHasName = sinon.stub().callsFake(fakeTileHasName);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
   PolygonRewireAPI.__Rewire__('tileHasName', mockTileHasName);
   TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
@@ -186,12 +185,7 @@ test('unmergedGraphFromTagproMap: diagonal walls', t => {
   const mockGetTileProperty = sinon.stub();
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
   mockGetTileProperty.returns(false);
-  const mockTileHasName = sinon.stub();
-  mockTileHasName.withArgs(1.1, 'ANGLE_WALL_1').returns(true);
-  mockTileHasName.withArgs(1.2, 'ANGLE_WALL_2').returns(true);
-  mockTileHasName.withArgs(1.3, 'ANGLE_WALL_3').returns(true);
-  mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
-  mockTileHasName.returns(false);
+  const mockTileHasName = sinon.stub().callsFake(fakeTileHasName);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
   PolygonRewireAPI.__Rewire__('tileHasName', mockTileHasName);
   TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
@@ -289,12 +283,7 @@ test('unmergedGraphFromTagproMap: diagonal edge of map edge case', t => {
   const mockGetTileProperty = sinon.stub();
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
   mockGetTileProperty.returns(false);
-  const mockTileHasName = sinon.stub();
-  mockTileHasName.withArgs(1.1, 'ANGLE_WALL_1').returns(true);
-  mockTileHasName.withArgs(1.2, 'ANGLE_WALL_2').returns(true);
-  mockTileHasName.withArgs(1.3, 'ANGLE_WALL_3').returns(true);
-  mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
-  mockTileHasName.returns(false);
+  const mockTileHasName = sinon.stub().callsFake(fakeTileHasName);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
   PolygonRewireAPI.__Rewire__('tileHasName', mockTileHasName);
   TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
@@ -489,12 +478,7 @@ test('graphFromTagproMap: diagonal walls', t => {
   const mockGetTileProperty = sinon.stub();
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
   mockGetTileProperty.returns(false);
-  const mockTileHasName = sinon.stub();
-  mockTileHasName.withArgs(1.1, 'ANGLE_WALL_1').returns(true);
-  mockTileHasName.withArgs(1.2, 'ANGLE_WALL_2').returns(true);
-  mockTileHasName.withArgs(1.3, 'ANGLE_WALL_3').returns(true);
-  mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
-  mockTileHasName.returns(false);
+  const mockTileHasName = sinon.stub().callsFake(fakeTileHasName);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
   PolygonRewireAPI.__Rewire__('tileHasName', mockTileHasName);
   TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
@@ -534,12 +518,7 @@ test('graphFromTagproMap: diagonal edge of map edge case', t => {
   const mockGetTileProperty = sinon.stub();
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
   mockGetTileProperty.returns(false);
-  const mockTileHasName = sinon.stub();
-  mockTileHasName.withArgs(1.1, 'ANGLE_WALL_1').returns(true);
-  mockTileHasName.withArgs(1.2, 'ANGLE_WALL_2').returns(true);
-  mockTileHasName.withArgs(1.3, 'ANGLE_WALL_3').returns(true);
-  mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
-  mockTileHasName.returns(false);
+  const mockTileHasName = sinon.stub().callsFake(fakeTileHasName);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
   PolygonRewireAPI.__Rewire__('tileHasName', mockTileHasName);
   TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
@@ -572,10 +551,7 @@ test('graphFromTagproMap: diagonal on empty space', t => {
   const mockGetTileProperty = sinon.stub();
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
   mockGetTileProperty.returns(false);
-  const mockTileHasName = sinon.stub();
-  mockTileHasName.withArgs(1.2, 'ANGLE_WALL_2').returns(true);
-  mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
-  mockTileHasName.returns(false);
+  const mockTileHasName = sinon.stub().callsFake(fakeTileHasName);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
   PolygonRewireAPI.__Rewire__('tileHasName', mockTileHasName);
   TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
@@ -583,8 +559,8 @@ test('graphFromTagproMap: diagonal on empty space', t => {
   const map = [
     [1,   1,   1,   1.4],
     [1,   1,   1.4, 1.2],
-    [1,   1.4, 1.2, 0],
-    [1.4, 1.2, 0,   0],
+    [1,   1.4, 1.2, 0  ],
+    [1.4, 1.2, 0,   0  ],
   ];
 
   const graph = graphFromTagproMap(map);
