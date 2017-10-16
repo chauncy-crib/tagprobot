@@ -146,6 +146,109 @@ test('unmergedGraphFromTagproMap: T and NT tiles', t => {
 });
 
 
+test('unmergedGraphFromTagproMap: diagonal walls', t => {
+  const mockGetTileProperty = sinon.stub();
+  mockGetTileProperty.withArgs(1, 'traversable').returns(true);
+  mockGetTileProperty.returns(false);
+  const mockTileHasName = sinon.stub();
+  mockTileHasName.withArgs(1.1, 'ANGLE_WALL_1').returns(true);
+  mockTileHasName.withArgs(1.2, 'ANGLE_WALL_2').returns(true);
+  mockTileHasName.withArgs(1.3, 'ANGLE_WALL_3').returns(true);
+  mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
+  mockTileHasName.returns(false);
+  PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
+
+  // this is an NT diamond in the middle of the map.
+  /* eslint-disable no-multi-spaces */
+  const map = [
+    [1, 1,   1,   1,   1,   1],
+    [1, 1,   1.4, 1.3, 1,   1],
+    [1, 1.4, 0,   0,   1.3, 1],
+    [1, 1.1, 0,   0,   1.2, 1],
+    [1, 1,   1.1, 1.2, 1,   1],
+    [1, 1,   1,   1,   1,   1],
+  ];
+  /* eslint-enable no-multi-spaces */
+
+  const graph = unmergedGraphFromTagproMap(map);
+  t.is(graph.getVertices().length, 32);
+  t.is(graph.getEdges().length, 32);
+  t.same(graph.getVertices(), [
+    { x: 0, y: 0 },
+    { x: 0, y: 40 },
+    { x: 40, y: 0 },
+    { x: 0, y: 80 },
+    { x: 0, y: 120 },
+    { x: 0, y: 160 },
+    { x: 0, y: 200 },
+    { x: 0, y: 240 },
+    { x: 40, y: 240 },
+    { x: 80, y: 0 },
+    { x: 40, y: 120 },
+    { x: 80, y: 80 },
+    { x: 80, y: 160 },
+    { x: 80, y: 240 },
+    { x: 120, y: 0 },
+    { x: 120, y: 40 },
+    { x: 120, y: 200 },
+    { x: 120, y: 240 },
+    { x: 160, y: 0 },
+    { x: 160, y: 80 },
+    { x: 160, y: 160 },
+    { x: 160, y: 240 },
+    { x: 200, y: 0 },
+    { x: 200, y: 120 },
+    { x: 200, y: 240 },
+    { x: 240, y: 0 },
+    { x: 240, y: 40 },
+    { x: 240, y: 80 },
+    { x: 240, y: 120 },
+    { x: 240, y: 160 },
+    { x: 240, y: 200 },
+    { x: 240, y: 240 },
+  ]);
+  t.same(graph.getEdges(), [
+    { point1: { x: 0, y: 0 }, point2: { x: 0, y: 40 } },
+    { point1: { x: 0, y: 0 }, point2: { x: 40, y: 0 } },
+    { point1: { x: 0, y: 40 }, point2: { x: 0, y: 80 } },
+    { point1: { x: 0, y: 80 }, point2: { x: 0, y: 120 } },
+    { point1: { x: 0, y: 120 }, point2: { x: 0, y: 160 } },
+    { point1: { x: 0, y: 160 }, point2: { x: 0, y: 200 } },
+    { point1: { x: 0, y: 200 }, point2: { x: 0, y: 240 } },
+    { point1: { x: 0, y: 240 }, point2: { x: 40, y: 240 } },
+    { point1: { x: 40, y: 0 }, point2: { x: 80, y: 0 } },
+    { point1: { x: 40, y: 120 }, point2: { x: 80, y: 80 } },
+    { point1: { x: 40, y: 120 }, point2: { x: 40, y: 160 } },
+    { point1: { x: 40, y: 240 }, point2: { x: 80, y: 240 } },
+    { point1: { x: 80, y: 0 }, point2: { x: 120, y: 0 } },
+    { point1: { x: 80, y: 80 }, point2: { x: 120, y: 40 } },
+    { point1: { x: 80, y: 160 }, point2: { x: 80, y: 200 } },
+    { point1: { x: 80, y: 240 }, point2: { x: 120, y: 240 } },
+    { point1: { x: 120, y: 0 }, point2: { x: 160, y: 0 } },
+    { point1: { x: 120, y: 40 }, point2: { x: 120, y: 80 } },
+    { point1: { x: 120, y: 200 }, point2: { x: 160, y: 160 } },
+    { point1: { x: 120, y: 240 }, point2: { x: 160, y: 240 } },
+    { point1: { x: 160, y: 0 }, point2: { x: 200, y: 0 } },
+    { point1: { x: 160, y: 80 }, point2: { x: 160, y: 120 } },
+    { point1: { x: 160, y: 160 }, point2: { x: 200, y: 120 } },
+    { point1: { x: 160, y: 240 }, point2: { x: 200, y: 240 } },
+    { point1: { x: 240, y: 0 }, point2: { x: 240, y: 40 } },
+    { point1: { x: 200, y: 0 }, point2: { x: 240, y: 0 } },
+    { point1: { x: 240, y: 40 }, point2: { x: 240, y: 80 } },
+    { point1: { x: 240, y: 80 }, point2: { x: 240, y: 120 } },
+    { point1: { x: 240, y: 120 }, point2: { x: 240, y: 160 } },
+    { point1: { x: 240, y: 160 }, point2: { x: 240, y: 200 } },
+    { point1: { x: 240, y: 200 }, point2: { x: 240, y: 240 } },
+    { point1: { x: 200, y: 240 }, point2: { x: 240, y: 240 } },
+  ]);
+
+  PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  TileRewireAPI.__ResetDependency__('tileHasName');
+  t.end();
+});
+
+
 test('graphFromTagproMap works for simple case', t => {
   const mockGetTileProperty = sinon.stub();
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
