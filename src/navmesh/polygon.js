@@ -130,7 +130,7 @@ export function unmergedGraphFromTagproMap(map) {
     if (tileIsOneOf(map[x][y], ['ANGLE_WALL_1', 'ANGLE_WALL_3'])) {
       graph.addVertex(topLeft);
       graph.addVertex(bottomRight);
-      graph.addEdge(topLeft, bottomLeft);
+      graph.addEdge(topLeft, bottomRight);
     } else if (tileIsOneOf(map[x][y], ['ANGLE_WALL_2', 'ANGLE_WALL_4'])) {
       graph.addVertex(bottomLeft);
       graph.addVertex(topRight);
