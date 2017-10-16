@@ -20,8 +20,8 @@ export class Point {
 
 
 /**
- * Represents the polygons of traversable space as a graph, with vertices and edges surrounding the
- * traversable-space.
+ * Represents the polygons as a graph, with vertices and edges surrounding the
+ * polygons.
  */
 export class Graph {
   constructor() {
