@@ -7,7 +7,7 @@ import {
   setupVelocity,
   chatHelpMenu,
 } from './utils/interface';
-import { graphFromTagproMap } from './navmesh/polygon';
+import { calculateNavMesh } from './navmesh/triangulation';
 import {
   drawPermanentNTSprites,
   initKeyPressesVisualization,
@@ -57,13 +57,14 @@ function start() {
   setupVelocity();
   computeTileInfo();
   chatHelpMenu();
+
   initMapTraversabilityCells(tagpro.map);
+  calculateNavMesh(tagpro.map);
+
   drawPermanentNTSprites();
   initKeyPressesVisualization();
   initUiUpdateProcess();
-
-  const graph = graphFromTagproMap(tagpro.map);
-  drawNavMesh(graph);
+  drawNavMesh();
 
   // Run the bot
   loop();
