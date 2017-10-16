@@ -7,6 +7,8 @@ import {
   __RewireAPI__ as PolygonRewireAPI } from '../../src/navmesh/polygon';
 import { __RewireAPI__ as TileRewireAPI } from '../../src/tiles';
 
+/* eslint-disable no-multi-spaces */
+
 test('mapToEdgeTiles returns edges of traversability', t => {
   const mockGetTileProperty = sinon.stub();
   mockGetTileProperty.withArgs(1, 'traversable').returns(true);
@@ -69,10 +71,10 @@ test('mapToEdgeTiles: correct number of tiles with diagonals', t => {
   mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
   mockTileHasName.returns(false);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  PolygonRewireAPI.__Rewire__('tileHasName', mockTileHasName);
   TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
 
   // this is an NT diamond in the middle of the map.
-  /* eslint-disable no-multi-spaces */
   const map = [
     [1, 1,   1,   1,   1,   1],
     [1, 1,   1.4, 1.3, 1,   1],
@@ -81,7 +83,6 @@ test('mapToEdgeTiles: correct number of tiles with diagonals', t => {
     [1, 1,   1.1, 1.2, 1,   1],
     [1, 1,   1,   1,   1,   1],
   ];
-  /* eslint-enable no-multi-spaces */
 
   const edges = mapToEdgeTiles(map);
   t.is(edges.length, 28);
@@ -117,6 +118,7 @@ test('mapToEdgeTiles: correct number of tiles with diagonals', t => {
   ]);
 
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  PolygonRewireAPI.__ResetDependency__('tileHasName');
   TileRewireAPI.__ResetDependency__('tileHasName');
   t.end();
 });
@@ -133,10 +135,10 @@ test('mapToEdgeTiles: diagonal edge of map edge case', t => {
   mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
   mockTileHasName.returns(false);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  PolygonRewireAPI.__Rewire__('tileHasName', mockTileHasName);
   TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
 
   // here, there is a diagonal "point" at the top of the map
-  /* eslint-disable no-multi-spaces */
   const map = [
     [1, 1, 1.4],
     [1, 1.4, 0],
@@ -145,12 +147,12 @@ test('mapToEdgeTiles: diagonal edge of map edge case', t => {
     [1, 1.1, 0],
     [1, 1, 1.1],
   ];
-  /* eslint-enable no-multi-spaces */
 
   const edges = mapToEdgeTiles(map);
   t.is(edges.length, 12);
 
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  PolygonRewireAPI.__ResetDependency__('tileHasName');
   TileRewireAPI.__ResetDependency__('tileHasName');
   t.end();
 });
@@ -191,10 +193,10 @@ test('unmergedGraphFromTagproMap: diagonal walls', t => {
   mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
   mockTileHasName.returns(false);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  PolygonRewireAPI.__Rewire__('tileHasName', mockTileHasName);
   TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
 
   // this is an NT diamond in the middle of the map.
-  /* eslint-disable no-multi-spaces */
   const map = [
     [1, 1,   1,   1,   1,   1],
     [1, 1,   1.4, 1.3, 1,   1],
@@ -203,7 +205,6 @@ test('unmergedGraphFromTagproMap: diagonal walls', t => {
     [1, 1,   1.1, 1.2, 1,   1],
     [1, 1,   1,   1,   1,   1],
   ];
-  /* eslint-enable no-multi-spaces */
 
   const graph = unmergedGraphFromTagproMap(map);
   t.is(graph.getVertices().length, 32);
@@ -278,6 +279,7 @@ test('unmergedGraphFromTagproMap: diagonal walls', t => {
   ]);
 
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  PolygonRewireAPI.__ResetDependency__('tileHasName');
   TileRewireAPI.__ResetDependency__('tileHasName');
   t.end();
 });
@@ -294,10 +296,10 @@ test('unmergedGraphFromTagproMap: diagonal edge of map edge case', t => {
   mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
   mockTileHasName.returns(false);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  PolygonRewireAPI.__Rewire__('tileHasName', mockTileHasName);
   TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
 
   // here, there is a diagonal "point" at the top of the map
-  /* eslint-disable no-multi-spaces */
   const map = [
     [1, 1, 1.4],
     [1, 1.4, 0],
@@ -306,13 +308,13 @@ test('unmergedGraphFromTagproMap: diagonal edge of map edge case', t => {
     [1, 1.1, 0],
     [1, 1, 1.1],
   ];
-  /* eslint-enable no-multi-spaces */
 
   const graph = unmergedGraphFromTagproMap(map);
   t.is(graph.getVertices().length, 17);
   t.is(graph.getEdges().length, 18);
 
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  PolygonRewireAPI.__ResetDependency__('tileHasName');
   TileRewireAPI.__ResetDependency__('tileHasName');
   t.end();
 });
@@ -494,10 +496,10 @@ test('graphFromTagproMap: diagonal walls', t => {
   mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
   mockTileHasName.returns(false);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  PolygonRewireAPI.__Rewire__('tileHasName', mockTileHasName);
   TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
 
   // this is an NT diamond in the middle of the map.
-  /* eslint-disable no-multi-spaces */
   const map = [
     [1, 1,   1,   1,   1,   1],
     [1, 1,   1.4, 1.3, 1,   1],
@@ -506,7 +508,6 @@ test('graphFromTagproMap: diagonal walls', t => {
     [1, 1,   1.1, 1.2, 1,   1],
     [1, 1,   1,   1,   1,   1],
   ];
-  /* eslint-enable no-multi-spaces */
 
   const graph = graphFromTagproMap(map);
   t.is(graph.getVertices().length, 8);
@@ -523,6 +524,7 @@ test('graphFromTagproMap: diagonal walls', t => {
   ]);
 
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  PolygonRewireAPI.__ResetDependency__('tileHasName');
   TileRewireAPI.__ResetDependency__('tileHasName');
   t.end();
 });
@@ -539,10 +541,10 @@ test('graphFromTagproMap: diagonal edge of map edge case', t => {
   mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
   mockTileHasName.returns(false);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  PolygonRewireAPI.__Rewire__('tileHasName', mockTileHasName);
   TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
 
   // here, there is a diagonal "point" at the top of the map
-  /* eslint-disable no-multi-spaces */
   const map = [
     [1, 1, 1.4],
     [1, 1.4, 0],
@@ -551,7 +553,6 @@ test('graphFromTagproMap: diagonal edge of map edge case', t => {
     [1, 1.1, 0],
     [1, 1, 1.1],
   ];
-  /* eslint-enable no-multi-spaces */
 
   const graph = graphFromTagproMap(map);
   t.is(graph.getVertices().length, 5);
@@ -561,6 +562,37 @@ test('graphFromTagproMap: diagonal edge of map edge case', t => {
   ]);
 
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  PolygonRewireAPI.__ResetDependency__('tileHasName');
+  TileRewireAPI.__ResetDependency__('tileHasName');
+  t.end();
+});
+
+
+test('graphFromTagproMap: diagonal on empty space', t => {
+  const mockGetTileProperty = sinon.stub();
+  mockGetTileProperty.withArgs(1, 'traversable').returns(true);
+  mockGetTileProperty.returns(false);
+  const mockTileHasName = sinon.stub();
+  mockTileHasName.withArgs(1.2, 'ANGLE_WALL_2').returns(true);
+  mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
+  mockTileHasName.returns(false);
+  PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  PolygonRewireAPI.__Rewire__('tileHasName', mockTileHasName);
+  TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
+
+  const map = [
+    [1,   1,   1,   1.4],
+    [1,   1,   1.4, 1.2],
+    [1,   1.4, 1.2, 0],
+    [1.4, 1.2, 0,   0],
+  ];
+
+  const graph = graphFromTagproMap(map);
+  t.is(graph.getVertices().length, 3);
+  t.is(graph.getEdges().length, 3);
+
+  PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  PolygonRewireAPI.__ResetDependency__('tileHasName');
   TileRewireAPI.__ResetDependency__('tileHasName');
   t.end();
 });
