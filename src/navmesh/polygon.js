@@ -4,6 +4,16 @@ import { getTileProperty, tileIsOneOf, tileHasName } from '../tiles';
 import { PPTL } from '../constants';
 import { assert } from '../utils/asserts';
 
+
+/**
+ * Given three point objects, with p2 assumed to be in the "middle" of the three, return if all
+ * three are on the same line
+ *
+ * @param {Point} p1
+ * @param {Point} p2
+ * @param {Point} p3
+ * @returns {boolean}
+ */
 function threePointsInLine(p1, p2, p3) {
   const x1 = p2.x - p1.x;
   const x2 = p2.x - p3.x;
@@ -17,6 +27,9 @@ function threePointsInLine(p1, p2, p3) {
 }
 
 
+/**
+ * Given a traversable cell, return if there is an NT wall (or the edge of the map) on the left.
+ */
 function wallOnLeft(map, x, y) {
   if (x === 0) {
     return true;
@@ -29,6 +42,9 @@ function wallOnLeft(map, x, y) {
 }
 
 
+/**
+ * Given a traversable cell, return if there is an NT wall (or the edge of the map) on the right.
+ */
 function wallOnRight(map, x, y) {
   if (x === map.length - 1) {
     return true;
@@ -41,6 +57,9 @@ function wallOnRight(map, x, y) {
 }
 
 
+/**
+ * Given a traversable cell, return if there is an NT wall (or the edge of the map) on top.
+ */
 function wallOnTop(map, x, y) {
   if (y === 0) {
     return true;
@@ -53,6 +72,9 @@ function wallOnTop(map, x, y) {
 }
 
 
+/**
+ * Given a traversable cell, return if there is an NT wall (or the edge of the map) below it.
+ */
 function wallOnBottom(map, x, y) {
   if (y === map[0].length - 1) {
     return true;
@@ -65,6 +87,9 @@ function wallOnBottom(map, x, y) {
 }
 
 
+/**
+ * Given a cell location, return if the cell above/below/left/right of it is traversable
+ */
 function traversableInDirection(map, x, y, direction) {
   switch (direction) {
     case 'UP':
@@ -82,6 +107,10 @@ function traversableInDirection(map, x, y, direction) {
 }
 
 
+/**
+ * Given an angle wall location, return true if it is traversable. (An NT angle wall has NT tiles
+ * surrounding it).
+ */
 function isAngleWallTraversable(map, x, y) {
   const id = map[x][y];
   if (tileHasName(id, 'ANGLE_WALL_1')) {
@@ -155,6 +184,13 @@ export function mapToEdgeTiles(map) {
   return res;
 }
 
+/**
+ * Given the tagpro map, return a Graph object containing edges along the edge of traversability.
+ * Each edge should be one tile-length one (or sqrt(2), if it lies on the diagonal of a tile)
+ *
+ * @param {{number|string}} map - the tagpro map
+ * @returns {Graph}
+ */
 export function unmergedGraphFromTagproMap(map) {
   const edgeTiles = mapToEdgeTiles(map);
   const graph = new Graph();
@@ -202,6 +238,15 @@ export function unmergedGraphFromTagproMap(map) {
 }
 
 
+/**
+ * Given the tagpro map, return a Graph object containing edges along the edge of traversability.
+ * Straight lines will be represented by a single edge (the edges are arbitrarily long). This is
+ * computed using the unmergedGraphFromTagproMap function above, and then merging edges that touch
+ * eachother and have the same slope.
+ *
+ * @param {{number|string}} map - the tagpro map
+ * @returns {Graph}
+ */
 export function graphFromTagproMap(map) {
   const unmergedGraph = unmergedGraphFromTagproMap(map);
   _.each(unmergedGraph.getVertices(), v => {
