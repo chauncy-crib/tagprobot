@@ -165,20 +165,23 @@ export function unmergedGraphFromTagproMap(map) {
 
 export function graphFromTagproMap(map) {
   const unmergedGraph = unmergedGraphFromTagproMap(map);
-  const vertices = unmergedGraph.getVertices();
-  let i = 0;
-  while (i < vertices.length) {
-    const v = vertices[i];
+  _.each(unmergedGraph.getVertices(), v => {
     const neighbors = unmergedGraph.neighbors(v);
-    if (neighbors.length === 2) {
-      if (threePointsInLine(v, neighbors[0], neighbors[1])) {
-        unmergedGraph.removeVertex(v);
-        unmergedGraph.removeEdge(v, neighbors[0]);
-        unmergedGraph.removeEdge(v, neighbors[1]);
-        unmergedGraph.addEdge(neighbors[0], neighbors[1]);
+    for (let j = 0; j < neighbors.length; j += 1) {
+      for (let k = j + 1; k < neighbors.length; k += 1) {
+        if (threePointsInLine(v, neighbors[j], neighbors[k])) {
+          unmergedGraph.removeEdge(v, neighbors[j]);
+          unmergedGraph.removeEdge(v, neighbors[k]);
+          unmergedGraph.addEdge(neighbors[j], neighbors[k]);
+        }
       }
     }
-    i += 1;
-  }
+  });
+  // remove all vertices that no longer have a neighbor
+  _.each(unmergedGraph.getVertices(), v => {
+    if (unmergedGraph.neighbors(v).length === 0) {
+      unmergedGraph.removeVertex(v);
+    }
+  });
   return unmergedGraph;
 }
