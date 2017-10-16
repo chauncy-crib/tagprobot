@@ -164,12 +164,12 @@ export function move(destination) {
  * Overriding this function to get a more accurate velocity of players. Velocity is saved in
  *   player.vx and vy. The refresh rate on our access to server size physics is only 4 Hz. We can
  *   check our client-side velocity at a much higher refresh rate (60 Hz), so we use this and store
- *   it in the me object. Units are in meters/second. 1 meter = 2.5 tiles.
+ *   it in the me object. Units are in pixels/second. 1 meter = 2.5 tiles = 100 pixels.
  */
 export function setupVelocity() {
   Box2D.Dynamics.b2Body.prototype.GetLinearVelocity = function accurateVelocity() {
-    tagpro.players[this.player.id].vx = this.m_linearVelocity.x * 55;
-    tagpro.players[this.player.id].vy = this.m_linearVelocity.y * 55;
+    tagpro.players[this.player.id].vx = this.m_linearVelocity.x * 100;
+    tagpro.players[this.player.id].vy = this.m_linearVelocity.y * 100;
     return this.m_linearVelocity;
   };
 }
