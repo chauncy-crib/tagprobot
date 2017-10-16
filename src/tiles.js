@@ -6,7 +6,7 @@ import { amBlue, amRed } from './helpers/player';
 const tileInfo = {}; // map from name to properties
 const tileNames = {}; // map from id to name
 
-/*
+/**
  * Stores all information we need about tiles in the tileInfo object, and creates the tileNames
  * object so that we can quickly map from an id to a name. This function depends on amBlue and
  * amRed, so the current player must be defined. We call this function once, after our player has an
@@ -68,19 +68,19 @@ export function computeTileInfo() {
 }
 
 
-/*
+/**
  * @param {number} id - the id for a tile
- * @param {String} name - the name of a tile
- * @return true if id is the id of the named tile, using a type-sensitive comparison
+ * @param {string} name - the name of a tile
+ * @returns true if id is the id of the named tile, using a type-sensitive comparison
  */
 export function tileHasName(id, name) {
   assert(_.has(tileInfo, name), `Unknown tileName: ${name}`);
   return tileInfo[name].id === id;
 }
 
-/*
- * @param {(number|String)} id - the id of a tile
- * @return {String} the name for the input tile id
+/**
+ * @param {(number|string)} id - the id of a tile
+ * @returns {string} the name for the input tile id
  */
 function getTileName(id) {
   assert(_.has(tileNames, id), `Unknown id: ${id}`);
@@ -90,10 +90,10 @@ function getTileName(id) {
 }
 
 
-/*
- * @param {String} id - the id of the tile
- * @param {String} property - the name of a property
- * @return {boolean} if the corresponding tile has a value for this property
+/**
+ * @param {string} id - the id of the tile
+ * @param {string} property - the name of a property
+ * @returns {boolean} if the corresponding tile has a value for this property
  */
 export function tileHasProperty(id, property) {
   const name = getTileName(id);
@@ -101,10 +101,10 @@ export function tileHasProperty(id, property) {
 }
 
 
-/*
- * @param {String} id - the id of the tile whose property we want
- * @param {String} property - the name of a property stored in tileInfo
- * @return {(number|String|boolean)} the property for the input tile
+/**
+ * @param {string} id - the id of the tile whose property we want
+ * @param {string} property - the name of a property stored in tileInfo
+ * @returns {(number|string|boolean)} the property for the input tile
  */
 export function getTileProperty(id, property) {
   const name = getTileName(id);
@@ -116,10 +116,10 @@ export function getTileProperty(id, property) {
 }
 
 
-/*
- * @param {String} id - the id of the tile
- * @param {String[]} names - an array of tile names
- * @return {boolean} if the tile with the corresponding id's name is in names
+/**
+ * @param {string} id - the id of the tile
+ * @param {string[]} names - an array of tile names
+ * @returns {boolean} if the tile with the corresponding id's name is in names
  */
 export function tileIsOneOf(id, names) {
   for (let i = 0; i < names.length; i++) {

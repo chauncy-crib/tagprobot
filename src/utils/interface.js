@@ -17,7 +17,7 @@ const KEY_CODES = {
 // FIFO queue for delaying chat messages
 const messageQueue = [];
 
-/*
+/**
  * Enqueues the message in the message queue to be chatted when appropriate.
  * @param {string} message - the message to chat
  */
@@ -33,7 +33,7 @@ const chatDelay = 500 + 100;
 // Keep track of the time the last message was sent
 let lastMessageTime = 0;
 
-/*
+/**
  * Checks if we've waited long enough since the last message was chatted, and
  * if so chats the first thing in the queue if it exists.
  */
@@ -77,10 +77,9 @@ export function chatHelpMenu() {
 }
 
 
-/*
+/**
  * Sends key events to move in a list of directions.
- *
- * @param {Object} directions - directions to move
+ * @param {{x: string, y: string}} directions - directions to move
  * @param {(string|undefined)} directions.x - either 'RIGHT', 'LEFT', or undefined
  * @param {(string|undefined)} directions.y - either 'DOWN', 'UP', or undefined
  */
@@ -135,11 +134,10 @@ export function onKeyDown(event) {
 }
 
 
-/*
+/**
  * Sends key events to move to a destination.
- *
- * @param {Object} destination - object with the position to move to, in pixels,
- * x and y
+ * @param {{x: number, y: number}} destination - object with the position to move to, in pixels,
+ *   x and y
  */
 export function move(destination) {
   // TODO: address deadband variable with a comment
@@ -162,12 +160,11 @@ export function move(destination) {
 }
 
 
-/*
- * Overriding this function to get a more accurate velocity of players.
- * Velocity is saved in player.vx and vy. The refresh rate on our access to server size physics is
- * only 4 Hz. We can check our client-side velocity at a much higher refresh rate (60 Hz), so we use
- * this and store it in the me object.
- * Units are in meters/second. 1 meter = 2.5 tiles.
+/**
+ * Overriding this function to get a more accurate velocity of players. Velocity is saved in
+ *   player.vx and vy. The refresh rate on our access to server size physics is only 4 Hz. We can
+ *   check our client-side velocity at a much higher refresh rate (60 Hz), so we use this and store
+ *   it in the me object. Units are in meters/second. 1 meter = 2.5 tiles.
  */
 export function setupVelocity() {
   Box2D.Dynamics.b2Body.prototype.GetLinearVelocity = function accurateVelocity() {

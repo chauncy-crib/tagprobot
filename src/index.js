@@ -18,9 +18,9 @@ import {
 window.onkeydown = onKeyDown;
 
 
-/*
- * This function will execute the provided function after tagpro.playerId
- * has been assigned.
+/**
+ * This function will execute the provided function after tagpro.playerId has been assigned.
+ * @param {function} fn - the function to execute after tagpro.playerId has been set
  */
 function waitForId(fn) {
   // Don't execute the function until tagpro.playerId has been assigned.
@@ -37,12 +37,21 @@ function waitForId(fn) {
 }
 
 
-/*
- * This is the "entry point" for our bot. We initialize the global "me"
- * variable, modify the way we calculate velocity for players, and then run our
- * "botLoop" every time an animation frame is drawn
+/**
+ * Call this function every time a tagpro animation frame gets drawn
+ */
+function loop() {
+  requestAnimationFrame(loop);
+  botLoop();
+}
+
+
+/**
+ * This is the "entry point" for our bot. We run necessary initializations and setups, and then run
+ *   our "botLoop" every time an animation frame is drawn
  */
 function start() {
+  // Setup
   setupMe();
   setupVelocity();
   computeTileInfo();
@@ -52,17 +61,12 @@ function start() {
   initKeyPressesVisualization();
   initUiUpdateProcess();
 
-  function loop() {
-    // Call this function every time a tagpro animation frame gets drawn
-    requestAnimationFrame(loop);
-    botLoop();
-  }
-
+  // Run the bot
   loop();
 }
 
 
-/*
+/**
  * Initialize the start script when tagpro is ready, and additionally wait
  * for the playerId property to be assigned.
  */

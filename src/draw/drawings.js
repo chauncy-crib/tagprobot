@@ -1,4 +1,4 @@
-/*
+/**
  * Note: the code in this file was written by reading this userscript:
  * https://gist.github.com/SomeBall-1/0060b3c71ec379ea7ccf
  * and doing my best to interpret what the code in it was doing.
@@ -46,14 +46,14 @@ const keySize = 30; // side length of keys in pixels
 const keyGap = 4; // gap between keys in pixels
 
 
-/*
+/**
  * @param {number} x - top left x, in pixels
  * @param {number} y - top left y, in pixels
  * @param {number} width - width in pixels
  * @param {number} height - height in pixels
  * @param {number} alpha - 0-1, where 0 is transparent
  * @param {number} color - a hex color
- * @return {PIXI.Graphics} a PIXI.Graphics rectangle object with the specified x, y, width, height,
+ * @returns {PIXI.Graphics} a PIXI.Graphics rectangle object with the specified x, y, width, height,
  *   alpha, and color
  */
 function getPixiRect(x, y, width, height, alpha, color) {
@@ -68,13 +68,13 @@ function getPixiRect(x, y, width, height, alpha, color) {
 }
 
 
-/*
+/**
  * @param {number} x - top left x, in pixels
  * @param {number} y - top left y, in pixels
  * @param {number} size - side length in pixels
  * @param {number} alpha - 0-1, where 0 is transparent
  * @param {number} color - a hex color
- * @return {PIXI.Graphics} a PIXI.Graphics rectangle object with the specified x, y, size,
+ * @returns {PIXI.Graphics} a PIXI.Graphics rectangle object with the specified x, y, size,
  *   alpha, and color
  */
 function getPixiSquare(x, y, size, alpha, color) {
@@ -82,7 +82,7 @@ function getPixiSquare(x, y, size, alpha, color) {
 }
 
 
-/*
+/**
  * Places the key presses visualization in the correct spot relative to the current screen size.
  * This is used to correct the placement of the key presses visualization if the user dynamically
  * resized their screen.
@@ -97,7 +97,7 @@ function centerKeyPressesVis() {
 }
 
 
-/*
+/**
  * The tagpro object has a function that is called every time the user interface needs to be
  * updated (this function is defined at tagpro.ui.update). We have made additions to the UI that now
  * need to be updated along with the rest of the builtin TagPro UI. This initUiUpdateProcess
@@ -112,7 +112,7 @@ export function initUiUpdateProcess() {
 }
 
 
-/*
+/**
  * Creates the PIXI object that holds the key press visualizations and draws the initial keys.
  */
 export function initKeyPressesVisualization() {
@@ -137,7 +137,7 @@ export function initKeyPressesVisualization() {
 }
 
 
-/*
+/**
  * @param keyIndex - the index within the keyPressesVis PIXI object of the key that should be
  *   updated
  * @param newAlpha - the alpha value to set the new key drawing to
@@ -173,9 +173,8 @@ function updateKeyDrawing(keyIndex, newAlpha) {
 }
 
 
-/*
+/**
  * Draw the given state of the key presses.
- *
  * @param {Object} directions - directions to draw
  * @param {(string|undefined)} directions.x - either 'RIGHT', 'LEFT', or undefined
  * @param {(string|undefined)} directions.y - either 'DOWN', 'UP', or undefined
@@ -203,12 +202,10 @@ export function drawKeyPresses(directions) {
 }
 
 
-/*
- * Erases all spirtes in pathSprites from the renderer
- * Creates a new path sprite for each cell in path
- * Adds each new sprite to pathSprites, and to the renderer
- * Runtime: O(A)
- * @param {Array} path - an array of cells, likely returned by getShortestPath()
+/**
+ * Erases all spirtes in pathSprites from the renderer. Creates a new path sprite for each cell in
+ *   path. Adds each new sprite to pathSprites, and to the renderer. Runtime: O(A)
+ * @param {GameState[]} path - an array of GameStates, likely returned by getShortestPath()
  */
 export function updatePath(path) {
   if (!isVisualMode()) {
@@ -224,10 +221,9 @@ export function updatePath(path) {
 }
 
 
-/*
- * Erases all sprites in pathSprites, tempNTSprites, and permNTSprites.
- * Reassigns pathSprites and tempNTSprites to empty list
- * Runtime: O(N^2)
+/**
+ * Erases all sprites in pathSprites, tempNTSprites, and permNTSprites. Reassigns pathSprites and
+ *   tempNTSprites to empty list. Runtime: O(N^2)
  */
 export function clearSprites() {
   // get a list of all sprites
@@ -242,22 +238,20 @@ export function clearSprites() {
 }
 
 
-/*
- * Iterates over permNTSprites and adds each sprite to the renderer
- * Runtime: O(P)
+/**
+ * Iterates over permNTSprites and adds each sprite to the renderer. Runtime: O(P)
  */
 export function drawPermanentNTSprites() {
   _.forEach(permNTSprites, s => tagpro.renderer.layers.background.addChild(s));
 }
 
 
-/*
+/**
  * Iterates over the cells in a single tile in the tagpro map, indexed in the tagpro map at
- * map[x][y].
- * It takes each cell in the corresponding cellTraversabilities grid, and if a cell is NT, creates a
- * new sprite for the cell and stores it in permNTSprites. Assumes that the cellTraversabilities for
- * the input tile have aleady been computed and stored in cellTraversabilities.
- * Runtime: O(CPTL^2)
+ *   map[x][y]. It takes each cell in the corresponding cellTraversabilities grid, and if a cell is
+ *   NT, creates a new sprite for the cell and stores it in permNTSprites. Assumes that the
+ *   cellTraversabilities for the input tile have aleady been computed and stored in
+ *   cellTraversabilities. Runtime: O(CPTL^2)
  */
 export function generatePermanentNTSprites(x, y, cellTraversabilities) {
   assertGridInBounds(cellTraversabilities, x * CPTL, y * CPTL);
@@ -275,15 +269,14 @@ export function generatePermanentNTSprites(x, y, cellTraversabilities) {
 }
 
 
-/*
+/**
  * Takes in an grid of cellTraversabilities, and the x, y tile location that we should check for
- * updates, and updates the sprites drawn on the tagpro map. If tempNTSprites is empty, initialize
- * it to the correct size as specified by the comment at the top of this file
- * Runtime: O(CPTL^2), O(1) if visualizations off
- *
+ *   updates, and updates the sprites drawn on the tagpro map. If tempNTSprites is empty, initialize
+ *   it to the correct size as specified by the comment at the top of this file. Runtime: O(CPTL^2),
+ *   O(1) if visualizations off
  * @param {number} xt - x location, in tiles
  * @param {number} yt - y location, in tiles
- * @param {Array} cellTraversabilities - the cell-traversabilities of the tagpro map.
+ * @param {number[][]} cellTraversabilities - the cell-traversabilities of the tagpro map.
  */
 export function updateNTSprites(xt, yt, cellTraversabilities) {
   if (!isVisualMode()) {

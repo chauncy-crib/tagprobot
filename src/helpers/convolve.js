@@ -2,14 +2,13 @@ import { init2dArray, fillGridWithSubgrid } from './map';
 import { assert, assertGridInBounds } from '../utils/asserts';
 
 
-/*
+/**
  * Returns the sum of all corresponding elements from two matrices being
- * multiplied together. For example:
- *   a = 1 2   b = 4 1
- *       3 4       2 3
- *   multiplyCorrespondingElementsAndSum(a, b)
- *   (1*4) + (2*1) + (3*2) + (4*3) = 21
- *
+ *   multiplied together. For example:
+ *     a = 1 2   b = 4 1
+ *         3 4       2 3
+ *     multiplyCorrespondingElementsAndSum(a, b)
+ *     (1*4) + (2*1) + (3*2) + (4*3) = 21
  * @param {number[][]} m1 - the first matrix
  * @param {number[][]} m2 - the second matrix (of the same dimensions as m1)
  */
@@ -46,7 +45,6 @@ export function multiplyCorrespondingElementsAndSum(m1, m2) {
  *                                                 1 1 7 8 9 1 1
  *                                                 1 1 1 1 1 1 1
  *                                                 1 1 1 1 1 1 1
- *
  * @param {number[][]} m - a 2D array, which will have a buffer added around its perimeter
  * @param {number} bufSize - the size of buffer to add around the matrix
  * @param {number} bufVal - the value to fill the buffer with
@@ -65,9 +63,8 @@ export function addBufferTo2dArray(m, bufSize, bufVal) {
 }
 
 
-/*
+/**
  * Returns a specified section from a 2D array.
- *
  * @param {number[][]} array - the 2D array to get the subarray from
  * @param {number} xMin - the left-most index of the desired subarray
  * @param {number} yMin - the top-most index of the desired subarray
@@ -91,9 +88,8 @@ export function getSubarrayFrom2dArray(array, xMin, yMin, xMax, yMax) {
 }
 
 
-/*
+/**
  * Returns a 2D array that is the result of the convolution of m and k.
- *
  * @param {number[][]} m - the first 2D array in the convolution
  * @param {number[][]} k - the second 2D array in the convolution, also called
  *   the kernel (must have sides of equal length and the sides must have an odd
@@ -135,9 +131,9 @@ export function convolve(m, k) {
 }
 
 
-/*
+/**
  * @param {number[][]} m - a binary 2d array to be inverted
- * @return {number[][]} - the original m, but with 0 and 1 values switched
+ * @returns {number[][]} the original m, but with 0 and 1 values switched
  */
 export function invertBinary2dArray(m) {
   const width = m.length;
@@ -155,16 +151,14 @@ export function invertBinary2dArray(m) {
 }
 
 
-/*
- * Adds a buffer around all nontraversable cells in the given 2D array. The
- * given parameters are inverted such that traversable is 0 and nontraversable
- * is 1. This makes the math easier, then the resulting 2D array is inverted
- * again to undo the original inversion.
- *
+/**
+ * Adds a buffer around all nontraversable cells in the given 2D array. The given parameters are
+ *   inverted such that traversable is 0 and nontraversable is 1. This makes the math easier, then
+ *   the resulting 2D array is inverted again to undo the original inversion.
  * @param {number[][]} m - the matrix that will have the kernel applied to it
  * @param {number[][]} k - the kernel that will be applied to the matrix
- * @return {number[][]} - the result of convolving m and k, then truncating
- * any nontraversable values to 0
+ * @returns {number[][]} the result of convolving m and k, then truncating
+ *   any nontraversable values to 0
  */
 export function addNTBuffer(m, k) {
   assert(k.length === k[0].length, 'the kernel is not square');
