@@ -66,7 +66,7 @@ function getNextTargetPos() {
     xc: Math.floor(goal.x / PPCL),
     yc: Math.floor(goal.y / PPCL),
   };
-  // Runtime: O(E*CPTL^2) with visualizations on, O(E + S*CPTL^2) with visualizations off
+  // Runtime: O(M*CPTL^2) with visualizations on, O(M + S*CPTL^2) with visualizations off
   const traversableCells = getMapTraversabilityInCells(map);
 
   // TODO: runtime of this? Call is O(R) for now

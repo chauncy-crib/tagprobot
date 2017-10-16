@@ -19,19 +19,25 @@ import {
   keyColor,
   keyOnAlpha,
   keyOffAlpha,
+  navMeshColor,
+  navMeshThickness,
 } from '../constants';
+import { getDTGraph } from '../navmesh/triangulation';
 import { init2dArray } from '../helpers/map';
 import { isVisualMode } from '../utils/interface';
-import { assertGridInBounds } from '../utils/asserts';
+import { assert, assertGridInBounds } from '../utils/asserts';
 
-let pathSprites = []; // a list of the current path sprites drawn
+let pathSprites = []; // A list of the current path sprites drawn
 
-// a grid of NT-sprites, which are subject to change. If there isn't a NT-object at the given cell,
+// A grid of NT-sprites, which are subject to change. If there isn't a NT-object at the given cell,
 // then store null. This object is size tagpro_map_length * CPTL x tagpro_map_width * CPTL
 let tempNTSprites = [];
 
-// a list of permanent NT sprites. Will always be on map (if visualizations are on)
+// A list of permanent NT sprites. Will always be on map (if visualizations are on)
 const permNTSprites = [];
+
+// A Graph class sprite
+let graphSprite;
 
 // The current state of the keys being pressed
 export const currKeyPresses = { x: null, y: null };
@@ -229,12 +235,14 @@ export function clearSprites() {
   // get a list of all sprites
   const allSprites = permNTSprites
     .concat(pathSprites)
+    .concat(graphSprite || [])
     // flatten the tempNTSprites grid, and remove null values
     // O(N^2), because tempNTSprites is NxN
     .concat(_.reject(_.flatten(tempNTSprites), _.isNull));
   _.forEach(allSprites, s => tagpro.renderer.layers.background.removeChild(s));
   pathSprites = [];
   tempNTSprites = [];
+  graphSprite = null;
 }
 
 
@@ -308,3 +316,35 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
   }
 }
 
+/*
+ * Draws edges and vertices of a graph class with a certain thickness and color. Runtime: O(E)
+ * @param {Graph} graph - graph to draw
+ * @param {number} thickness - thickness of the lines in pixels
+ * @param {number} color - a hex color
+ */
+function drawGraph(graph, thickness, color) {
+  assert(_.isNil(graphSprite), 'graphSprite is not null');
+  const graphGraphics = new PIXI.Graphics().lineStyle(thickness, color);
+
+  _.forEach(graph.getEdges(), edge => {
+    graphGraphics
+      .moveTo(edge.point1.x, edge.point1.y)
+      .lineTo(edge.point2.x, edge.point2.y);
+  });
+  _.forEach(graph.getVertices(), vertex => {
+    graphGraphics.drawCircle(vertex.x, vertex.y, thickness / 2);
+  });
+
+  tagpro.renderer.layers.background.addChild(graphGraphics);
+  graphSprite = graphGraphics;
+}
+
+/*
+ * Draws the navigation mesh lines on the tagpro map. Runtime: O(E), O(1) if visualizations off
+ */
+export function drawNavMesh() {
+  if (!isVisualMode()) {
+    return;
+  }
+  drawGraph(getDTGraph(), navMeshThickness, navMeshColor);
+}

@@ -7,11 +7,12 @@ import {
   setupVelocity,
   chatHelpMenu,
 } from './utils/interface';
-
+import { calculateNavMesh } from './navmesh/triangulation';
 import {
   drawPermanentNTSprites,
   initKeyPressesVisualization,
   initUiUpdateProcess,
+  drawNavMesh,
 } from './draw/drawings';
 
 // Handle keypress and related events for manual/auto toggle
@@ -56,10 +57,14 @@ function start() {
   setupVelocity();
   computeTileInfo();
   chatHelpMenu();
+
   initMapTraversabilityCells(tagpro.map);
+  calculateNavMesh(tagpro.map);
+
   drawPermanentNTSprites();
   initKeyPressesVisualization();
   initUiUpdateProcess();
+  drawNavMesh();
 
   // Run the bot
   loop();
