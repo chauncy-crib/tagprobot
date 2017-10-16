@@ -265,21 +265,21 @@ test('updateNTSprites', tester => {
 test('drawNavMesh()', tester => {
   tester.test('does nothing if visual mode is off', t => {
     const mockIsVisualMode = sinon.stub().returns(false);
-    const mockDrawGraphEdges = sinon.spy();
+    const mockDrawGraph = sinon.spy();
     DrawRewireAPI.__Rewire__('isVisualMode', mockIsVisualMode);
-    DrawRewireAPI.__Rewire__('drawGraphEdges', mockDrawGraphEdges);
+    DrawRewireAPI.__Rewire__('drawGraph', mockDrawGraph);
 
     drawNavMesh(null);
 
     t.is(mockIsVisualMode.callCount, 1);
-    t.is(mockDrawGraphEdges.callCount, 0);
+    t.is(mockDrawGraph.callCount, 0);
 
     DrawRewireAPI.__ResetDependency__('isVisualMode');
-    DrawRewireAPI.__ResetDependency__('drawGraphEdges');
+    DrawRewireAPI.__ResetDependency__('drawGraph');
     t.end();
   });
 
-  tester.test('calls drawGraphEdges with correct graph object', t => {
+  tester.test('calls drawGraph with correct graph object', t => {
     const mockGraph = new Graph();
     const middle = new Point(1000, 1000);
     const left = new Point(900, 1000);
@@ -287,15 +287,15 @@ test('drawNavMesh()', tester => {
     mockGraph.addEdge(middle, left);
     mockGraph.addEdge(middle, down);
     mockGraph.addEdge(down, left);
-    const mockDrawGraphEdges = sinon.spy();
-    DrawRewireAPI.__Rewire__('drawGraphEdges', mockDrawGraphEdges);
+    const mockDrawGraph = sinon.spy();
+    DrawRewireAPI.__Rewire__('drawGraph', mockDrawGraph);
     DrawRewireAPI.__Rewire__('navMeshThickness', 'thick');
     DrawRewireAPI.__Rewire__('navMeshColor', 'brown');
 
     drawNavMesh(mockGraph);
-    t.true(mockDrawGraphEdges.calledWith(mockGraph, 'thick', 'brown'));
+    t.true(mockDrawGraph.calledWith(mockGraph, 'thick', 'brown'));
 
-    DrawRewireAPI.__ResetDependency__('drawGraphEdges');
+    DrawRewireAPI.__ResetDependency__('drawGraph');
     DrawRewireAPI.__ResetDependency__('navMeshThickness');
     DrawRewireAPI.__ResetDependency__('navMeshColor');
     t.end();

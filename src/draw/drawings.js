@@ -22,6 +22,7 @@ import {
   navMeshColor,
   navMeshThickness,
 } from '../constants';
+import { getDTGraph } from '../navmesh/triangulation';
 import { init2dArray } from '../helpers/map';
 import { isVisualMode } from '../utils/interface';
 import { assert, assertGridInBounds } from '../utils/asserts';
@@ -316,37 +317,34 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
 }
 
 /*
- * Draws edges of a graph class with a certain thickness and color.
- * Runtime: O(E)
- *
+ * Draws edges and vertices of a graph class with a certain thickness and color. Runtime: O(E)
  * @param {Graph} graph - graph to draw
  * @param {number} thickness - thickness of the lines in pixels
  * @param {number} color - a hex color
  */
-function drawGraphEdges(graph, thickness, color) {
+function drawGraph(graph, thickness, color) {
   assert(_.isNil(graphSprite), 'graphSprite is not null');
-  const edgeGraphics = new PIXI.Graphics();
+  const graphGraphics = new PIXI.Graphics().lineStyle(thickness, color);
 
   _.forEach(graph.getEdges(), edge => {
-    edgeGraphics
-      .lineStyle(thickness, color)
+    graphGraphics
       .moveTo(edge.point1.x, edge.point1.y)
       .lineTo(edge.point2.x, edge.point2.y);
   });
+  _.forEach(graph.getVertices(), vertex => {
+    graphGraphics.drawCircle(vertex.x, vertex.y, thickness / 2);
+  });
 
-  tagpro.renderer.layers.background.addChild(edgeGraphics);
-  graphSprite = edgeGraphics;
+  tagpro.renderer.layers.background.addChild(graphGraphics);
+  graphSprite = graphGraphics;
 }
 
 /*
- * Draws the navigation mesh lines on the tagpro map.
- * Runtime: O(E), O(1) if visualizations off
- *
- * @param {Graph} graph - graph of edges to draw
+ * Draws the navigation mesh lines on the tagpro map. Runtime: O(E), O(1) if visualizations off
  */
-export function drawNavMesh(graph) {
+export function drawNavMesh() {
   if (!isVisualMode()) {
     return;
   }
-  drawGraphEdges(graph, navMeshThickness, navMeshColor);
+  drawGraph(getDTGraph(), navMeshThickness, navMeshColor);
 }
