@@ -21,12 +21,9 @@ const tilesToUpdate = [];
 const tilesToUpdateValues = []; // the values stored in those locations
 
 
-/*
+/**
  * Initializes and returns a 2D array with the specified width, height, and
- * default value.
- *
- * Runtime: O(width * height)
- *
+ *   default value. Runtime: O(width * height)
  * @param {number} width - the width of the initialized 2D array
  * @param {number} height - the height of the initialized 2D array
  * @param {number} defaultVal - the value to give each element in the initialized 2D array
@@ -46,9 +43,8 @@ export function init2dArray(width, height, defaultVal = 0, inputMatrix = undefin
 }
 
 
-/* eslint no-param-reassign: ["error", { "ignorePropertyModificationsFor": ["bigGrid"] }] */
-/*
- * place all values from smallGrid into bigGrid. Align the upper left corner at x, y
+/**
+ * Place all values from smallGrid into bigGrid. Align the upper left corner at x, y.
  */
 export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
   const smallGridWidth = smallGrid.length;
@@ -58,13 +54,13 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
 
   for (let i = 0; i < smallGridWidth; i++) {
     for (let j = 0; j < smallGridHeight; j++) {
-      bigGrid[i + x][j + y] = smallGrid[i][j];
+      bigGrid[i + x][j + y] = smallGrid[i][j]; // eslint-disable-line no-param-reassign
     }
   }
 }
 
 
-/*
+/**
  * Updates the traversability grid in a selected area from the num NTO grid
  * @param numNTO {number[][]} - a count of nontraversable objects in cells
  * @param traversability {number[][]} - a binary 2D array of traversability in cells
@@ -80,17 +76,18 @@ export function updateTraversabilityFromNumNTO(numNTO, traversability, xMin, yMi
   for (let xc = xMin; xc < xMax; xc++) {
     for (let yc = yMin; yc < yMax; yc++) {
       // if there are no NTO here, define it as traversable
+      // eslint-disable-next-line no-param-reassign
       traversability[xc][yc] = numNTO[xc][yc] === 0 ? 1 : 0;
     }
   }
 }
 
 
-/* Returns a 2d cell array of traversible (1) and blocked (0) cells inside a tile.
- * Runtime: O(CPTL^2)
- *
+/**
+ * Returns a 2d cell array of traversible (1) and blocked (0) cells inside a tile. Runtime:
+ *   O(CPTL^2)
  * @param {number} tileId - the id of the tile that should be split into cells and
- * parsed for traversability
+ *   parsed for traversability
  */
 export function getTileTraversabilityInCells(tileId) {
   // Start with all cells being traversable
@@ -142,16 +139,15 @@ export function getTileTraversabilityInCells(tileId) {
 }
 
 
-/*
+/**
  * Updates the numNTO grid in the area affected by a single tile changing its traversability state
- *
  * @param {number[][]} numNTO - the count of NTO within the affected area of the NTKernel
  * @param xMin {number} - the minimum x value to update (inclusive)
  * @param yMin {number} - the minimum y value to update (inclusive)
  * @param xMax {number} - the maximum x value to update (exclusive)
  * @param yMax {number} - the maximum y value to update (exclusive)
  * @param {boolean} tileTraversability - the traversability for the tile that was updated and is
- * now affecting the numNTO grid
+ *   now affecting the numNTO grid
  */
 export function updateNumNTO(numNTO, xMin, yMin, xMax, yMax, tileTraversability) {
   assertGridInBounds(numNTO, xMin, yMin);
@@ -169,13 +165,11 @@ export function updateNumNTO(numNTO, xMin, yMin, xMax, yMax, tileTraversability)
 }
 
 
-/*
- * Initializes mapTraversabilityCells to a grid of size map.length * CPTL with
- * the correct values. Store all non-permanent locations in tilesToUpdate, and
- * their corresponding values in tilesToUpdateValues. Initialize permanent sprites
- * for all permanent NT sprites.
- * Runtime: O(N^2 * CPTL^2)
- *
+/**
+ * Initializes mapTraversabilityCells to a grid of size map.length * CPTL with the correct values.
+ *   Store all non-permanent locations in tilesToUpdate, and their corresponding values in
+ *   tilesToUpdateValues. Initialize permanent sprites for all permanent NT sprites. Runtime:
+ *   O(N^2 * CPTL^2)
  * @param {number} map - 2D array representing the Tagpro map
  */
 export function initMapTraversabilityCells(map) {
@@ -220,17 +214,12 @@ export function initMapTraversabilityCells(map) {
   );
 }
 
-/*
- * Returns a 2D array of traversable (1) and blocked (0) cells. Size of return grid is
- * map.length * CPTL
- *
- * The 2D array is an array of the columns in the game. empty_tiles[0] is
- * the left-most column. Each column array is an array of the tiles in
- * that column, with 1s and 0s.  empty_tiles[0][0] is the upper-left corner
- * tile.
- *
- * Runtime: O(E*CPTL^2) with drawings on, O(E + S*CPTL^2) with drawings off
- *
+/**
+ * Returns a 2D array of traversable (1) and blocked (0) cells. Size of return grid is map.length *
+ *   CPTL. The 2D array is an array of the columns in the game. empty_tiles[0] is the left-most
+ *   column. Each column array is an array of the tiles in that column, with 1s and 0s.
+ *   empty_tiles[0][0] is the upper-left corner tile. Runtime: O(E*CPTL^2) with drawings on,
+ *   O(E + S*CPTL^2) with drawings off
  * @param {number} map - 2D array representing the Tagpro map
  */
 export function getMapTraversabilityInCells(map) {

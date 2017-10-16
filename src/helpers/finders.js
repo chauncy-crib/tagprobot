@@ -6,15 +6,12 @@ import { PPTL } from '../constants';
 import { assert } from '../utils/asserts';
 
 
-/*
+/**
  * Returns the position xt and yt (in pixels) of the first of the specified tile
- * types to appear starting in the top left corner and moving in a page-reading
- * fashion.
- *
- * Runtime: O(N^2)
- *
+ *   types to appear starting in the top left corner and moving in a page-reading
+ *   fashion. Runtime: O(N^2)
  * @param {(number | number[])} tiles - either a number representing a tileType,
- * or an array of such numbers
+ *   or an array of such numbers
  */
 export function findTile(tileNames) {
   assert(tileNames, 'tileNames is undefined');
@@ -37,10 +34,9 @@ export function findTile(tileNames) {
 }
 
 
-/*
+/**
  * Returns the enemy FC object from the tagpro.players array, if in view
- *
- * @return {Object} the enemy FC object
+ * @returns {Object} the enemy FC object
  */
 export function findEnemyFC() {
   return _.find(tagpro.players, player => (

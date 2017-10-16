@@ -1,4 +1,4 @@
-/*
+/**
  * Throws a specified error message if a condition is not met. If no message
  * is specified, then a default error message is thrown.
  *

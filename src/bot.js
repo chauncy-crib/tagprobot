@@ -8,16 +8,15 @@ import { isAutonomousMode, isVisualMode, move, dequeueChatMessages } from './uti
 import { updatePath } from './draw/drawings';
 
 
-/*
+/**
  * The logic/flowchart to get where our goal is.
  *   If I have the flag, go to my endzone.
  *   If an enemy in view has the flag, chase him.
  *   If the enemy team has the flag but I can't see them, go to their endzone.
  *   If we have the flag, go to our endzone.
  *   Else, go to the flag station.
- *
- * @return {Object} - the position, in pixels, of the bot's goal, which is
- * determined by the current state of the game
+ * @returns {{x: number, y: number}} the position, in pixels, of the bot's goal, which is
+ *   determined by the current state of the game
  */
 function getGoalPos() {
   const me = getMe();
@@ -51,9 +50,9 @@ function getGoalPos() {
 }
 
 
-/*
- * @return {Object} - an object with position of the next immediate place to
- * navigate to in pixels, x and y
+/**
+ * @returns {{x: number, y: number}} the position, in pixels, of the next immediate place to
+ *   navigate to
  */
 function getNextTargetPos() {
   const { map } = tagpro;
@@ -94,6 +93,9 @@ function getNextTargetPos() {
 }
 
 
+/**
+ * The base loop for defining the bot's behavior.
+ */
 export default function botLoop() {
   dequeueChatMessages();
   if (isAutonomousMode()) {

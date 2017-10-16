@@ -2,12 +2,11 @@ import { PPCL, BRP } from '../constants';
 import { init2dArray } from './map';
 
 
-/*
+/**
  * Creates the nontraversable kernel that we apply to each nontraversable cell on the
- * map such that our bot will not bump into things. In other words, the bot doesn't acccount for
- * its own nonzero radius, and this creates a buffer around nontraversable objects such that the
- * bot can continue to not account for its radius.
- *
+ *   map such that our bot will not bump into things. In other words, the bot doesn't acccount for
+ *   its own nonzero radius, and this creates a buffer around nontraversable objects such that the
+ *   bot can continue to not account for its radius.
  * @returns {number[][]} the nontraversable kernel
  */
 export function getNTKernel() { // eslint-disable-line import/prefer-default-export

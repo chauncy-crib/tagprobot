@@ -1,4 +1,4 @@
-/*
+/**
  * Our A-star implementation is based on the pseudocode from this website:
  * http://www.growingwiththeweb.com/2012/06/a-pathfinding-algorithm.html
  */
@@ -26,10 +26,10 @@ export class GameState {
     this.key = `${xc},${yc}`;
   }
 
-  /*
+  /**
    * @param {GameState} targetState - the GameState object we are calculating the heuristic distance
    *   to
-   * @return the heuristic distance from this state to the targetState
+   * @returns the heuristic distance from this state to the targetState
    */
   heuristic(targetState) {
     const xDiff = Math.abs(this.xc - targetState.xc);
@@ -46,11 +46,11 @@ export class GameState {
     return this.xc === state.xc && this.yc === state.yc;
   }
 
-  /*
+  /**
    * @param {number[][]} traversabilityCells - 2d grid of cell traversabilities, 1 for traversable,
    *   0 for NT
-   * @return {Array} Array of neighboring GameStates, with g values initialized to current node's
-   *   g value + 1
+   * @returns {GameState[]} an array of neighboring GameStates, with g values initialized to current
+   *   node's g value + 1
    */
   neighbors(traversabilityCells) {
     // vertical and horizontal neighbors
@@ -89,10 +89,10 @@ export class GameState {
   }
 }
 
-/*
+/**
  * @param {GameState} finalState - the final target GameState object. Will use to construct the path
  *   by walking the parent pointers back to the start state.
- * @return {Array} list of GameStates from starting state to final state, not including the
+ * @returns {GameState[]} list of GameStates from starting state to final state, not including the
  *   starting state.
  */
 function constructPath(finalState) {
@@ -107,11 +107,10 @@ function constructPath(finalState) {
 }
 
 
-/*
- * takes in current location and target location (eg, the location of the flag) and the map
- * represented as a grid of 1 and 0, where 1s are traversable and 0s are not. Uses A* to calculate
- * the best path
- *
+/**
+ * Takes in current location and target location (eg, the location of the flag) and the map
+ *   represented as a grid of 1 and 0, where 1s are traversable and 0s are not. Uses A* to calculate
+ *   the best path
  * @param {Object} me - object with bot's position in cells, xc and yc
  * @param {Object} target - object with target's position in cells, xc and yc
  * @param {number} traversabilityCells - 2D array of cells. Traversable cells are 1s, others are 0.
@@ -180,13 +179,12 @@ export function getShortestPath(me, target, traversabilityCells) {
 }
 
 
-/*
- * Takes in the current player's location, and a representation of the shortest
- * path as an array of cells returned by getShortestPath(), and returns the
- * position (in cells) that the player should seek toward.
- *
+/**
+ * Takes in the current player's location, and a representation of the shortest path as an array of
+ *   cells returned by getShortestPath(), and returns the position (in cells) that the player should
+ *   seek toward.
  * @param {Object} me - object with bot's position in cells, xc and yc
- * @return {Object} - object with target's position in cells, xc and yc
+ * @returns {Object} - object with target's position in cells, xc and yc
  */
 export function getTarget(me, shortestPath) {
   assert(shortestPath, 'shortestPath is null, there may be no traversable path to the target');
