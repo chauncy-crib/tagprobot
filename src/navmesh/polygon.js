@@ -136,26 +136,22 @@ export function unmergedGraphFromTagproMap(map) {
       graph.addVertex(topRight);
       graph.addEdge(bottomLeft, topRight);
     }
-    if ((x === 0 || !getTileProperty(map[x - 1][y], 'traversable')) &&
-      !tileIsOneOf(map[x][y], ['ANGLE_WALL_1', 'ANGLE_WALL_2'])) {
+    if (wallOnLeft(map, x, y) && !tileIsOneOf(map[x][y], ['ANGLE_WALL_1', 'ANGLE_WALL_2'])) {
       // edge on left
       graph.addVertex(topLeft);
       graph.addVertex(bottomLeft);
       graph.addEdge(topLeft, bottomLeft);
-    } if ((x === map.length - 1 || !getTileProperty(map[x + 1][y], 'traversable')) &&
-      !tileIsOneOf(map[x][y], ['ANGLE_WALL_3', 'ANGLE_WALL_4'])) {
+    } if (wallOnRight(map, x, y) && !tileIsOneOf(map[x][y], ['ANGLE_WALL_3', 'ANGLE_WALL_4'])) {
       // edge on right
       graph.addVertex(topRight);
       graph.addVertex(bottomRight);
       graph.addEdge(topRight, bottomRight);
-    } if ((y === 0 || !getTileProperty(map[x][y - 1], 'traversable')) &&
-      !tileIsOneOf(map[x][y], ['ANGLE_WALL_2', 'ANGLE_WALL_3'])) {
+    } if (wallOnTop(map, x, y) && !tileIsOneOf(map[x][y], ['ANGLE_WALL_2', 'ANGLE_WALL_3'])) {
       // edge above
       graph.addVertex(topLeft);
       graph.addVertex(topRight);
       graph.addEdge(topLeft, topRight);
-    } if ((y === map[0].length - 1 || !getTileProperty(map[x][y + 1], 'traversable')) &&
-      !tileIsOneOf(map[x][y], ['ANGLE_WALL_1', 'ANGLE_WALL_4'])) {
+    } if (wallOnBottom(map, x, y) && !tileIsOneOf(map[x][y], ['ANGLE_WALL_1', 'ANGLE_WALL_4'])) {
       // edge below
       graph.addVertex(bottomLeft);
       graph.addVertex(bottomRight);
