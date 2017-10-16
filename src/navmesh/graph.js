@@ -1,5 +1,6 @@
 import _ from 'lodash';
 
+
 export class Point {
   constructor(x, y) {
     this.x = x;
@@ -15,6 +16,7 @@ export class Point {
   }
 }
 
+
 export class Graph {
   constructor() {
     this.vertices = [];
@@ -29,26 +31,26 @@ export class Graph {
   }
 
   removeEdge(point1, point2) {
-    this.edges = _.reject(this.edges, e =>
+    this.edges = _.reject(this.edges, e => (
       // remove edges between the two points
       (e.point1.equal(point1) && e.point2.equal(point2)) ||
-        (e.point1.equal(point2) && e.point2.equal(point1)));
+      (e.point1.equal(point2) && e.point2.equal(point1))
+    ));
   }
-
 
   // user is responsible for clearing edges comming from vertex
   removeVertex(vertex) {
     this.vertices = _.reject(this.vertices, v => vertex.equal(v));
   }
 
-
   isConnected(point1, point2) {
     const N = this.neighbors(point1);
+    // return true if any of point1's neighbors are equal to point2
     return _.some(_.map(N, n => n.equal(point2)));
   }
 
   /**
-   * Return neighbors of the point
+   * Returns neighbors of the point
    *
    * @returns {Point[]}
    */
@@ -66,11 +68,10 @@ export class Graph {
   }
 
   addVertex(point) {
-    if (_.some(_.map(this.getVertices(), v => v.equal(point)))) {
-      // vertex already exists
-      return;
+    // only add vertex if it doesn't already exist in the graph
+    if (!_.some(_.map(this.getVertices(), v => v.equal(point)))) {
+      this.vertices.push(point);
     }
-    this.vertices.push(point);
   }
 
   /**
