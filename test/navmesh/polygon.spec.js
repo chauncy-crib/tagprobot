@@ -219,18 +219,18 @@ test('unmergedGraphFromTagproMap: diagonal walls', t => {
     { point1: { x: 0, y: 240 }, point2: { x: 40, y: 240 } },
     { point1: { x: 40, y: 0 }, point2: { x: 80, y: 0 } },
     { point1: { x: 40, y: 120 }, point2: { x: 80, y: 80 } },
-    { point1: { x: 40, y: 120 }, point2: { x: 40, y: 160 } },
+    { point1: { x: 40, y: 120 }, point2: { x: 80, y: 160 } },
     { point1: { x: 40, y: 240 }, point2: { x: 80, y: 240 } },
     { point1: { x: 80, y: 0 }, point2: { x: 120, y: 0 } },
     { point1: { x: 80, y: 80 }, point2: { x: 120, y: 40 } },
-    { point1: { x: 80, y: 160 }, point2: { x: 80, y: 200 } },
+    { point1: { x: 80, y: 160 }, point2: { x: 120, y: 200 } },
     { point1: { x: 80, y: 240 }, point2: { x: 120, y: 240 } },
     { point1: { x: 120, y: 0 }, point2: { x: 160, y: 0 } },
-    { point1: { x: 120, y: 40 }, point2: { x: 120, y: 80 } },
+    { point1: { x: 120, y: 40 }, point2: { x: 160, y: 80 } },
     { point1: { x: 120, y: 200 }, point2: { x: 160, y: 160 } },
     { point1: { x: 120, y: 240 }, point2: { x: 160, y: 240 } },
     { point1: { x: 160, y: 0 }, point2: { x: 200, y: 0 } },
-    { point1: { x: 160, y: 80 }, point2: { x: 160, y: 120 } },
+    { point1: { x: 160, y: 80 }, point2: { x: 200, y: 120 } },
     { point1: { x: 160, y: 160 }, point2: { x: 200, y: 120 } },
     { point1: { x: 160, y: 240 }, point2: { x: 200, y: 240 } },
     { point1: { x: 240, y: 0 }, point2: { x: 240, y: 40 } },
@@ -410,5 +410,55 @@ test('graphFromTagproMap works for large graph', t => {
 
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
   PolygonRewireAPI.__ResetDependency__('tileIsOneOf');
+  t.end();
+});
+
+
+test('graphFromTagproMap: diagonal walls', t => {
+  const mockGetTileProperty = sinon.stub();
+  mockGetTileProperty.withArgs(1, 'traversable').returns(true);
+  mockGetTileProperty.returns(false);
+  const mockTileHasName = sinon.stub();
+  mockTileHasName.withArgs(1.1, 'ANGLE_WALL_1').returns(true);
+  mockTileHasName.withArgs(1.2, 'ANGLE_WALL_2').returns(true);
+  mockTileHasName.withArgs(1.3, 'ANGLE_WALL_3').returns(true);
+  mockTileHasName.withArgs(1.4, 'ANGLE_WALL_4').returns(true);
+  mockTileHasName.returns(false);
+  PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
+
+  // this is an NT diamond in the middle of the map.
+  /* eslint-disable no-multi-spaces */
+  const map = [
+    [1, 1,   1,   1,   1,   1],
+    [1, 1,   1.4, 1.3, 1,   1],
+    [1, 1.4, 0,   0,   1.3, 1],
+    [1, 1.1, 0,   0,   1.2, 1],
+    [1, 1,   1.1, 1.2, 1,   1],
+    [1, 1,   1,   1,   1,   1],
+  ];
+  /* eslint-enable no-multi-spaces */
+
+  const graph = graphFromTagproMap(map);
+  t.is(graph.getVertices().length, 8);
+  t.is(graph.getEdges().length, 8);
+  t.same(graph.getEdges(), [
+    { point1: { x: 0, y: 240 }, point2: { x: 0, y: 0 } },
+    { point1: { x: 40, y: 120 }, point2: { x: 120, y: 40 } },
+    { point1: { x: 40, y: 120 }, point2: { x: 120, y: 200 } },
+    { point1: { x: 120, y: 40 }, point2: { x: 200, y: 120 } },
+    { point1: { x: 120, y: 200 }, point2: { x: 200, y: 120 } },
+    { point1: { x: 240, y: 0 }, point2: { x: 0, y: 0 } },
+    { point1: { x: 240, y: 240 }, point2: { x: 0, y: 240 } },
+    { point1: { x: 240, y: 240 }, point2: { x: 240, y: 0 } },
+  ]);
+
+  PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  TileRewireAPI.__ResetDependency__('tileHasName');
+  t.end();
+});
+
+  PolygonRewireAPI.__ResetDependency__('getTileProperty');
+  TileRewireAPI.__ResetDependency__('tileHasName');
   t.end();
 });

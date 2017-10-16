@@ -9,6 +9,10 @@ export class Point {
   equal(other) {
     return this.x === other.x && this.y === other.y;
   }
+
+  toString() {
+    return `x: ${this.x}, y: ${this.y}`;
+  }
 }
 
 export class Graph {
