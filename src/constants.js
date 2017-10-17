@@ -20,6 +20,9 @@ export const PPCL = PPTL / CPTL;
 // Size of the Tagpro ball
 export const BRP = 19; // ball radius, in pixels
 
+// use diagonals in A* calculation
+export const diagonal = true;
+
 // Nontraversable kernel, which applies a buffer around NTOs on the map
 export const NTKernel = getNTKernel();
 
@@ -34,13 +37,16 @@ export const keyOffAlpha = 0.2;
 export const navMeshColor = 0x9400ff; // Purple
 export const navMeshThickness = 4; // Line thickness in pixels
 
+// Numbers of cells along the shortest path to lookeahead and seek toward
+export const lookahead = 3;
+
 // Tagpro physics
 const maxSpeedMPS = 2.5; // meters per second
 const accelerationMPF = 0.025; // meters per frame
 const tilesPerMeter = 2.5;
 const framesPerSecond = 60;
 
-// export all constants in pixels per second
+// Export all constants in pixels per second
 // accel = 3.75 tiles/second^2 = 150 pixels/second^2
 export const accel = accelerationMPF * framesPerSecond * tilesPerMeter * PPTL;
 // maxSpeed = 6.25 tiles/second = 250 pixels/second^2

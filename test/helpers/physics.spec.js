@@ -2,7 +2,7 @@ import test from 'tape';
 import {
   projectedState,
   binarySearchAcceleration,
-  desiredAcceleration } from '../../src/helpers/physics';
+  desiredAccelerationMultiplier } from '../../src/helpers/physics';
 import { maxSpeed } from '../../src/constants';
 
 test('projectedState', tester => {
@@ -10,12 +10,14 @@ test('projectedState', tester => {
     const nextState = projectedState(0, 0, 8, -4, {}, 0.5);
     t.equal(nextState.vxp, 6);
     t.equal(nextState.vyp, -3);
+
     t.end();
   });
 
   tester.test('returns correct state with no keypress', t => {
     t.same(projectedState(15, 17, 0, 0, {}, 0.5), { xp: 15, yp: 17, vxp: 0, vyp: 0 });
     t.same(projectedState(15, 17, 3, -8, {}, 0.5), { xp: 16.3125, yp: 13.5, vxp: 2.25, vyp: -6 });
+
     t.end();
   });
 
@@ -32,6 +34,7 @@ test('projectedState', tester => {
       projectedState(15, 17, -50, 80, { x: 'LEFT', y: 'DOWN' }, 0.5),
       { xp: -25.625, yp: 70.75, vxp: -112.5, vyp: 135 },
     );
+
     t.end();
   });
 
@@ -39,9 +42,11 @@ test('projectedState', tester => {
     let state = projectedState(0, 0, 245, -245, { x: 'RIGHT', y: 'UP' }, 0.5);
     t.is(state.vxp, 250);
     t.is(state.vyp, -250);
+
     state = projectedState(0, 0, -245, 245, { x: 'LEFT', y: 'DOWN' }, 0.5);
     t.is(state.vxp, -250);
     t.is(state.vyp, 250);
+
     t.end();
   });
 
@@ -58,6 +63,7 @@ test('projectedState', tester => {
     }
     t.true(Math.abs(time - 3.57) < 0.1); // from empiracle tests, time to max speed is 3.57 seconds
     t.true(Math.abs(position - 574) < 10); // also based on tests
+
     t.end();
   });
 
@@ -67,11 +73,22 @@ test('projectedState', tester => {
 
 test('binarySearchAcceleration', tester => {
   tester.test('returns accurate keypress frequency', t => {
-    t.true(Math.abs(binarySearchAcceleration(0, 0, 75, 3) - 0.17) < 0.01);
-    t.true(Math.abs(binarySearchAcceleration(-75, 0, 0, 3) - 0.17) < 0.01);
-    t.true(Math.abs(binarySearchAcceleration(-75, -30, 10, 3) - 0.30) < 0.01);
-    t.true(Math.abs(binarySearchAcceleration(-75, -30, 40, 3) - 0.37) < 0.01);
-    t.true(Math.abs(binarySearchAcceleration(-75, 200, 40, 3) + 0.45) < 0.01);
+    // Relative distances are the same
+    const smallAcc1 = binarySearchAcceleration(0, 0, 75, 3);
+    const smallAcc2 = binarySearchAcceleration(-75, 0, 0, 3);
+    t.equal(smallAcc1, smallAcc2);
+    t.true(smallAcc1 < 0.5);
+    t.true(smallAcc1 > 0);
+
+    const medAcc1 = binarySearchAcceleration(-75, -30, 10, 3);
+    const medAcc2 = binarySearchAcceleration(-75, -30, 40, 3);
+    const medAcc3 = binarySearchAcceleration(-75, 200, 40, 3);
+    t.true(medAcc1 > smallAcc1);
+    t.true(medAcc2 > medAcc1);
+    t.true(-medAcc3 > medAcc2);
+    t.true(medAcc2 < 1);
+    t.true(medAcc3 > -1);
+
     t.end();
   });
 
@@ -80,6 +97,7 @@ test('binarySearchAcceleration', tester => {
     let time = 0;
     let position = -75;
     let speed = -30;
+    // acceleration returned by the binary search should bring the ball to a position of 40
     const accMult = binarySearchAcceleration(-75, -30, 40, 3);
     while (time < 3) {
       const nextState = projectedState(position, 0, speed, 0, { x: 'RIGHT' }, step, accMult);
@@ -87,7 +105,9 @@ test('binarySearchAcceleration', tester => {
       speed = nextState.vxp;
       time += step;
     }
-    t.true(Math.abs(position - 40) < 1);
+    // acceptable margin of error is 2 pixels
+    t.true(Math.abs(position - 40) < 2);
+
     t.end();
   });
 
@@ -95,44 +115,55 @@ test('binarySearchAcceleration', tester => {
 });
 
 
-test('desiredAcceleration', tester => {
-  tester.test('when target is down and right', t => {
-    t.true(Math.abs(desiredAcceleration(0, 0, 0, 0, 100, 100).accX - 1) < 0.01);
-    t.true(Math.abs(desiredAcceleration(0, 0, 0, 0, 100, 100).accY - 1) < 0.01);
-    t.true(Math.abs(desiredAcceleration(0, 0, 0, 0, -100, 100).accX + 1) < 0.01);
-    t.true(Math.abs(desiredAcceleration(0, 0, 0, 0, -100, 100).accY - 1) < 0.01);
-    t.true(Math.abs(desiredAcceleration(0, 0, 0, 0, -100, -100).accX + 1) < 0.01);
-    t.true(Math.abs(desiredAcceleration(0, 0, 0, 0, -100, -100).accY + 1) < 0.01);
+test('desiredAccelerationMultiplier', tester => {
+  tester.test('when target is 45 degrees of an axis', t => {
+    t.is(desiredAccelerationMultiplier(0, 0, 0, 0, 100, 100).accX, 1);
+    t.is(desiredAccelerationMultiplier(0, 0, 0, 0, 100, 100).accY, 1);
+    t.true(desiredAccelerationMultiplier(0, 0, 0, 0, -100, 100).accX < 0);
+    t.true(desiredAccelerationMultiplier(0, 0, 0, 0, -100, 100).accY > 0);
+    t.is(desiredAccelerationMultiplier(0, 0, 0, 0, -100, -100).accX, -1);
+    t.is(desiredAccelerationMultiplier(0, 0, 0, 0, -100, -100).accY, -1);
+
     t.end();
   });
 
   tester.test('when target is further down than right', t => {
-    t.true(Math.abs(desiredAcceleration(0, 0, 0, 0, 100, 300).accX - 0.33) < 0.01);
-    t.true(Math.abs(desiredAcceleration(0, 0, 0, 0, 100, 300).accY - 1) < 0.01);
-    t.true(Math.abs(desiredAcceleration(0, 0, 0, 0, 100, 600).accX - 0.17) < 0.01);
+    const holdUp = desiredAccelerationMultiplier(0, 0, 0, 0, 100, 300);
+    const holdUpMore = desiredAccelerationMultiplier(0, 0, 0, 0, 100, 600);
+    t.is(holdUp.accY, 1);
+    t.is(holdUpMore.accY, 1);
+    t.true(holdUp.accX > 0 && holdUp.accX < 0.5);
+    t.true(holdUpMore.accX > 0 && holdUpMore.accX < holdUp.accX && holdUpMore.accX < 0.25);
+
     t.end();
   });
 
   tester.test('with initial velocities', t => {
-    t.true(Math.abs(desiredAcceleration(0, 0, 0, 50, 300, 300).accY - 0.76) < 0.01);
-    t.true(Math.abs(desiredAcceleration(0, 0, -200, 50, 300, 300).accY - 0.33) < 0.01);
-    t.true(Math.abs(desiredAcceleration(0, 0, 0, -200, 300, 600).accX - 0.31) < 0.01);
-    // t.is(desiredAcceleration(0, 0, 0, -200, 300, 600), {})
+    const initialDownVelocity = desiredAccelerationMultiplier(0, 0, 0, 50, 300, 300);
+    const initialLeftDownVelocity = desiredAccelerationMultiplier(0, 0, -200, 50, 300, 300);
+    const initialUpVelocity = desiredAccelerationMultiplier(0, 0, 0, -200, 300, 600);
+    t.true(initialDownVelocity.accY > 0.5 && initialDownVelocity.accY < 1);
+    t.is(initialDownVelocity.accX, 1);
+    t.true(initialLeftDownVelocity.accY < 0.5 && initialLeftDownVelocity.accY > 0);
+    t.is(initialLeftDownVelocity.accX, 1);
+    t.true(initialUpVelocity.accX < 0.5 && initialUpVelocity.accX > 0);
+    t.is(initialUpVelocity.accY, 1);
+
     t.end();
   });
 
   tester.test('with target in multiple directions', t => {
     t.is(
-      desiredAcceleration(0, 0, 0, -200, 300, 600).accX,
-      -desiredAcceleration(0, 0, 0, -200, -300, 600).accX,
+      desiredAccelerationMultiplier(0, 0, 0, -200, 300, 600).accX,
+      -desiredAccelerationMultiplier(0, 0, 0, -200, -300, 600).accX,
     );
     t.is(
-      desiredAcceleration(200, 100, 50, 25, -10, -60).accX,
-      -desiredAcceleration(-220, -220, -50, -25, -10, -60).accX,
+      desiredAccelerationMultiplier(200, 100, 50, 25, -10, -60).accX,
+      -desiredAccelerationMultiplier(-220, -220, -50, -25, -10, -60).accX,
     );
     t.is(
-      desiredAcceleration(200, 100, 50, 25, -10, -60).accY,
-      -desiredAcceleration(-220, -220, -50, -25, -10, -60).accY,
+      desiredAccelerationMultiplier(200, 100, 50, 25, -10, -60).accY,
+      -desiredAccelerationMultiplier(-220, -220, -50, -25, -10, -60).accY,
     );
     t.end();
   });

@@ -38,23 +38,22 @@ function nextVelocity(v, a, t) {
  * @param {(string|undefined)} keypress.x - either 'RIGHT', 'LEFT', or undefined
  * @param {(string|undefined)} keypress.y - either 'DOWN', 'UP', or undefined
  * @param {number} timeStep - seconds between current and projected state
- * @returns {Object}
+ * @param {number} accelerationMultiplier - a multiplier to apply to the acceleration resulting from
+ *   the keypress. Default to 1
+ * @returns {{xp: number, yp: number, vxp: number, vyp: number}} the next state of the bot
  */
-// eslint-disable-next-line import/prefer-default-export
 export function projectedState(xp, yp, vxp, vyp, keypress, timeStep, accelerationMultiplier = 1) {
-  // acceleration as a result of friction
+  // Acceleration as a result of friction
   const dampingDecelX = -vxp * dampingFactor;
   const dampingDecelY = -vyp * dampingFactor;
 
-  // acceleration from keypress
-  let keypressAccelX = accel;
-  let keypressAccelY = accel;
-  if (keypress.x === 'RIGHT') keypressAccelX *= accelerationMultiplier;
-  else if (keypress.x === 'LEFT') keypressAccelX *= -accelerationMultiplier;
-  else keypressAccelX *= 0;
-  if (keypress.y === 'DOWN') keypressAccelY *= accelerationMultiplier;
-  else if (keypress.y === 'UP') keypressAccelY *= -accelerationMultiplier;
-  else keypressAccelY *= 0;
+  // Acceleration from keypress
+  let keypressAccelX = 0;
+  let keypressAccelY = 0;
+  if (keypress.x === 'RIGHT') keypressAccelX = accel * accelerationMultiplier;
+  else if (keypress.x === 'LEFT') keypressAccelX = -accel * accelerationMultiplier;
+  if (keypress.y === 'DOWN') keypressAccelY = accel * accelerationMultiplier;
+  else if (keypress.y === 'UP') keypressAccelY = -accel * accelerationMultiplier;
 
   const netAccelX = keypressAccelX + dampingDecelX;
   const netAccelY = keypressAccelY + dampingDecelY;
@@ -62,7 +61,7 @@ export function projectedState(xp, yp, vxp, vyp, keypress, timeStep, acceleratio
   return {
     xp: nextPosition(xp, vxp, netAccelX, timeStep),
     yp: nextPosition(yp, vyp, netAccelY, timeStep),
-    // bound velocity by [-maxSpeed, maxSpeed]
+    // Bound velocity by [-maxSpeed, maxSpeed]
     vxp: Math.max(
       Math.min(nextVelocity(vxp, netAccelX, timeStep), maxSpeed),
       -maxSpeed,
@@ -80,18 +79,17 @@ export function projectedState(xp, yp, vxp, vyp, keypress, timeStep, acceleratio
  * @param {number} vel - starting velocity in one direction
  * @param {number} target - target position, in one coordinate
  * @param {number} time - the number of seconds it should take to reach target
+ * @param {number} threshold - the largest possible absolute difference between the return value and
+ *   the true correct acceleration (default to 0.01)
  * @returns {number} how often (from -1.0-1.0) we should hold the arrow key in the direction of the
- *   target (negative numbers mean we should break)
+ *   target (negative numbers mean we should brake)
  */
-export function binarySearchAcceleration(pos, vel, target, time) {
-  // console.log(
-  // `Binary searching starting pos: ${pos}, vel: ${vel}. Target: ${target}. Sim time: ${time}`);
+export function binarySearchAcceleration(pos, vel, target, time, threshold = 0.01) {
   let lo = -1.0;
   let hi = 1.0;
   const step = 0.01;
-  while (hi - lo > 0.01) {
+  while (hi - lo > threshold) {
     const mid = (hi + lo) / 2;
-    // console.log(`Trying acceleration: ${mid}`);
     let t = 0;
     let position = pos;
     let speed = vel;
@@ -101,7 +99,6 @@ export function binarySearchAcceleration(pos, vel, target, time) {
       speed = nextState.vxp;
       t += step;
     }
-    // console.log(`Final position: ${position}`);
     if (position > target) { // overshot the target
       hi = mid;
     } else { // undershot the target
@@ -118,54 +115,46 @@ export function binarySearchAcceleration(pos, vel, target, time) {
  * @param {number} vy - starting velocity y (pixels)
  * @param {number} destX - target x (pixels)
  * @param {number} destY - target y (pixels)
+ * @returns {{accX: number, accY: number}} The desired acceleration multipliers to reach the
+ *   destination. The positive directions are down and right.
  */
-export function desiredAcceleration(x, y, vx, vy, destX, destY) {
-  // put the target down and to the right of the current location
-  // this makes the loop control easier because we know to hold DOWN and RIGHT
+export function desiredAccelerationMultiplier(x, y, vx, vy, destX, destY) {
   const flipX = x > destX;
   const flipY = y > destY;
   const step = 0.01; // simulation timestep
-  /* eslint-disable no-param-reassign */
-  if (flipX) {
-    const temp = x;
-    x = destX;
-    destX = temp;
-    vx = -vx;
-  }
-  if (flipY) {
-    const temp = y;
-    y = destY;
-    destY = temp;
-    vy = -vy;
-  }
-  let currX = x;
-  let currY = y;
-  let currVx = vx;
-  let currVy = vy;
+  // Put the target down and to the right of the current location
+  // This makes the loop control easier because we know to hold DOWN and RIGHT
+  const startX = flipX ? destX : x;
+  const startY = flipY ? destY : y;
+  const startVx = flipX ? -vx : vx;
+  const startVy = flipY ? -vy : vy;
+  const endX = flipX ? x : destX;
+  const endY = flipY ? y : destY;
+  let currX = startX;
+  let currY = startY;
+  let currVx = startVx;
+  let currVy = startVy;
   let currTime = 0;
-  // simulate until we've overshot both directions
-  while (currX <= destX || currY <= destY) {
+  // Simulate until we've overshot both directions
+  while (currX <= endX || currY <= endY) {
     const nextState = projectedState(currX, currY, currVx, currVy, { y: 'DOWN', x: 'RIGHT' }, step);
     currX = nextState.xp;
     currY = nextState.yp;
     currVx = nextState.vxp;
     currVy = nextState.vyp;
     currTime += step;
-    // console.log(`Position: x: ${currX}, y: ${currY}`)
-    // console.log(`Velocity: vx: ${currVx}, vy: ${currVy}`)
   }
-  // console.log(`Simulation time: ${currTime}`)
 
-  const overshotX = (currX - destX) > (currY - destY);
-  const overshotY = !overshotX;
-
+  const overshotX = (currX - endX) > (currY - endY);
+  const overshotY = (currX - endX) < (currY - endY);
   const res = { accX: 1.0, accY: 1.0 };
-  if (overshotX) res.accX = binarySearchAcceleration(x, vx, destX, currTime);
-  if (overshotY) res.accY = binarySearchAcceleration(y, vy, destY, currTime);
+  // Binary search for the acceleration in the direction we reach more quickly in simulation
+  if (overshotX) res.accX = binarySearchAcceleration(startX, startVx, endX, currTime);
+  if (overshotY) res.accY = binarySearchAcceleration(startY, startVy, endY, currTime);
+  // Undo the flips we did at the start
   if (flipX) res.accX *= -1;
   if (flipY) res.accY *= -1;
 
   return res;
-  /* eslint-enable no-param-reassign */
 }
 
