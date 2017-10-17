@@ -135,27 +135,16 @@ export function onKeyDown(event) {
 
 
 /**
- * Sends key events to move to a destination.
- * @param {{x: number, y: number}} destination - object with the position to move to, in pixels,
- *   x and y
+ * TODO: update
  */
-export function move(destination) {
-  // TODO: address deadband variable with a comment
-  const deadband = 4;
+export function move(accelValues) {
   const directions = {};
-
-  if (destination.x > deadband) {
-    directions.x = 'RIGHT';
-  } else if (destination.x < -deadband) {
-    directions.x = 'LEFT';
+  if (Math.random() < Math.abs(accelValues.accX)) {
+    directions.x = accelValues.accX > 0 ? 'RIGHT' : 'LEFT';
   }
-
-  if (destination.y > deadband) {
-    directions.y = 'DOWN';
-  } else if (destination.y < -deadband) {
-    directions.y = 'UP';
+  if (Math.random() < Math.abs(accelValues.accY)) {
+    directions.y = accelValues.accY > 0 ? 'DOWN' : 'UP';
   }
-
   press(directions);
 }
 

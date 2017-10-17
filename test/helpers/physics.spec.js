@@ -137,6 +137,5 @@ test('desiredAcceleration', tester => {
     t.end();
   });
 
-
   tester.end();
 });
