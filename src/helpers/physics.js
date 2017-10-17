@@ -143,7 +143,7 @@ export function desiredAcceleration(x, y, vx, vy, destX, destY) {
   let currVx = vx;
   let currVy = vy;
   let currTime = 0;
-  // simulate until we've overshot one direction
+  // simulate until we've overshot both directions
   while (currX <= destX || currY <= destY) {
     const nextState = projectedState(currX, currY, currVx, currVy, { y: 'DOWN', x: 'RIGHT' }, step);
     currX = nextState.xp;

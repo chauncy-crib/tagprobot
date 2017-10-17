@@ -3,9 +3,10 @@ import { getMapTraversabilityInCells } from './helpers/map';
 import { findTile, findEnemyFC } from './helpers/finders';
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe, amBlue, amRed } from './helpers/player';
-import { getShortestPath, getTarget } from './helpers/path';
+import { getShortestPath } from './helpers/path';
 import { isAutonomousMode, isVisualMode, move, dequeueChatMessages } from './utils/interface';
 import { updatePath } from './draw/drawings';
+import { desiredAcceleration } from './helpers/physics';
 
 
 /**
@@ -54,7 +55,7 @@ function getGoalPos() {
  * @returns {{x: number, y: number}} the position, in pixels, of the next immediate place to
  *   navigate to
  */
-function getNextTargetPos() {
+function getAccelValues() {
   const { map } = tagpro;
   const me = getMe();
 
@@ -78,18 +79,36 @@ function getNextTargetPos() {
   // Runtime: O(A), O(1) if visualizations off
   updatePath(shortestPath);
 
-  const nextTarget = getTarget(
-    { xc: me.xc, yc: me.yc },
-    shortestPath,
-  );
-  // Math to move the center of the TPB ball to the center of the target cell
-  nextTarget.x = ((nextTarget.xc * PPCL) + (PPCL / 2)) - BRP;
-  nextTarget.y = ((nextTarget.yc * PPCL) + (PPCL / 2)) - BRP;
+  const targetPixels = { xp: me.x + BRP, yp: me.y + BRP };
+  if (shortestPath) {
+    const targetCell = shortestPath[Math.min(3, shortestPath.length - 1)];
+    targetPixels.xp = Math.floor((targetCell.xc + 0.5) * PPCL);
+    targetPixels.yp = Math.floor((targetCell.yc + 0.5) * PPCL);
+  } else {
+    console.log('Shortest path was null, using own location as target');
+  }
 
-  return {
-    x: nextTarget.x - (me.x + me.vx),
-    y: nextTarget.y - (me.y + me.vy),
-  };
+  return desiredAcceleration(
+    me.x + BRP, // the x center of our ball, in pixels
+    me.y + BRP, // the y center of our ball, in pixels
+    me.vx, // our v velocity
+    me.vy, // our y velocity
+    targetPixels.xp, // the x we are seeking toward (pixels)
+    targetPixels.yp, // the y we are seeking toward (pixels)
+  );
+
+  // const nextTarget = getTarget(
+  //   { xc: me.xc, yc: me.yc },
+  //   shortestPath,
+  // );
+  // // Math to move the center of the TPB ball to the center of the target cell
+  // nextTarget.x = ((nextTarget.xc * PPCL) + (PPCL / 2)) - BRP;
+  // nextTarget.y = ((nextTarget.yc * PPCL) + (PPCL / 2)) - BRP;
+
+  // return {
+  //   x: nextTarget.x - (me.x + me.vx),
+  //   y: nextTarget.y - (me.y + me.vy),
+  // };
 }
 
 
@@ -99,8 +118,8 @@ function getNextTargetPos() {
 export default function botLoop() {
   dequeueChatMessages();
   if (isAutonomousMode()) {
-    move(getNextTargetPos());
+    move(getAccelValues());
   } else if (isVisualMode()) {
-    getNextTargetPos();
+    getAccelValues();
   }
 }
