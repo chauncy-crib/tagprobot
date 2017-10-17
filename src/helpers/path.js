@@ -5,9 +5,8 @@
 import _ from 'lodash';
 import FibonacciHeap from '@tyriar/fibonacci-heap';
 import { assert, assertGridInBounds } from '../../src/utils/asserts';
+import { diagonal } from '../constants';
 
-
-const diagonal = true;
 
 export class GameState {
   constructor(xc, yc) {
