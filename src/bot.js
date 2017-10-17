@@ -6,7 +6,9 @@ import { getMe, amBlue, amRed } from './helpers/player';
 import { getShortestPath } from './helpers/path';
 import { isAutonomousMode, isVisualMode, move, dequeueChatMessages } from './utils/interface';
 import { updatePath } from './draw/drawings';
-import { desiredAcceleration } from './helpers/physics';
+import { desiredAccelerationMultiplier } from './helpers/physics';
+
+const LOOKAHEAD = 3; // numbers of cells along the shortest path to lookeahead and seek toward
 
 
 /**
@@ -52,8 +54,8 @@ function getGoalPos() {
 
 
 /**
- * @returns {{x: number, y: number}} the position, in pixels, of the next immediate place to
- *   navigate to
+ * @returns {{accX: number, accY: number}} The desired acceleration multipliers the bot should
+ *   achieve with arrow key presses. Positive directions are down and right.
  */
 function getAccelValues() {
   const { map } = tagpro;
@@ -81,14 +83,14 @@ function getAccelValues() {
 
   const targetPixels = { xp: me.x + BRP, yp: me.y + BRP };
   if (shortestPath) {
-    const targetCell = shortestPath[Math.min(3, shortestPath.length - 1)];
+    const targetCell = shortestPath[Math.min(LOOKAHEAD, shortestPath.length - 1)];
     targetPixels.xp = Math.floor((targetCell.xc + 0.5) * PPCL);
     targetPixels.yp = Math.floor((targetCell.yc + 0.5) * PPCL);
   } else {
     console.log('Shortest path was null, using own location as target');
   }
 
-  return desiredAcceleration(
+  return desiredAccelerationMultiplier(
     me.x + BRP, // the x center of our ball, in pixels
     me.y + BRP, // the y center of our ball, in pixels
     me.vx, // our v velocity
@@ -96,19 +98,6 @@ function getAccelValues() {
     targetPixels.xp, // the x we are seeking toward (pixels)
     targetPixels.yp, // the y we are seeking toward (pixels)
   );
-
-  // const nextTarget = getTarget(
-  //   { xc: me.xc, yc: me.yc },
-  //   shortestPath,
-  // );
-  // // Math to move the center of the TPB ball to the center of the target cell
-  // nextTarget.x = ((nextTarget.xc * PPCL) + (PPCL / 2)) - BRP;
-  // nextTarget.y = ((nextTarget.yc * PPCL) + (PPCL / 2)) - BRP;
-
-  // return {
-  //   x: nextTarget.x - (me.x + me.vx),
-  //   y: nextTarget.y - (me.y + me.vy),
-  // };
 }
 
 
