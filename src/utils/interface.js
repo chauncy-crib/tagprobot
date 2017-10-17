@@ -135,7 +135,10 @@ export function onKeyDown(event) {
 
 
 /**
- * TODO: update
+ * Uses random numbers to decide which keys to press, based on desired acceleration multiplier
+ *   values.
+ * @param {{accX: number, accY: number}} accelValues - The acceleration multipliers to achieve with
+ *   arrow key presses. Positive directions are down and right.
  */
 export function move(accelValues) {
   const directions = {};
