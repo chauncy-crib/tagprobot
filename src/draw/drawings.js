@@ -53,8 +53,8 @@ const keyGap = 4; // gap between keys in pixels
 
 
 /**
- * @param {number} x - top left x, in pixels
- * @param {number} y - top left y, in pixels
+ * @param {number} xp - top left x, in pixels
+ * @param {number} yp - top left y, in pixels
  * @param {number} width - width in pixels
  * @param {number} height - height in pixels
  * @param {number} alpha - 0-1, where 0 is transparent
@@ -62,11 +62,11 @@ const keyGap = 4; // gap between keys in pixels
  * @returns {PIXI.Graphics} a PIXI.Graphics rectangle object with the specified x, y, width, height,
  *   alpha, and color
  */
-function getPixiRect(x, y, width, height, alpha, color) {
+function getPixiRect(xp, yp, width, height, alpha, color) {
   const pixiRect = new PIXI.Graphics();
   pixiRect.beginFill(color).drawRect(
-    x,
-    y,
+    xp,
+    yp,
     width,
     height,
   ).alpha = alpha;
@@ -75,16 +75,16 @@ function getPixiRect(x, y, width, height, alpha, color) {
 
 
 /**
- * @param {number} x - top left x, in pixels
- * @param {number} y - top left y, in pixels
+ * @param {number} xp - top left x, in pixels
+ * @param {number} yp - top left y, in pixels
  * @param {number} size - side length in pixels
  * @param {number} alpha - 0-1, where 0 is transparent
  * @param {number} color - a hex color
  * @returns {PIXI.Graphics} a PIXI.Graphics rectangle object with the specified x, y, size,
  *   alpha, and color
  */
-function getPixiSquare(x, y, size, alpha, color) {
-  return getPixiRect(x, y, size, size, alpha, color);
+function getPixiSquare(xp, yp, size, alpha, color) {
+  return getPixiRect(xp, yp, size, size, alpha, color);
 }
 
 
@@ -144,36 +144,36 @@ export function initKeyPressesVisualization() {
 
 
 /**
- * @param keyIndex - the index within the keyPressesVis PIXI object of the key that should be
- *   updated
- * @param newAlpha - the alpha value to set the new key drawing to
+ * @param {number} keyIndex - the index within the keyPressesVis PIXI object of the key that should
+ *   be updated
+ * @param {number} newAlpha - the alpha value to set the new key drawing to
  */
 function updateKeyDrawing(keyIndex, newAlpha) {
-  let x;
-  let y;
+  let xp;
+  let yp;
   switch (keyIndex) {
     case leftKeyIndex:
-      x = -(1.5 * keySize) - keyGap;
-      y = 0;
+      xp = -(1.5 * keySize) - keyGap;
+      yp = 0;
       break;
     case downKeyIndex:
-      x = -(0.5 * keySize);
-      y = 0;
+      xp = -(0.5 * keySize);
+      yp = 0;
       break;
     case rightKeyIndex:
-      x = (0.5 * keySize) + keyGap;
-      y = 0;
+      xp = (0.5 * keySize) + keyGap;
+      yp = 0;
       break;
     case upKeyIndex:
-      x = -(0.5 * keySize);
-      y = -keySize - keyGap;
+      xp = -(0.5 * keySize);
+      yp = -keySize - keyGap;
       break;
     default:
       throw new Error(`Given key index does not exist: ${keyIndex}`);
   }
   keyPressesVis.removeChildAt(keyIndex);
   keyPressesVis.addChildAt(
-    getPixiSquare(x, y, keySize, newAlpha, keyColor),
+    getPixiSquare(xp, yp, keySize, newAlpha, keyColor),
     keyIndex,
   );
 }
@@ -261,11 +261,11 @@ export function drawPermanentNTSprites() {
  *   cellTraversabilities for the input tile have aleady been computed and stored in
  *   cellTraversabilities. Runtime: O(CPTL^2)
  */
-export function generatePermanentNTSprites(x, y, cellTraversabilities) {
-  assertGridInBounds(cellTraversabilities, x * CPTL, y * CPTL);
-  assertGridInBounds(cellTraversabilities, ((x + 1) * CPTL) - 1, ((y + 1) * CPTL) - 1);
-  for (let i = x * CPTL; i < (x + 1) * CPTL; i++) {
-    for (let j = y * CPTL; j < (y + 1) * CPTL; j++) {
+export function generatePermanentNTSprites(xt, yt, cellTraversabilities) {
+  assertGridInBounds(cellTraversabilities, xt * CPTL, yt * CPTL);
+  assertGridInBounds(cellTraversabilities, ((xt + 1) * CPTL) - 1, ((yt + 1) * CPTL) - 1);
+  for (let i = xt * CPTL; i < (xt + 1) * CPTL; i++) {
+    for (let j = yt * CPTL; j < (yt + 1) * CPTL; j++) {
       // if we don't have a sprite already there and there should be one,
       // draw it
       if (!cellTraversabilities[i][j]) {

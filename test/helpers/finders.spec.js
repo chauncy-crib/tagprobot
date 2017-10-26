@@ -30,9 +30,9 @@ test('findTile: returns correctly with orthogonal inputs', t => {
 
   FinderRewireAPI.__Rewire__('tileHasName', mockTileHasName);
 
-  t.same(findTile('BOMB'), { x: 0 * PPTL, y: 0 * PPTL });
-  t.same(findTile('RED_GATE'), { x: 0 * PPTL, y: 2 * PPTL });
-  t.same(findTile('SPIKE'), { x: 2 * PPTL, y: 1 * PPTL });
+  t.same(findTile('BOMB'), { xp: 0 * PPTL, yp: 0 * PPTL });
+  t.same(findTile('RED_GATE'), { xp: 0 * PPTL, yp: 2 * PPTL });
+  t.same(findTile('SPIKE'), { xp: 2 * PPTL, yp: 1 * PPTL });
 
   FinderRewireAPI.__ResetDependency__('tileHasName');
 

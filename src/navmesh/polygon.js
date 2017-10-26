@@ -44,11 +44,11 @@ function wallOnLeft(map, x, y) {
  * Given the tagpro map and a traversable tile location, return if there is an NT wall (or the edge
  *   of the map) on the right.
  */
-function wallOnRight(map, x, y) {
-  if (x === map.length - 1) {
+function wallOnRight(map, xt, yt) {
+  if (xt === map.length - 1) {
     return true;
   }
-  const id = map[x + 1][y];
+  const id = map[xt + 1][yt];
   if (tileIsOneOf(id, ['ANGLE_WALL_3', 'ANGLE_WALL_4'])) {
     return false;
   }
@@ -60,11 +60,11 @@ function wallOnRight(map, x, y) {
  * Given the tagpro map and a traversable tile location, return if there is an NT wall (or the edge
  *   of the map) on top.
  */
-function wallOnTop(map, x, y) {
-  if (y === 0) {
+function wallOnTop(map, xt, yt) {
+  if (yt === 0) {
     return true;
   }
-  const id = map[x][y - 1];
+  const id = map[xt][yt - 1];
   if (tileIsOneOf(id, ['ANGLE_WALL_2', 'ANGLE_WALL_3'])) {
     return false;
   }
@@ -76,11 +76,11 @@ function wallOnTop(map, x, y) {
  * Given the tagpro map and a traversable tile location, return if there is an NT wall (or the edge
  *   of the map) below it.
  */
-function wallOnBottom(map, x, y) {
-  if (y === map[0].length - 1) {
+function wallOnBottom(map, xt, yt) {
+  if (yt === map[0].length - 1) {
     return true;
   }
-  const id = map[x][y + 1];
+  const id = map[xt][yt + 1];
   if (tileIsOneOf(id, ['ANGLE_WALL_1', 'ANGLE_WALL_4'])) {
     return false;
   }
@@ -157,26 +157,26 @@ function isAngleWallTraversable(map, x, y) {
  */
 export function mapToEdgeTiles(map) {
   const res = [];
-  for (let x = 0; x < map.length; x++) {
-    for (let y = 0; y < map[0].length; y++) {
+  for (let xt = 0; xt < map.length; xt++) {
+    for (let yt = 0; yt < map[0].length; yt++) {
       // Angle walls have a traversability edge
       if (tileIsOneOf(
-        map[x][y],
+        map[xt][yt],
         ['ANGLE_WALL_1', 'ANGLE_WALL_2', 'ANGLE_WALL_3', 'ANGLE_WALL_4'],
       )) {
-        if (isAngleWallTraversable(map, x, y)) {
-          res.push({ x, y });
+        if (isAngleWallTraversable(map, xt, yt)) {
+          res.push({ xt, yt });
         }
       } else if (
-        // Only store edges of traversable tiles
-        getTileProperty(map[x][y], 'traversable') && (
-          wallOnLeft(map, x, y) ||
-          wallOnRight(map, x, y) ||
-          wallOnTop(map, x, y) ||
-          wallOnBottom(map, x, y)
+        // Onlyt store edges of traversable tiles
+        getTileProperty(map[xt][yt], 'traversable') && (
+          wallOnLeft(map, xt, yt) ||
+          wallOnRight(map, xt, yt) ||
+          wallOnTop(map, xt, yt) ||
+          wallOnBottom(map, xt, yt)
         )
       ) {
-        res.push({ x, y });
+        res.push({ xt, yt });
       }
     }
   }
@@ -193,38 +193,41 @@ export function unmergedGraphFromTagproMap(map) {
   const edgeTiles = mapToEdgeTiles(map);
   const graph = new Graph();
   _.each(edgeTiles, tile => {
-    const { x, y } = tile;
-    const xp = x * PPTL;
-    const yp = y * PPTL;
+    const { xt, yt } = tile;
+    const xp = xt * PPTL;
+    const yp = yt * PPTL;
     const topLeft = new Point(xp, yp);
     const topRight = new Point(xp + PPTL, yp);
     const bottomLeft = new Point(xp, yp + PPTL);
     const bottomRight = new Point(xp + PPTL, yp + PPTL);
-    if (tileIsOneOf(map[x][y], ['ANGLE_WALL_1', 'ANGLE_WALL_3'])) {
+    if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_3'])) {
       graph.addVertex(topLeft);
       graph.addVertex(bottomRight);
       graph.addEdge(topLeft, bottomRight);
-    } else if (tileIsOneOf(map[x][y], ['ANGLE_WALL_2', 'ANGLE_WALL_4'])) {
+    } else if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_2', 'ANGLE_WALL_4'])) {
       graph.addVertex(bottomLeft);
       graph.addVertex(topRight);
       graph.addEdge(bottomLeft, topRight);
     }
-    if (wallOnLeft(map, x, y) && !tileIsOneOf(map[x][y], ['ANGLE_WALL_1', 'ANGLE_WALL_2'])) {
+    if (wallOnLeft(map, xt, yt) && !tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_2'])) {
       // Edge on left
       graph.addVertex(topLeft);
       graph.addVertex(bottomLeft);
       graph.addEdge(topLeft, bottomLeft);
-    } if (wallOnRight(map, x, y) && !tileIsOneOf(map[x][y], ['ANGLE_WALL_3', 'ANGLE_WALL_4'])) {
+    } if (wallOnRight(map, xt, yt) && !tileIsOneOf(map[xt][yt], ['ANGLE_WALL_3', 'ANGLE_WALL_4'])) {
       // Edge on right
       graph.addVertex(topRight);
       graph.addVertex(bottomRight);
       graph.addEdge(topRight, bottomRight);
-    } if (wallOnTop(map, x, y) && !tileIsOneOf(map[x][y], ['ANGLE_WALL_2', 'ANGLE_WALL_3'])) {
+    } if (wallOnTop(map, xt, yt) && !tileIsOneOf(map[xt][yt], ['ANGLE_WALL_2', 'ANGLE_WALL_3'])) {
       // Edge above
       graph.addVertex(topLeft);
       graph.addVertex(topRight);
       graph.addEdge(topLeft, topRight);
-    } if (wallOnBottom(map, x, y) && !tileIsOneOf(map[x][y], ['ANGLE_WALL_1', 'ANGLE_WALL_4'])) {
+    } if (
+      wallOnBottom(map, xt, yt) &&
+      !tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_4'])
+    ) {
       // Edge below
       graph.addVertex(bottomLeft);
       graph.addVertex(bottomRight);
