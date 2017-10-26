@@ -12,16 +12,12 @@ export class GameState {
   constructor(xc, yc) {
     this.xc = xc;
     this.yc = yc;
-
     this.g = undefined; // the cost to the current state
-
     // the estimated total cost from the start state to the target state,
     // passing through this state.
     this.f = undefined;
-
     // the GameState we came from
     this.parent = undefined;
-
     this.key = `${xc},${yc}`;
   }
 
