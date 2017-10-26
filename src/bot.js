@@ -16,7 +16,7 @@ import { desiredAccelerationMultiplier } from './helpers/physics';
  *   If the enemy team has the flag but I can't see them, go to their endzone.
  *   If we have the flag, go to our endzone.
  *   Else, go to the flag station.
- * @returns {{x: number, y: number}} the position, in pixels, of the bot's goal, which is
+ * @returns {{xp: number, yp: number}} the position, in pixels, of the bot's goal, which is
  *   determined by the current state of the game
  */
 function getGoalPos() {
@@ -25,21 +25,22 @@ function getGoalPos() {
 
   // If the bot has the flag, go to the endzone
   if (me.flag) {
-    goal = amRed() ? { x: 1320, y: 1360 } : { x: 440, y: 400 };
+    goal = amRed() ? { xp: 1320, yp: 1360 } : { xp: 440, yp: 400 };
 
     console.log('I have the flag. Seeking endzone!');
   } else {
     const enemyFC = findEnemyFC();
     if (enemyFC) { // If an enemy player in view has the flag, chase
       goal = enemyFC;
-      goal.x = enemyFC.x + enemyFC.vx;
-      goal.y = enemyFC.y + enemyFC.vy;
+      // TODO: bug #236
+      goal.xp = enemyFC.x + enemyFC.vx;
+      goal.yp = enemyFC.y + enemyFC.vy;
       console.log('I see an enemy with the flag. Chasing!');
     } else if (enemyTeamHasFlag()) {
-      goal = amBlue() ? { x: 1360, y: 1360 } : { x: 400, y: 400 };
+      goal = amBlue() ? { xp: 1360, yp: 1360 } : { xp: 400, yp: 400 };
       console.log('Enemy has the flag. Headed towards the Enemy Endzone.');
     } else if (myTeamHasFlag()) {
-      goal = amRed() ? { x: 1360, y: 1360 } : { x: 400, y: 400 };
+      goal = amRed() ? { xp: 1360, yp: 1360 } : { xp: 400, yp: 400 };
       console.log('We have the flag. Headed towards our Endzone.');
     } else {
       goal = findTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
@@ -64,8 +65,8 @@ function getAccelValues() {
   me.yc = Math.floor((me.y + (PPCL / 2)) / PPCL);
 
   const finalTarget = {
-    xc: Math.floor(goal.x / PPCL),
-    yc: Math.floor(goal.y / PPCL),
+    xc: Math.floor(goal.xp / PPCL),
+    yc: Math.floor(goal.yp / PPCL),
   };
   // Runtime: O(M*CPTL^2) with visualizations on, O(M + S*CPTL^2) with visualizations off
   const traversableCells = getMapTraversabilityInCells(map);

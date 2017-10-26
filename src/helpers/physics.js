@@ -111,8 +111,8 @@ export function binarySearchAcceleration(pos, vel, target, time, threshold = 0.0
 }
 
 /**
- * @param {number} x - starting position (pixels)
- * @param {number} y - starting y position (pixels)
+ * @param {number} xp - starting position (pixels)
+ * @param {number} yp - starting y position (pixels)
  * @param {number} vx - starting velocity x (pixels)
  * @param {number} vy - starting velocity y (pixels)
  * @param {number} destX - target x (pixels)
@@ -120,18 +120,18 @@ export function binarySearchAcceleration(pos, vel, target, time, threshold = 0.0
  * @returns {{accX: number, accY: number}} The desired acceleration multipliers to reach the
  *   destination. The positive directions are down and right.
  */
-export function desiredAccelerationMultiplier(x, y, vx, vy, destX, destY) {
-  const flipX = x > destX;
-  const flipY = y > destY;
+export function desiredAccelerationMultiplier(xp, yp, vx, vy, destX, destY) {
+  const flipX = xp > destX;
+  const flipY = yp > destY;
   const step = 0.01; // simulation timestep
   // Put the target down and to the right of the current location
   // This makes the loop control easier because we know to hold DOWN and RIGHT
-  const startX = flipX ? destX : x;
-  const startY = flipY ? destY : y;
+  const startX = flipX ? destX : xp;
+  const startY = flipY ? destY : yp;
   const startVx = flipX ? -vx : vx;
   const startVy = flipY ? -vy : vy;
-  const endX = flipX ? x : destX;
-  const endY = flipY ? y : destY;
+  const endX = flipX ? xp : destX;
+  const endY = flipY ? yp : destY;
   let currX = startX;
   let currY = startY;
   let currVx = startVx;
