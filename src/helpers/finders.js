@@ -24,7 +24,7 @@ export function findTile(tileNames) {
     for (let yt = 0, yl = tagpro.map[0].length; yt < yl; yt++) {
       for (let i = 0; i < tileNameArray.length; i++) {
         if (tileHasName(tagpro.map[xt][yt], tileNameArray[i])) {
-          return { x: xt * PPTL, y: yt * PPTL };
+          return { xp: xt * PPTL, yp: yt * PPTL };
         }
       }
     }
