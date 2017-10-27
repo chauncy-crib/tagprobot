@@ -7,7 +7,7 @@ import { assert } from '../utils/asserts';
 
 
 /**
- * Returns the position xt and yt (in pixels) of the first of the specified tile
+ * Returns the position xp and yp (in pixels) of the first of the specified tile
  *   types to appear starting in the top left corner and moving in a page-reading
  *   fashion. Runtime: O(N^2)
  * @param {(number | number[])} tiles - either a number representing a tileType,
