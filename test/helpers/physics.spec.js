@@ -44,7 +44,7 @@ test('projectedState', tester => {
     t.end();
   });
 
-  tester.test('applies cieling to velocity', t => {
+  tester.test('applies ceiling to velocity', t => {
     let state = projectedState(0, 0, 245, -245, { x: 'RIGHT', y: 'UP' }, 0.5);
     t.is(state.vxp, 250);
     t.is(state.vyp, -250);
@@ -174,6 +174,7 @@ test('desiredAccelerationMultiplier', tester => {
       desiredAccelerationMultiplier(200, 100, 50, 25, -10, -60).accY,
       -desiredAccelerationMultiplier(-220, -220, -50, -25, -10, -60).accY,
     );
+
     t.end();
   });
 
