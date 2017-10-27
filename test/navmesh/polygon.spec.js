@@ -5,6 +5,7 @@ import {
   unmergedGraphFromTagproMap,
   graphFromTagproMap,
   __RewireAPI__ as PolygonRewireAPI } from '../../src/navmesh/polygon';
+import { Point } from '../../src/navmesh/graph';
 import { __RewireAPI__ as TileRewireAPI } from '../../src/tiles';
 
 /* eslint-disable no-multi-spaces array-bracket-spacing */
@@ -224,40 +225,39 @@ test('unmergedGraphFromTagproMap', tester => {
       { x: 240, y: 200 },
       { x: 240, y: 240 },
     ]);
-    t.same(graph.getEdges(), [
-      { point1: { x: 0, y: 0 }, point2: { x: 0, y: 40 } },
-      { point1: { x: 0, y: 0 }, point2: { x: 40, y: 0 } },
-      { point1: { x: 0, y: 40 }, point2: { x: 0, y: 80 } },
-      { point1: { x: 0, y: 80 }, point2: { x: 0, y: 120 } },
-      { point1: { x: 0, y: 120 }, point2: { x: 0, y: 160 } },
-      { point1: { x: 0, y: 160 }, point2: { x: 0, y: 200 } },
-      { point1: { x: 0, y: 200 }, point2: { x: 0, y: 240 } },
-      { point1: { x: 0, y: 240 }, point2: { x: 40, y: 240 } },
-      { point1: { x: 40, y: 0 }, point2: { x: 80, y: 0 } },
-      { point1: { x: 40, y: 120 }, point2: { x: 80, y: 80 } },
-      { point1: { x: 40, y: 120 }, point2: { x: 80, y: 160 } },
-      { point1: { x: 40, y: 240 }, point2: { x: 80, y: 240 } },
-      { point1: { x: 80, y: 0 }, point2: { x: 120, y: 0 } },
-      { point1: { x: 80, y: 80 }, point2: { x: 120, y: 40 } },
-      { point1: { x: 80, y: 160 }, point2: { x: 120, y: 200 } },
-      { point1: { x: 80, y: 240 }, point2: { x: 120, y: 240 } },
-      { point1: { x: 120, y: 0 }, point2: { x: 160, y: 0 } },
-      { point1: { x: 120, y: 40 }, point2: { x: 160, y: 80 } },
-      { point1: { x: 120, y: 200 }, point2: { x: 160, y: 160 } },
-      { point1: { x: 120, y: 240 }, point2: { x: 160, y: 240 } },
-      { point1: { x: 160, y: 0 }, point2: { x: 200, y: 0 } },
-      { point1: { x: 160, y: 80 }, point2: { x: 200, y: 120 } },
-      { point1: { x: 160, y: 160 }, point2: { x: 200, y: 120 } },
-      { point1: { x: 160, y: 240 }, point2: { x: 200, y: 240 } },
-      { point1: { x: 240, y: 0 }, point2: { x: 240, y: 40 } },
-      { point1: { x: 200, y: 0 }, point2: { x: 240, y: 0 } },
-      { point1: { x: 240, y: 40 }, point2: { x: 240, y: 80 } },
-      { point1: { x: 240, y: 80 }, point2: { x: 240, y: 120 } },
-      { point1: { x: 240, y: 120 }, point2: { x: 240, y: 160 } },
-      { point1: { x: 240, y: 160 }, point2: { x: 240, y: 200 } },
-      { point1: { x: 240, y: 200 }, point2: { x: 240, y: 240 } },
-      { point1: { x: 200, y: 240 }, point2: { x: 240, y: 240 } },
-    ]);
+    t.is(graph.getEdges().length, 32);
+    t.ok(graph.isConnected(new Point(0, 0), new Point(0, 40)));
+    t.ok(graph.isConnected(new Point(0, 0), new Point(40, 0)));
+    t.ok(graph.isConnected(new Point(0, 40), new Point(0, 80)));
+    t.ok(graph.isConnected(new Point(0, 80), new Point(0, 120)));
+    t.ok(graph.isConnected(new Point(0, 120), new Point(0, 160)));
+    t.ok(graph.isConnected(new Point(0, 160), new Point(0, 200)));
+    t.ok(graph.isConnected(new Point(0, 200), new Point(0, 240)));
+    t.ok(graph.isConnected(new Point(0, 240), new Point(40, 240)));
+    t.ok(graph.isConnected(new Point(40, 0), new Point(80, 0)));
+    t.ok(graph.isConnected(new Point(40, 120), new Point(80, 80)));
+    t.ok(graph.isConnected(new Point(40, 120), new Point(80, 160)));
+    t.ok(graph.isConnected(new Point(40, 240), new Point(80, 240)));
+    t.ok(graph.isConnected(new Point(80, 0), new Point(120, 0)));
+    t.ok(graph.isConnected(new Point(80, 80), new Point(120, 40)));
+    t.ok(graph.isConnected(new Point(80, 160), new Point(120, 200)));
+    t.ok(graph.isConnected(new Point(80, 240), new Point(120, 240)));
+    t.ok(graph.isConnected(new Point(120, 0), new Point(160, 0)));
+    t.ok(graph.isConnected(new Point(120, 40), new Point(160, 80)));
+    t.ok(graph.isConnected(new Point(120, 200), new Point(160, 160)));
+    t.ok(graph.isConnected(new Point(120, 240), new Point(160, 240)));
+    t.ok(graph.isConnected(new Point(160, 0), new Point(200, 0)));
+    t.ok(graph.isConnected(new Point(160, 80), new Point(200, 120)));
+    t.ok(graph.isConnected(new Point(160, 160), new Point(200, 120)));
+    t.ok(graph.isConnected(new Point(160, 240), new Point(200, 240)));
+    t.ok(graph.isConnected(new Point(240, 0), new Point(240, 40)));
+    t.ok(graph.isConnected(new Point(200, 0), new Point(240, 0)));
+    t.ok(graph.isConnected(new Point(240, 40), new Point(240, 80)));
+    t.ok(graph.isConnected(new Point(240, 80), new Point(240, 120)));
+    t.ok(graph.isConnected(new Point(240, 120), new Point(240, 160)));
+    t.ok(graph.isConnected(new Point(240, 160), new Point(240, 200)));
+    t.ok(graph.isConnected(new Point(240, 200), new Point(240, 240)));
+    t.ok(graph.isConnected(new Point(200, 240), new Point(240, 240)));
 
     teardown();
     t.end();
@@ -431,16 +431,14 @@ test('graphFromTagproMap', tester => {
 
     t.is(graph.getVertices().length, 8);
     t.is(graph.getEdges().length, 8);
-    t.same(graph.getEdges(), [
-      { point1: { x: 0, y: 240 }, point2: { x: 0, y: 0 } },
-      { point1: { x: 40, y: 120 }, point2: { x: 120, y: 40 } },
-      { point1: { x: 40, y: 120 }, point2: { x: 120, y: 200 } },
-      { point1: { x: 120, y: 40 }, point2: { x: 200, y: 120 } },
-      { point1: { x: 120, y: 200 }, point2: { x: 200, y: 120 } },
-      { point1: { x: 240, y: 0 }, point2: { x: 0, y: 0 } },
-      { point1: { x: 240, y: 240 }, point2: { x: 0, y: 240 } },
-      { point1: { x: 240, y: 240 }, point2: { x: 240, y: 0 } },
-    ]);
+    t.ok(graph.isConnected(new Point(0, 240), new Point(0, 0)));
+    t.ok(graph.isConnected(new Point(40, 120), new Point(120, 40)));
+    t.ok(graph.isConnected(new Point(40, 120), new Point(120, 200)));
+    t.ok(graph.isConnected(new Point(120, 40), new Point(200, 120)));
+    t.ok(graph.isConnected(new Point(120, 200), new Point(200, 120)));
+    t.ok(graph.isConnected(new Point(240, 0), new Point(0, 0)));
+    t.ok(graph.isConnected(new Point(240, 240), new Point(0, 240)));
+    t.ok(graph.isConnected(new Point(240, 240), new Point(240, 0)));
 
     teardown();
     t.end();

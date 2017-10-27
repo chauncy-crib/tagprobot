@@ -287,6 +287,9 @@ test('drawNavMesh()', tester => {
     const middle = new Point(1000, 1000);
     const left = new Point(900, 1000);
     const down = new Point(1000, 1100);
+    mockGraph.addVertex(middle);
+    mockGraph.addVertex(left);
+    mockGraph.addVertex(down);
     mockGraph.addEdge(middle, left);
     mockGraph.addEdge(middle, down);
     mockGraph.addEdge(down, left);
