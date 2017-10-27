@@ -80,11 +80,11 @@ function getAccelValues() {
   // Runtime: O(A), O(1) if visualizations off
   updatePath(shortestPath);
 
-  const targetPixels = { xp: me.x + BRP, yp: me.y + BRP };
+  const target = { xp: me.x + BRP, yp: me.y + BRP };
   if (shortestPath) {
     const targetCell = shortestPath[Math.min(lookahead, shortestPath.length - 1)];
-    targetPixels.xp = Math.floor((targetCell.xc + 0.5) * PPCL);
-    targetPixels.yp = Math.floor((targetCell.yc + 0.5) * PPCL);
+    target.xp = Math.floor((targetCell.xc + 0.5) * PPCL);
+    target.yp = Math.floor((targetCell.yc + 0.5) * PPCL);
   } else {
     console.log('Shortest path was null, using own location as target');
   }
@@ -94,8 +94,8 @@ function getAccelValues() {
     me.y + BRP, // the y center of our ball, in pixels
     me.vx, // our v velocity
     me.vy, // our y velocity
-    targetPixels.xp, // the x we are seeking toward (pixels)
-    targetPixels.yp, // the y we are seeking toward (pixels)
+    target.xp, // the x we are seeking toward (pixels)
+    target.yp, // the y we are seeking toward (pixels)
   );
 }
 
