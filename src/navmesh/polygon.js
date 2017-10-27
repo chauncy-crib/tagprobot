@@ -201,37 +201,25 @@ export function unmergedGraphFromTagproMap(map) {
     const bottomLeft = new Point(xp, yp + PPTL);
     const bottomRight = new Point(xp + PPTL, yp + PPTL);
     if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_3'])) {
-      graph.addVertex(topLeft);
-      graph.addVertex(bottomRight);
-      graph.addEdge(topLeft, bottomRight);
+      graph.addEdgeAndVertices(topLeft, bottomRight);
     } else if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_2', 'ANGLE_WALL_4'])) {
-      graph.addVertex(bottomLeft);
-      graph.addVertex(topRight);
-      graph.addEdge(bottomLeft, topRight);
+      graph.addEdgeAndVertices(bottomLeft, topRight);
     }
     if (wallOnLeft(map, xt, yt) && !tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_2'])) {
       // Edge on left
-      graph.addVertex(topLeft);
-      graph.addVertex(bottomLeft);
-      graph.addEdge(topLeft, bottomLeft);
+      graph.addEdgeAndVertices(topLeft, bottomLeft);
     } if (wallOnRight(map, xt, yt) && !tileIsOneOf(map[xt][yt], ['ANGLE_WALL_3', 'ANGLE_WALL_4'])) {
       // Edge on right
-      graph.addVertex(topRight);
-      graph.addVertex(bottomRight);
-      graph.addEdge(topRight, bottomRight);
+      graph.addEdgeAndVertices(topRight, bottomRight);
     } if (wallOnTop(map, xt, yt) && !tileIsOneOf(map[xt][yt], ['ANGLE_WALL_2', 'ANGLE_WALL_3'])) {
       // Edge above
-      graph.addVertex(topLeft);
-      graph.addVertex(topRight);
-      graph.addEdge(topLeft, topRight);
+      graph.addEdgeAndVertices(topLeft, topRight);
     } if (
       wallOnBottom(map, xt, yt) &&
       !tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_4'])
     ) {
       // Edge below
-      graph.addVertex(bottomLeft);
-      graph.addVertex(bottomRight);
-      graph.addEdge(bottomLeft, bottomRight);
+      graph.addEdgeAndVertices(bottomLeft, bottomRight);
     }
   });
   return graph;
