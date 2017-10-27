@@ -3,7 +3,6 @@ import { accel, maxSpeed, dampingFactor } from '../constants';
 
 /**
  * Using constant acceleration equations, return next position
- *
  * @param {number} x - position
  * @param {number} v - velocity
  * @param {number} a - acceleration
@@ -14,13 +13,13 @@ function nextPosition(x, v, a, t) {
   return x + (v * t) + (0.5 * a * (t ** 2));
 }
 
+
 /**
  * Using constant acceleration equations, return next velocity
- *
  * @param {number} v - velocity
  * @param {number} a - acceleration
  * @param {number} t - time
- * @returns {number} velcity after t time
+ * @returns {number} velocity after t time
  */
 function nextVelocity(v, a, t) {
   return v + (a * t);
@@ -37,7 +36,6 @@ function boundValue(value, lowerBound, upperBound) {
 /**
  * Given the current state of the bot, return the next position and velocity assuming you hold a
  * key for a timestep
- *
  * @param {number} xp - x position, pixels
  * @param {number} yp - y position, pixels
  * @param {number} vxp - x-velocity, pixels/second
@@ -111,12 +109,12 @@ export function binarySearchAcceleration(pos, vel, target, time, threshold = 0.0
 }
 
 /**
- * @param {number} xp - starting position (pixels)
- * @param {number} yp - starting y position (pixels)
- * @param {number} vx - starting velocity x (pixels)
- * @param {number} vy - starting velocity y (pixels)
- * @param {number} destXp - target x (pixels)
- * @param {number} destYp - target y (pixels)
+ * @param {number} xp - starting x position
+ * @param {number} yp - starting y position
+ * @param {number} vxp - starting x velocity
+ * @param {number} vyp - starting y velocity
+ * @param {number} destXp - target x
+ * @param {number} destYp - target y
  * @returns {{accX: number, accY: number}} The desired acceleration multipliers to reach the
  *   destination. The positive directions are down and right.
  */
