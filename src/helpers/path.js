@@ -24,7 +24,7 @@ export class GameState {
   /**
    * @param {GameState} targetState - the GameState object we are calculating the heuristic distance
    *   to
-   * @returns the heuristic distance from this state to the targetState
+   * @returns {number} the heuristic distance from this state to the targetState
    */
   heuristic(targetState) {
     const xDiff = Math.abs(this.xc - targetState.xc);
