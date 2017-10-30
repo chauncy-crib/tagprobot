@@ -25,7 +25,7 @@ test('getHighestPoint()', tester => {
 });
 
 
-test.only('delaunayTriangulation()', tester => {
+test('delaunayTriangulation()', tester => {
   tester.test('creates legal horizontal line', t => {
     // Horizontal line between p1 and p4
     const p1 = new Point(0, 8);

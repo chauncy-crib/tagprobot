@@ -21,6 +21,11 @@ export class Point {
     return new Point(x, y);
   }
 
+  distanceSquared(other) {
+    const vector = this.subtract(other);
+    return (vector.x ** 2) + (vector.y ** 2);
+  }
+
   dot(other) {
     return (this.x * other.x) + (this.y * other.y);
   }
@@ -129,7 +134,7 @@ export class Triangle {
     const unique = [];
     const thesePoints = this.getPoints();
     const thosePoints = other.getPoints();
-    thesePoints.forEach(thisPoint => {
+    _.each(thesePoints, thisPoint => {
       if (thosePoints.has(thisPoint)) {
         shared.push(thisPoint);
         thosePoints.delete(thisPoint);
@@ -140,6 +145,13 @@ export class Triangle {
     unique.concat(Array.from(thosePoints));
     return { shared, unique };
   }
+
+  equal(other) {
+    const points1 = [this.p1, this.p2, this.p3];
+    const points2 = [other.p1, other.p2, other.p3];
+    // Return if p1 in points1 has some p2 in points2 where p2.equal(p1)
+    return _.every(points1, p1 => _.some(points2, p2 => p2.equal(p1)));
+  }
 }
 
 
@@ -147,7 +159,6 @@ export class TGraph extends Graph {
   constructor() {
     super();
     this.triangles = new Set();
-    this.edgeToTriangles = {};
   }
 
   findContainingTriangles(p) {
@@ -180,42 +191,96 @@ export class TGraph extends Graph {
 
   addTriangle(t) {
     this.triangles.add(t);
-    this.addEdge(t.p1, t.p2);
-    this.addEdge(t.p1, t.p3);
-    this.addEdge(t.p2, t.p3);
-    this.edgeToTriangle[`${t.p1},${t.p2}`] = this.edgeToTriangle[`${t.p1},${t.p2}`] || [];
-    this.edgeToTriangle[''].push(t);
+    this.addEdgeAndVertices(t.p1, t.p2);
+    this.addEdgeAndVertices(t.p1, t.p3);
+    this.addEdgeAndVertices(t.p2, t.p3);
   }
 
-  removeTriangle(t) {
+  findTriangle(p1, p2, p3) {
+    const r = new Triangle(p1, p2, p3);
+    let res = null;
+    this.triangles.forEach(t => {
+      if (r.equal(t)) res = t;
+    });
+    return res;
+  }
+
+  removeTriangleByPoints(p1, p2, p3) {
+    const r = this.findTriangle(p1, p2, p3);
+    if (r) this.removeTriangleByReference(r);
+  }
+
+  removeTriangleByReference(t) {
     this.triangles.delete(t);
     this.removeEdge(t.p1, t.p2);
     this.removeEdge(t.p1, t.p3);
     this.removeEdge(t.p2, t.p3);
   }
 
-  isLegal(e) {
-    return true;
+  isLegal(insertedPoint, e, oppositePoint) {
+    const p1 = e.p1;
+    const p2 = e.p2;
+    const p3 = insertedPoint;
+    const ma = (p2.y - p1.y) / (p2.x - p1.x);
+    const mb = (p3.y - p2.y) / (p3.x - p2.x);
+    const centerX = (
+      (ma * mb * (p1.y - p3.y)) + (mb * (p1.x + p2.x)) - (ma * (p2.x + p3.x))) /
+      (2 * (mb - ma)
+    );
+    const centerY = (
+      ((-1 / ma) * (centerX - ((p1.x + p2.x) / 2))) +
+      ((p1.y + p2.y) / 2)
+    );
+    const centerPoint = new Point(centerX, centerY);
+    const radiusSquared = centerPoint.distanceSquared(p1);
+    return centerPoint.distanceSquared(oppositePoint) >= radiusSquared;
   }
 
-  legalizeEdge(p, e, oppositePoint) {
-    if (!this.isLegal(e)) {
-      this.removeTriangle();
-      this.legalizeEdge(p, { p1: e.p1, p2: oppositePoint });
-      this.legalizeEdge(p, { p1: e.p2, p2: oppositePoint });
+  findOppositePoint(p, e) {
+    assert(this.isConnected(p, e.p1), `${p} was not connected to p1 of edge: ${e.p1}`);
+    assert(this.isConnected(p, e.p2), `${p} was not connected to p2 of edge: ${e.p2}`);
+    const n1 = this.neighbors(e.p1);
+    const n2 = this.neighbors(e.p2);
+    const sharedPoints = _.intersectionBy(n1, n2, point => point.toString());
+    const oppositePoint = _.filter(sharedPoints, point => (
+      // Point forms a triangle with the edge and is not the inserted point
+      this.findTriangle(point, e.p1, e.p2) && !point.equal(p)
+    ))
+    console.log(`inserting: ${p}`)
+    console.log(`n${e.p1}`, n1, `n${e.p2}`, n2);
+    console.log('oppositePoint', oppositePoint)
+    assert(
+      oppositePoint.length <= 1,
+      `Found ${oppositePoint.length} opposite points to ${e.p1} and ${e.p2}`,
+    );
+    return _.isEmpty(oppositePoint) ? null : oppositePoint[0];
+  }
+
+  legalizeEdge(insertedPoint, e) {
+    const oppositePoint = this.findOppositePoint(insertedPoint, e);
+    if (oppositePoint && !this.isLegal(insertedPoint, e, oppositePoint)) {
+      console.log('FLIPPIN', e)
+      this.removeTriangleByPoints(e.p1, e.p2, insertedPoint);
+      this.removeTriangleByPoints(e.p1, e.p2, oppositePoint);
+      this.addTriangle(new Triangle(insertedPoint, oppositePoint, e.p1));
+      this.addTriangle(new Triangle(insertedPoint, oppositePoint, e.p2));
+      this.legalizeEdge(insertedPoint, { p1: e.p1, p2: oppositePoint });
+      this.legalizeEdge(insertedPoint, { p1: e.p2, p2: oppositePoint });
+      console.log()
     }
   }
 
-  addVertex(p) {
+  addTriangulationVertex(p) {
     const containingTriangles = this.findContainingTriangles(p);
-    console.info(containingTriangles);
+    console.log(`adding: ${p}`, 'containingTriangles', containingTriangles);
     if (containingTriangles.length === 1) {
       // Point is inside one triangle
       const ct = containingTriangles[0];
-      this.removeTriangle(ct);
+      this.removeTriangleByReference(ct);
       this.addTriangle(new Triangle(ct.p1, ct.p2, p));
       this.addTriangle(new Triangle(ct.p1, p, ct.p3));
       this.addTriangle(new Triangle(p, ct.p2, ct.p3));
+      console.log(this.triangles)
       this.legalizeEdge(p, { p1: ct.p1, p2: ct.p2 });
       this.legalizeEdge(p, { p1: ct.p1, p2: ct.p3 });
       this.legalizeEdge(p, { p1: ct.p2, p2: ct.p3 });
@@ -224,8 +289,8 @@ export class TGraph extends Graph {
       const ct1 = containingTriangles[0];
       const ct2 = containingTriangles[1];
       const cp = ct1.categorizePoints(ct2); // categorized points
-      this.removeTriangle(ct1);
-      this.removeTriangle(ct2);
+      this.removeTriangleByReference(ct1);
+      this.removeTriangleByReference(ct2);
       this.addTriangle(new Triangle(cp.shared[0], cp.unique[0], p));
       this.addTriangle(new Triangle(cp.shared[0], cp.unique[1], p));
       this.addTriangle(new Triangle(cp.shared[1], cp.unique[0], p));
@@ -235,5 +300,6 @@ export class TGraph extends Graph {
       this.legalizeEdge(p, { p1: cp.shared[1], p2: cp.unique[0] });
       this.legalizeEdge(p, { p1: cp.shared[1], p2: cp.unique[1] });
     }
+    console.log('after legalization triangles:', this.triangles)
   }
 }
