@@ -287,9 +287,9 @@ test('drawNavMesh()', tester => {
     const middle = new Point(1000, 1000);
     const left = new Point(900, 1000);
     const down = new Point(1000, 1100);
-    mockGraph.addEdgeAndVertices(middle, left);
-    mockGraph.addEdgeAndVertices(middle, down);
-    mockGraph.addEdgeAndVertices(down, left);
+    mockGraph.addVerticesAndEdges(middle, left);
+    mockGraph.addVerticesAndEdges(middle, down);
+    mockGraph.addVerticesAndEdges(down, left);
     const mockDrawGraph = sinon.spy();
     const mockGetDTGraph = sinon.stub().returns(mockGraph);
     DrawRewireAPI.__Rewire__('drawGraph', mockDrawGraph);
