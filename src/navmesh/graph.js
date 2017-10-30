@@ -40,7 +40,7 @@ export class Graph {
     this.adj[point2].push(point1);
   }
 
-  addEdgeAndVertices(point1, point2) {
+  addVerticesAndEdges(point1, point2) {
     this.addVertex(point1);
     this.addVertex(point2);
     this.addEdge(point1, point2);
