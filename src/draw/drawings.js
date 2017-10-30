@@ -12,15 +12,15 @@ import _ from 'lodash';
 import {
   PPCL,
   CPTL,
-  pathAlpha,
-  pathColor,
-  ntAlpha,
-  ntColor,
-  keyColor,
-  keyOnAlpha,
-  keyOffAlpha,
-  navMeshColor,
-  navMeshThickness,
+  PATH_ALPHA,
+  PATH_COLOR,
+  NT_ALPHA,
+  NT_COLOR,
+  KEY_COLOR,
+  KEY_ON_ALPHA,
+  KEY_OFF_ALPHA,
+  NAV_MESH_COLOR,
+  NAV_MESH_THICKNESS,
 } from '../constants';
 import { getDTGraph } from '../navmesh/triangulation';
 import { init2dArray } from '../helpers/map';
@@ -125,19 +125,19 @@ export function initKeyPressesVisualization() {
   keyPressesVis = new PIXI.DisplayObjectContainer();
   tagpro.renderer.layers.ui.addChild(keyPressesVis);
   keyPressesVis.addChildAt(
-    getPixiSquare(-(1.5 * keySize) - keyGap, 0, keySize, keyOffAlpha, keyColor),
+    getPixiSquare(-(1.5 * keySize) - keyGap, 0, keySize, KEY_OFF_ALPHA, KEY_COLOR),
     leftKeyIndex,
   );
   keyPressesVis.addChildAt(
-    getPixiSquare(-(0.5 * keySize), 0, keySize, keyOffAlpha, keyColor),
+    getPixiSquare(-(0.5 * keySize), 0, keySize, KEY_OFF_ALPHA, KEY_COLOR),
     downKeyIndex,
   );
   keyPressesVis.addChildAt(
-    getPixiSquare((0.5 * keySize) + keyGap, 0, keySize, keyOffAlpha, keyColor),
+    getPixiSquare((0.5 * keySize) + keyGap, 0, keySize, KEY_OFF_ALPHA, KEY_COLOR),
     rightKeyIndex,
   );
   keyPressesVis.addChildAt(
-    getPixiSquare(-(0.5 * keySize), -keySize - keyGap, keySize, keyOffAlpha, keyColor),
+    getPixiSquare(-(0.5 * keySize), -keySize - keyGap, keySize, KEY_OFF_ALPHA, KEY_COLOR),
     upKeyIndex,
   );
 }
@@ -173,7 +173,7 @@ function updateKeyDrawing(keyIndex, newAlpha) {
   }
   keyPressesVis.removeChildAt(keyIndex);
   keyPressesVis.addChildAt(
-    getPixiSquare(xp, yp, keySize, newAlpha, keyColor),
+    getPixiSquare(xp, yp, keySize, newAlpha, KEY_COLOR),
     keyIndex,
   );
 }
@@ -188,8 +188,8 @@ function updateKeyDrawing(keyIndex, newAlpha) {
 export function drawKeyPresses(directions) {
   if (directions.x !== currKeyPresses.x) {
     // Find new alpha values for left/right keys
-    const leftAlpha = directions.x === 'LEFT' ? keyOnAlpha : keyOffAlpha;
-    const rightAlpha = directions.x === 'RIGHT' ? keyOnAlpha : keyOffAlpha;
+    const leftAlpha = directions.x === 'LEFT' ? KEY_ON_ALPHA : KEY_OFF_ALPHA;
+    const rightAlpha = directions.x === 'RIGHT' ? KEY_ON_ALPHA : KEY_OFF_ALPHA;
 
     // Update left/right key drawings
     updateKeyDrawing(leftKeyIndex, leftAlpha);
@@ -198,8 +198,8 @@ export function drawKeyPresses(directions) {
 
   if (directions.y !== currKeyPresses.y) {
     // Find new alpha values for down/up keys
-    const downAlpha = directions.y === 'DOWN' ? keyOnAlpha : keyOffAlpha;
-    const upAlpha = directions.y === 'UP' ? keyOnAlpha : keyOffAlpha;
+    const downAlpha = directions.y === 'DOWN' ? KEY_ON_ALPHA : KEY_OFF_ALPHA;
+    const upAlpha = directions.y === 'UP' ? KEY_ON_ALPHA : KEY_OFF_ALPHA;
 
     // Update down/up key drawings
     updateKeyDrawing(downKeyIndex, downAlpha);
@@ -220,7 +220,7 @@ export function updatePath(path) {
   _.forEach(pathSprites, p => tagpro.renderer.layers.background.removeChild(p));
   pathSprites.splice(0, pathSprites.length);
   _.forEach(path, cell => {
-    const sprite = getPixiSquare(cell.xc * PPCL, cell.yc * PPCL, PPCL, pathAlpha, pathColor);
+    const sprite = getPixiSquare(cell.xc * PPCL, cell.yc * PPCL, PPCL, PATH_ALPHA, PATH_COLOR);
     pathSprites.push(sprite);
     tagpro.renderer.layers.background.addChild(sprite);
   });
@@ -269,7 +269,7 @@ export function generatePermanentNTSprites(xt, yt, cellTraversabilities) {
       // if we don't have a sprite already there and there should be one,
       // draw it
       if (!cellTraversabilities[i][j]) {
-        const sprite = getPixiSquare(i * PPCL, j * PPCL, PPCL, ntAlpha, ntColor);
+        const sprite = getPixiSquare(i * PPCL, j * PPCL, PPCL, NT_ALPHA, NT_COLOR);
         permNTSprites.push(sprite);
       }
     }
@@ -302,7 +302,7 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
       // if we don't have a sprite already there and there should be one,
       // draw it
       if (_.isNull(tempNTSprites[i][j]) && !cellTraversabilities[i][j]) {
-        const sprite = getPixiSquare(i * PPCL, j * PPCL, PPCL, ntAlpha, ntColor);
+        const sprite = getPixiSquare(i * PPCL, j * PPCL, PPCL, NT_ALPHA, NT_COLOR);
         tempNTSprites[i][j] = sprite;
         tagpro.renderer.layers.background.addChild(sprite);
       // else if we already have a sprite there and there shouldn't be one,
@@ -346,5 +346,5 @@ export function drawNavMesh() {
   if (!isVisualMode()) {
     return;
   }
-  drawGraph(getDTGraph(), navMeshThickness, navMeshColor);
+  drawGraph(getDTGraph(), NAV_MESH_THICKNESS, NAV_MESH_COLOR);
 }

@@ -294,16 +294,16 @@ test('drawNavMesh()', tester => {
     const mockGetDTGraph = sinon.stub().returns(mockGraph);
     DrawRewireAPI.__Rewire__('drawGraph', mockDrawGraph);
     DrawRewireAPI.__Rewire__('getDTGraph', mockGetDTGraph);
-    DrawRewireAPI.__Rewire__('navMeshThickness', 'thick');
-    DrawRewireAPI.__Rewire__('navMeshColor', 'brown');
+    DrawRewireAPI.__Rewire__('NAV_MESH_THICKNESS', 'thick');
+    DrawRewireAPI.__Rewire__('NAV_MESH_COLOR', 'brown');
 
     drawNavMesh();
     t.true(mockDrawGraph.calledWith(mockGraph, 'thick', 'brown'));
 
     DrawRewireAPI.__ResetDependency__('drawGraph');
     DrawRewireAPI.__ResetDependency__('getDTGraph');
-    DrawRewireAPI.__ResetDependency__('navMeshThickness');
-    DrawRewireAPI.__ResetDependency__('navMeshColor');
+    DrawRewireAPI.__ResetDependency__('NAV_MESH_THICKNESS');
+    DrawRewireAPI.__ResetDependency__('NAV_MESH_COLOR');
     t.end();
   });
   tester.end();

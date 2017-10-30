@@ -5,7 +5,7 @@
 import _ from 'lodash';
 import FibonacciHeap from '@tyriar/fibonacci-heap';
 import { assert, assertGridInBounds } from '../../src/utils/asserts';
-import { diagonal } from '../constants';
+import { DIAGONAL } from '../constants';
 
 
 export class GameState {
@@ -29,7 +29,7 @@ export class GameState {
   heuristic(targetState) {
     const xDiff = Math.abs(this.xc - targetState.xc);
     const yDiff = Math.abs(this.yc - targetState.yc);
-    if (diagonal) {
+    if (DIAGONAL) {
       const diagDist = Math.sqrt(2) * Math.min(xDiff, yDiff);
       const linDist = Math.abs(xDiff - yDiff);
       return diagDist + linDist;
@@ -56,7 +56,7 @@ export class GameState {
       new GameState(this.xc, this.yc + 1),
     ];
     // diagonal neighbors
-    if (diagonal) {
+    if (DIAGONAL) {
       potentialNeighbors = potentialNeighbors.concat([
         new GameState(this.xc - 1, this.yc - 1),
         new GameState(this.xc - 1, this.yc + 1),

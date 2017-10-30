@@ -10,7 +10,7 @@ test('test neighbors returns the right number of neighbors with diagonals on', t
     [0, 1, 1],
 
   ];
-  PathRewireAPI.__Rewire__('diagonal', true);
+  PathRewireAPI.__Rewire__('DIAGONAL', true);
 
   let state = new GameState(1, 1);
   t.is(state.neighbors(traversabilityCells).length, 5);
@@ -24,7 +24,7 @@ test('test neighbors returns the right number of neighbors with diagonals on', t
   state = new GameState(2, 2);
   t.is(state.neighbors(traversabilityCells).length, 2);
 
-  PathRewireAPI.__ResetDependency__('diagonal');
+  PathRewireAPI.__ResetDependency__('DIAGONAL');
   t.end();
 });
 
@@ -35,7 +35,7 @@ test('test neighbors returns the right number of neighbors with diagonals off', 
     [1, 1, 0],
     [0, 1, 1],
   ];
-  PathRewireAPI.__Rewire__('diagonal', false);
+  PathRewireAPI.__Rewire__('DIAGONAL', false);
 
   let state = new GameState(1, 1);
   t.is(state.neighbors(traversabilityCells).length, 2);
@@ -49,7 +49,7 @@ test('test neighbors returns the right number of neighbors with diagonals off', 
   state = new GameState(2, 2);
   t.is(state.neighbors(traversabilityCells).length, 1);
 
-  PathRewireAPI.__ResetDependency__('diagonal');
+  PathRewireAPI.__ResetDependency__('DIAGONAL');
   t.end();
 });
 
@@ -60,20 +60,20 @@ test('test neighbors have correct g values', t => {
     [1, 1, 0],
     [0, 1, 1],
   ];
-  PathRewireAPI.__Rewire__('diagonal', false);
+  PathRewireAPI.__Rewire__('DIAGONAL', false);
 
   const state = new GameState(1, 1);
   state.g = 12;
   _.each(state.neighbors(traversabilityCells), n => {
     t.is(n.g, 13);
   });
-  PathRewireAPI.__ResetDependency__('diagonal');
+  PathRewireAPI.__ResetDependency__('DIAGONAL');
   t.end();
 });
 
 
 test('test getShortestPath returns shortest path without diagonals', t => {
-  PathRewireAPI.__Rewire__('diagonal', false);
+  PathRewireAPI.__Rewire__('DIAGONAL', false);
   const inputMap = [
     [1, 0, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 1, 1, 1],
@@ -86,7 +86,7 @@ test('test getShortestPath returns shortest path without diagonals', t => {
     inputMap,
   );
   t.equal(shortestPath.length, 14);
-  PathRewireAPI.__ResetDependency__('diagonal');
+  PathRewireAPI.__ResetDependency__('DIAGONAL');
 
   t.end();
 });
@@ -94,7 +94,7 @@ test('test getShortestPath returns shortest path without diagonals', t => {
 
 test('getShortestPath()', tester => {
   tester.test('returns shortest path with diagonals', t => {
-    PathRewireAPI.__Rewire__('diagonal', true);
+    PathRewireAPI.__Rewire__('DIAGONAL', true);
     const inputMap = [
       [1, 0, 1, 1, 1, 1, 1, 1],
       [1, 0, 0, 0, 0, 1, 1, 1],
@@ -107,14 +107,14 @@ test('getShortestPath()', tester => {
       inputMap,
     );
     t.equal(shortestDiagonalPath.length, 10);
-    PathRewireAPI.__ResetDependency__('diagonal');
+    PathRewireAPI.__ResetDependency__('DIAGONAL');
 
     t.end();
   });
 
 
   tester.test('returns undefined when no path exists', t => {
-    PathRewireAPI.__Rewire__('diagonal', true);
+    PathRewireAPI.__Rewire__('DIAGONAL', true);
     const impossibleMap = [
       [1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1],
@@ -130,7 +130,7 @@ test('getShortestPath()', tester => {
     );
     t.false(impossiblePath);
 
-    PathRewireAPI.__ResetDependency__('diagonal');
+    PathRewireAPI.__ResetDependency__('DIAGONAL');
     t.end();
   });
 
@@ -164,7 +164,7 @@ test('getShortestPath()', tester => {
 
 
   tester.test('returns the shortest path when the greedy algorithm returns the wrong path', t => {
-    PathRewireAPI.__Rewire__('diagonal', false);
+    PathRewireAPI.__Rewire__('DIAGONAL', false);
     const map = [
       [0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -192,7 +192,7 @@ test('getShortestPath()', tester => {
       map,
     );
     t.is(shortestDiagonalPath.length, 62);
-    PathRewireAPI.__ResetDependency__('diagonal');
+    PathRewireAPI.__ResetDependency__('DIAGONAL');
 
     t.end();
   });

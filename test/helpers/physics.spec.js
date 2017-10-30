@@ -3,7 +3,7 @@ import {
   projectedState,
   binarySearchAcceleration,
   desiredAccelerationMultiplier } from '../../src/helpers/physics';
-import { maxSpeed } from '../../src/constants';
+import { MAX_SPEED } from '../../src/constants';
 
 
 function isRoughly(val, expected, threshold = 0.01) {
@@ -61,7 +61,7 @@ test('projectedState', tester => {
     let time = 0;
     let position = 0;
     let speed = 0;
-    while (speed < maxSpeed) {
+    while (speed < MAX_SPEED) {
       const nextState = projectedState(position, 0, speed, 0, { x: 'RIGHT' }, step);
       position = nextState.xp;
       speed = nextState.vxp;

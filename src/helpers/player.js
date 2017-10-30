@@ -1,4 +1,4 @@
-import { teams } from '../constants';
+import { TEAMS } from '../constants';
 
 let me;
 
@@ -12,11 +12,11 @@ export function getMe() {
 }
 
 export function amBlue() {
-  return me.team === teams.BLUE;
+  return me.team === TEAMS.BLUE;
 }
 
 export function amRed() {
-  return me.team === teams.RED;
+  return me.team === TEAMS.RED;
 }
 
 export function isOnMyTeam(player) {
