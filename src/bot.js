@@ -1,4 +1,4 @@
-import { PPCL, BRP, lookahead } from './constants';
+import { PPCL, BRP, LOOKAHEAD } from './constants';
 import { getMapTraversabilityInCells } from './helpers/map';
 import { findTile, findEnemyFC } from './helpers/finders';
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
@@ -81,7 +81,7 @@ function getAccelValues() {
 
   const target = { xp: me.x + BRP, yp: me.y + BRP };
   if (shortestPath) {
-    const targetCell = shortestPath[Math.min(lookahead, shortestPath.length - 1)];
+    const targetCell = shortestPath[Math.min(LOOKAHEAD, shortestPath.length - 1)];
     target.xp = Math.floor((targetCell.xc + 0.5) * PPCL);
     target.yp = Math.floor((targetCell.yc + 0.5) * PPCL);
   } else {

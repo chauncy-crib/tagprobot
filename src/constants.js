@@ -2,7 +2,7 @@ import { getNTKernel } from './helpers/constants';
 import { assert } from '../src/utils/asserts';
 
 
-export const teams = {
+export const TEAMS = {
   RED: 1,
   BLUE: 2,
 };
@@ -21,24 +21,24 @@ export const PPCL = PPTL / CPTL;
 export const BRP = 19; // ball radius, in pixels
 
 // use diagonals in A* calculation
-export const diagonal = true;
+export const DIAGONAL = true;
 
 // Nontraversable kernel, which applies a buffer around NTOs on the map
-export const NTKernel = getNTKernel();
+export const NT_KERNEL = getNTKernel();
 
 // Drawing constants
-export const pathAlpha = 0.25;
-export const pathColor = 0x00ff00; // Green
-export const ntAlpha = 0.4;
-export const ntColor = 0xff8c00; // Orange
-export const keyColor = 0x753daf; // purple
-export const keyOnAlpha = 0.75;
-export const keyOffAlpha = 0.2;
-export const navMeshColor = 0x9400ff; // Purple
-export const navMeshThickness = 4; // Line thickness in pixels
+export const PATH_ALPHA = 0.25;
+export const PATH_COLOR = 0x00ff00; // Green
+export const NT_ALPHA = 0.4;
+export const NT_COLOR = 0xff8c00; // Orange
+export const KEY_COLOR = 0x753daf; // purple
+export const KEY_ON_ALPHA = 0.75;
+export const KEY_OFF_ALPHA = 0.2;
+export const NAV_MESH_COLOR = 0x9400ff; // Purple
+export const NAV_MESH_THICKNESS = 4; // Line thickness in pixels
 
 // Numbers of cells along the shortest path to lookeahead and seek toward
-export const lookahead = 3;
+export const LOOKAHEAD = 3;
 
 // Tagpro physics
 const maxSpeedMPS = 2.5; // meters per second
@@ -47,9 +47,9 @@ const tilesPerMeter = 2.5;
 const framesPerSecond = 60;
 
 // Export all constants in pixels per second
-// accel = 3.75 tiles/second^2 = 150 pixels/second^2
-export const accel = accelerationMPF * framesPerSecond * tilesPerMeter * PPTL;
-// maxSpeed = 6.25 tiles/second = 250 pixels/second^2
-export const maxSpeed = maxSpeedMPS * tilesPerMeter * PPTL;
+// ACCEL = 3.75 tiles/second^2 = 150 pixels/second^2
+export const ACCEL = accelerationMPF * framesPerSecond * tilesPerMeter * PPTL;
+// MAX_SPEED = 6.25 tiles/second = 250 pixels/second^2
+export const MAX_SPEED = maxSpeedMPS * tilesPerMeter * PPTL;
 // Every frame, current velocity is multiplied by (1 - step * damp) = (1 - (1/60) * 0.5) = 0.992
-export const dampingFactor = 0.5;
+export const DAMPING_FACTOR = 0.5;

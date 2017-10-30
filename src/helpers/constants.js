@@ -16,7 +16,7 @@ export function getNTKernel() { // eslint-disable-line import/prefer-default-exp
   const ratioKernelToBall = 1.0;
   const kernelRadiusPixels = Math.ceil(BRP * ratioKernelToBall) + (PPCL / 2);
   const kernelDiameterPixels = 2 * kernelRadiusPixels;
-  // This value must be odd, because it represents the dimensions of the NTKernel
+  // This value must be odd, because it represents the dimensions of the NT_KERNEL
   const kernelDiameterCellsTemp = Math.ceil(kernelDiameterPixels / PPCL);
   const kernelDiameterCells = kernelDiameterCellsTemp % 2 === 1
     ? kernelDiameterCellsTemp

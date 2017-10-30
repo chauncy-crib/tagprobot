@@ -1,4 +1,4 @@
-import { accel, maxSpeed, dampingFactor } from '../constants';
+import { ACCEL, MAX_SPEED, DAMPING_FACTOR } from '../constants';
 
 
 /**
@@ -50,16 +50,16 @@ function boundValue(value, lowerBound, upperBound) {
  */
 export function projectedState(xp, yp, vxp, vyp, keypress, timeStep, accelerationMultiplier = 1) {
   // Acceleration as a result of friction
-  const dampingDecelX = -vxp * dampingFactor;
-  const dampingDecelY = -vyp * dampingFactor;
+  const dampingDecelX = -vxp * DAMPING_FACTOR;
+  const dampingDecelY = -vyp * DAMPING_FACTOR;
 
   // Acceleration from keypress
   let keypressAccelX = 0;
   let keypressAccelY = 0;
-  if (keypress.x === 'RIGHT') keypressAccelX = accel * accelerationMultiplier;
-  else if (keypress.x === 'LEFT') keypressAccelX = -accel * accelerationMultiplier;
-  if (keypress.y === 'DOWN') keypressAccelY = accel * accelerationMultiplier;
-  else if (keypress.y === 'UP') keypressAccelY = -accel * accelerationMultiplier;
+  if (keypress.x === 'RIGHT') keypressAccelX = ACCEL * accelerationMultiplier;
+  else if (keypress.x === 'LEFT') keypressAccelX = -ACCEL * accelerationMultiplier;
+  if (keypress.y === 'DOWN') keypressAccelY = ACCEL * accelerationMultiplier;
+  else if (keypress.y === 'UP') keypressAccelY = -ACCEL * accelerationMultiplier;
 
   const netAccelX = keypressAccelX + dampingDecelX;
   const netAccelY = keypressAccelY + dampingDecelY;
@@ -67,9 +67,9 @@ export function projectedState(xp, yp, vxp, vyp, keypress, timeStep, acceleratio
   return {
     xp: nextPosition(xp, vxp, netAccelX, timeStep),
     yp: nextPosition(yp, vyp, netAccelY, timeStep),
-    // Bound velocity by [-maxSpeed, maxSpeed]
-    vxp: boundValue(nextVelocity(vxp, netAccelX, timeStep), -maxSpeed, maxSpeed),
-    vyp: boundValue(nextVelocity(vyp, netAccelY, timeStep), -maxSpeed, maxSpeed),
+    // Bound velocity by [-MAX_SPEED, MAX_SPEED]
+    vxp: boundValue(nextVelocity(vxp, netAccelX, timeStep), -MAX_SPEED, MAX_SPEED),
+    vyp: boundValue(nextVelocity(vyp, netAccelY, timeStep), -MAX_SPEED, MAX_SPEED),
   };
 }
 

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { CPTL, PPCL, NTKernel } from '../constants';
+import { CPTL, PPCL, NT_KERNEL } from '../constants';
 import { assert, assertGridInBounds } from '../utils/asserts';
 import { tileHasName, getTileProperty, tileHasProperty, tileIsOneOf } from '../tiles';
 import { updateNTSprites, generatePermanentNTSprites } from '../draw/drawings';
@@ -141,7 +141,7 @@ export function getTileTraversabilityInCells(tileId) {
 
 /**
  * Updates the numNTO grid in the area affected by a single tile changing its traversability state
- * @param {number[][]} numNTO - the count of NTO within the affected area of the NTKernel
+ * @param {number[][]} numNTO - the count of NTO within the affected area of the NT_KERNEL
  * @param xMin {number} - the minimum x value to update (inclusive)
  * @param yMin {number} - the minimum y value to update (inclusive)
  * @param xMax {number} - the maximum x value to update (exclusive)
@@ -201,7 +201,7 @@ export function initMapTraversabilityCells(map) {
   }
   numNTOWithinBufCells = convolve(
     invertBinary2dArray(mapTraversabilityCells), // invert so that NTOs are represented by 1s
-    NTKernel,
+    NT_KERNEL,
   );
   init2dArray(xtl * CPTL, ytl * CPTL, 0, mapTraversabilityCellsWithBuf);
   updateTraversabilityFromNumNTO(
@@ -238,14 +238,14 @@ export function getMapTraversabilityInCells(map) {
       const xFirstCell = xy.xt * CPTL;
       const yFirstCell = xy.yt * CPTL;
 
-      // When a tile's traversability is changed, everything within the reach of the NTKernel will
+      // When a tile's traversability is changed, everything within the reach of the NT_KERNEL will
       // be changed as well. Here, we define the affected area so that we know where to dynamically
       // update numNTOWithinBufCells and mapTraversabilityCellsWithBuf.
-      const NTKernelReach = Math.floor(NTKernel.length / 2);
-      const minXCell = xFirstCell - NTKernelReach;
-      const minYCell = yFirstCell - NTKernelReach;
-      const maxXCell = xFirstCell + CPTL + NTKernelReach;
-      const maxYCell = yFirstCell + CPTL + NTKernelReach;
+      const ntKernelReach = Math.floor(NT_KERNEL.length / 2);
+      const minXCell = xFirstCell - ntKernelReach;
+      const minYCell = yFirstCell - ntKernelReach;
+      const maxXCell = xFirstCell + CPTL + ntKernelReach;
+      const maxYCell = yFirstCell + CPTL + ntKernelReach;
 
       updateNumNTO(
         numNTOWithinBufCells,
