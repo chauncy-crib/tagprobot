@@ -30,25 +30,25 @@ export class Graph {
     this.vertices = [];
   }
 
-  addEdge(point1, point2) {
-    assert(_.has(this.adj, point1), `${point1} not initialized in the graph with addVertex()`);
-    assert(_.has(this.adj, point2), `${point2} not initialized in the graph with addVertex()`);
-    if (this.isConnected(point1, point2)) {
+  addEdge(p1, p2) {
+    assert(_.has(this.adj, p1), `${p1} not initialized in the graph with addVertex()`);
+    assert(_.has(this.adj, p2), `${p2} not initialized in the graph with addVertex()`);
+    if (this.isConnected(p1, p2)) {
       return;
     }
-    this.adj[point1].push(point2);
-    this.adj[point2].push(point1);
+    this.adj[p1].push(p2);
+    this.adj[p2].push(p1);
   }
 
-  addEdgeAndVertices(point1, point2) {
-    this.addVertex(point1);
-    this.addVertex(point2);
-    this.addEdge(point1, point2);
+  addEdgeAndVertices(p1, p2) {
+    this.addVertex(p1);
+    this.addVertex(p2);
+    this.addEdge(p1, p2);
   }
 
-  removeEdge(point1, point2) {
-    this.adj[point1] = _.reject(this.adj[point1], p => p.equal(point2));
-    this.adj[point2] = _.reject(this.adj[point2], p => p.equal(point1));
+  removeEdge(p1, p2) {
+    this.adj[p1] = _.reject(this.adj[p1], p => p.equal(p2));
+    this.adj[p2] = _.reject(this.adj[p2], p => p.equal(p1));
   }
 
   // User is responsible for clearing edges comming from vertex
@@ -57,10 +57,10 @@ export class Graph {
     this.vertices = _.reject(this.vertices, v => vertex.equal(v));
   }
 
-  isConnected(point1, point2) {
-    const N = this.neighbors(point1);
-    // Return true if any of point1's neighbors are equal to point2
-    return _.some(_.map(N, n => n.equal(point2)));
+  isConnected(p1, p2) {
+    const N = this.neighbors(p1);
+    // Return true if any of p1's neighbors are equal to p2
+    return _.some(_.map(N, n => n.equal(p2)));
   }
 
   /**
@@ -90,11 +90,11 @@ export class Graph {
     _.each(this.vertices, p1 => {
       _.each(this.adj[p1], p2 => {
         const edgeExists = _.some(edges, e => (
-          (e.point1.equal(p1) && e.point2.equal(p2)) ||
-          (e.point1.equal(p2) && e.point2.equal(p1))
+          (e.p1.equal(p1) && e.p2.equal(p2)) ||
+          (e.p1.equal(p2) && e.p2.equal(p1))
         ));
         if (!edgeExists) {
-          edges.push({ point1: p1, point2: p2 });
+          edges.push({ p1, p2 });
         }
       });
     });

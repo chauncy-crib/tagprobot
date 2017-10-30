@@ -321,10 +321,10 @@ test('graphFromTagproMap', tester => {
       { x: 120, y: 120 },
     ]);
     t.same(graph.getEdges(), [
-      { point1: { x: 40, y: 40 }, point2: { x: 40, y: 120 } },
-      { point1: { x: 40, y: 40 }, point2: { x: 120, y: 40 } },
-      { point1: { x: 40, y: 120 }, point2: { x: 120, y: 120 } },
-      { point1: { x: 120, y: 40 }, point2: { x: 120, y: 120 } },
+      { p1: { x: 40, y: 40 }, p2: { x: 40, y: 120 } },
+      { p1: { x: 40, y: 40 }, p2: { x: 120, y: 40 } },
+      { p1: { x: 40, y: 120 }, p2: { x: 120, y: 120 } },
+      { p1: { x: 120, y: 40 }, p2: { x: 120, y: 120 } },
     ]);
 
     teardown();
