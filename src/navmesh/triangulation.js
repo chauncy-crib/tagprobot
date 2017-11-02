@@ -1,9 +1,10 @@
 import _ from 'lodash';
 import { graphFromTagproMap } from './polygon';
 import { TGraph, Point, Triangle } from './graph';
+import { assert } from '../utils/asserts';
 
 
-let DTGraph = new TGraph();
+const DTGraph = new TGraph();
 
 
 /**
@@ -18,26 +19,26 @@ export function getHighestPoint(vertices) {
 
 
 /**
+ * TODO treat p-1 and p-2 symbollically
  * @param {Point[]} vertices - array of all vertices
  * @returns {Graph} graph of the triangulation of all the vertices
  */
-export function delaunayTriangulation(vertices) {
+export function delaunayTriangulation(vertices, dummyPoint1, dummyPoint2) {
   const highestP = getHighestPoint(vertices);
-  // TODO treat p-1 and p-2 symbollically
-  const pn1 = new Point(-100, 50);
-  const pn2 = new Point(100, 50);
 
-  const t = new Triangle(highestP, pn1, pn2);
+  const t = new Triangle(highestP, dummyPoint1, dummyPoint2);
   DTGraph.addTriangle(t);
 
-  // TODO: actually shuffle the vertices
-  // const shuffledVertices = _.shuffle(_.without(vertices, highestP));
-  const shuffledVertices = _.without(vertices, highestP);
-  _.forEach(shuffledVertices, vertex => {
+  const shuffledVertices = _.shuffle(_.without(vertices, highestP));
+  // Check if dummy triangle contains each point
+  _.each(shuffledVertices, vertex => {
+    assert(DTGraph.findContainingTriangles(vertex).length === 1);
+  });
+  _.each(shuffledVertices, vertex => {
     DTGraph.addTriangulationVertex(vertex);
   });
-  DTGraph.removeVertexAndTriangles(pn1);
-  DTGraph.removeVertexAndTriangles(pn2);
+  DTGraph.removeVertexAndTriangles(dummyPoint1);
+  DTGraph.removeVertexAndTriangles(dummyPoint2);
   return shuffledVertices;
 }
 
@@ -48,7 +49,11 @@ export function delaunayTriangulation(vertices) {
  */
 export function calculateNavMesh(map) {
   const mapGraph = graphFromTagproMap(map);
-  DTGraph = mapGraph;
+  delaunayTriangulation(
+    mapGraph.getVertices(),
+    new Point(-3000000, -100),
+    new Point(14000000, 10000000),
+  );
 }
 
 

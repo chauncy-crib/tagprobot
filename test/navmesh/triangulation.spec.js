@@ -35,7 +35,7 @@ test('delaunayTriangulation()', tester => {
     const p4 = new Point(20, 8);
     const vertices = [p1, p2, p3, p4];
 
-    delaunayTriangulation(vertices);
+    delaunayTriangulation(vertices, new Point(-100, 50), new Point(100, 50));
     const DTGraph = getDTGraph();
     t.true(DTGraph.isConnected(p1, p4));
     t.true(DTGraph.isConnected(p1, p2));
@@ -61,7 +61,7 @@ test('delaunayTriangulation()', tester => {
     const p4 = new Point(20, 8);
     const vertices = [p1, p2, p3, p4];
 
-    delaunayTriangulation(vertices);
+    delaunayTriangulation(vertices, new Point(-100, 50), new Point(100, 50));
     const DTGraph = getDTGraph();
     t.false(DTGraph.isConnected(p1, p4));
     t.true(DTGraph.isConnected(p1, p2));
@@ -70,6 +70,24 @@ test('delaunayTriangulation()', tester => {
     t.true(DTGraph.isConnected(p3, p4));
     t.true(DTGraph.isConnected(p2, p3));
     t.is(DTGraph.getEdges().length, 5);
+    t.is(DTGraph.getVertices().length, 4);
+    t.is(DTGraph.triangles.size, 2);
+    TriangulationRewireAPI.__ResetDependency__('DTGraph');
+
+    t.end();
+  });
+
+  tester.test('works when point is on existing line', t => {
+    const mockDTGraph = new TGraph();
+    TriangulationRewireAPI.__Rewire__('DTGraph', mockDTGraph);
+    const p1 = new Point(0, 0);
+    const p2 = new Point(0, 10);
+    const p3 = new Point(-3, 8);
+    const p4 = new Point(0, 2); // on line between p1 and p2
+    const vertices = [p1, p2, p3, p4];
+
+    delaunayTriangulation(vertices, new Point(-40, 40), new Point(40, 40));
+    const DTGraph = getDTGraph();
     t.is(DTGraph.getVertices().length, 4);
     t.is(DTGraph.triangles.size, 2);
     TriangulationRewireAPI.__ResetDependency__('DTGraph');
