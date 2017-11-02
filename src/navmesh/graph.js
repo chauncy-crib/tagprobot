@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { assert } from '../utils/asserts';
 
+
 /**
  * Represents an x, y pixel location on the tagpro map. Used as vertices to define polygons.
  */
@@ -37,6 +38,7 @@ export class Point {
 
 export function isLegal(insertedPoint, e, oppositePoint) {
   // TODO: do this with a matrix determinant per wiki article
+  // Assign p1, p2, p3 such that the slopes of the lines p1p2 and p2p3 are not infinite
   let p1;
   let p2;
   let p3;
@@ -126,6 +128,7 @@ export class Graph {
   }
 
   addVertex(point) {
+    assert(!_.isNil(point), 'Point was undefined');
     // Only add vertex if it doesn't already exist in the graph
     if (!_.has(this.adj, point)) {
       this.adj[point] = [];
@@ -170,19 +173,25 @@ export class Triangle {
   }
 
   categorizePoints(other) {
+    const allPoints = [this.p1, this.p2, this.p3, other.p1, other.p2, other.p3];
+    const uniqueIdx = [true, true, true, true, true, true]; // assume all unique
+    const sharedIdx = [false, false, false, false, false, false];
+    for (let i = 0; i < 3; i += 1) {
+      for (let j = 3; j < 6; j += 1) {
+        if (allPoints[i].equal(allPoints[j])) {
+          uniqueIdx[i] = false;
+          uniqueIdx[j] = false;
+          sharedIdx[i] = true;
+          continue; // eslint-disable-line no-continue
+        }
+      }
+    }
     const shared = [];
     const unique = [];
-    const thesePoints = this.getPoints();
-    const thosePoints = other.getPoints();
-    _.each(thesePoints, thisPoint => {
-      if (thosePoints.has(thisPoint)) {
-        shared.push(thisPoint);
-        thosePoints.delete(thisPoint);
-      } else {
-        unique.push(thisPoint);
-      }
-    });
-    unique.concat(Array.from(thosePoints));
+    for (let i = 0; i < 6; i += 1) {
+      if (uniqueIdx[i]) unique.push(allPoints[i]);
+      if (sharedIdx[i]) shared.push(allPoints[i]);
+    }
     return { shared, unique };
   }
 
@@ -318,6 +327,8 @@ export class TGraph extends Graph {
       const ct1 = containingTriangles[0];
       const ct2 = containingTriangles[1];
       const cp = ct1.categorizePoints(ct2); // categorized points
+      assert(cp.shared.length > 1, `cp.shared length was ${cp.shared.length}`);
+      assert(cp.unique.length > 1, `cp.unique length was ${cp.unique.length}`);
       this.removeTriangleByReference(ct1);
       this.removeTriangleByReference(ct2);
       this.addTriangle(new Triangle(cp.shared[0], cp.unique[0], p));
