@@ -36,6 +36,8 @@ export function delaunayTriangulation(vertices) {
   _.forEach(shuffledVertices, vertex => {
     DTGraph.addTriangulationVertex(vertex);
   });
+  DTGraph.removeVertexAndTriangles(pn1);
+  DTGraph.removeVertexAndTriangles(pn2);
   return shuffledVertices;
 }
 

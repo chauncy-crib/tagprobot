@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import { assert } from '../utils/asserts';
 
-
 /**
  * Represents an x, y pixel location on the tagpro map. Used as vertices to define polygons.
  */
@@ -33,6 +32,47 @@ export class Point {
   toString() {
     return `x: ${this.x}, y: ${this.y}`;
   }
+}
+
+
+export function isLegal(insertedPoint, e, oppositePoint) {
+  // TODO: do this with a matrix determinant per wiki article
+  let p1;
+  let p2;
+  let p3;
+  if (e.p2.x === e.p1.x) {
+    p1 = e.p1; // eslint-disable-line prefer-destructuring
+    p2 = insertedPoint;
+    p3 = e.p2;
+  } else if (insertedPoint.x === e.p2.x) {
+    p1 = e.p2;
+    p2 = e.p1;
+    p3 = insertedPoint;
+  } else {
+    p1 = e.p1; // eslint-disable-line prefer-destructuring
+    p2 = e.p2; // eslint-disable-line prefer-destructuring
+    p3 = insertedPoint;
+  }
+  assert(
+    p2.x !== p1.x && p2.x !== p3.x,
+    'Drawing a line between two points resulted in an infinite slope',
+  );
+  const ma = (p2.y - p1.y) / (p2.x - p1.x);
+  const mb = (p3.y - p2.y) / (p3.x - p2.x);
+  assert(ma !== mb, `Lines had parallel slope: ${ma}`);
+  const centerX = (
+    (ma * mb * (p1.y - p3.y)) + (mb * (p1.x + p2.x)) + (-ma * (p2.x + p3.x))) /
+    (2 * (mb - ma)
+    );
+  let centerY;
+  if (ma !== 0) { // if line A has a non-horizantal slope, use it to calculate centerY
+    centerY = ((-1 / ma) * (centerX - ((p1.x + p2.x) / 2))) + ((p1.y + p2.y) / 2);
+  } else { // otherwise, use line B
+    centerY = ((-1 / mb) * (centerX - ((p2.x + p3.x) / 2))) + ((p2.y + p3.y) / 2);
+  }
+  const centerPoint = new Point(centerX, centerY);
+  const radiusSquared = centerPoint.distanceSquared(p1);
+  return centerPoint.distanceSquared(oppositePoint) >= radiusSquared;
 }
 
 
@@ -205,6 +245,20 @@ export class TGraph extends Graph {
     return res;
   }
 
+  removeVertexAndTriangles(p) {
+    this.triangles.forEach(t => {
+      // remove all triangles connected to the point
+      if (t.p1.equal(p) || t.p2.equal(p) || t.p3.equal(p)) {
+        this.removeTriangleByReference(t);
+        // add back the edges we just removed
+        if (t.p1.equal(p)) this.addEdge(t.p2, t.p3);
+        if (t.p2.equal(p)) this.addEdge(t.p1, t.p3);
+        if (t.p3.equal(p)) this.addEdge(t.p1, t.p2);
+      }
+    });
+    this.removeVertex(p);
+  }
+
   removeTriangleByPoints(p1, p2, p3) {
     const r = this.findTriangle(p1, p2, p3);
     if (r) this.removeTriangleByReference(r);
@@ -217,25 +271,6 @@ export class TGraph extends Graph {
     this.removeEdge(t.p2, t.p3);
   }
 
-  isLegal(insertedPoint, e, oppositePoint) {
-    const p1 = e.p1;
-    const p2 = e.p2;
-    const p3 = insertedPoint;
-    const ma = (p2.y - p1.y) / (p2.x - p1.x);
-    const mb = (p3.y - p2.y) / (p3.x - p2.x);
-    const centerX = (
-      (ma * mb * (p1.y - p3.y)) + (mb * (p1.x + p2.x)) - (ma * (p2.x + p3.x))) /
-      (2 * (mb - ma)
-    );
-    const centerY = (
-      ((-1 / ma) * (centerX - ((p1.x + p2.x) / 2))) +
-      ((p1.y + p2.y) / 2)
-    );
-    const centerPoint = new Point(centerX, centerY);
-    const radiusSquared = centerPoint.distanceSquared(p1);
-    return centerPoint.distanceSquared(oppositePoint) >= radiusSquared;
-  }
-
   findOppositePoint(p, e) {
     assert(this.isConnected(p, e.p1), `${p} was not connected to p1 of edge: ${e.p1}`);
     assert(this.isConnected(p, e.p2), `${p} was not connected to p2 of edge: ${e.p2}`);
@@ -245,10 +280,7 @@ export class TGraph extends Graph {
     const oppositePoint = _.filter(sharedPoints, point => (
       // Point forms a triangle with the edge and is not the inserted point
       this.findTriangle(point, e.p1, e.p2) && !point.equal(p)
-    ))
-    console.log(`inserting: ${p}`)
-    console.log(`n${e.p1}`, n1, `n${e.p2}`, n2);
-    console.log('oppositePoint', oppositePoint)
+    ));
     assert(
       oppositePoint.length <= 1,
       `Found ${oppositePoint.length} opposite points to ${e.p1} and ${e.p2}`,
@@ -258,21 +290,19 @@ export class TGraph extends Graph {
 
   legalizeEdge(insertedPoint, e) {
     const oppositePoint = this.findOppositePoint(insertedPoint, e);
-    if (oppositePoint && !this.isLegal(insertedPoint, e, oppositePoint)) {
-      console.log('FLIPPIN', e)
+    if (oppositePoint && !isLegal(insertedPoint, e, oppositePoint)) {
       this.removeTriangleByPoints(e.p1, e.p2, insertedPoint);
       this.removeTriangleByPoints(e.p1, e.p2, oppositePoint);
       this.addTriangle(new Triangle(insertedPoint, oppositePoint, e.p1));
       this.addTriangle(new Triangle(insertedPoint, oppositePoint, e.p2));
       this.legalizeEdge(insertedPoint, { p1: e.p1, p2: oppositePoint });
       this.legalizeEdge(insertedPoint, { p1: e.p2, p2: oppositePoint });
-      console.log()
     }
   }
 
   addTriangulationVertex(p) {
     const containingTriangles = this.findContainingTriangles(p);
-    console.log(`adding: ${p}`, 'containingTriangles', containingTriangles);
+    assert(containingTriangles.length > 0, 'Found no containing triangles');
     if (containingTriangles.length === 1) {
       // Point is inside one triangle
       const ct = containingTriangles[0];
@@ -280,7 +310,6 @@ export class TGraph extends Graph {
       this.addTriangle(new Triangle(ct.p1, ct.p2, p));
       this.addTriangle(new Triangle(ct.p1, p, ct.p3));
       this.addTriangle(new Triangle(p, ct.p2, ct.p3));
-      console.log(this.triangles)
       this.legalizeEdge(p, { p1: ct.p1, p2: ct.p2 });
       this.legalizeEdge(p, { p1: ct.p1, p2: ct.p3 });
       this.legalizeEdge(p, { p1: ct.p2, p2: ct.p3 });
@@ -300,6 +329,5 @@ export class TGraph extends Graph {
       this.legalizeEdge(p, { p1: cp.shared[1], p2: cp.unique[0] });
       this.legalizeEdge(p, { p1: cp.shared[1], p2: cp.unique[1] });
     }
-    console.log('after legalization triangles:', this.triangles)
   }
 }
