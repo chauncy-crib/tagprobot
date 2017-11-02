@@ -177,12 +177,13 @@ export class Triangle {
     const uniqueIdx = [true, true, true, true, true, true]; // assume all unique
     const sharedIdx = [false, false, false, false, false, false];
     for (let i = 0; i < 3; i += 1) {
-      for (let j = 3; j < 6; j += 1) {
+      let foundMatch = false;
+      for (let j = 3; j < 6 && !foundMatch; j += 1) {
         if (allPoints[i].equal(allPoints[j])) {
           uniqueIdx[i] = false;
           uniqueIdx[j] = false;
           sharedIdx[i] = true;
-          continue; // eslint-disable-line no-continue
+          foundMatch = true;
         }
       }
     }
