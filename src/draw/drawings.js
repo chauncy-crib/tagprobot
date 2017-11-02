@@ -20,6 +20,7 @@ import {
   KEY_ON_ALPHA,
   KEY_OFF_ALPHA,
   NAV_MESH_COLOR,
+  NAV_MESH_ALPHA,
   NAV_MESH_THICKNESS,
 } from '../constants';
 import { getDTGraph } from '../navmesh/triangulation';
@@ -326,10 +327,11 @@ function drawGraph(graph, thickness, color) {
   assert(_.isNil(graphSprite), 'graphSprite is not null');
   const graphGraphics = new PIXI.Graphics().lineStyle(thickness, color);
 
+  graphGraphics.alpha = NAV_MESH_ALPHA;
   _.forEach(graph.getEdges(), edge => {
     graphGraphics
-      .moveTo(edge.point1.x, edge.point1.y)
-      .lineTo(edge.point2.x, edge.point2.y);
+      .moveTo(edge.p1.x, edge.p1.y)
+      .lineTo(edge.p2.x, edge.p2.y);
   });
   _.forEach(graph.getVertices(), vertex => {
     graphGraphics.drawCircle(vertex.x, vertex.y, thickness / 2);

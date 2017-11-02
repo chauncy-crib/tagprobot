@@ -35,6 +35,7 @@ export const KEY_COLOR = 0x753daf; // purple
 export const KEY_ON_ALPHA = 0.75;
 export const KEY_OFF_ALPHA = 0.2;
 export const NAV_MESH_COLOR = 0x9400ff; // Purple
+export const NAV_MESH_ALPHA = 0.2; // Purple
 export const NAV_MESH_THICKNESS = 4; // Line thickness in pixels
 
 // Numbers of cells along the shortest path to lookeahead and seek toward
