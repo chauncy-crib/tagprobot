@@ -64,7 +64,7 @@ test('test neighbors have correct g values', t => {
 
   const state = new GameState(1, 1);
   state.g = 12;
-  _.each(state.neighbors(traversabilityCells), n => {
+  _.forEach(state.neighbors(traversabilityCells), n => {
     t.is(n.g, 13);
   });
   PathRewireAPI.__ResetDependency__('DIAGONAL');

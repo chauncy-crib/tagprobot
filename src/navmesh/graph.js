@@ -145,8 +145,8 @@ export class Graph {
 
   getEdges() {
     const edges = [];
-    _.each(this.vertices, p1 => {
-      _.each(this.adj[p1], p2 => {
+    _.forEach(this.vertices, p1 => {
+      _.forEach(this.adj[p1], p2 => {
         const edgeExists = _.some(edges, e => (
           (e.p1.equal(p1) && e.p2.equal(p2)) ||
           (e.p1.equal(p2) && e.p2.equal(p1))
