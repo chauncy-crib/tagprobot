@@ -5,6 +5,7 @@
     "jquery": true,
   },
   "rules": {
+    "prefer-destructuring": ["error", {VariableDeclarator: {object: true}}],
     "no-console": "off",
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "arrow-parens": ["error", "as-needed"],
