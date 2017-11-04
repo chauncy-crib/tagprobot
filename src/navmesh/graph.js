@@ -43,7 +43,7 @@ export function isLegal(insertedPoint, e, oppositePoint) {
   let p2;
   let p3;
   if (e.p2.x === e.p1.x) {
-    p1 = e.p1; // eslint-disable-line prefer-destructuring
+    p1 = e.p1;
     p2 = insertedPoint;
     p3 = e.p2;
   } else if (insertedPoint.x === e.p2.x) {
@@ -51,8 +51,8 @@ export function isLegal(insertedPoint, e, oppositePoint) {
     p2 = e.p1;
     p3 = insertedPoint;
   } else {
-    p1 = e.p1; // eslint-disable-line prefer-destructuring
-    p2 = e.p2; // eslint-disable-line prefer-destructuring
+    p1 = e.p1;
+    p2 = e.p2;
     p3 = insertedPoint;
   }
   assert(
