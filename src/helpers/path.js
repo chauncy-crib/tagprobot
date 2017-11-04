@@ -65,7 +65,7 @@ export class GameState {
       ]);
     }
     // assign g values of neighbors
-    _.each(potentialNeighbors, n => {
+    _.forEach(potentialNeighbors, n => {
       n.g = this.g + 1; // eslint-disable-line no-param-reassign
       n.parent = this; // eslint-disable-line no-param-reassign
     });
@@ -145,7 +145,7 @@ export function getShortestPath(me, target, traversabilityCells) {
     openList.delete(currState.key);
     closedList.add(currState.key);
     // iterate over neighbors
-    _.each(currState.neighbors(traversabilityCells), neighbor => {
+    _.forEach(currState.neighbors(traversabilityCells), neighbor => {
       // if the neighbor has been closed, don't add it to the fib heap
       if (closedList.has(neighbor.key)) {
         return;

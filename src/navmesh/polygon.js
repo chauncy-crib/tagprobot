@@ -192,7 +192,7 @@ export function mapToEdgeTiles(map) {
 export function unmergedGraphFromTagproMap(map) {
   const edgeTiles = mapToEdgeTiles(map);
   const graph = new Graph();
-  _.each(edgeTiles, tile => {
+  _.forEach(edgeTiles, tile => {
     const { xt, yt } = tile;
     const xp = xt * PPTL;
     const yp = yt * PPTL;
@@ -236,7 +236,7 @@ export function unmergedGraphFromTagproMap(map) {
  */
 export function graphFromTagproMap(map) {
   const unmergedGraph = unmergedGraphFromTagproMap(map);
-  _.each(unmergedGraph.getVertices(), v => {
+  _.forEach(unmergedGraph.getVertices(), v => {
     const neighbors = unmergedGraph.neighbors(v);
     for (let j = 0; j < neighbors.length; j += 1) {
       for (let k = j + 1; k < neighbors.length; k += 1) {
@@ -249,7 +249,7 @@ export function graphFromTagproMap(map) {
     }
   });
   // Remove all vertices that no longer have a neighbor
-  _.each(unmergedGraph.getVertices(), v => {
+  _.forEach(unmergedGraph.getVertices(), v => {
     if (unmergedGraph.neighbors(v).length === 0) {
       unmergedGraph.removeVertex(v);
     }

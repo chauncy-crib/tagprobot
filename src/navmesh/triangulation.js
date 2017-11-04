@@ -31,10 +31,10 @@ export function delaunayTriangulation(vertices, dummyPoint1, dummyPoint2) {
 
   const shuffledVertices = _.shuffle(_.without(vertices, highestP));
   // Check if dummy triangle contains each point
-  _.each(shuffledVertices, vertex => {
+  _.forEach(shuffledVertices, vertex => {
     assert(DTGraph.findContainingTriangles(vertex).length === 1);
   });
-  _.each(shuffledVertices, vertex => {
+  _.forEach(shuffledVertices, vertex => {
     DTGraph.addTriangulationVertex(vertex);
   });
   DTGraph.removeVertexAndTriangles(dummyPoint1);
