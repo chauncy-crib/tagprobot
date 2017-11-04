@@ -7,6 +7,22 @@
   "rules": {
     "no-console": "off",
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "prefer-destructuring": [
+      "error",
+      {
+        "VariableDeclarator": {
+          "array": false,
+          "object": true
+        },
+        "AssignmentExpression": {
+          "array": true,
+          "object": false
+        }
+      },
+      {
+        "enforceForRenamedProperties": false
+      }
+    ],
     "arrow-parens": ["error", "as-needed"],
     "no-underscore-dangle": "off",
     "max-len": ["error", 100, 2],
