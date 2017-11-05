@@ -196,32 +196,9 @@ export class Triangle {
    *   triangles, unique has all points contained in exactly one of the triangles
    */
   categorizePoints(other) {
+    const shared = _.intersectionBy(this.getPoints(), other.getPoints(), p => p.toString());
     const allPoints = this.getPoints().concat(other.getPoints());
-
-    // If uniqueIdx[i] is true, we will put allPoints[i] in unique
-    // If sharedIdx[i] is true, we will put allPoints[i] in shared
-    // Start by assuming all points are unique
-    const uniqueIdx = [true, true, true, true, true, true];
-    const sharedIdx = [false, false, false, false, false, false];
-    // Compare each of the first 3 points to each of the last 3 points
-    for (let i = 0; i < 3; i += 1) {
-      for (let j = 3; j < 6; j += 1) {
-        if (allPoints[i].equal(allPoints[j])) {
-          // If two points match, put neither in unique, and the first one in shared
-          uniqueIdx[i] = false;
-          uniqueIdx[j] = false;
-          sharedIdx[i] = true;
-          break;
-        }
-      }
-    }
-
-    const shared = [];
-    const unique = [];
-    for (let i = 0; i < 6; i += 1) {
-      if (uniqueIdx[i]) unique.push(allPoints[i]);
-      if (sharedIdx[i]) shared.push(allPoints[i]);
-    }
+    const unique = _.reject(allPoints, p => _.some(shared, s => s.equal(p)));
     return { shared, unique };
   }
 
