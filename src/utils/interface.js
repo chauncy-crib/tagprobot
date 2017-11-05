@@ -4,6 +4,7 @@ import {
   drawPermanentNTSprites,
   drawKeyPresses,
   currKeyPresses,
+  drawNavMesh,
 } from '../draw/drawings';
 
 
@@ -126,6 +127,7 @@ export function onKeyDown(event) {
         clearSprites();
       } else {
         drawPermanentNTSprites();
+        drawNavMesh();
       }
       break;
     }
