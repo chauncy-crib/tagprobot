@@ -24,6 +24,8 @@ export function getHighestPoint(vertices) {
  * @returns {Graph} graph of the triangulation of all the vertices
  */
 export function delaunayTriangulation(vertices, dummyPoint1, dummyPoint2) {
+  const numVertices = DTGraph.getVertices().length;
+  assert(DTGraph.getVertices().length === 0, `DTGraph had ${numVertices} vertices.`);
   const highestP = getHighestPoint(vertices);
 
   const t = new Triangle(highestP, dummyPoint1, dummyPoint2);
@@ -31,8 +33,11 @@ export function delaunayTriangulation(vertices, dummyPoint1, dummyPoint2) {
 
   const shuffledVertices = _.shuffle(_.without(vertices, highestP));
   // Check if dummy triangle contains each point
-  _.forEach(shuffledVertices, vertex => {
-    assert(DTGraph.findContainingTriangles(vertex).length === 1);
+  _.forEach(shuffledVertices, v => {
+    assert(
+      DTGraph.findContainingTriangles(v).length === 1,
+      `Dummy triangle did not contain point at ${v.x}, ${v.y}`,
+    );
   });
   _.forEach(shuffledVertices, vertex => {
     DTGraph.addTriangulationVertex(vertex);
