@@ -295,15 +295,17 @@ test('drawNavMesh()', tester => {
     DrawRewireAPI.__Rewire__('drawGraph', mockDrawGraph);
     DrawRewireAPI.__Rewire__('getDTGraph', mockGetDTGraph);
     DrawRewireAPI.__Rewire__('NAV_MESH_THICKNESS', 'thick');
-    DrawRewireAPI.__Rewire__('NAV_MESH_COLOR', 'brown');
+    DrawRewireAPI.__Rewire__('NAV_MESH_EDGE_COLOR', 'brown');
+    DrawRewireAPI.__Rewire__('NAV_MESH_VERTEX_COLOR', 'morebrown');
 
     drawNavMesh();
-    t.true(mockDrawGraph.calledWith(mockGraph, 'thick', 'brown'));
+    t.true(mockDrawGraph.calledWith(mockGraph, 'thick', 'brown', 'morebrown'));
 
     DrawRewireAPI.__ResetDependency__('drawGraph');
     DrawRewireAPI.__ResetDependency__('getDTGraph');
     DrawRewireAPI.__ResetDependency__('NAV_MESH_THICKNESS');
-    DrawRewireAPI.__ResetDependency__('NAV_MESH_COLOR');
+    DrawRewireAPI.__ResetDependency__('NAV_MESH_EDGE_COLOR');
+    DrawRewireAPI.__ResetDependency__('NAV_MESH_VERTEX_COLOR');
     t.end();
   });
   tester.end();

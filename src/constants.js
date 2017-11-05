@@ -31,11 +31,12 @@ export const PATH_ALPHA = 0.25;
 export const PATH_COLOR = 0x00ff00; // Green
 export const NT_ALPHA = 0.4;
 export const NT_COLOR = 0xff8c00; // Orange
-export const KEY_COLOR = 0x753daf; // purple
+export const KEY_COLOR = 0x753daf; // Purple
 export const KEY_ON_ALPHA = 0.75;
 export const KEY_OFF_ALPHA = 0.2;
-export const NAV_MESH_COLOR = 0x9400ff; // Purple
-export const NAV_MESH_ALPHA = 0.2; // Purple
+export const NAV_MESH_EDGE_COLOR = 0xff0090; // Pink
+export const NAV_MESH_VERTEX_COLOR = 0xa5005d; // Darker Pink
+export const NAV_MESH_ALPHA = 0.2;
 export const NAV_MESH_THICKNESS = 4; // Line thickness in pixels
 
 // Numbers of cells along the shortest path to lookeahead and seek toward

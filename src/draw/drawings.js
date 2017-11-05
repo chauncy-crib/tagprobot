@@ -19,7 +19,8 @@ import {
   KEY_COLOR,
   KEY_ON_ALPHA,
   KEY_OFF_ALPHA,
-  NAV_MESH_COLOR,
+  NAV_MESH_EDGE_COLOR,
+  NAV_MESH_VERTEX_COLOR,
   NAV_MESH_ALPHA,
   NAV_MESH_THICKNESS,
 } from '../constants';
@@ -323,9 +324,9 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
  * @param {number} thickness - thickness of the lines in pixels
  * @param {number} color - a hex color
  */
-function drawGraph(graph, thickness, color) {
+function drawGraph(graph, thickness, edgeColor, vertexColor) {
   assert(_.isNil(graphSprite), 'graphSprite is not null');
-  const graphGraphics = new PIXI.Graphics().lineStyle(thickness, color);
+  const graphGraphics = new PIXI.Graphics().lineStyle(thickness, edgeColor);
 
   graphGraphics.alpha = NAV_MESH_ALPHA;
   _.forEach(graph.getEdges(), edge => {
@@ -333,6 +334,8 @@ function drawGraph(graph, thickness, color) {
       .moveTo(edge.p1.x, edge.p1.y)
       .lineTo(edge.p2.x, edge.p2.y);
   });
+
+  graphGraphics.lineStyle(thickness, vertexColor);
   _.forEach(graph.getVertices(), vertex => {
     graphGraphics.drawCircle(vertex.x, vertex.y, thickness / 2);
   });
@@ -348,5 +351,5 @@ export function drawNavMesh() {
   if (!isVisualMode()) {
     return;
   }
-  drawGraph(getDTGraph(), NAV_MESH_THICKNESS, NAV_MESH_COLOR);
+  drawGraph(getDTGraph(), NAV_MESH_THICKNESS, NAV_MESH_EDGE_COLOR, NAV_MESH_VERTEX_COLOR);
 }
