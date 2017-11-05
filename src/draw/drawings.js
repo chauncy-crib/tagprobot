@@ -336,6 +336,7 @@ function drawGraph(graph, thickness, edgeColor, vertexColor) {
   });
 
   graphGraphics.lineStyle(thickness, vertexColor);
+
   _.forEach(graph.getVertices(), vertex => {
     graphGraphics.drawCircle(vertex.x, vertex.y, thickness / 2);
   });
