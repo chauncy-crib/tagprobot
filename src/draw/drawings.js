@@ -326,8 +326,9 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
  */
 function drawGraph(graph, thickness, edgeColor, vertexColor) {
   assert(_.isNil(graphSprite), 'graphSprite is not null');
-  const graphGraphics = new PIXI.Graphics().lineStyle(thickness, edgeColor);
+  const graphGraphics = new PIXI.Graphics();
 
+  graphGraphics.lineStyle(thickness, edgeColor);
   graphGraphics.alpha = NAV_MESH_ALPHA;
   _.forEach(graph.getEdges(), edge => {
     graphGraphics
