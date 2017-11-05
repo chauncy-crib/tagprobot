@@ -337,7 +337,7 @@ function drawGraph(graph, thickness, color) {
     graphGraphics.drawCircle(vertex.x, vertex.y, thickness / 2);
   });
 
-  tagpro.renderer.layers.background.addChild(graphGraphics);
+  tagpro.renderer.layers.foreground.addChild(graphGraphics);
   graphSprite = graphGraphics;
 }
 
