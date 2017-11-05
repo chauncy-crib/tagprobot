@@ -19,7 +19,6 @@ export function getHighestPoint(vertices) {
 
 
 /**
- * TODO treat p-1 and p-2 symbollically
  * @param {Point[]} vertices - array of all vertices
  * @returns {Graph} graph of the triangulation of all the vertices
  */

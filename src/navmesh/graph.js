@@ -36,8 +36,16 @@ export class Point {
 }
 
 
+/**
+ * Checks if edge e is delaunay-legal with respect to the inserted point
+ * @param {Point} insertedPoint - the point being added to the triangulation
+ * @param {{p1: Point, p2: Point}} e - the edge we are checking for legality
+ * @param {Point} oppositePoint - The third point of the adjacent triangle to e.p1, e.p2,
+ *   insertedPoint
+ * @returns {boolean} true if the opposite point is not inside the circle which touches e.p1, e.p2,
+ *   insertedPoint
+ */
 export function isLegal(insertedPoint, e, oppositePoint) {
-  // TODO: do this with a matrix determinant per wiki article
   // Assign p1, p2, p3 such that the slopes of the lines p1p2 and p2p3 are not infinite
   let p1;
   let p2;
@@ -169,16 +177,27 @@ export class Triangle {
   }
 
   getPoints() {
-    return new Set([this.p1, this.p2, this.p3]);
+    return [this.p1, this.p2, this.p3];
   }
 
+  /**
+   * @param {Triangle} other
+   * @returns {{shared: Point[], unique: Point[]}} shared contains all points which appear in both
+   *   triangles, unique has all points contained in exactly one of the triangles
+   */
   categorizePoints(other) {
-    const allPoints = [this.p1, this.p2, this.p3, other.p1, other.p2, other.p3];
-    const uniqueIdx = [true, true, true, true, true, true]; // assume all unique
+    const allPoints = this.getPoints().concat(other.getPoints());
+
+    // If uniqueIdx[i] is true, we will put allPoints[i] in unique
+    // If sharedIdx[i] is true, we will put allPoints[i] in shared
+    // Start by assuming all points are unique
+    const uniqueIdx = [true, true, true, true, true, true];
     const sharedIdx = [false, false, false, false, false, false];
+    // Compare each of the first 3 points to each of the last 3 points
     for (let i = 0; i < 3; i += 1) {
       for (let j = 3; j < 6; j += 1) {
         if (allPoints[i].equal(allPoints[j])) {
+          // If two points match, put neither in unique, and the first one in shared
           uniqueIdx[i] = false;
           uniqueIdx[j] = false;
           sharedIdx[i] = true;
@@ -186,6 +205,7 @@ export class Triangle {
         }
       }
     }
+
     const shared = [];
     const unique = [];
     for (let i = 0; i < 6; i += 1) {
@@ -204,12 +224,20 @@ export class Triangle {
 }
 
 
+/*
+ * Extend the Graph class to represent the delaunay triangles. Contains triangle objects in addition
+ * to edges and vertices
+ */
 export class TGraph extends Graph {
   constructor() {
     super();
     this.triangles = new Set();
   }
 
+  /**
+   * @param {Point} p
+   * @returns {Triangle[]} all triangles in the triangulation containing the point
+   */
   findContainingTriangles(p) {
     const containingTriangles = [];
     this.triangles.forEach(t => {
@@ -245,6 +273,13 @@ export class TGraph extends Graph {
     this.addEdgeAndVertices(t.p2, t.p3);
   }
 
+  /**
+   * @param {Point} p1
+   * @param {Point} p2
+   * @param {Point} p3
+   * @returns {Triangle} a reference to the triangle which has the same location as the three input
+   *   points
+   */
   findTriangle(p1, p2, p3) {
     const r = new Triangle(p1, p2, p3);
     let res = null;
@@ -254,6 +289,9 @@ export class TGraph extends Graph {
     return res;
   }
 
+  /**
+   * Remove all triangles and the associated edges connected to a point
+   */
   removeVertexAndTriangles(p) {
     this.triangles.forEach(t => {
       // remove all triangles connected to the point
@@ -297,6 +335,9 @@ export class TGraph extends Graph {
     return _.isEmpty(oppositePoint) ? null : oppositePoint[0];
   }
 
+  /**
+   * If the edge e is not delaunay-legal, flip it, and recursively legalize the resulting triangles
+   */
   legalizeEdge(insertedPoint, e) {
     const oppositePoint = this.findOppositePoint(insertedPoint, e);
     if (oppositePoint && !isLegal(insertedPoint, e, oppositePoint)) {
@@ -309,6 +350,10 @@ export class TGraph extends Graph {
     }
   }
 
+  /**
+   * Adds the point to the triangulation. Ensures the triangulation is delaunay-legal after
+   *   insertion
+   */
   addTriangulationVertex(p) {
     const containingTriangles = this.findContainingTriangles(p);
     assert(
