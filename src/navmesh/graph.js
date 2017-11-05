@@ -46,6 +46,9 @@ export class Point {
  *   insertedPoint
  */
 export function isLegal(insertedPoint, e, oppositePoint) {
+  // Calculate location of circle touching e.p1, e.2, inserted point using equations from
+  // http://paulbourke.net/geometry/circlesphere/
+
   // Assign p1, p2, p3 such that the slopes of the lines p1p2 and p2p3 are not infinite
   let p1;
   let p2;
@@ -67,19 +70,26 @@ export function isLegal(insertedPoint, e, oppositePoint) {
     p2.x !== p1.x && p2.x !== p3.x,
     'Drawing a line between two points resulted in an infinite slope',
   );
+
+  // The slope of the lines between p1p2 and p2p3
   const ma = (p2.y - p1.y) / (p2.x - p1.x);
   const mb = (p3.y - p2.y) / (p3.x - p2.x);
   assert(ma !== mb, `Lines had parallel slope: ${ma}`);
+
+  // Calculate the x-coordinate of the center of the circle
   const centerX = (
     (ma * mb * (p1.y - p3.y)) + (mb * (p1.x + p2.x)) + (-ma * (p2.x + p3.x))) /
     (2 * (mb - ma)
     );
+  // Calculate the y-coordinate of the center of the circle
   let centerY;
   if (ma !== 0) { // if line A has a non-horizantal slope, use it to calculate centerY
     centerY = ((-1 / ma) * (centerX - ((p1.x + p2.x) / 2))) + ((p1.y + p2.y) / 2);
   } else { // otherwise, use line B
     centerY = ((-1 / mb) * (centerX - ((p2.x + p3.x) / 2))) + ((p2.y + p3.y) / 2);
   }
+
+  // Check if opposite point is inside the circle
   const centerPoint = new Point(centerX, centerY);
   const radiusSquared = centerPoint.distanceSquared(p1);
   return centerPoint.distanceSquared(oppositePoint) >= radiusSquared;
