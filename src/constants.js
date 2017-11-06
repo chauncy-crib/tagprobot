@@ -38,6 +38,9 @@ export const NAV_MESH_EDGE_COLOR = 0xff0090; // Pink
 export const NAV_MESH_VERTEX_COLOR = 0xa5005d; // Darker Pink
 export const NAV_MESH_ALPHA = 0.2;
 export const NAV_MESH_THICKNESS = 4; // Line thickness in pixels
+export const TRIANGULATION_EDGE_COLOR = 0x006600; // Turquoise
+export const TRIANGULATION_ALPHA = 0.2;
+export const TRIANGULATION_THICKNESS = 4; // Line thickness in pixels
 
 // Numbers of cells along the shortest path to lookeahead and seek toward
 export const LOOKAHEAD = 3;
