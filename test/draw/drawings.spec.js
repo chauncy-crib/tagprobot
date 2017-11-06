@@ -97,7 +97,14 @@ test('updatePath', tester => {
 test('clearSprites', tester => {
   tester.test('removes all sprites in permNTSprites, pathSprites, and tempNTSprites', t => {
     const mockRemoveChild = sinon.spy();
-    global.tagpro = { renderer: { layers: { background: { removeChild: mockRemoveChild } } } };
+    global.tagpro = {
+      renderer: {
+        layers: {
+          background: { removeChild: mockRemoveChild },
+          foreground: { removeChild: mockRemoveChild },
+        },
+      },
+    };
 
     DrawRewireAPI.__Rewire__('permNTSprites', [1, 2]);
     DrawRewireAPI.__Rewire__('pathSprites', [3, 4]);
