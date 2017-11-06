@@ -92,8 +92,8 @@ function getPixiSquare(xp, yp, size, alpha, color) {
 
 /**
  * Places the key presses visualization in the correct spot relative to the current screen size.
- * This is used to correct the placement of the key presses visualization if the user dynamically
- * resized their screen.
+ *   This is used to correct the placement of the key presses visualization if the user dynamically
+ *   resized their screen.
  */
 function centerKeyPressesVis() {
   const viewport = $('#viewport');
@@ -107,9 +107,9 @@ function centerKeyPressesVis() {
 
 /**
  * The tagpro object has a function that is called every time the user interface needs to be
- * updated (this function is defined at tagpro.ui.update). We have made additions to the UI that now
- * need to be updated along with the rest of the builtin TagPro UI. This initUiUpdateProcess
- * function appends our own custom commands to the tagpro builtin UI update commands.
+ *   updated (this function is defined at tagpro.ui.update). We have made additions to the UI that
+ *   now need to be updated along with the rest of the builtin TagPro UI. This initUiUpdateProcess
+ *   function appends our own custom commands to the tagpro builtin UI update commands.
  */
 export function initUiUpdateProcess() {
   const updateUi = tagpro.ui.update;
@@ -121,11 +121,11 @@ export function initUiUpdateProcess() {
 
 
 /**
- * Creates the PIXI object that holds the key press visualizations and draws the initial keys.
+ * Removes all children from the global keyPressesVis and draws the visualization to look like no
+ *   keys are being pressed.
  */
-export function initKeyPressesVisualization() {
-  keyPressesVis = new PIXI.DisplayObjectContainer();
-  tagpro.renderer.layers.ui.addChild(keyPressesVis);
+export function drawBlankKeyPresses() {
+  keyPressesVis.removeChildren();
   keyPressesVis.addChildAt(
     getPixiSquare(-(1.5 * keySize) - keyGap, 0, keySize, KEY_OFF_ALPHA, KEY_COLOR),
     leftKeyIndex,
@@ -142,6 +142,19 @@ export function initKeyPressesVisualization() {
     getPixiSquare(-(0.5 * keySize), -keySize - keyGap, keySize, KEY_OFF_ALPHA, KEY_COLOR),
     upKeyIndex,
   );
+  // Set currKeyPresses to reflect the state of the drawing
+  currKeyPresses.x = null;
+  currKeyPresses.y = null;
+}
+
+
+/**
+ * Creates the PIXI object that holds the key press visualizations and draws the initial keys.
+ */
+export function initKeyPressesVisualization() {
+  keyPressesVis = new PIXI.DisplayObjectContainer();
+  tagpro.renderer.layers.ui.addChild(keyPressesVis);
+  drawBlankKeyPresses();
 }
 
 
@@ -234,17 +247,18 @@ export function updatePath(path) {
  *   tempNTSprites to empty list. Runtime: O(N^2)
  */
 export function clearSprites() {
-  // get a list of all sprites
+  // Get a list of all sprites
   const allSprites = permNTSprites
     .concat(pathSprites)
-    // flatten the tempNTSprites grid, and remove null values
-    // O(N^2), because tempNTSprites is NxN
+    .concat(graphSprite || [])
+    // Flatten the tempNTSprites grid, and remove null values. O(N^2), because tempNTSprites is NxN
     .concat(_.reject(_.flatten(tempNTSprites), _.isNull));
   _.forEach(allSprites, s => tagpro.renderer.layers.background.removeChild(s));
   tagpro.renderer.layers.foreground.removeChild(graphSprite);
   pathSprites = [];
   tempNTSprites = [];
   graphSprite = null;
+  if (keyPressesVis) keyPressesVis.removeChildren(); // clear the keypresses visualization
 }
 
 
@@ -269,7 +283,7 @@ export function generatePermanentNTSprites(xt, yt, cellTraversabilities) {
   for (let i = xt * CPTL; i < (xt + 1) * CPTL; i++) {
     for (let j = yt * CPTL; j < (yt + 1) * CPTL; j++) {
       // if we don't have a sprite already there and there should be one,
-      // draw it
+      //   draw it
       if (!cellTraversabilities[i][j]) {
         const sprite = getPixiSquare(i * PPCL, j * PPCL, PPCL, NT_ALPHA, NT_COLOR);
         permNTSprites.push(sprite);
@@ -318,6 +332,7 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
   }
 }
 
+
 /*
  * Draws edges and vertices of a graph class with a certain thickness and color. Runtime: O(E)
  * @param {Graph} graph - graph to draw
@@ -343,6 +358,7 @@ function drawGraph(graph, thickness, edgeColor, vertexColor) {
   tagpro.renderer.layers.foreground.addChild(graphGraphics);
   graphSprite = graphGraphics;
 }
+
 
 /*
  * Draws the navigation mesh lines on the tagpro map. Runtime: O(E), O(1) if visualizations off
