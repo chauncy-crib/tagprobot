@@ -195,6 +195,24 @@ export class Triangle {
     this.p3 = p3;
   }
 
+  /**
+   * @returns {Point} the center point of the triangle
+   */
+  getCenter() {
+    return new Point(
+      (this.p1.x + this.p2.x + this.p3.x) / 3,
+      (this.p1.y + this.p2.y + this.p3.y) / 3,
+    );
+  }
+
+  getEdgeCenters() {
+    return [
+      new Point((this.p1.x + this.p2.x) / 2, (this.p1.y + this.p2.y) / 2),
+      new Point((this.p2.x + this.p3.x) / 2, (this.p2.y + this.p3.y) / 2),
+      new Point((this.p1.x + this.p3.x) / 2, (this.p1.y + this.p3.y) / 2),
+    ];
+  }
+
   getPoints() {
     return [this.p1, this.p2, this.p3];
   }
@@ -228,6 +246,41 @@ export class TGraph extends Graph {
   constructor() {
     super();
     this.triangles = new Set();
+    this.polypoints = new Graph();
+  }
+
+  calculatePolypointGraph() {
+    this.triangles.forEach(triangle => {
+      // For adding a polypoint in center of triangle
+      const triangleCenter = triangle.getCenter();
+      this.polypoints.addVertex(triangleCenter);
+      _.forEach(this.getAdjacentTriangles(triangle), t => {
+        const adjCenter = t.getCenter();
+        this.polypoints.addVertex(adjCenter);
+        this.polypoints.addEdge(triangleCenter, adjCenter);
+      });
+      // Connect edge centers to triangle center
+      // const edgeCenters = triangle.getEdgeCenters();
+      // _.forEach(edgeCenters, ep => {
+      //   this.polypoints.addVertex(ep);
+      //   this.polypoints.addEdge(ep, triangleCenter);
+      // });
+      // Connect all edge centers to eachother
+      // this.polypoints.addEdge(edgeCenters[0], edgeCenters[1]);
+      // this.polypoints.addEdge(edgeCenters[0], edgeCenters[2]);
+      // this.polypoints.addEdge(edgeCenters[1], edgeCenters[2]);
+    });
+  }
+
+  getAdjacentTriangles(t) {
+    const res = [];
+    const op1 = this.findOppositePoint(t.p1, { p1: t.p2, p2: t.p3 });
+    const op2 = this.findOppositePoint(t.p2, { p1: t.p1, p2: t.p3 });
+    const op3 = this.findOppositePoint(t.p3, { p1: t.p1, p2: t.p2 });
+    if (op3) res.push(this.findTriangle(t.p1, t.p2, op3));
+    if (op2) res.push(this.findTriangle(t.p1, t.p3, op2));
+    if (op1) res.push(this.findTriangle(t.p2, t.p3, op1));
+    return res;
   }
 
   /**
