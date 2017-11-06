@@ -1,5 +1,10 @@
 import test from 'tape';
 import { isLegal, Point, Triangle, TGraph } from '../../src/navmesh/graph';
+import {
+  delaunayTriangulation,
+  getDTGraph,
+  __RewireAPI__ as TriangulationRewireAPI,
+} from '../../src/navmesh/triangulation';
 
 
 test('isLegal', tester => {

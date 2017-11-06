@@ -23,6 +23,9 @@ import {
   NAV_MESH_VERTEX_COLOR,
   NAV_MESH_ALPHA,
   NAV_MESH_THICKNESS,
+  TRIANGULATION_EDGE_COLOR,
+  TRIANGULATION_ALPHA,
+  TRIANGULATION_THICKNESS,
 } from '../constants';
 import { getDTGraph } from '../navmesh/triangulation';
 import { init2dArray } from '../helpers/map';
@@ -40,6 +43,9 @@ const permNTSprites = [];
 
 // The sprite for the triangulation graph
 let triangulationSprite;
+
+// The sprite for the polypoint graph
+let polypointSprite;
 
 // The current state of the keys being pressed
 export const currKeyPresses = { x: null, y: null };
@@ -242,11 +248,13 @@ export function clearSprites() {
     .concat(_.reject(_.flatten(tempNTSprites), _.isNull));
   _.forEach(backgroundSprites, s => tagpro.renderer.layers.background.removeChild(s));
   const foregroundSprites = []
-    .concat(triangulationSprite || []);
+    .concat(triangulationSprite || [])
+    .concat(polypointSprite || []);
   _.forEach(foregroundSprites, s => tagpro.renderer.layers.foreground.removeChild(s));
   pathSprites = [];
   tempNTSprites = [];
   triangulationSprite = null;
+  polypointSprite = null;
 }
 
 
@@ -325,25 +333,27 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
  * @param {Graph} graph - graph to draw
  * @param {number} thickness - thickness of the lines in pixels
  * @param {number} color - a hex color
+ * @param {number} alpha - an alpha value
  */
-function drawGraph(graph, thickness, edgeColor, vertexColor) {
-  assert(_.isNil(triangulationSprite), 'triangulationSprite is not null');
+function drawGraph(graph, thickness, edgeColor, vertexColor, alpha, drawVertices = true) {
   const graphGraphics = new PIXI.Graphics();
 
-  graphGraphics.lineStyle(thickness, edgeColor, NAV_MESH_ALPHA);
+  graphGraphics.lineStyle(thickness, edgeColor, alpha);
   _.forEach(graph.getEdges(), edge => {
     graphGraphics
       .moveTo(edge.p1.x, edge.p1.y)
       .lineTo(edge.p2.x, edge.p2.y);
   });
 
-  graphGraphics.lineStyle(thickness, vertexColor);
-  _.forEach(graph.getVertices(), vertex => {
-    graphGraphics.drawCircle(vertex.x, vertex.y, thickness / 2);
-  });
+  if (drawVertices) {
+    graphGraphics.lineStyle(thickness, vertexColor, alpha);
+    _.forEach(graph.getVertices(), vertex => {
+      graphGraphics.drawCircle(vertex.x, vertex.y, thickness);
+    });
+  }
 
   tagpro.renderer.layers.foreground.addChild(graphGraphics);
-  triangulationSprite = graphGraphics;
+  return graphGraphics;
 }
 
 /*
@@ -353,5 +363,15 @@ export function drawNavMesh() {
   if (!isVisualMode()) {
     return;
   }
-  drawGraph(getDTGraph(), NAV_MESH_THICKNESS, NAV_MESH_EDGE_COLOR, NAV_MESH_VERTEX_COLOR);
+  assert(_.isNil(triangulationSprite), 'graphSprite is not null');
+  triangulationSprite = drawGraph(
+    getDTGraph(),
+    NAV_MESH_THICKNESS, NAV_MESH_EDGE_COLOR, NAV_MESH_VERTEX_COLOR, NAV_MESH_ALPHA,
+  );
+  assert(_.isNil(polypointSprite), 'polypointSprite is not null');
+  polypointSprite = drawGraph(
+    getDTGraph().polypoints,
+    TRIANGULATION_THICKNESS, TRIANGULATION_EDGE_COLOR, null,
+    TRIANGULATION_ALPHA, false,
+  );
 }

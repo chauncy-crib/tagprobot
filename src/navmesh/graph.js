@@ -186,6 +186,24 @@ export class Triangle {
     this.p3 = p3;
   }
 
+  /**
+   * @returns {Point} the center point of the triangle
+   */
+  getCenter() {
+    return new Point(
+      (this.p1.x + this.p2.x + this.p3.x) / 3,
+      (this.p1.y + this.p2.y + this.p3.y) / 3,
+    );
+  }
+
+  getEdgeCenters() {
+    return [
+      new Point((this.p1.x + this.p2.x) / 2, (this.p1.y + this.p2.y) / 2),
+      new Point((this.p2.x + this.p3.x) / 2, (this.p2.y + this.p3.y) / 2),
+      new Point((this.p1.x + this.p3.x) / 2, (this.p1.y + this.p3.y) / 2),
+    ];
+  }
+
   getPoints() {
     return [this.p1, this.p2, this.p3];
   }
@@ -219,6 +237,25 @@ export class TGraph extends Graph {
   constructor() {
     super();
     this.triangles = new Set();
+    this.polypoints = new Graph();
+  }
+
+  calculatePolypointGraph() {
+    this.triangles.forEach(triangle => {
+      // for adding a polypoint in center of triangle
+      const triangleCenter = triangle.getCenter();
+      this.polypoints.addVertex(triangleCenter);
+      const edgeCenters = triangle.getEdgeCenters();
+      // connect edge centers to triangle center
+      _.forEach(edgeCenters, ep => {
+        this.polypoints.addVertex(ep);
+        this.polypoints.addEdge(ep, triangleCenter);
+      });
+      // connect all edge centers to eachother
+      // this.polypoints.addEdge(edgeCenters[0], edgeCenters[1]);
+      // this.polypoints.addEdge(edgeCenters[0], edgeCenters[2]);
+      // this.polypoints.addEdge(edgeCenters[1], edgeCenters[2]);
+    });
   }
 
   /**
