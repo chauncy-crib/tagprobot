@@ -2,6 +2,7 @@ import differenceInMilliseconds from 'date-fns/difference_in_milliseconds';
 import {
   clearSprites,
   drawPermanentNTSprites,
+  drawBlankKeyPresses,
   drawKeyPresses,
   currKeyPresses,
   drawNavMesh,
@@ -95,7 +96,7 @@ function press(directions) {
     tagpro.sendKeyPress('up', directions.y !== 'UP');
   }
 
-  drawKeyPresses(directions); // only updates drawings that need to be updated
+  if (isVisualMode()) drawKeyPresses(directions); // only updates drawings that need to be updated
 
   // Update the global key presses state
   currKeyPresses.x = directions.x;
@@ -127,6 +128,7 @@ export function onKeyDown(event) {
         clearSprites();
       } else {
         drawPermanentNTSprites();
+        drawBlankKeyPresses();
         drawNavMesh();
       }
       break;
