@@ -78,9 +78,9 @@ export function isLegal(insertedPoint, e, oppositePoint) {
 
   // Calculate the x-coordinate of the center of the circle
   const centerX = (
-    (ma * mb * (p1.y - p3.y)) + (mb * (p1.x + p2.x)) + (-ma * (p2.x + p3.x))) /
-    (2 * (mb - ma)
-    );
+    ((ma * mb * (p1.y - p3.y)) + (mb * (p1.x + p2.x)) + (-ma * (p2.x + p3.x))) /
+    (2 * (mb - ma))
+  );
   // Calculate the y-coordinate of the center of the circle
   let centerY;
   if (ma !== 0) { // if line A has a non-horizantal slope, use it to calculate centerY
