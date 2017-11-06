@@ -46,6 +46,8 @@ test('delaunayTriangulation()', tester => {
     t.is(DTGraph.getEdges().length, 5);
     t.is(DTGraph.getVertices().length, 4);
     t.is(DTGraph.triangles.size, 2);
+    t.is(DTGraph.polypoints.getVertices().length, 2);
+    t.is(DTGraph.polypoints.getEdges().length, 1);
     TriangulationRewireAPI.__ResetDependency__('DTGraph');
 
     t.end();
@@ -72,6 +74,8 @@ test('delaunayTriangulation()', tester => {
     t.is(DTGraph.getEdges().length, 5);
     t.is(DTGraph.getVertices().length, 4);
     t.is(DTGraph.triangles.size, 2);
+    t.is(DTGraph.polypoints.getVertices().length, 2);
+    t.is(DTGraph.polypoints.getEdges().length, 1);
     TriangulationRewireAPI.__ResetDependency__('DTGraph');
 
     t.end();
@@ -92,6 +96,31 @@ test('delaunayTriangulation()', tester => {
     t.is(DTGraph.triangles.size, 2);
     TriangulationRewireAPI.__ResetDependency__('DTGraph');
 
+    t.end();
+  });
+
+  tester.test('creates correct polypoints and polyedges', t => {
+    const mockDTGraph = new TGraph();
+    TriangulationRewireAPI.__Rewire__('DTGraph', mockDTGraph);
+    const p1 = new Point(0, 0);
+    const p2 = new Point(0, 12);
+    const p3 = new Point(12, 0);
+    const p4 = new Point(12, 12);
+    const vertices = [p1, p2, p3, p4];
+    delaunayTriangulation(vertices, new Point(-200, -5), new Point(20, 200));
+    const pp = getDTGraph().polypoints;
+
+    // there are two valid triangulations for a square of vertices
+    // (can draw the diagonal line two ways)
+    const valid1 = pp.hasVertex(new Point(4, 8)) && pp.hasVertex(new Point(8, 4));
+    const valid2 = pp.hasVertex(new Point(4, 4)) && pp.hasVertex(new Point(8, 8));
+    t.is(pp.getVertices().length, 2);
+    t.is(pp.getEdges().length, 1);
+    t.true(valid1 || valid2);
+    if (valid1) t.true(pp.isConnected(new Point(4, 8), new Point(8, 4)));
+    if (valid2) t.true(pp.isConnected(new Point(4, 4), new Point(8, 8)));
+
+    TriangulationRewireAPI.__ResetDependency__('DTGraph');
     t.end();
   });
 
