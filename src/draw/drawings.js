@@ -38,8 +38,8 @@ let tempNTSprites = [];
 // A list of permanent NT sprites. Will always be on map (if visualizations are on)
 const permNTSprites = [];
 
-// A Graph class sprite
-let graphSprite;
+// The sprite for the triangulation graph
+let triangulationSprite;
 
 // The current state of the keys being pressed
 export const currKeyPresses = { x: null, y: null };
@@ -235,16 +235,18 @@ export function updatePath(path) {
  */
 export function clearSprites() {
   // get a list of all sprites
-  const allSprites = permNTSprites
+  const backgroundSprites = permNTSprites
     .concat(pathSprites)
     // flatten the tempNTSprites grid, and remove null values
     // O(N^2), because tempNTSprites is NxN
     .concat(_.reject(_.flatten(tempNTSprites), _.isNull));
-  _.forEach(allSprites, s => tagpro.renderer.layers.background.removeChild(s));
-  tagpro.renderer.layers.foreground.removeChild(graphSprite);
+  _.forEach(backgroundSprites, s => tagpro.renderer.layers.background.removeChild(s));
+  const foregroundSprites = []
+    .concat(triangulationSprite || []);
+  _.forEach(foregroundSprites, s => tagpro.renderer.layers.foreground.removeChild(s));
   pathSprites = [];
   tempNTSprites = [];
-  graphSprite = null;
+  triangulationSprite = null;
 }
 
 
@@ -325,7 +327,7 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
  * @param {number} color - a hex color
  */
 function drawGraph(graph, thickness, edgeColor, vertexColor) {
-  assert(_.isNil(graphSprite), 'graphSprite is not null');
+  assert(_.isNil(triangulationSprite), 'triangulationSprite is not null');
   const graphGraphics = new PIXI.Graphics();
 
   graphGraphics.lineStyle(thickness, edgeColor, NAV_MESH_ALPHA);
@@ -341,7 +343,7 @@ function drawGraph(graph, thickness, edgeColor, vertexColor) {
   });
 
   tagpro.renderer.layers.foreground.addChild(graphGraphics);
-  graphSprite = graphGraphics;
+  triangulationSprite = graphGraphics;
 }
 
 /*
