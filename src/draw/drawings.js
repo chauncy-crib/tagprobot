@@ -237,11 +237,11 @@ export function clearSprites() {
   // get a list of all sprites
   const allSprites = permNTSprites
     .concat(pathSprites)
-    .concat(graphSprite || [])
     // flatten the tempNTSprites grid, and remove null values
     // O(N^2), because tempNTSprites is NxN
     .concat(_.reject(_.flatten(tempNTSprites), _.isNull));
   _.forEach(allSprites, s => tagpro.renderer.layers.background.removeChild(s));
+  tagpro.renderer.layers.foreground.removeChild(graphSprite);
   pathSprites = [];
   tempNTSprites = [];
   graphSprite = null;
