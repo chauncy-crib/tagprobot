@@ -43,7 +43,7 @@ export function delaunayTriangulation(vertices, dummyPoint1, dummyPoint2) {
   });
   DTGraph.removeVertexAndTriangles(dummyPoint1);
   DTGraph.removeVertexAndTriangles(dummyPoint2);
-  return shuffledVertices;
+  DTGraph.calculatePolypointGraph();
 }
 
 

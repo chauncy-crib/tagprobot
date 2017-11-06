@@ -46,6 +46,8 @@ test('delaunayTriangulation()', tester => {
     t.is(DTGraph.getEdges().length, 5);
     t.is(DTGraph.getVertices().length, 4);
     t.is(DTGraph.triangles.size, 2);
+    t.is(DTGraph.polypoints.getVertices().length, 2);
+    t.is(DTGraph.polypoints.getEdges().length, 1);
     TriangulationRewireAPI.__ResetDependency__('DTGraph');
 
     t.end();
@@ -72,6 +74,8 @@ test('delaunayTriangulation()', tester => {
     t.is(DTGraph.getEdges().length, 5);
     t.is(DTGraph.getVertices().length, 4);
     t.is(DTGraph.triangles.size, 2);
+    t.is(DTGraph.polypoints.getVertices().length, 2);
+    t.is(DTGraph.polypoints.getEdges().length, 1);
     TriangulationRewireAPI.__ResetDependency__('DTGraph');
 
     t.end();
