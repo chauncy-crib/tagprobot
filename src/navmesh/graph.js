@@ -126,16 +126,21 @@ export class Graph {
     this.adj[p2] = _.reject(this.adj[p2], p => p.equal(p1));
   }
 
-  // User is responsible for clearing edges comming from vertex
   removeVertex(vertex) {
+    // clear all edges attached to the vertex
+    _.forEach(this.adj[vertex], a => {
+      this.adj[a] = _.reject(this.adj[a], v => vertex.equal(v));
+    });
+    // remove the vertex
     delete this.adj[vertex];
     this.vertices = _.reject(this.vertices, v => vertex.equal(v));
   }
 
   isConnected(p1, p2) {
+    if (!this.hasVertex(p1) || !this.hasVertex(p2)) return false;
     const N = this.neighbors(p1);
     // Return true if any of p1's neighbors are equal to p2
-    return _.some(_.map(N, n => n.equal(p2)));
+    return _.some(N, n => n.equal(p2));
   }
 
   /**
@@ -143,6 +148,10 @@ export class Graph {
    */
   neighbors(p) {
     return this.adj[p];
+  }
+
+  hasVertex(p) {
+    return _.has(this.adj, p);
   }
 
   addVertex(point) {
