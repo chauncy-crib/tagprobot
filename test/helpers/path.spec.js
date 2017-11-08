@@ -85,7 +85,7 @@ test('test getShortestPath returns shortest path without diagonals', t => {
     { xc: 0, yc: 2 },
     inputMap,
   );
-  t.equal(shortestPath.length, 14);
+  t.equal(shortestPath.length, 15);
   PathRewireAPI.__ResetDependency__('DIAGONAL');
 
   t.end();
@@ -106,7 +106,7 @@ test('getShortestPath()', tester => {
       { xc: 0, yc: 2 },
       inputMap,
     );
-    t.equal(shortestDiagonalPath.length, 10);
+    t.equal(shortestDiagonalPath.length, 11);
     PathRewireAPI.__ResetDependency__('DIAGONAL');
 
     t.end();
@@ -191,7 +191,7 @@ test('getShortestPath()', tester => {
       { xc: 8, yc: 28 },
       map,
     );
-    t.is(shortestDiagonalPath.length, 62);
+    t.is(shortestDiagonalPath.length, 63);
     PathRewireAPI.__ResetDependency__('DIAGONAL');
 
     t.end();

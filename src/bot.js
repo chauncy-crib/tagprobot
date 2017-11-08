@@ -81,7 +81,7 @@ function getAccelValues() {
 
   const target = { xp: me.x + BRP, yp: me.y + BRP };
   if (shortestPath) {
-    const targetCell = shortestPath[Math.min(LOOKAHEAD, shortestPath.length - 1)];
+    const targetCell = shortestPath[Math.min(LOOKAHEAD + 1, shortestPath.length - 1)];
     target.xp = Math.floor((targetCell.xc + 0.5) * PPCL);
     target.yp = Math.floor((targetCell.yc + 0.5) * PPCL);
   } else {

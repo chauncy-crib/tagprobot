@@ -93,7 +93,7 @@ export class GameState {
 function constructPath(finalState) {
   const path = [];
   let state = finalState;
-  while (state.parent) {
+  while (state) {
     path.push(state);
     state = state.parent;
   }
@@ -101,27 +101,7 @@ function constructPath(finalState) {
   return path;
 }
 
-
-/**
- * Takes in current location and target location (eg, the location of the flag) and the map
- *   represented as a grid of 1 and 0, where 1s are traversable and 0s are not. Uses A* to calculate
- *   the best path
- * @param {Object} me - object with bot's position in cells, xc and yc
- * @param {Object} target - object with target's position in cells, xc and yc
- * @param {number} traversabilityCells - 2D array of cells. Traversable cells are 1s, others are 0.
- */
-export function getShortestPath(me, target, traversabilityCells) {
-  assert(_.has(me, 'xc'));
-  assert(_.has(me, 'yc'));
-  assert(_.has(target, 'xc'));
-  assert(_.has(target, 'yc'));
-
-  assertGridInBounds(traversabilityCells, me.xc, me.yc);
-  assertGridInBounds(traversabilityCells, target.xc, target.yc);
-
-  const startState = new GameState(me.xc, me.yc);
-  const targetState = new GameState(target.xc, target.yc);
-
+export function runAstar(startState, targetState, neighborParam) {
   // keep track of potential game states in a fibonacci heap, where the key is the f-cost for the
   // state, and value is the GameState object
   const fibHeap = new FibonacciHeap();
@@ -131,7 +111,9 @@ export function getShortestPath(me, target, traversabilityCells) {
   const closedList = new Set();
 
   // start with the current state in the fibonacci heap
+  // eslint-disable-next-line no-param-reassign
   startState.g = 0;
+  // eslint-disable-next-line no-param-reassign
   startState.f = startState.g + startState.heuristic(targetState);
   fibHeap.insert(startState.f, startState);
 
@@ -145,7 +127,7 @@ export function getShortestPath(me, target, traversabilityCells) {
     openList.delete(currState.key);
     closedList.add(currState.key);
     // iterate over neighbors
-    _.forEach(currState.neighbors(traversabilityCells), neighbor => {
+    _.forEach(currState.neighbors(neighborParam), neighbor => {
       // if the neighbor has been closed, don't add it to the fib heap
       if (closedList.has(neighbor.key)) {
         return;
@@ -175,44 +157,25 @@ export function getShortestPath(me, target, traversabilityCells) {
 
 
 /**
- * Takes in the current player's location, and a representation of the shortest path as an array of
- *   cells returned by getShortestPath(), and returns the position (in cells) that the player should
- *   seek toward.
+ * Takes in current location and target location (eg, the location of the flag) and the map
+ *   represented as a grid of 1 and 0, where 1s are traversable and 0s are not. Uses A* to calculate
+ *   the best path
  * @param {Object} me - object with bot's position in cells, xc and yc
- * @returns {Object} - object with target's position in cells, xc and yc
+ * @param {Object} target - object with target's position in cells, xc and yc
+ * @param {number} traversabilityCells - 2D array of cells. Traversable cells are 1s, others are 0.
  */
-export function getTarget(me, shortestPath) {
-  assert(shortestPath, 'shortestPath is null, there may be no traversable path to the target');
-  // Find the furthest cell in the direction of the next cell
-  // If we target the next cell in our path only, motion is very choppy
-  let winner = 0; // This will be the length of the longest straight path
-  let j = 0; // indexed here in case there is no path
-  if (shortestPath.length > 1) {
-    const diff = {
-      xc: shortestPath[0].xc - me.xc,
-      yc: shortestPath[0].yc - me.yc,
-    };
-    const nDiff = {};
-    for (let i = 0; i < shortestPath.length; i++) {
-      // walk along the path in the x axis until it turns
-      nDiff.xc = shortestPath[i].xc - me.xc;
-      if (diff.xc === nDiff.xc) {
-        winner += 1;
-      } else {
-        break;
-      }
-    }
-    while (j < winner) {
-      // walk along the path in the y axis until it turns
-      // OR the x axis has already turned
-      nDiff.yc = shortestPath[j].yc - me.yc;
-      if (diff.yc !== nDiff.yc) {
-        winner = j;
-        break;
-      }
-      j += 1;
-    }
-  }
-  const next = shortestPath[j];
-  return { xc: next.xc, yc: next.yc };
+export function getShortestPath(me, target, traversabilityCells) {
+  assert(_.has(me, 'xc'));
+  assert(_.has(me, 'yc'));
+  assert(_.has(target, 'xc'));
+  assert(_.has(target, 'yc'));
+
+  assertGridInBounds(traversabilityCells, me.xc, me.yc);
+  assertGridInBounds(traversabilityCells, target.xc, target.yc);
+
+  const startState = new GameState(me.xc, me.yc);
+  const targetState = new GameState(target.xc, target.yc);
+
+  return runAstar(startState, targetState, traversabilityCells);
 }
+
