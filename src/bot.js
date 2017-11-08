@@ -64,8 +64,6 @@ function getAccelValues() {
   const goal = getGoalPos();
   me.xc = Math.floor((me.x + (PPCL / 2)) / PPCL);
   me.yc = Math.floor((me.y + (PPCL / 2)) / PPCL);
-  me.xp = me.x + BRP; // the x center of our ball, in pixels
-  me.yp = me.y + BRP; // the y center of our ball, in pixels
 
   const finalTarget = {
     xp: goal.xp,
@@ -82,7 +80,11 @@ function getAccelValues() {
     { xc: finalTarget.xc, yc: finalTarget.yc },
     traversableCells,
   );
-  const polypointShortestPath = getShortestPathPolypoint(me, finalTarget, getDTGraph());
+  const polypointShortestPath = getShortestPathPolypoint(
+    { xp: me.x + BRP, yp: me.y + BRP },
+    finalTarget,
+    getDTGraph(),
+  );
 
   // Runtime: O(A), O(1) if visualizations off
   updatePath(shortestPath, polypointShortestPath);
@@ -97,8 +99,8 @@ function getAccelValues() {
   }
 
   return desiredAccelerationMultiplier(
-    me.xp,
-    me.yp,
+    me.x + BRP, // the x center of our ball, in pixels
+    me.y + BRP, // the y center of our ball, in pixels
     me.vx, // our v velocity
     me.vy, // our y velocity
     target.xp, // the x we are seeking toward (pixels)
