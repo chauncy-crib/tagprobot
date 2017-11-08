@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import test from 'tape';
-import { getShortestPath, GameState, __RewireAPI__ as PathRewireAPI } from '../../src/helpers/path';
+import { getShortestPath, PathState, __RewireAPI__ as PathRewireAPI } from '../../src/helpers/path';
 
 
 test('test neighbors returns the right number of neighbors with diagonals on', t => {
@@ -12,16 +12,16 @@ test('test neighbors returns the right number of neighbors with diagonals on', t
   ];
   PathRewireAPI.__Rewire__('DIAGONAL', true);
 
-  let state = new GameState(1, 1);
+  let state = new PathState(1, 1);
   t.is(state.neighbors(traversabilityCells).length, 5);
 
-  state = new GameState(1, 0);
+  state = new PathState(1, 0);
   t.is(state.neighbors(traversabilityCells).length, 3);
 
-  state = new GameState(0, 2);
+  state = new PathState(0, 2);
   t.is(state.neighbors(traversabilityCells).length, 1);
 
-  state = new GameState(2, 2);
+  state = new PathState(2, 2);
   t.is(state.neighbors(traversabilityCells).length, 2);
 
   PathRewireAPI.__ResetDependency__('DIAGONAL');
@@ -37,16 +37,16 @@ test('test neighbors returns the right number of neighbors with diagonals off', 
   ];
   PathRewireAPI.__Rewire__('DIAGONAL', false);
 
-  let state = new GameState(1, 1);
+  let state = new PathState(1, 1);
   t.is(state.neighbors(traversabilityCells).length, 2);
 
-  state = new GameState(1, 0);
+  state = new PathState(1, 0);
   t.is(state.neighbors(traversabilityCells).length, 2);
 
-  state = new GameState(0, 2);
+  state = new PathState(0, 2);
   t.is(state.neighbors(traversabilityCells).length, 0);
 
-  state = new GameState(2, 2);
+  state = new PathState(2, 2);
   t.is(state.neighbors(traversabilityCells).length, 1);
 
   PathRewireAPI.__ResetDependency__('DIAGONAL');
@@ -62,7 +62,7 @@ test('test neighbors have correct g values', t => {
   ];
   PathRewireAPI.__Rewire__('DIAGONAL', false);
 
-  const state = new GameState(1, 1);
+  const state = new PathState(1, 1);
   state.g = 12;
   _.forEach(state.neighbors(traversabilityCells), n => {
     t.is(n.g, 13);
