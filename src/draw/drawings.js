@@ -33,6 +33,7 @@ import { isVisualMode } from '../utils/interface';
 import { assert, assertGridInBounds } from '../utils/asserts';
 
 let pathSprites = []; // A list of the current path sprites drawn
+let polypointPathSprite; // the sprite for the polypoint path
 
 // A grid of NT-sprites, which are subject to change. If there isn't a NT-object at the given cell,
 // then store null. This object is size tagpro_map_length * CPTL x tagpro_map_width * CPTL
@@ -234,7 +235,7 @@ export function drawKeyPresses(directions) {
  *   path. Adds each new sprite to pathSprites, and to the renderer. Runtime: O(A)
  * @param {GameState[]} path - an array of GameStates, likely returned by getShortestPath()
  */
-export function updatePath(path) {
+export function updatePath(path, polypointPath) {
   if (!isVisualMode()) {
     return;
   }
@@ -245,6 +246,28 @@ export function updatePath(path) {
     pathSprites.push(sprite);
     tagpro.renderer.layers.background.addChild(sprite);
   });
+
+  if (polypointPath) {
+    tagpro.renderer.layers.background.removeChild(polypointPathSprite);
+    polypointPathSprite = new PIXI.Graphics();
+    polypointPathSprite.lineStyle(
+      TRIANGULATION_THICKNESS + 1,
+      TRIANGULATION_EDGE_COLOR,
+      1,
+    );
+    let prevPoint;
+    _.forEach(polypointPath, p => {
+      // TODO remove these asserts
+      assert(_.has(p, 'point'));
+      if (prevPoint) {
+        polypointPathSprite
+          .moveTo(prevPoint.point.x, prevPoint.point.y)
+          .lineTo(p.point.x, p.point.y);
+      }
+      prevPoint = p;
+    });
+    tagpro.renderer.layers.background.addChild(polypointPathSprite);
+  }
 }
 
 
@@ -256,6 +279,7 @@ export function clearSprites() {
   // Get a list of all sprites
   const backgroundSprites = permNTSprites
     .concat(pathSprites)
+    .concat(polypointPathSprite)
     // Flatten the tempNTSprites grid, and remove null values. O(N^2), because tempNTSprites is NxN
     .concat(_.reject(_.flatten(tempNTSprites), _.isNull));
   _.forEach(backgroundSprites, s => tagpro.renderer.layers.background.removeChild(s));

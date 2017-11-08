@@ -21,6 +21,11 @@ export class Point {
     return new Point(x, y);
   }
 
+  distance(other) {
+    const vector = this.subtract(other);
+    return Math.sqrt((vector.x ** 2) + (vector.y ** 2));
+  }
+
   distanceSquared(other) {
     const vector = this.subtract(other);
     return (vector.x ** 2) + (vector.y ** 2);
@@ -200,8 +205,8 @@ export class Triangle {
    */
   getCenter() {
     return new Point(
-      (this.p1.x + this.p2.x + this.p3.x) / 3,
-      (this.p1.y + this.p2.y + this.p3.y) / 3,
+      Math.round((this.p1.x + this.p2.x + this.p3.x) / 3),
+      Math.round((this.p1.y + this.p2.y + this.p3.y) / 3),
     );
   }
 
