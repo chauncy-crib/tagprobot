@@ -8,16 +8,38 @@ import { assert, assertGridInBounds } from '../../src/utils/asserts';
 import { DIAGONAL } from '../constants';
 
 
-export class GameState {
-  constructor(xc, yc) {
-    this.xc = xc;
-    this.yc = yc;
+export class State {
+  /* eslint-disable class-methods-use-this */
+  constructor() {
+    assert(new.target !== State, 'State object cannot be initialized directly');
+
     this.g = undefined; // the cost to the current state
     // the estimated total cost from the start state to the target state,
     // passing through this state.
     this.f = undefined;
     // the GameState we came from
     this.parent = undefined;
+  }
+
+  heuristic() {
+    assert(false, 'Method not implemented');
+  }
+
+  equals() {
+    assert(false, 'Method not implemented');
+  }
+
+  neighbors() {
+    assert(false, 'Method not implemented');
+  }
+  /* eslint-enable class-methods-use-this */
+}
+
+export class PathState extends State {
+  constructor(xc, yc) {
+    super();
+    this.xc = xc;
+    this.yc = yc;
     this.key = `${xc},${yc}`;
   }
 
@@ -50,18 +72,18 @@ export class GameState {
   neighbors(traversabilityCells) {
     // vertical and horizontal neighbors
     let potentialNeighbors = [
-      new GameState(this.xc - 1, this.yc),
-      new GameState(this.xc + 1, this.yc),
-      new GameState(this.xc, this.yc - 1),
-      new GameState(this.xc, this.yc + 1),
+      new PathState(this.xc - 1, this.yc),
+      new PathState(this.xc + 1, this.yc),
+      new PathState(this.xc, this.yc - 1),
+      new PathState(this.xc, this.yc + 1),
     ];
     // diagonal neighbors
     if (DIAGONAL) {
       potentialNeighbors = potentialNeighbors.concat([
-        new GameState(this.xc - 1, this.yc - 1),
-        new GameState(this.xc - 1, this.yc + 1),
-        new GameState(this.xc + 1, this.yc - 1),
-        new GameState(this.xc + 1, this.yc + 1),
+        new PathState(this.xc - 1, this.yc - 1),
+        new PathState(this.xc - 1, this.yc + 1),
+        new PathState(this.xc + 1, this.yc - 1),
+        new PathState(this.xc + 1, this.yc + 1),
       ]);
     }
     // assign g values of neighbors
@@ -85,9 +107,9 @@ export class GameState {
 }
 
 /**
- * @param {GameState} finalState - the final target GameState object. Will use to construct the path
+ * @param {State} finalState - the final target State object. Will use to construct the path
  *   by walking the parent pointers back to the start state.
- * @returns {GameState[]} list of GameStates from starting state to final state, not including the
+ * @returns {State[]} list of States from starting state to final state, including the
  *   starting state.
  */
 function constructPath(finalState) {
@@ -101,6 +123,12 @@ function constructPath(finalState) {
   return path;
 }
 
+/**
+ * @param {State} startState
+ * @param {State} targetState
+ * @param {Object} neighborParam - the argument to pass the state.neighbors() function
+ * @returns {State[]} a list of states, starting from the startState to the targetState
+ */
 export function runAstar(startState, targetState, neighborParam) {
   // keep track of potential game states in a fibonacci heap, where the key is the f-cost for the
   // state, and value is the GameState object
@@ -163,8 +191,9 @@ export function runAstar(startState, targetState, neighborParam) {
  * @param {Object} me - object with bot's position in cells, xc and yc
  * @param {Object} target - object with target's position in cells, xc and yc
  * @param {number} traversabilityCells - 2D array of cells. Traversable cells are 1s, others are 0.
+ * @returns {PathState[]} a list of states, starting from the startState to the targetState
  */
-export function getShortestPath(me, target, traversabilityCells) {
+export function getShortestTilePath(me, target, traversabilityCells) {
   assert(_.has(me, 'xc'));
   assert(_.has(me, 'yc'));
   assert(_.has(target, 'xc'));
@@ -173,8 +202,8 @@ export function getShortestPath(me, target, traversabilityCells) {
   assertGridInBounds(traversabilityCells, me.xc, me.yc);
   assertGridInBounds(traversabilityCells, target.xc, target.yc);
 
-  const startState = new GameState(me.xc, me.yc);
-  const targetState = new GameState(target.xc, target.yc);
+  const startState = new PathState(me.xc, me.yc);
+  const targetState = new PathState(target.xc, target.yc);
 
   return runAstar(startState, targetState, traversabilityCells);
 }

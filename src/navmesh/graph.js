@@ -22,8 +22,7 @@ export class Point {
   }
 
   distance(other) {
-    const vector = this.subtract(other);
-    return Math.sqrt((vector.x ** 2) + (vector.y ** 2));
+    return Math.sqrt(this.distanceSquared(other));
   }
 
   distanceSquared(other) {
