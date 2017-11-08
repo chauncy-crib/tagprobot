@@ -7,6 +7,8 @@ import { getShortestPath } from './helpers/path';
 import { isAutonomousMode, isVisualMode, move, dequeueChatMessages } from './utils/interface';
 import { updatePath } from './draw/drawings';
 import { desiredAccelerationMultiplier } from './helpers/physics';
+import { getShortestPath as getShortestPathPolypoint } from './navmesh/path';
+import { getDTGraph } from './navmesh/triangulation';
 
 
 /**
@@ -62,8 +64,12 @@ function getAccelValues() {
   const goal = getGoalPos();
   me.xc = Math.floor((me.x + (PPCL / 2)) / PPCL);
   me.yc = Math.floor((me.y + (PPCL / 2)) / PPCL);
+  me.xp = me.x + BRP; // the x center of our ball, in pixels
+  me.yp = me.y + BRP; // the y center of our ball, in pixels
 
   const finalTarget = {
+    xp: goal.xp,
+    yp: goal.yp,
     xc: Math.floor(goal.xp / PPCL),
     yc: Math.floor(goal.yp / PPCL),
   };
@@ -76,8 +82,10 @@ function getAccelValues() {
     { xc: finalTarget.xc, yc: finalTarget.yc },
     traversableCells,
   );
+  const polypointShortestPath = getShortestPathPolypoint(me, finalTarget, getDTGraph());
+
   // Runtime: O(A), O(1) if visualizations off
-  updatePath(shortestPath);
+  updatePath(shortestPath, polypointShortestPath);
 
   const target = { xp: me.x + BRP, yp: me.y + BRP };
   if (shortestPath) {
@@ -89,8 +97,8 @@ function getAccelValues() {
   }
 
   return desiredAccelerationMultiplier(
-    me.x + BRP, // the x center of our ball, in pixels
-    me.y + BRP, // the y center of our ball, in pixels
+    me.xp,
+    me.yp,
     me.vx, // our v velocity
     me.vy, // our y velocity
     target.xp, // the x we are seeking toward (pixels)
