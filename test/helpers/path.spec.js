@@ -1,6 +1,9 @@
 import _ from 'lodash';
 import test from 'tape';
-import { getShortestPath, GameState, __RewireAPI__ as PathRewireAPI } from '../../src/helpers/path';
+import {
+  getShortestTilePath,
+  PathState,
+  __RewireAPI__ as PathRewireAPI } from '../../src/helpers/path';
 
 
 test('test neighbors returns the right number of neighbors with diagonals on', t => {
@@ -12,16 +15,16 @@ test('test neighbors returns the right number of neighbors with diagonals on', t
   ];
   PathRewireAPI.__Rewire__('DIAGONAL', true);
 
-  let state = new GameState(1, 1);
+  let state = new PathState(1, 1);
   t.is(state.neighbors(traversabilityCells).length, 5);
 
-  state = new GameState(1, 0);
+  state = new PathState(1, 0);
   t.is(state.neighbors(traversabilityCells).length, 3);
 
-  state = new GameState(0, 2);
+  state = new PathState(0, 2);
   t.is(state.neighbors(traversabilityCells).length, 1);
 
-  state = new GameState(2, 2);
+  state = new PathState(2, 2);
   t.is(state.neighbors(traversabilityCells).length, 2);
 
   PathRewireAPI.__ResetDependency__('DIAGONAL');
@@ -37,16 +40,16 @@ test('test neighbors returns the right number of neighbors with diagonals off', 
   ];
   PathRewireAPI.__Rewire__('DIAGONAL', false);
 
-  let state = new GameState(1, 1);
+  let state = new PathState(1, 1);
   t.is(state.neighbors(traversabilityCells).length, 2);
 
-  state = new GameState(1, 0);
+  state = new PathState(1, 0);
   t.is(state.neighbors(traversabilityCells).length, 2);
 
-  state = new GameState(0, 2);
+  state = new PathState(0, 2);
   t.is(state.neighbors(traversabilityCells).length, 0);
 
-  state = new GameState(2, 2);
+  state = new PathState(2, 2);
   t.is(state.neighbors(traversabilityCells).length, 1);
 
   PathRewireAPI.__ResetDependency__('DIAGONAL');
@@ -62,7 +65,7 @@ test('test neighbors have correct g values', t => {
   ];
   PathRewireAPI.__Rewire__('DIAGONAL', false);
 
-  const state = new GameState(1, 1);
+  const state = new PathState(1, 1);
   state.g = 12;
   _.forEach(state.neighbors(traversabilityCells), n => {
     t.is(n.g, 13);
@@ -72,7 +75,7 @@ test('test neighbors have correct g values', t => {
 });
 
 
-test('test getShortestPath returns shortest path without diagonals', t => {
+test('test getShortestTilePath returns shortest path without diagonals', t => {
   PathRewireAPI.__Rewire__('DIAGONAL', false);
   const inputMap = [
     [1, 0, 1, 1, 1, 1, 1, 1],
@@ -80,7 +83,7 @@ test('test getShortestPath returns shortest path without diagonals', t => {
     [1, 0, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1],
   ];
-  const shortestPath = getShortestPath(
+  const shortestPath = getShortestTilePath(
     { xc: 0, yc: 0 },
     { xc: 0, yc: 2 },
     inputMap,
@@ -92,7 +95,7 @@ test('test getShortestPath returns shortest path without diagonals', t => {
 });
 
 
-test('getShortestPath()', tester => {
+test('getShortestTilePath()', tester => {
   tester.test('returns shortest path with diagonals', t => {
     PathRewireAPI.__Rewire__('DIAGONAL', true);
     const inputMap = [
@@ -101,7 +104,7 @@ test('getShortestPath()', tester => {
       [1, 0, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1],
     ];
-    const shortestDiagonalPath = getShortestPath(
+    const shortestDiagonalPath = getShortestTilePath(
       { xc: 0, yc: 0 },
       { xc: 0, yc: 2 },
       inputMap,
@@ -123,7 +126,7 @@ test('getShortestPath()', tester => {
       [1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1],
     ];
-    const impossiblePath = getShortestPath(
+    const impossiblePath = getShortestTilePath(
       { xc: 0, yc: 4 },
       { xc: 5, yc: 5 },
       impossibleMap,
@@ -145,14 +148,14 @@ test('getShortestPath()', tester => {
       [1, 1, 1, 1, 1, 1, 1, 1],
     ];
     t.throws(() => {
-      getShortestPath(
+      getShortestTilePath(
         { xc: 6, yc: 3 },
         { xc: 3, yc: 6 },
         impossibleMap,
       );
     });
     t.throws(() => {
-      getShortestPath(
+      getShortestTilePath(
         { xc: 2, yc: 3 },
         { xc: 3, yc: 8 },
         impossibleMap,
@@ -186,7 +189,7 @@ test('getShortestPath()', tester => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    const shortestDiagonalPath = getShortestPath(
+    const shortestDiagonalPath = getShortestTilePath(
       { xc: 0, yc: 2 },
       { xc: 8, yc: 28 },
       map,
