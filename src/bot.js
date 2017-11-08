@@ -3,11 +3,11 @@ import { getMapTraversabilityInCells } from './helpers/map';
 import { findTile, findEnemyFC } from './helpers/finders';
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe, amBlue, amRed } from './helpers/player';
-import { getShortestPath } from './helpers/path';
+import { getShortestTilePath } from './helpers/path';
 import { isAutonomousMode, isVisualMode, move, dequeueChatMessages } from './utils/interface';
 import { updatePath } from './draw/drawings';
 import { desiredAccelerationMultiplier } from './helpers/physics';
-import { getShortestPath as getShortestPathPolypoint } from './navmesh/path';
+import { getShortestPolypointPath } from './navmesh/path';
 import { getDTGraph } from './navmesh/triangulation';
 
 
@@ -64,8 +64,6 @@ function getAccelValues() {
   const goal = getGoalPos();
   me.xc = Math.floor((me.x + (PPCL / 2)) / PPCL);
   me.yc = Math.floor((me.y + (PPCL / 2)) / PPCL);
-  me.xp = me.x + BRP; // the x center of our ball, in pixels
-  me.yp = me.y + BRP; // the y center of our ball, in pixels
 
   const finalTarget = {
     xp: goal.xp,
@@ -77,12 +75,16 @@ function getAccelValues() {
   const traversableCells = getMapTraversabilityInCells(map);
 
   // TODO: runtime of this? Call is O(R) for now
-  const shortestPath = getShortestPath(
+  const shortestPath = getShortestTilePath(
     { xc: me.xc, yc: me.yc },
     { xc: finalTarget.xc, yc: finalTarget.yc },
     traversableCells,
   );
-  const polypointShortestPath = getShortestPathPolypoint(me, finalTarget, getDTGraph());
+  const polypointShortestPath = getShortestPolypointPath(
+    { xp: me.x + BRP, yp: me.y + BRP },
+    finalTarget,
+    getDTGraph(),
+  );
 
   // Runtime: O(A), O(1) if visualizations off
   updatePath(shortestPath, polypointShortestPath);
@@ -97,8 +99,8 @@ function getAccelValues() {
   }
 
   return desiredAccelerationMultiplier(
-    me.xp,
-    me.yp,
+    me.x + BRP, // the x center of our ball, in pixels
+    me.y + BRP, // the y center of our ball, in pixels
     me.vx, // our v velocity
     me.vy, // our y velocity
     target.xp, // the x we are seeking toward (pixels)
