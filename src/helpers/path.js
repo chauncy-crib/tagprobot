@@ -88,8 +88,8 @@ export class PathState extends State {
     }
     // assign g values of neighbors
     _.forEach(potentialNeighbors, n => {
-      n.g = this.g + 1; // eslint-disable-line no-param-reassign
-      n.parent = this; // eslint-disable-line no-param-reassign
+      n.g = this.g + 1;
+      n.parent = this;
     });
     // filter out out of bounds and NT neighbors
     return _.filter(potentialNeighbors, n => {
@@ -139,9 +139,7 @@ export function runAstar(startState, targetState, neighborParam) {
   const closedList = new Set();
 
   // start with the current state in the fibonacci heap
-  // eslint-disable-next-line no-param-reassign
   startState.g = 0;
-  // eslint-disable-next-line no-param-reassign
   startState.f = startState.g + startState.heuristic(targetState);
   fibHeap.insert(startState.f, startState);
 
@@ -161,7 +159,6 @@ export function runAstar(startState, targetState, neighborParam) {
         return;
       }
       // assign neighbor's f-cost
-      // eslint-disable-next-line no-param-reassign
       neighbor.f = neighbor.g + neighbor.heuristic(targetState);
       // if neighbor not in openList, add it
       if (!openList.has(neighbor.key)) {
