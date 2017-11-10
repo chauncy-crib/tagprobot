@@ -38,8 +38,8 @@ export class PolypointState extends State {
     const neighbors = _.map(polypoints.neighbors(this.point), n => new PolypointState(n));
     // Assign g values of neighbors
     _.forEach(neighbors, n => {
-      n.g = this.g + n.point.distance(this.point); // eslint-disable-line no-param-reassign
-      n.parent = this; // eslint-disable-line no-param-reassign
+      n.g = this.g + n.point.distance(this.point);
+      n.parent = this;
     });
     return neighbors;
   }
