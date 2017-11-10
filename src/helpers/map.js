@@ -54,7 +54,7 @@ export function fillGridWithSubgrid(bigGrid, smallGrid, x, y) {
 
   for (let i = 0; i < smallGridWidth; i++) {
     for (let j = 0; j < smallGridHeight; j++) {
-      bigGrid[i + x][j + y] = smallGrid[i][j]; // eslint-disable-line no-param-reassign
+      bigGrid[i + x][j + y] = smallGrid[i][j];
     }
   }
 }
@@ -76,7 +76,6 @@ export function updateTraversabilityFromNumNTO(numNTO, traversability, xMin, yMi
   for (let xc = xMin; xc < xMax; xc++) {
     for (let yc = yMin; yc < yMax; yc++) {
       // if there are no NTO here, define it as traversable
-      // eslint-disable-next-line no-param-reassign
       traversability[xc][yc] = numNTO[xc][yc] === 0 ? 1 : 0;
     }
   }
@@ -159,7 +158,7 @@ export function updateNumNTO(numNTO, xMin, yMin, xMax, yMax, tileTraversability)
     for (let yc = yMin; yc < yMax; yc++) {
       const newNumNTO = numNTO[xc][yc] + numNTOChange;
       assert(newNumNTO >= 0, `numNTO is below zero at cell: (${xc}, ${yc})`);
-      numNTO[xc][yc] = newNumNTO; // eslint-disable-line no-param-reassign
+      numNTO[xc][yc] = newNumNTO;
     }
   }
 }
