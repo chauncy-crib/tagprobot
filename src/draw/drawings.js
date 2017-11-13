@@ -71,8 +71,8 @@ const keyGap = 4; // gap between keys in pixels
  * @returns {PIXI.Graphics} a PIXI.Graphics rectangle object with the specified x, y, width, height,
  *   alpha, and color
  */
-function getPixiRect(xp, yp, width, height, alpha, color) {
-  const pixiRect = new PIXI.Graphics();
+function getPixiRect(xp, yp, width, height, alpha, color, graphics) {
+  const pixiRect = graphics || new PIXI.Graphics();
   pixiRect.beginFill(color).drawRect(
     xp,
     yp,
@@ -92,8 +92,8 @@ function getPixiRect(xp, yp, width, height, alpha, color) {
  * @returns {PIXI.Graphics} a PIXI.Graphics rectangle object with the specified x, y, size,
  *   alpha, and color
  */
-function getPixiSquare(xp, yp, size, alpha, color) {
-  return getPixiRect(xp, yp, size, size, alpha, color);
+function getPixiSquare(xp, yp, size, alpha, color, graphics) {
+  return getPixiRect(xp, yp, size, size, alpha, color, graphics);
 }
 
 
