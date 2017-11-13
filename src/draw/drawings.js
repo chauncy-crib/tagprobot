@@ -244,6 +244,7 @@ export function updatePath(path, polypointPath) {
   _.forEach(path, cell => {
     getPixiSquare(cell.xc * PPCL, cell.yc * PPCL, PPCL, PATH_ALPHA, PATH_COLOR, pathSprite);
   });
+  console.log(pathSprite);
   tagpro.renderer.layers.background.addChild(pathSprite);
 
   if (polypointPath) {
