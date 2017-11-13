@@ -71,15 +71,14 @@ const keyGap = 4; // gap between keys in pixels
  * @returns {PIXI.Graphics} a PIXI.Graphics rectangle object with the specified x, y, width, height,
  *   alpha, and color
  */
-function getPixiRect(xp, yp, width, height, alpha, color, graphics) {
-  const pixiRect = graphics || new PIXI.Graphics();
-  pixiRect.beginFill(color).drawRect(
+function getPixiRect(xp, yp, width, height, alpha, color, graphics = new PIXI.Graphics()) {
+  graphics.beginFill(color).drawRect(
     xp,
     yp,
     width,
     height,
   ).alpha = alpha;
-  return pixiRect;
+  return graphics;
 }
 
 
@@ -293,7 +292,7 @@ export function clearSprites() {
 
 
 /**
- * Iterates over permNTSprites and adds each sprite to the renderer. Runtime: O(P)
+ * Adds the permNTSprite to the renderer. Runtime: O(1)
  */
 export function drawPermanentNTSprites() {
   tagpro.renderer.layers.background.addChild(permNTSprite);
@@ -370,7 +369,7 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
  * @param {number} color - a hex color
  * @param {number} alpha - an alpha value
  */
-function drawGraph(graph, thickness, edgeColor, vertexColor, alpha, drawVertices = true) {
+function getGraphGraphics(graph, thickness, edgeColor, vertexColor, alpha, drawVertices = true) {
   const graphGraphics = new PIXI.Graphics();
 
   graphGraphics.lineStyle(thickness, edgeColor, alpha);
@@ -398,7 +397,7 @@ export function drawNavMesh() {
   if (!isVisualMode()) {
     return;
   }
-  triangulationSprite = triangulationSprite || drawGraph(
+  triangulationSprite = triangulationSprite || getGraphGraphics(
     getDTGraph(),
     NAV_MESH_THICKNESS,
     NAV_MESH_EDGE_COLOR,
@@ -406,7 +405,7 @@ export function drawNavMesh() {
     NAV_MESH_ALPHA,
   );
   tagpro.renderer.layers.foreground.addChild(triangulationSprite);
-  polypointSprite = polypointSprite || drawGraph(
+  polypointSprite = polypointSprite || getGraphGraphics(
     getDTGraph().polypoints,
     TRIANGULATION_THICKNESS,
     TRIANGULATION_EDGE_COLOR,
