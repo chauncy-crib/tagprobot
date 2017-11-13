@@ -32,7 +32,7 @@ import { init2dArray } from '../helpers/map';
 import { isVisualMode } from '../utils/interface';
 import { assert, assertGridInBounds } from '../utils/asserts';
 
-let pathSprites = []; // A list of the current path sprites drawn
+let pathSprite; // The sprite for the current path
 let polypointPathSprite; // the sprite for the polypoint path
 
 // A grid of NT-sprites, which are subject to change. If there isn't a NT-object at the given cell,
@@ -231,7 +231,7 @@ export function drawKeyPresses(directions) {
 
 
 /**
- * Erases all spirtes in pathSprites from the renderer. Creates a new path sprite for each cell in
+ * Erases pathSprite from the renderer. Creates a new path sprite for each cell in
  *   path. Adds each new sprite to pathSprites, and to the renderer. Runtime: O(A)
  * @param {GameState[]} path - an array of GameStates, likely returned by getShortestPath()
  */
@@ -239,13 +239,12 @@ export function updatePath(path, polypointPath) {
   if (!isVisualMode()) {
     return;
   }
-  _.forEach(pathSprites, p => tagpro.renderer.layers.background.removeChild(p));
-  pathSprites.splice(0, pathSprites.length);
+  tagpro.renderer.layers.background.removeChild(pathSprite);
+  pathSprite = new PIXI.Graphics();
   _.forEach(path, cell => {
-    const sprite = getPixiSquare(cell.xc * PPCL, cell.yc * PPCL, PPCL, PATH_ALPHA, PATH_COLOR);
-    pathSprites.push(sprite);
-    tagpro.renderer.layers.background.addChild(sprite);
+    getPixiSquare(cell.xc * PPCL, cell.yc * PPCL, PPCL, PATH_ALPHA, PATH_COLOR, pathSprite);
   });
+  tagpro.renderer.layers.background.addChild(pathSprite);
 
   if (polypointPath) {
     tagpro.renderer.layers.background.removeChild(polypointPathSprite);
@@ -278,7 +277,7 @@ export function updatePath(path, polypointPath) {
 export function clearSprites() {
   // Get a list of all sprites
   const backgroundSprites = permNTSprites
-    .concat(pathSprites)
+    .concat(pathSprite)
     .concat(polypointPathSprite)
     // Flatten the tempNTSprites grid, and remove null values. O(N^2), because tempNTSprites is NxN
     .concat(_.reject(_.flatten(tempNTSprites), _.isNull));
@@ -287,7 +286,7 @@ export function clearSprites() {
     .concat(triangulationSprite || [])
     .concat(polypointSprite || []);
   _.forEach(foregroundSprites, s => tagpro.renderer.layers.foreground.removeChild(s));
-  pathSprites = [];
+  pathSprite = null;
   tempNTSprites = [];
   triangulationSprite = null;
   polypointSprite = null;
