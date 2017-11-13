@@ -288,8 +288,6 @@ export function clearSprites() {
   _.forEach(foregroundSprites, s => tagpro.renderer.layers.foreground.removeChild(s));
   pathSprite = null;
   tempNTSprites = [];
-  triangulationSprite = null;
-  polypointSprite = null;
   if (keyPressesVis) keyPressesVis.removeChildren(); // clear the keypresses visualization
 }
 
@@ -389,7 +387,6 @@ function drawGraph(graph, thickness, edgeColor, vertexColor, alpha, drawVertices
     });
   }
 
-  tagpro.renderer.layers.foreground.addChild(graphGraphics);
   return graphGraphics;
 }
 
@@ -401,16 +398,15 @@ export function drawNavMesh() {
   if (!isVisualMode()) {
     return;
   }
-  assert(_.isNil(triangulationSprite), 'triangulationSprite is not null');
-  triangulationSprite = drawGraph(
+  triangulationSprite = triangulationSprite || drawGraph(
     getDTGraph(),
     NAV_MESH_THICKNESS,
     NAV_MESH_EDGE_COLOR,
     NAV_MESH_VERTEX_COLOR,
     NAV_MESH_ALPHA,
   );
-  assert(_.isNil(polypointSprite), 'polypointSprite is not null');
-  polypointSprite = drawGraph(
+  tagpro.renderer.layers.foreground.addChild(triangulationSprite);
+  polypointSprite = polypointSprite || drawGraph(
     getDTGraph().polypoints,
     TRIANGULATION_THICKNESS,
     TRIANGULATION_EDGE_COLOR,
@@ -418,4 +414,5 @@ export function drawNavMesh() {
     TRIANGULATION_ALPHA,
     false,
   );
+  tagpro.renderer.layers.foreground.addChild(polypointSprite);
 }
