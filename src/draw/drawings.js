@@ -39,8 +39,8 @@ let polypointPathSprite; // the sprite for the polypoint path
 // then store null. This object is size tagpro_map_length * CPTL x tagpro_map_width * CPTL
 let tempNTSprites = [];
 
-// A list of permanent NT sprites. Will always be on map (if visualizations are on)
-const permNTSprites = [];
+// The permanent NT sprite. Will always be on map (if visualizations are on)
+let permNTSprite;
 
 // The sprite for the triangulation graph
 let triangulationSprite;
@@ -276,7 +276,7 @@ export function updatePath(path, polypointPath) {
  */
 export function clearSprites() {
   // Get a list of all sprites
-  const backgroundSprites = permNTSprites
+  const backgroundSprites = [permNTSprite]
     .concat(pathSprite)
     .concat(polypointPathSprite)
     // Flatten the tempNTSprites grid, and remove null values. O(N^2), because tempNTSprites is NxN
@@ -298,7 +298,7 @@ export function clearSprites() {
  * Iterates over permNTSprites and adds each sprite to the renderer. Runtime: O(P)
  */
 export function drawPermanentNTSprites() {
-  _.forEach(permNTSprites, s => tagpro.renderer.layers.background.addChild(s));
+  tagpro.renderer.layers.background.addChild(permNTSprite);
 }
 
 
@@ -312,13 +312,13 @@ export function drawPermanentNTSprites() {
 export function generatePermanentNTSprites(xt, yt, cellTraversabilities) {
   assertGridInBounds(cellTraversabilities, xt * CPTL, yt * CPTL);
   assertGridInBounds(cellTraversabilities, ((xt + 1) * CPTL) - 1, ((yt + 1) * CPTL) - 1);
+  permNTSprite = permNTSprite || new PIXI.Graphics();
   for (let i = xt * CPTL; i < (xt + 1) * CPTL; i++) {
     for (let j = yt * CPTL; j < (yt + 1) * CPTL; j++) {
       // if we don't have a sprite already there and there should be one,
       //   draw it
       if (!cellTraversabilities[i][j]) {
-        const sprite = getPixiSquare(i * PPCL, j * PPCL, PPCL, NT_ALPHA, NT_COLOR);
-        permNTSprites.push(sprite);
+        getPixiSquare(i * PPCL, j * PPCL, PPCL, NT_ALPHA, NT_COLOR, permNTSprite);
       }
     }
   }
