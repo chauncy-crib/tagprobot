@@ -290,7 +290,7 @@ test('drawNavMesh()', tester => {
     mockGraph.addEdgeAndVertices(down, left);
     const mockDrawGraph = sinon.spy();
     const mockGetDTGraph = sinon.stub().returns(mockGraph);
-    DrawRewireAPI.__Rewire__('drawGraph', mockDrawGraph);
+    DrawRewireAPI.__Rewire__('getGraphGraphics', mockDrawGraph);
     DrawRewireAPI.__Rewire__('getDTGraph', mockGetDTGraph);
     DrawRewireAPI.__Rewire__('NAV_MESH_THICKNESS', 'thick');
     DrawRewireAPI.__Rewire__('NAV_MESH_EDGE_COLOR', 'brown');
