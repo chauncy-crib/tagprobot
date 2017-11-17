@@ -1,13 +1,3 @@
-/**
- * Note: the code in this file was written by reading this userscript:
- * https://gist.github.com/SomeBall-1/0060b3c71ec379ea7ccf
- * and doing my best to interpret what the code in it was doing.
- * As far as I know, there's no explicit documentation on how to draw on the tagpro screen (more
- * specifically, I can't find docs for the `tagpro.renderer.layers` object). There are additional
- * objects in the `layers` object, such as `foreground` and `midground`. Drawing on `background`
- * seemed to be the best thing for this feature.
- */
-
 import _ from 'lodash';
 import {
   PPCL,
@@ -38,6 +28,7 @@ let polypointPathSprite; // the sprite for the polypoint path
 // A grid of NT-sprites, which are subject to change. If there isn't a NT-object at the given cell,
 // then store null. This object is size tagpro_map_length * CPTL x tagpro_map_width * CPTL
 let tempNTSprites = [];
+let tempNTSpritesOnScreen = false;
 
 // The permanent NT sprite. Will always be on map (if visualizations are on)
 let permNTSprite;
@@ -287,6 +278,7 @@ export function clearSprites() {
   _.forEach(foregroundSprites, s => tagpro.renderer.layers.foreground.removeChild(s));
   pathSprite = null;
   tempNTSprites = [];
+  tempNTSpritesOnScreen = false;
   if (keyPressesVis) keyPressesVis.removeChildren(); // clear the keypresses visualization
 }
 
@@ -414,4 +406,12 @@ export function drawNavMesh() {
     false,
   );
   tagpro.renderer.layers.foreground.addChild(polypointSprite);
+}
+
+export function areNTSpritesOnScreen() {
+  return tempNTSpritesOnScreen;
+}
+
+export function setNTSpritesOnScreen(b) {
+  tempNTSpritesOnScreen = b;
 }
