@@ -547,6 +547,7 @@ test('getMapTraversabilityInCells', tester => {
     ]);
     MapRewireAPI.__Rewire__('tilesToUpdateValues', mockTilesToUpdateValues);
     MapRewireAPI.__Rewire__('updateNTSprites', mockUpdateNTSprites);
+    MapRewireAPI.__Rewire__('areNTSpritesOnScreen', sinon.stub().returns(false));
 
     t.same(getMapTraversabilityInCells(mockMap), [
       [0, 0, 0],
@@ -597,6 +598,7 @@ test('getMapTraversabilityInCells', tester => {
     MapRewireAPI.__ResetDependency__('updateNTSprites');
     MapRewireAPI.__ResetDependency__('getTileTraversabilityInCells');
     MapRewireAPI.__ResetDependency__('getTileProperty');
+    MapRewireAPI.__ResetDependency__('areNTSpritesOnScreen');
     t.end();
   });
 

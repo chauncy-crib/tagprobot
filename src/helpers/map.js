@@ -1,8 +1,14 @@
 import _ from 'lodash';
 import { CPTL, PPCL, NT_KERNEL } from '../constants';
 import { assert, assertGridInBounds } from '../utils/asserts';
+import { isVisualMode } from '../utils/interface';
 import { tileHasName, getTileProperty, tileHasProperty, tileIsOneOf } from '../tiles';
-import { updateNTSprites, generatePermanentNTSprites } from '../draw/drawings';
+import {
+  updateNTSprites,
+  generatePermanentNTSprites,
+  areNTSpritesOnScreen,
+  setNTSpritesOnScreen,
+} from '../draw/drawings';
 import { invertBinary2dArray, convolve } from './convolve';
 
 
@@ -233,6 +239,13 @@ export function getMapTraversabilityInCells(map) {
     // if the traversability of the tile in this location has changed since the last state
     if (tileTraversability !== getTileProperty(tilesToUpdateValues[i], 'traversable')) {
       tilesToUpdateValues[i] = tileId;
+      // O(CTPL^2)
+      fillGridWithSubgrid(
+        mapTraversabilityCells,
+        getTileTraversabilityInCells(map[xy.xt][xy.yt]),
+        xy.xt * CPTL,
+        xy.yt * CPTL,
+      );
       // Index of the top-left cell in the tile that just updated
       const xFirstCell = xy.xt * CPTL;
       const yFirstCell = xy.yt * CPTL;
@@ -262,10 +275,12 @@ export function getMapTraversabilityInCells(map) {
         maxXCell,
         maxYCell,
       );
+      // If the NT sprites are already on the screen, only update the sprites that have changed
+      if (areNTSpritesOnScreen()) updateNTSprites(xy.xt, xy.yt, mapTraversabilityCells);
     }
-    // O(CTPL^2).
-    // TODO: We can optimize this by only calling updateNTSprites when a cell changes.
-    updateNTSprites(xy.xt, xy.yt, mapTraversabilityCellsWithBuf);
+    // Otherwise, update all non-permanent sprites
+    if (!areNTSpritesOnScreen()) updateNTSprites(xy.xt, xy.yt, mapTraversabilityCells);
   }
+  if (isVisualMode()) setNTSpritesOnScreen(true);
   return mapTraversabilityCellsWithBuf;
 }
