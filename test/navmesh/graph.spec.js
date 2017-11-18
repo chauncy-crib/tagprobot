@@ -1,5 +1,5 @@
 import test from 'tape';
-import { isLegal, Point, Triangle, TGraph } from '../../src/navmesh/graph';
+import { isLegal, sortCounterClockwise, Point, Triangle, TGraph } from '../../src/navmesh/graph';
 
 
 test('isLegal', tester => {
@@ -32,6 +32,32 @@ test('isLegal', tester => {
     t.end();
   });
   tester.end();
+});
+
+test('sortCounterClockwise sorts points in counter-clockwise order', t => {
+  let points = [
+    new Point(-1, 1),
+    new Point(1, 1),
+    new Point(1, -1),
+    new Point(-1, -1),
+  ];
+  t.same(sortCounterClockwise(points), [
+    new Point(-1, 1),
+    new Point(-1, -1),
+    new Point(1, -1),
+    new Point(1, 1),
+  ]);
+  points = [
+    new Point(0, 1),
+    new Point(1, -1),
+    new Point(-1, -1),
+  ];
+  t.same(sortCounterClockwise(points), [
+    new Point(-1, -1),
+    new Point(1, -1),
+    new Point(0, 1),
+  ]);
+  t.end();
 });
 
 test('findContainingTriangles finds containing triangles', t => {
