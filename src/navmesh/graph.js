@@ -41,6 +41,37 @@ export class Point {
 
 
 /**
+ * Sorts points counter clockwise using code adapted from:
+ * https://stackoverflow.com/questions/6989100/sort-points-in-clockwise-order
+ */
+export function sortCounterClockwise(points) {
+  const center = {
+    x: _.map(points, 'x').reduce((a, b) => a + b, 0),
+    y: _.map(points, 'y').reduce((a, b) => a + b, 0),
+  };
+  return points.sort((a, b) => {
+    if (a.x - center.x >= 0 && b.x - center.x < 0) { return true; }
+    if (a.x - center.x < 0 && b.x - center.x >= 0) { return false; }
+    if (a.x - center.x === 0 && b.x - center.x === 0) {
+      if (a.y - center.y >= 0 || b.y - center.y >= 0) { return a.y > b.y; }
+      return b.y > a.y;
+    }
+
+    // compute the cross product of vectors (center -> a) x (center -> b)
+    const det = ((a.x - center.x) * (b.y - center.y)) - ((b.x - center.x) * (a.y - center.y));
+    if (det < 0) { return true; }
+    if (det > 0) { return false; }
+
+    // points a and b are on the same line from the center
+    // check which point is closer to the center
+    const d1 = ((a.x - center.x) * (a.x - center.x)) + ((a.y - center.y) * (a.y - center.y));
+    const d2 = ((b.x - center.x) * (b.x - center.x)) + ((b.y - center.y) * (b.y - center.y));
+    return d1 > d2;
+  });
+}
+
+
+/**
  * Checks if edge e is delaunay-legal with respect to the inserted point
  * @param {Point} insertedPoint - the point being added to the triangulation
  * @param {{p1: Point, p2: Point}} e - the edge we are checking for legality
