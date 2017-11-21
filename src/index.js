@@ -10,8 +10,8 @@ import {
 import { calculateNavMesh } from './navmesh/triangulation';
 import {
   drawPermanentNTSprites,
-  initKeyPressesVisualization,
   initUiUpdateProcess,
+  drawBlankKeyPresses,
   drawNavMesh,
 } from './draw/drawings';
 
@@ -62,8 +62,8 @@ function start() {
   calculateNavMesh(tagpro.map);
 
   drawPermanentNTSprites();
-  initKeyPressesVisualization();
   initUiUpdateProcess();
+  drawBlankKeyPresses();
   drawNavMesh();
 
   // Run the bot
