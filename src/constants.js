@@ -28,7 +28,8 @@ export const NT_KERNEL = getNTKernel();
 
 // Drawing constants
 export const PATH_ALPHA = 0.25;
-export const PATH_COLOR = 0x00ff00; // Green
+export const ALLY_PATH_COLOR = 0x00ff00; // Green
+export const ENEMY_PATH_COLOR = 0x993333; // Dark red
 export const NT_ALPHA = 0.4;
 export const NT_COLOR = 0xff8c00; // Orange
 export const KEY_COLOR = 0x753daf; // Purple
