@@ -1,6 +1,34 @@
 import _ from 'lodash';
-import math from 'mathjs';
 import { assert } from '../utils/asserts';
+
+
+export function threeByThreeDeterminant(matrix) {
+  assert(matrix.length === 3, 'input matrix should be 3x3');
+  for (let i = 0; i < 3; i += 1) assert(matrix[i].length === 3, 'input matrix should be 3x3');
+  const [[a, b, c], [d, e, f], [g, h, i]] = matrix;
+  return ((a * ((e * i) - (f * h))) - (b * ((d * i) - (f * g)))) + (c * ((d * h) - (e * g)));
+}
+
+
+export function fourByFourDeterminant(matrix) {
+  assert(matrix.length === 4, 'input matrix should be 4x4');
+  for (let i = 0; i < 4; i += 1) assert(matrix[i].length === 4, 'input matrix should be 4x4');
+  let sum = 0;
+  for (let j = 0; j < 4; j += 1) {
+    // Create a sub-matrix of the 3x3 which do not contain elements in the 0th row or the jth column
+    const subMatrix = [];
+    for (let k = 1; k < 4; k += 1) {
+      const row = [];
+      for (let l = 0; l < 4; l += 1) {
+        if (l !== j) row.push(matrix[k][l]);
+      }
+      subMatrix.push(row);
+    }
+    // Alternate between +/- the determinant of the 3x3
+    sum += ((j % 2) ? -1 : 1) * matrix[0][j] * threeByThreeDeterminant(subMatrix);
+  }
+  return sum;
+}
 
 
 /**
@@ -51,20 +79,20 @@ export function sortCounterClockwise(points) {
     y: _.map(points, 'y').reduce((a, b) => a + b, 0) / points.length,
   };
   return points.sort((a, b) => {
-    if (a.x - center.x >= 0 && b.x - center.x < 0) { return true; }
-    if (a.x - center.x < 0 && b.x - center.x >= 0) { return false; }
+    if (a.x - center.x >= 0 && b.x - center.x < 0) return true;
+    if (a.x - center.x < 0 && b.x - center.x >= 0) return false;
     if (a.x - center.x === 0 && b.x - center.x === 0) {
-      if (a.y - center.y >= 0 || b.y - center.y >= 0) { return a.y > b.y; }
+      if (a.y - center.y >= 0 || b.y - center.y >= 0) return a.y > b.y;
       return b.y > a.y;
     }
 
-    // compute the cross product of vectors (center -> a) x (center -> b)
+    // Compute the cross product of vectors (center -> a) x (center -> b)
     const det = ((a.x - center.x) * (b.y - center.y)) - ((b.x - center.x) * (a.y - center.y));
-    if (det < 0) { return true; }
-    if (det > 0) { return false; }
+    if (det < 0) return true;
+    if (det > 0) return false;
 
-    // points a and b are on the same line from the center
-    // check which point is closer to the center
+    // Points a and b are on the same line from the center
+    // Check which point is closer to the center
     const d1 = ((a.x - center.x) * (a.x - center.x)) + ((a.y - center.y) * (a.y - center.y));
     const d2 = ((b.x - center.x) * (b.x - center.x)) + ((b.y - center.y) * (b.y - center.y));
     return d1 > d2;
@@ -84,13 +112,13 @@ export function sortCounterClockwise(points) {
 export function isLegal(insertedPoint, e, oppositePoint) {
   const [A, B, C] = sortCounterClockwise([insertedPoint, e.p1, e.p2]);
   const D = oppositePoint;
-  const mat = [
+  const matrix = [
     [A.x, A.y, (A.x ** 2) + (A.y ** 2), 1],
     [B.x, B.y, (B.x ** 2) + (B.y ** 2), 1],
     [C.x, C.y, (C.x ** 2) + (C.y ** 2), 1],
     [D.x, D.y, (D.x ** 2) + (D.y ** 2), 1],
   ];
-  return math.det(mat) <= 0;
+  return fourByFourDeterminant(matrix) <= 0;
 }
 
 

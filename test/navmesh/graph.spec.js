@@ -1,14 +1,74 @@
 import test from 'tape';
-import { isLegal, sortCounterClockwise, Point, Triangle, TGraph } from '../../src/navmesh/graph';
+import {
+  threeByThreeDeterminant,
+  fourByFourDeterminant,
+  isLegal,
+  sortCounterClockwise,
+  Point,
+  Triangle,
+  TGraph,
+} from '../../src/navmesh/graph';
+
+
+test('threeByThreeDeterminant returns correct value', t => {
+  t.is(threeByThreeDeterminant([
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+  ]), 0);
+  t.is(threeByThreeDeterminant([
+    [1, 3, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+  ]), 6);
+  t.is(threeByThreeDeterminant([
+    [1, 3, 3],
+    [4, 5, 6],
+    [7, 4, 9],
+  ]), -18);
+
+  t.end();
+});
+
+
+test('fourByFourDeterminant returns correct value', t => {
+  t.is(fourByFourDeterminant([
+    [1, 2, 3, 4],
+    [1, 2, 3, 4],
+    [1, 2, 3, 4],
+    [1, 2, 3, 4],
+  ]), 0);
+  t.is(fourByFourDeterminant([
+    [1, -2, 3, 4],
+    [1, 5, 3, 7],
+    [1, 2, 3, 4],
+    [0, 2, 8, 4],
+  ]), 96);
+  t.is(fourByFourDeterminant([
+    [1, -2, 5, 4],
+    [1, 5, 9, 7],
+    [1, 2, 3, 4],
+    [-1, 2, 8, 4],
+  ]), -84);
+
+  t.end();
+});
 
 
 test('isLegal', tester => {
   tester.test('returns true when oppositePoint outside circle', t => {
-    const edge = { p1: new Point(0, 1), p2: new Point(2, 1) };
-    const insertedPoint = new Point(1, 0);
-
+    let edge = { p1: new Point(0, 1), p2: new Point(2, 1) };
+    let insertedPoint = new Point(1, 0);
     t.true(isLegal(insertedPoint, edge, new Point(1, -1)));
     t.true(isLegal(insertedPoint, edge, new Point(1, 2.1)));
+
+    insertedPoint = new Point(1320, 1160);
+    edge = { p1: new Point(1000, 1160), p2: new Point(14000000, 10000000) };
+    t.true(isLegal(insertedPoint, edge, new Point(-3000000, -100)));
+
+    insertedPoint = new Point(1160, 520);
+    edge = { p1: new Point(80, 1560), p2: new Point(14000000, 10000000) };
+    t.true(isLegal(insertedPoint, edge, new Point(-3000000, -100)));
 
     t.end();
   });
@@ -24,13 +84,17 @@ test('isLegal', tester => {
   });
 
   tester.test('returns true when oppositePoint on circle', t => {
-    const edge = { p1: new Point(1, 0), p2: new Point(2, 1) };
-    const insertedPoint = new Point(0, 1);
-
+    let edge = { p1: new Point(1, 0), p2: new Point(2, 1) };
+    let insertedPoint = new Point(0, 1);
     t.true(isLegal(insertedPoint, edge, new Point(1, 2)));
+
+    insertedPoint = new Point(840, 1480);
+    edge = { p1: new Point(1000, 1360), p2: new Point(680, 1320) };
+    t.true(isLegal(insertedPoint, edge, new Point(800, 1160)));
 
     t.end();
   });
+
   tester.end();
 });
 
@@ -42,6 +106,7 @@ test('sortCounterClockwise sorts points in counter-clockwise order', t => {
     new Point(1, -1),
     new Point(-1, -1),
   ];
+
   t.same(sortCounterClockwise(points), [
     new Point(-1, 1),
     new Point(-1, -1),
@@ -68,6 +133,7 @@ test('sortCounterClockwise sorts points in counter-clockwise order', t => {
     new Point(1, 0),
     new Point(2, 1),
   ]);
+
   t.end();
 });
 
