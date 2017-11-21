@@ -1,6 +1,32 @@
 import _ from 'lodash';
-import math from 'mathjs';
 import { assert } from '../utils/asserts';
+
+
+export function threeByThreeDeterminant(matrix) {
+  assert(matrix.length === 3);
+  for (let i = 0; i < 3; i += 1) assert(matrix[i].length === 3);
+  const [[a, b, c], [d, e, f], [g, h, i]] = matrix;
+  return ((a * ((e * i) - (f * h))) - (b * ((d * i) - (f * g)))) + (c * ((d * h) - (e * g)));
+}
+
+
+export function fourByFourDeterminant(matrix) {
+  assert(matrix.length === 4);
+  for (let i = 0; i < 4; i += 1) assert(matrix[i].length === 4);
+  let sum = 0;
+  for (let j = 0; j < 4; j += 1) {
+    const mat = [];
+    for (let k = 1; k < 4; k += 1) {
+      const row = [];
+      for (let l = 0; l < 4; l += 1) {
+        if (l !== j) row.push(matrix[k][l]);
+      }
+      mat.push(row);
+    }
+    sum += ((j % 2) ? -1 : 1) * matrix[0][j] * threeByThreeDeterminant(mat);
+  }
+  return sum;
+}
 
 
 /**
@@ -84,13 +110,13 @@ export function sortCounterClockwise(points) {
 export function isLegal(insertedPoint, e, oppositePoint) {
   const [A, B, C] = sortCounterClockwise([insertedPoint, e.p1, e.p2]);
   const D = oppositePoint;
-  const mat = [
+  const matrix = [
     [A.x, A.y, (A.x ** 2) + (A.y ** 2), 1],
     [B.x, B.y, (B.x ** 2) + (B.y ** 2), 1],
     [C.x, C.y, (C.x ** 2) + (C.y ** 2), 1],
     [D.x, D.y, (D.x ** 2) + (D.y ** 2), 1],
   ];
-  return math.det(mat) <= 0;
+  return fourByFourDeterminant(matrix) <= 0;
 }
 
 
