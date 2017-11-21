@@ -1,31 +1,26 @@
 import _ from 'lodash';
 import { assert } from '../utils/asserts';
 
-
-export function threeByThreeDeterminant(matrix) {
-  assert(matrix.length === 3, 'input matrix should be 3x3');
-  for (let i = 0; i < 3; i += 1) assert(matrix[i].length === 3, 'input matrix should be 3x3');
-  const [[a, b, c], [d, e, f], [g, h, i]] = matrix;
-  return ((a * ((e * i) - (f * h))) - (b * ((d * i) - (f * g)))) + (c * ((d * h) - (e * g)));
-}
-
-
-export function fourByFourDeterminant(matrix) {
-  assert(matrix.length === 4, 'input matrix should be 4x4');
-  for (let i = 0; i < 4; i += 1) assert(matrix[i].length === 4, 'input matrix should be 4x4');
+export function determinant(matrix) {
+  const N = matrix.length;
+  for (let i = 0; i < N; i += 1) {
+    assert(matrix[i].length === N, 'input matrix should be NxN');
+  }
   let sum = 0;
-  for (let j = 0; j < 4; j += 1) {
-    // Create a sub-matrix of the 3x3 which do not contain elements in the 0th row or the jth column
+  // Recursive base-case, a single element
+  if (N === 1) return matrix[0][0];
+  for (let j = 0; j < N; j += 1) {
+    // Create a sub-matrix which do not contain elements in the 0th row or the jth column
     const subMatrix = [];
-    for (let k = 1; k < 4; k += 1) {
+    for (let k = 1; k < N; k += 1) {
       const row = [];
-      for (let l = 0; l < 4; l += 1) {
+      for (let l = 0; l < N; l += 1) {
         if (l !== j) row.push(matrix[k][l]);
       }
       subMatrix.push(row);
     }
-    // Alternate between +/- the determinant of the 3x3
-    sum += ((j % 2) ? -1 : 1) * matrix[0][j] * threeByThreeDeterminant(subMatrix);
+    // Alternate between +/- the determinant of the sub-matrix
+    sum += ((j % 2) ? -1 : 1) * matrix[0][j] * determinant(subMatrix);
   }
   return sum;
 }
@@ -118,7 +113,7 @@ export function isLegal(insertedPoint, e, oppositePoint) {
     [C.x, C.y, (C.x ** 2) + (C.y ** 2), 1],
     [D.x, D.y, (D.x ** 2) + (D.y ** 2), 1],
   ];
-  return fourByFourDeterminant(matrix) <= 0;
+  return determinant(matrix) <= 0;
 }
 
 
