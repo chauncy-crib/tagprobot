@@ -13,7 +13,8 @@ import {
   PPCL,
   CPTL,
   PATH_ALPHA,
-  PATH_COLOR,
+  ALLY_PATH_COLOR,
+  ENEMY_PATH_COLOR,
   NT_ALPHA,
   NT_COLOR,
   KEY_COLOR,
@@ -32,11 +33,15 @@ import { init2dArray } from '../helpers/map';
 import { isVisualMode } from '../utils/interface';
 import { assert, assertGridInBounds } from '../utils/asserts';
 
-let pathSprite; // The sprite for the current path
-let polypointPathSprite; // the sprite for the polypoint path
+// PIXI Graphics for drawing the bot's current planned path
+let allyCellPathGraphics = null; // eslint-disable-line prefer-const
+// PIXI Graphics for drawing the predicted enemy path
+let enemyCellPathGraphics = null; // eslint-disable-line prefer-const
+// PIXI Graphics for drawing the polypoint path
+let polypointPathGraphics = null;
 
 // A grid of NT-sprites, which are subject to change. If there isn't a NT-object at the given cell,
-// then store null. This object is size tagpro_map_length * CPTL x tagpro_map_width * CPTL
+//   then store null. This object is size tagpro_map_length * CPTL x tagpro_map_width * CPTL
 let tempNTSprites = [];
 
 // The permanent NT sprite. Will always be on map (if visualizations are on)
@@ -50,9 +55,8 @@ let polypointSprite;
 
 // The current state of the keys being pressed
 export const currKeyPresses = { x: null, y: null };
-// PIXI object that holds the key press visualizations
-let keyPressesVis;
-// Index of specific keys inside of the graphics container's children array
+let keyPressesVis; // PIXI Graphics for drawing the key press visualizations
+// Index of specific keys inside of the keyPressesVis children array
 const leftKeyIndex = 0;
 const downKeyIndex = 1;
 const rightKeyIndex = 2;
@@ -71,7 +75,8 @@ const keyGap = 4; // gap between keys in pixels
  * @returns {PIXI.Graphics} a PIXI.Graphics rectangle object with the specified x, y, width, height,
  *   alpha, and color
  */
-function getPixiRect(xp, yp, width, height, alpha, color, graphics = new PIXI.Graphics()) {
+function getPixiRect(xp, yp, width, height, alpha, color) {
+  const graphics = new PIXI.Graphics();
   graphics.beginFill(color).drawRect(
     xp,
     yp,
@@ -91,8 +96,19 @@ function getPixiRect(xp, yp, width, height, alpha, color, graphics = new PIXI.Gr
  * @returns {PIXI.Graphics} a PIXI.Graphics rectangle object with the specified x, y, size,
  *   alpha, and color
  */
-function getPixiSquare(xp, yp, size, alpha, color, graphics) {
-  return getPixiRect(xp, yp, size, size, alpha, color, graphics);
+function getPixiSquare(xp, yp, size, alpha, color) {
+  return getPixiRect(xp, yp, size, size, alpha, color);
+}
+
+
+/**
+ * Stores a PIXI Container in the keyPressesVis global and adds it to the appropriate tagpro object
+ *   UI layer.
+ */
+function initKeyPressesVis() {
+  keyPressesVis = new PIXI.Graphics();
+  tagpro.renderer.layers.ui.addChild(keyPressesVis);
+  console.error('Set the thing!');
 }
 
 
@@ -131,6 +147,8 @@ export function initUiUpdateProcess() {
  *   keys are being pressed.
  */
 export function drawBlankKeyPresses() {
+  if (!keyPressesVis) initKeyPressesVis();
+
   keyPressesVis.removeChildren();
   keyPressesVis.addChildAt(
     getPixiSquare(-(1.5 * keySize) - keyGap, 0, keySize, KEY_OFF_ALPHA, KEY_COLOR),
@@ -155,21 +173,11 @@ export function drawBlankKeyPresses() {
 
 
 /**
- * Creates the PIXI object that holds the key press visualizations and draws the initial keys.
- */
-export function initKeyPressesVisualization() {
-  keyPressesVis = new PIXI.DisplayObjectContainer();
-  tagpro.renderer.layers.ui.addChild(keyPressesVis);
-  drawBlankKeyPresses();
-}
-
-
-/**
  * @param {number} keyIndex - the index within the keyPressesVis PIXI object of the key that should
  *   be updated
  * @param {number} newAlpha - the alpha value to set the new key drawing to
  */
-function updateKeyDrawing(keyIndex, newAlpha) {
+function updateKeyPressesDrawing(keyIndex, newAlpha) {
   let xp;
   let yp;
   switch (keyIndex) {
@@ -213,8 +221,8 @@ export function drawKeyPresses(directions) {
     const rightAlpha = directions.x === 'RIGHT' ? KEY_ON_ALPHA : KEY_OFF_ALPHA;
 
     // Update left/right key drawings
-    updateKeyDrawing(leftKeyIndex, leftAlpha);
-    updateKeyDrawing(rightKeyIndex, rightAlpha);
+    updateKeyPressesDrawing(leftKeyIndex, leftAlpha);
+    updateKeyPressesDrawing(rightKeyIndex, rightAlpha);
   }
 
   if (directions.y !== currKeyPresses.y) {
@@ -223,32 +231,36 @@ export function drawKeyPresses(directions) {
     const upAlpha = directions.y === 'UP' ? KEY_ON_ALPHA : KEY_OFF_ALPHA;
 
     // Update down/up key drawings
-    updateKeyDrawing(downKeyIndex, downAlpha);
-    updateKeyDrawing(upKeyIndex, upAlpha);
+    updateKeyPressesDrawing(downKeyIndex, downAlpha);
+    updateKeyPressesDrawing(upKeyIndex, upAlpha);
   }
 }
 
 
 /**
- * Erases pathSprite from the renderer. Creates a new path sprite for each cell in
+ * Erases cellPathGraphic from the renderer. Creates a new path sprite for each cell in
  *   path. Adds each new sprite to pathSprites, and to the renderer. Runtime: O(A)
- * @param {GameState[]} path - an array of GameStates, likely returned by getShortestPath()
+ * @param {PIXI.Graphics} cellPathGraphic - the PIXI Graphics object to update
+ * @param {GameState[]} cellPath - an array of GameStates, likely returned by getShortestPath()
+ * @param cellPathColor - the color to make the rendered path
+ * @param {PolypointState[]} polypointPath - a list of states, that define the path
  */
-export function updatePath(path, polypointPath) {
-  if (!isVisualMode()) {
-    return;
-  }
-  tagpro.renderer.layers.background.removeChild(pathSprite);
-  pathSprite = new PIXI.Graphics();
-  _.forEach(path, cell => {
-    getPixiSquare(cell.xc * PPCL, cell.yc * PPCL, PPCL, PATH_ALPHA, PATH_COLOR, pathSprite);
+export function drawPath(cellPathGraphics, cellPath, cellPathColor, polypointPath) {
+  cellPathGraphics.removeChildren();
+  _.forEach(cellPath, cell => {
+    cellPathGraphics.addChild(getPixiSquare(
+      cell.xc * PPCL,
+      cell.yc * PPCL,
+      PPCL,
+      PATH_ALPHA,
+      cellPathColor,
+    ));
   });
-  tagpro.renderer.layers.background.addChild(pathSprite);
 
   if (polypointPath) {
-    tagpro.renderer.layers.background.removeChild(polypointPathSprite);
-    polypointPathSprite = new PIXI.Graphics();
-    polypointPathSprite.lineStyle(
+    tagpro.renderer.layers.background.removeChild(polypointPathGraphics);
+    polypointPathGraphics = new PIXI.Graphics();
+    polypointPathGraphics.lineStyle(
       TRIANGULATION_THICKNESS + 1,
       TRIANGULATION_EDGE_COLOR,
       1,
@@ -258,14 +270,36 @@ export function updatePath(path, polypointPath) {
       // TODO remove these asserts
       assert(_.has(p, 'point'));
       if (prevPoint) {
-        polypointPathSprite
+        polypointPathGraphics
           .moveTo(prevPoint.point.x, prevPoint.point.y)
           .lineTo(p.point.x, p.point.y);
       }
       prevPoint = p;
     });
-    tagpro.renderer.layers.background.addChild(polypointPathSprite);
+    tagpro.renderer.layers.background.addChild(polypointPathGraphics);
   }
+}
+
+
+export function drawAllyPath(cellPath, polypointPath) {
+  if (!isVisualMode()) return;
+  if (!allyCellPathGraphics) {
+    allyCellPathGraphics = new PIXI.Graphics();
+    tagpro.renderer.layers.background.addChild(allyCellPathGraphics);
+  }
+
+  drawPath(allyCellPathGraphics, cellPath, ALLY_PATH_COLOR, polypointPath);
+}
+
+
+export function drawEnemyPath(cellPath) {
+  if (!isVisualMode()) return;
+  if (!enemyCellPathGraphics) {
+    enemyCellPathGraphics = new PIXI.Graphics();
+    tagpro.renderer.layers.background.addChild(enemyCellPathGraphics);
+  }
+
+  drawPath(enemyCellPathGraphics, cellPath, ENEMY_PATH_COLOR);
 }
 
 
@@ -274,10 +308,13 @@ export function updatePath(path, polypointPath) {
  *   tempNTSprites to empty list. Runtime: O(N^2)
  */
 export function clearSprites() {
+  if (keyPressesVis) keyPressesVis.removeChildren();
+  if (allyCellPathGraphics) allyCellPathGraphics.removeChildren();
+  if (enemyCellPathGraphics) enemyCellPathGraphics.removeChildren();
+
   // Get a list of all sprites
   const backgroundSprites = [permNTSprite]
-    .concat(pathSprite)
-    .concat(polypointPathSprite)
+    .concat(polypointPathGraphics)
     // Flatten the tempNTSprites grid, and remove null values. O(N^2), because tempNTSprites is NxN
     .concat(_.reject(_.flatten(tempNTSprites), _.isNull));
   _.forEach(backgroundSprites, s => tagpro.renderer.layers.background.removeChild(s));
@@ -285,9 +322,9 @@ export function clearSprites() {
     .concat(triangulationSprite || [])
     .concat(polypointSprite || []);
   _.forEach(foregroundSprites, s => tagpro.renderer.layers.foreground.removeChild(s));
-  pathSprite = null;
   tempNTSprites = [];
-  if (keyPressesVis) keyPressesVis.removeChildren(); // clear the keypresses visualization
+  triangulationSprite = null;
+  polypointSprite = null;
 }
 
 
@@ -394,9 +431,7 @@ function getGraphGraphics(graph, thickness, edgeColor, vertexColor, alpha, drawV
  * Draws the navigation mesh lines on the tagpro map. Runtime: O(E), O(1) if visualizations off
  */
 export function drawNavMesh() {
-  if (!isVisualMode()) {
-    return;
-  }
+  if (!isVisualMode()) return;
   triangulationSprite = triangulationSprite || getGraphGraphics(
     getDTGraph(),
     NAV_MESH_THICKNESS,
