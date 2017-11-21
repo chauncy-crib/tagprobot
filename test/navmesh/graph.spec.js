@@ -1,7 +1,6 @@
 import test from 'tape';
 import {
-  threeByThreeDeterminant,
-  fourByFourDeterminant,
+  determinant,
   isLegal,
   sortCounterClockwise,
   Point,
@@ -10,18 +9,18 @@ import {
 } from '../../src/navmesh/graph';
 
 
-test('threeByThreeDeterminant returns correct value', t => {
-  t.is(threeByThreeDeterminant([
+test('determinant returns correct value for a 3x3', t => {
+  t.is(determinant([
     [1, 2, 3],
     [4, 5, 6],
     [7, 8, 9],
   ]), 0);
-  t.is(threeByThreeDeterminant([
+  t.is(determinant([
     [1, 3, 3],
     [4, 5, 6],
     [7, 8, 9],
   ]), 6);
-  t.is(threeByThreeDeterminant([
+  t.is(determinant([
     [1, 3, 3],
     [4, 5, 6],
     [7, 4, 9],
@@ -31,20 +30,20 @@ test('threeByThreeDeterminant returns correct value', t => {
 });
 
 
-test('fourByFourDeterminant returns correct value', t => {
-  t.is(fourByFourDeterminant([
+test('determinant returns correct value for a 4x4', t => {
+  t.is(determinant([
     [1, 2, 3, 4],
     [1, 2, 3, 4],
     [1, 2, 3, 4],
     [1, 2, 3, 4],
   ]), 0);
-  t.is(fourByFourDeterminant([
+  t.is(determinant([
     [1, -2, 3, 4],
     [1, 5, 3, 7],
     [1, 2, 3, 4],
     [0, 2, 8, 4],
   ]), 96);
-  t.is(fourByFourDeterminant([
+  t.is(determinant([
     [1, -2, 5, 4],
     [1, 5, 9, 7],
     [1, 2, 3, 4],
@@ -106,13 +105,13 @@ test('sortCounterClockwise sorts points in counter-clockwise order', t => {
     new Point(1, -1),
     new Point(-1, -1),
   ];
-
   t.same(sortCounterClockwise(points), [
     new Point(-1, 1),
     new Point(-1, -1),
     new Point(1, -1),
     new Point(1, 1),
   ]);
+
   points = [
     new Point(0, 1),
     new Point(1, -1),
@@ -123,6 +122,7 @@ test('sortCounterClockwise sorts points in counter-clockwise order', t => {
     new Point(1, -1),
     new Point(0, 1),
   ]);
+
   points = [
     new Point(0, 1),
     new Point(2, 1),
