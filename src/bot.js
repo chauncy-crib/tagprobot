@@ -5,7 +5,7 @@ import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe, amBlue, amRed } from './helpers/player';
 import { getShortestTilePath } from './helpers/path';
 import { isAutonomousMode, isVisualMode, move, dequeueChatMessages } from './utils/interface';
-import { updatePath } from './draw/drawings';
+import { drawAllyPath, drawEnemyPath } from './draw/drawings';
 import { desiredAccelerationMultiplier } from './helpers/physics';
 import { getShortestPolypointPath } from './navmesh/path';
 import { getDTGraph } from './navmesh/triangulation';
@@ -33,19 +33,39 @@ function getGoalPos() {
   } else {
     const enemyFC = findEnemyFC();
     if (enemyFC) { // If an enemy player in view has the flag, chase
+      const enemyGoal = amBlue() ? { xp: 1320, yp: 1360 } : { xp: 440, yp: 400 };
+      const enemyFinalTarget = {
+        xc: Math.floor(enemyGoal.xp / PPCL),
+        yc: Math.floor(enemyGoal.yp / PPCL),
+      };
+      enemyFC.xc = Math.floor((enemyFC.x + (PPCL / 2)) / PPCL);
+      enemyFC.yc = Math.floor((enemyFC.y + (PPCL / 2)) / PPCL);
+      const { map } = tagpro;
+      // Runtime: O(M*CPTL^2) with visualizations on, O(M + S*CPTL^2) with visualizations off
+      const traversableCells = getMapTraversabilityInCells(map);
+      const enemyShortestPath = getShortestTilePath(
+        { xc: enemyFC.xc, yc: enemyFC.yc },
+        { xc: enemyFinalTarget.xc, yc: enemyFinalTarget.yc },
+        traversableCells,
+      );
+      // Runtime: O(B), O(1) if visualizations off
+      drawEnemyPath(enemyShortestPath);
       goal = enemyFC;
       goal.xp = enemyFC.x + enemyFC.vx;
       goal.yp = enemyFC.y + enemyFC.vy;
       console.log('I see an enemy with the flag. Chasing!');
-    } else if (enemyTeamHasFlag()) {
-      goal = amBlue() ? { xp: 1360, yp: 1360 } : { xp: 400, yp: 400 };
-      console.log('Enemy has the flag. Headed towards the Enemy Endzone.');
-    } else if (myTeamHasFlag()) {
-      goal = amRed() ? { xp: 1360, yp: 1360 } : { xp: 400, yp: 400 };
-      console.log('We have the flag. Headed towards our Endzone.');
     } else {
-      goal = findTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
-      console.log("I don't know what to do. Going to central flag station!");
+      drawEnemyPath([]);
+      if (enemyTeamHasFlag()) {
+        goal = amBlue() ? { xp: 1360, yp: 1360 } : { xp: 400, yp: 400 };
+        console.log('Enemy has the flag. Headed towards the Enemy Endzone.');
+      } else if (myTeamHasFlag()) {
+        goal = amRed() ? { xp: 1360, yp: 1360 } : { xp: 400, yp: 400 };
+        console.log('We have the flag. Headed towards our Endzone.');
+      } else {
+        goal = findTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
+        console.log("I don't know what to do. Going to central flag station!");
+      }
     }
   }
 
@@ -87,7 +107,7 @@ function getAccelValues() {
   );
 
   // Runtime: O(A), O(1) if visualizations off
-  updatePath(shortestPath, polypointShortestPath);
+  drawAllyPath(shortestPath, polypointShortestPath);
 
   const target = { xp: me.x + BRP, yp: me.y + BRP };
   if (shortestPath) {
