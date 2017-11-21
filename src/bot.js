@@ -5,7 +5,7 @@ import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe, amBlue, amRed } from './helpers/player';
 import { getShortestTilePath } from './helpers/path';
 import { isAutonomousMode, isVisualMode, move, dequeueChatMessages } from './utils/interface';
-import { drawAllyPath, drawEnemyPath } from './draw/drawings';
+import { drawAllyCellPath, drawEnemyCellPath, drawPolypointPath } from './draw/drawings';
 import { desiredAccelerationMultiplier } from './helpers/physics';
 import { getShortestPolypointPath } from './navmesh/path';
 import { getDTGraph } from './navmesh/triangulation';
@@ -49,13 +49,13 @@ function getGoalPos() {
         traversableCells,
       );
       // Runtime: O(B), O(1) if visualizations off
-      drawEnemyPath(enemyShortestPath);
+      drawEnemyCellPath(enemyShortestPath);
       goal = enemyFC;
       goal.xp = enemyFC.x + enemyFC.vx;
       goal.yp = enemyFC.y + enemyFC.vy;
       console.log('I see an enemy with the flag. Chasing!');
     } else {
-      drawEnemyPath([]);
+      drawEnemyCellPath([]);
       if (enemyTeamHasFlag()) {
         goal = amBlue() ? { xp: 1360, yp: 1360 } : { xp: 400, yp: 400 };
         console.log('Enemy has the flag. Headed towards the Enemy Endzone.');
@@ -107,7 +107,8 @@ function getAccelValues() {
   );
 
   // Runtime: O(A), O(1) if visualizations off
-  drawAllyPath(shortestPath, polypointShortestPath);
+  drawAllyCellPath(shortestPath);
+  drawPolypointPath(polypointShortestPath);
 
   const target = { xp: me.x + BRP, yp: me.y + BRP };
   if (shortestPath) {

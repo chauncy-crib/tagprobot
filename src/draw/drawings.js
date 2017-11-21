@@ -21,15 +21,12 @@ import {
 import { getDTGraph } from '../navmesh/triangulation';
 import { init2dArray } from '../helpers/map';
 import { isVisualMode } from '../utils/interface';
-import { assert, assertGridInBounds } from '../utils/asserts';
+import { assertGridInBounds } from '../utils/asserts';
 
-// PIXI Graphics for drawing the bot's current planned path
-let allyCellPathGraphics = null; // eslint-disable-line prefer-const
-// PIXI Graphics for drawing the predicted enemy path
-let enemyCellPathGraphics = null; // eslint-disable-line prefer-const
-// PIXI Graphics for drawing the polypoint path
-let polypointPathGraphics = null;
 
+let allyCellPathGraphics = null; // PIXI Graphics for drawing the bot's current planned path
+let enemyCellPathGraphics = null; // PIXI Graphics for drawing the predicted enemy path
+let polypointPathGraphics = null; // PIXI Graphics for drawing the polypoint path
 // A grid of NT-sprites, which are subject to change. If there isn't a NT-object at the given cell,
 //   then store null. This object is size tagpro_map_length * CPTL x tagpro_map_width * CPTL
 let tempNTSprites = [];
@@ -37,10 +34,8 @@ let tempNTSpritesDrawn = false;
 
 // The permanent NT sprite. Will always be on map (if visualizations are on)
 let permNTSprite;
-
 // The sprite for the triangulation graph
 let triangulationSprite;
-
 // The sprite for the polypoint graph
 let polypointSprite;
 
@@ -93,17 +88,6 @@ function getPixiSquare(xp, yp, size, alpha, color) {
 
 
 /**
- * Stores a PIXI Container in the keyPressesVis global and adds it to the appropriate tagpro object
- *   UI layer.
- */
-function initKeyPressesVis() {
-  keyPressesVis = new PIXI.Graphics();
-  tagpro.renderer.layers.ui.addChild(keyPressesVis);
-  console.error('Set the thing!');
-}
-
-
-/**
  * Places the key presses visualization in the correct spot relative to the current screen size.
  *   This is used to correct the placement of the key presses visualization if the user dynamically
  *   resized their screen.
@@ -138,7 +122,10 @@ export function initUiUpdateProcess() {
  *   keys are being pressed.
  */
 export function drawBlankKeyPresses() {
-  if (!keyPressesVis) initKeyPressesVis();
+  if (!keyPressesVis) {
+    keyPressesVis = new PIXI.Graphics();
+    tagpro.renderer.layers.ui.addChild(keyPressesVis);
+  }
 
   keyPressesVis.removeChildren();
   keyPressesVis.addChildAt(
@@ -229,14 +216,13 @@ export function drawKeyPresses(directions) {
 
 
 /**
- * Erases cellPathGraphic from the renderer. Creates a new path sprite for each cell in
+ * Erases cellPathGraphics from the renderer. Creates a new path sprite for each cell in
  *   path. Adds each new sprite to pathSprites, and to the renderer. Runtime: O(A)
- * @param {PIXI.Graphics} cellPathGraphic - the PIXI Graphics object to update
+ * @param {PIXI.Graphics} cellPathGraphics - the PIXI Graphics object to update
  * @param {GameState[]} cellPath - an array of GameStates, likely returned by getShortestPath()
  * @param cellPathColor - the color to make the rendered path
- * @param {PolypointState[]} polypointPath - a list of states, that define the path
  */
-export function drawPath(cellPathGraphics, cellPath, cellPathColor, polypointPath) {
+function drawCellPath(cellPathGraphics, cellPath, cellPathColor) {
   cellPathGraphics.removeChildren();
   _.forEach(cellPath, cell => {
     cellPathGraphics.addChild(getPixiSquare(
@@ -247,50 +233,59 @@ export function drawPath(cellPathGraphics, cellPath, cellPathColor, polypointPat
       cellPathColor,
     ));
   });
-
-  if (polypointPath) {
-    tagpro.renderer.layers.background.removeChild(polypointPathGraphics);
-    polypointPathGraphics = new PIXI.Graphics();
-    polypointPathGraphics.lineStyle(
-      TRIANGULATION_THICKNESS + 1,
-      TRIANGULATION_EDGE_COLOR,
-      1,
-    );
-    let prevPoint;
-    _.forEach(polypointPath, p => {
-      // TODO remove these asserts
-      assert(_.has(p, 'point'));
-      if (prevPoint) {
-        polypointPathGraphics
-          .moveTo(prevPoint.point.x, prevPoint.point.y)
-          .lineTo(p.point.x, p.point.y);
-      }
-      prevPoint = p;
-    });
-    tagpro.renderer.layers.background.addChild(polypointPathGraphics);
-  }
 }
 
 
-export function drawAllyPath(cellPath, polypointPath) {
+/**
+ * Helper function to call drawCellPath() while modifying the correct global Graphics object.
+ * @param {GameState[]} cellPath - an array of GameStates, likely returned by getShortestPath()
+ */
+export function drawAllyCellPath(cellPath) {
   if (!isVisualMode()) return;
   if (!allyCellPathGraphics) {
     allyCellPathGraphics = new PIXI.Graphics();
     tagpro.renderer.layers.background.addChild(allyCellPathGraphics);
   }
-
-  drawPath(allyCellPathGraphics, cellPath, ALLY_PATH_COLOR, polypointPath);
+  drawCellPath(allyCellPathGraphics, cellPath, ALLY_PATH_COLOR);
 }
 
 
-export function drawEnemyPath(cellPath) {
+/**
+ * Helper function to call drawCellPath() while modifying the correct global Graphics object.
+ * @param {GameState[]} cellPath - an array of GameStates, likely returned by getShortestPath()
+ */
+export function drawEnemyCellPath(cellPath) {
   if (!isVisualMode()) return;
   if (!enemyCellPathGraphics) {
     enemyCellPathGraphics = new PIXI.Graphics();
     tagpro.renderer.layers.background.addChild(enemyCellPathGraphics);
   }
+  drawCellPath(enemyCellPathGraphics, cellPath, ENEMY_PATH_COLOR);
+}
 
-  drawPath(enemyCellPathGraphics, cellPath, ENEMY_PATH_COLOR);
+
+/**
+ * @param {PolypointState[]} polypointPath - a list of states that define the path
+ */
+export function drawPolypointPath(polypointPath) {
+  if (!isVisualMode()) return;
+  tagpro.renderer.layers.background.removeChild(polypointPathGraphics);
+  polypointPathGraphics = new PIXI.Graphics();
+  polypointPathGraphics.lineStyle(
+    TRIANGULATION_THICKNESS + 1,
+    TRIANGULATION_EDGE_COLOR,
+    1,
+  );
+  let prevPoint;
+  _.forEach(polypointPath, p => {
+    if (prevPoint) {
+      polypointPathGraphics
+        .moveTo(prevPoint.point.x, prevPoint.point.y)
+        .lineTo(p.point.x, p.point.y);
+    }
+    prevPoint = p;
+  });
+  tagpro.renderer.layers.background.addChild(polypointPathGraphics);
 }
 
 
