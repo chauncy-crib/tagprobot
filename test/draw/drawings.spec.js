@@ -3,7 +3,7 @@ import sinon from 'sinon';
 
 import { Point, Graph } from '../../src/navmesh/graph';
 import {
-  drawAllyPath,
+  drawAllyCellPath,
   clearSprites,
   drawPermanentNTSprites,
   generatePermanentNTSprites,
@@ -16,12 +16,12 @@ import {
 /* eslint-disable class-methods-use-this */
 
 
-test('drawAllyPath', tester => {
+test('drawAllyCellPath', tester => {
   tester.test('checks isVisualMode', t => {
     const mockIsVisualMode = sinon.stub().returns(false);
     DrawRewireAPI.__Rewire__('isVisualMode', mockIsVisualMode);
 
-    drawAllyPath();
+    drawAllyCellPath();
     t.is(mockIsVisualMode.callCount, 1);
 
     DrawRewireAPI.__ResetDependency__('isVisualMode');
@@ -36,7 +36,7 @@ test('drawAllyPath', tester => {
     const mockAllyCellPathGraphics = new PIXI.Graphics();
     DrawRewireAPI.__Rewire__('allyCellPathGraphics', mockAllyCellPathGraphics);
 
-    drawAllyPath();
+    drawAllyCellPath();
     t.is(mockRemoveChildren.callCount, 1);
 
     global.PIXI = null;
@@ -56,7 +56,7 @@ test('drawAllyPath', tester => {
     DrawRewireAPI.__Rewire__('getPixiSquare', mockGetPixiSquare);
     DrawRewireAPI.__Rewire__('PPCL', 1);
 
-    drawAllyPath([{ xc: 0, yc: 1 }, { xc: 2, yc: 3 }]);
+    drawAllyCellPath([{ xc: 0, yc: 1 }, { xc: 2, yc: 3 }]);
     t.is(mockAddChild.callCount, 2);
     t.is(mockGetPixiSquare.callCount, 2);
     t.true(mockGetPixiSquare.calledWith(0, 1));
@@ -85,20 +85,20 @@ test('drawAllyPath', tester => {
     DrawRewireAPI.__Rewire__('isVisualMode', mockIsVisualMode);
     const mockGetPixiSquare = sinon.spy();
     DrawRewireAPI.__Rewire__('getPixiSquare', mockGetPixiSquare);
-    const mockDrawPath = sinon.spy();
-    DrawRewireAPI.__Rewire__('drawPath', mockDrawPath);
+    const mockDrawCellPath = sinon.spy();
+    DrawRewireAPI.__Rewire__('drawCellPath', mockDrawCellPath);
     const mockRemoveChildren = sinon.spy();
     global.PIXI = { Graphics: class { removeChildren() { mockRemoveChildren(); } } };
 
-    drawAllyPath();
-    drawAllyPath();
-    drawAllyPath();
-    t.is(mockAddChild.callCount, 1); // run only the first time drawAllyPath() is called
+    drawAllyCellPath();
+    drawAllyCellPath();
+    drawAllyCellPath();
+    t.is(mockAddChild.callCount, 1); // run only the first time drawAllyCellPath() is called
 
     DrawRewireAPI.__ResetDependency__('isVisualMode');
     DrawRewireAPI.__ResetDependency__('allyCellPathGraphics');
     DrawRewireAPI.__ResetDependency__('getPixiSquare');
-    DrawRewireAPI.__ResetDependency__('drawPath');
+    DrawRewireAPI.__ResetDependency__('drawCellPath');
     global.tagpro = null;
     global.PIXI = null;
     t.end();
