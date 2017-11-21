@@ -2,88 +2,105 @@ import test from 'tape';
 import sinon from 'sinon';
 
 import { Point, Graph } from '../../src/navmesh/graph';
-import { updatePath,
+import {
+  drawAllyPath,
   clearSprites,
   drawPermanentNTSprites,
   generatePermanentNTSprites,
   updateNTSprites,
   drawNavMesh,
-  __RewireAPI__ as DrawRewireAPI } from '../../src/draw/drawings';
+  __RewireAPI__ as DrawRewireAPI,
+} from '../../src/draw/drawings';
 
 
-test('updatePath', tester => {
+/* eslint-disable class-methods-use-this */
+
+
+test('drawAllyPath', tester => {
   tester.test('checks isVisualMode', t => {
     const mockIsVisualMode = sinon.stub().returns(false);
     DrawRewireAPI.__Rewire__('isVisualMode', mockIsVisualMode);
-    updatePath();
+
+    drawAllyPath();
     t.is(mockIsVisualMode.callCount, 1);
+
     DrawRewireAPI.__ResetDependency__('isVisualMode');
     t.end();
   });
 
-  tester.test('calls removeChild on each existing sprite', t => {
+  tester.test('calls removeChildren once', t => {
+    const mockRemoveChildren = sinon.spy();
+    global.PIXI = { Graphics: class { removeChildren() { mockRemoveChildren(); } } };
     const mockIsVisualMode = sinon.stub().returns(true);
-    const mockRemoveChild = sinon.spy();
-    const mockPathSprite = 'sprite';
-    global.tagpro = {
-      renderer: {
-        layers: {
-          background: { removeChild: mockRemoveChild, addChild: () => {} },
-        },
-      },
-    };
-    global.PIXI = { Graphics: class {} };
-
     DrawRewireAPI.__Rewire__('isVisualMode', mockIsVisualMode);
-    DrawRewireAPI.__Rewire__('pathSprite', mockPathSprite);
+    const mockAllyCellPathGraphics = new PIXI.Graphics();
+    DrawRewireAPI.__Rewire__('allyCellPathGraphics', mockAllyCellPathGraphics);
 
-    updatePath();
+    drawAllyPath();
+    t.is(mockRemoveChildren.callCount, 1);
 
-    t.is(mockRemoveChild.callCount, 1);
-    t.true(mockRemoveChild.getCall(0).calledWithExactly('sprite'));
-
+    global.PIXI = null;
     DrawRewireAPI.__ResetDependency__('isVisualMode');
-    DrawRewireAPI.__ResetDependency__('pathSprite');
-
+    DrawRewireAPI.__ResetDependency__('allyCellPathGraphics');
     t.end();
   });
 
-  tester.test('adds a new sprite for each item in path to the renderer', t => {
-    const mockIsVisualMode = sinon.stub().returns(true);
+  tester.test('calls addChild and getPixiSquare for each cell in cellPath', t => {
     const mockAddChild = sinon.spy();
-    const mockPathSprite = 'potato';
-    const mockGetPixiSquare = sinon.stub();
-    mockGetPixiSquare.onCall(0).returns('square1');
-    mockGetPixiSquare.onCall(1).returns('square2');
-    global.tagpro = {
-      renderer: {
-        layers: {
-          background: { removeChild: () => {}, addChild: mockAddChild },
-        },
-      },
-    };
-    global.PIXI = { Graphics: class {} };
+    global.PIXI = { Graphics: class { addChild() { mockAddChild(); } removeChildren() {} } };
+    const mockIsVisualMode = sinon.stub().returns(true);
     DrawRewireAPI.__Rewire__('isVisualMode', mockIsVisualMode);
-    DrawRewireAPI.__Rewire__('pathSprite', mockPathSprite);
+    const mockAllyCellPathGraphics = new PIXI.Graphics();
+    DrawRewireAPI.__Rewire__('allyCellPathGraphics', mockAllyCellPathGraphics);
+    const mockGetPixiSquare = sinon.stub();
     DrawRewireAPI.__Rewire__('getPixiSquare', mockGetPixiSquare);
     DrawRewireAPI.__Rewire__('PPCL', 1);
 
-    updatePath([
-      { xc: 0, yc: 1 },
-      { xc: 2, yc: 3 },
-    ]);
-
+    drawAllyPath([{ xc: 0, yc: 1 }, { xc: 2, yc: 3 }]);
+    t.is(mockAddChild.callCount, 2);
     t.is(mockGetPixiSquare.callCount, 2);
-    t.is(mockAddChild.callCount, 1);
     t.true(mockGetPixiSquare.calledWith(0, 1));
     t.true(mockGetPixiSquare.calledWith(2, 3));
-    t.true(mockAddChild.getCall(0).args[0] instanceof global.PIXI.Graphics);
 
+    global.PIXI = null;
     DrawRewireAPI.__ResetDependency__('isVisualMode');
-    DrawRewireAPI.__ResetDependency__('pathSprite');
+    DrawRewireAPI.__ResetDependency__('allyCellPathGraphics');
     DrawRewireAPI.__ResetDependency__('getPixiSquare');
     DrawRewireAPI.__ResetDependency__('PPCL');
+    t.end();
+  });
 
+  tester.test('only adds graphics to background once', t => {
+    const mockAddChild = sinon.spy();
+    global.tagpro = {
+      renderer: {
+        layers: {
+          background: { addChild: mockAddChild },
+        },
+      },
+    };
+    const mockAllyCellPathGraphics = null;
+    DrawRewireAPI.__Rewire__('allyCellPathGraphics', mockAllyCellPathGraphics);
+    const mockIsVisualMode = sinon.stub().returns(true);
+    DrawRewireAPI.__Rewire__('isVisualMode', mockIsVisualMode);
+    const mockGetPixiSquare = sinon.spy();
+    DrawRewireAPI.__Rewire__('getPixiSquare', mockGetPixiSquare);
+    const mockDrawPath = sinon.spy();
+    DrawRewireAPI.__Rewire__('drawPath', mockDrawPath);
+    const mockRemoveChildren = sinon.spy();
+    global.PIXI = { Graphics: class { removeChildren() { mockRemoveChildren(); } } };
+
+    drawAllyPath();
+    drawAllyPath();
+    drawAllyPath();
+    t.is(mockAddChild.callCount, 1); // run only the first time drawAllyPath() is called
+
+    DrawRewireAPI.__ResetDependency__('isVisualMode');
+    DrawRewireAPI.__ResetDependency__('allyCellPathGraphics');
+    DrawRewireAPI.__ResetDependency__('getPixiSquare');
+    DrawRewireAPI.__ResetDependency__('drawPath');
+    global.tagpro = null;
+    global.PIXI = null;
     t.end();
   });
 
@@ -92,7 +109,7 @@ test('updatePath', tester => {
 
 
 test('clearSprites', tester => {
-  tester.test('removes all sprites in permNTSprites, pathSprites, and tempNTSprites', t => {
+  tester.test('removes permNTSprites, pathSprites, and tempNTSprites from UI', t => {
     const mockRemoveChild = sinon.spy();
     global.tagpro = {
       renderer: {
@@ -102,27 +119,21 @@ test('clearSprites', tester => {
         },
       },
     };
-
     DrawRewireAPI.__Rewire__('permNTSprite', 1);
-    DrawRewireAPI.__Rewire__('pathSprite', 2);
-    DrawRewireAPI.__Rewire__('polypointPathSprite', 3);
-    DrawRewireAPI.__Rewire__('tempNTSprites', [[5, null], [null, 6]]);
-
+    DrawRewireAPI.__Rewire__('polypointPathGraphics', 2);
+    DrawRewireAPI.__Rewire__('tempNTSprites', [[3, null], [null, 4]]);
     clearSprites();
 
-    t.is(mockRemoveChild.callCount, 5);
+    t.is(mockRemoveChild.callCount, 4);
     t.true(mockRemoveChild.calledWithExactly(1));
     t.true(mockRemoveChild.calledWithExactly(2));
     t.true(mockRemoveChild.calledWithExactly(3));
-    t.false(mockRemoveChild.calledWithExactly(4));
-    t.true(mockRemoveChild.calledWithExactly(5));
-    t.true(mockRemoveChild.calledWithExactly(6));
+    t.true(mockRemoveChild.calledWithExactly(4));
 
     DrawRewireAPI.__ResetDependency__('permNTSprite');
-    DrawRewireAPI.__ResetDependency__('pathSprite');
     DrawRewireAPI.__ResetDependency__('tempNTSprite');
-    DrawRewireAPI.__ResetDependency__('polypointPathSprite');
-
+    DrawRewireAPI.__ResetDependency__('polypointPathGraphics');
+    global.tagpro = null;
     t.end();
   });
   tester.end();
@@ -134,14 +145,13 @@ test('drawPermanentNTSprites', tester => {
     const mockAddChild = sinon.spy();
     global.tagpro = { renderer: { layers: { background: { addChild: mockAddChild } } } };
     DrawRewireAPI.__Rewire__('permNTSprite', 'sprite');
-
     drawPermanentNTSprites();
 
     t.is(mockAddChild.callCount, 1);
     t.true(mockAddChild.calledWithExactly('sprite'));
 
     DrawRewireAPI.__ResetDependency__('permNTSprite');
-
+    global.tagpro = null;
     t.end();
   });
   tester.end();
@@ -151,10 +161,14 @@ test('drawPermanentNTSprites', tester => {
 test('generatePermanentNTSprites', tester => {
   tester.test('throws error when x, y out of bounds', t => {
     DrawRewireAPI.__Rewire__('CPTL', 1);
+
     t.throws(() => generatePermanentNTSprites(1, 0, [[0, 0, 0]]));
     t.throws(() => generatePermanentNTSprites(0, 1, [[0], [0], [0]]));
+
     DrawRewireAPI.__Rewire__('CPTL', 2);
+
     t.throws(() => generatePermanentNTSprites(1, 0, [[0, 0], [0, 0]]));
+
     DrawRewireAPI.__Rewire__('CPTL', 2);
     DrawRewireAPI.__ResetDependency__('CPTL');
     t.end();
@@ -162,10 +176,10 @@ test('generatePermanentNTSprites', tester => {
 
   tester.test('calls getPixiSquare for CPTL=1', t => {
     const mockGetPixiSquare = sinon.spy();
-
     DrawRewireAPI.__Rewire__('getPixiSquare', mockGetPixiSquare);
     DrawRewireAPI.__Rewire__('CPTL', 1);
     DrawRewireAPI.__Rewire__('PPCL', 40);
+    global.PIXI = { Graphics: class {} };
 
     generatePermanentNTSprites(0, 0, [[1, 0, 1]]);
     t.false(mockGetPixiSquare.called);
@@ -177,7 +191,7 @@ test('generatePermanentNTSprites', tester => {
     DrawRewireAPI.__ResetDependency__('getPixiSquare');
     DrawRewireAPI.__ResetDependency__('CPTL');
     DrawRewireAPI.__ResetDependency__('PPCL');
-
+    global.PIXI = null;
     t.end();
   });
 
@@ -235,12 +249,10 @@ test('updateNTSprites', tester => {
         },
       },
     };
-
     DrawRewireAPI.__Rewire__('CPTL', 2);
     DrawRewireAPI.__Rewire__('PPCL', 20);
     DrawRewireAPI.__Rewire__('getPixiSquare', mockGetPixiSquare);
     DrawRewireAPI.__Rewire__('tempNTSprites', mockTempNTSprites);
-
     updateNTSprites(0, 1, cellTraversabilities);
     updateNTSprites(0, 2, cellTraversabilities);
 
@@ -253,7 +265,7 @@ test('updateNTSprites', tester => {
     DrawRewireAPI.__ResetDependency__('PPCL');
     DrawRewireAPI.__ResetDependency__('getPixiSquare');
     DrawRewireAPI.__ResetDependency__('tempNTSprites');
-
+    global.tagpro = null;
     t.end();
   });
   tester.end();
@@ -302,8 +314,8 @@ test('drawNavMesh()', tester => {
         },
       },
     };
-
     drawNavMesh();
+
     t.true(mockDrawGraph.calledWith(mockGraph, 'thick', 'brown', 'morebrown'));
 
     DrawRewireAPI.__ResetDependency__('drawGraph');
@@ -311,7 +323,9 @@ test('drawNavMesh()', tester => {
     DrawRewireAPI.__ResetDependency__('NAV_MESH_THICKNESS');
     DrawRewireAPI.__ResetDependency__('NAV_MESH_EDGE_COLOR');
     DrawRewireAPI.__ResetDependency__('NAV_MESH_VERTEX_COLOR');
+    global.tagpro = null;
     t.end();
   });
+
   tester.end();
 });
