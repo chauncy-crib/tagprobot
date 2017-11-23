@@ -334,10 +334,15 @@ export function generatePermanentNTSprites(xt, yt, cellTraversabilities) {
   permNTSprite = permNTSprite || new PIXI.Graphics();
   for (let i = xt * CPTL; i < (xt + 1) * CPTL; i++) {
     for (let j = yt * CPTL; j < (yt + 1) * CPTL; j++) {
-      // if we don't have a sprite already there and there should be one,
+      // If we don't have a sprite already there and there should be one,
       //   draw it
       if (!cellTraversabilities[i][j]) {
-        getPixiSquare(i * PPCL, j * PPCL, PPCL, NT_ALPHA, NT_COLOR, permNTSprite);
+        permNTSprite.beginFill(NT_COLOR).drawRect(
+          i * PPCL,
+          j * PPCL,
+          PPCL,
+          PPCL,
+        ).alpha = NT_ALPHA;
       }
     }
   }
