@@ -136,6 +136,7 @@ test('clearSprites', tester => {
     global.tagpro = null;
     t.end();
   });
+
   tester.end();
 });
 
@@ -154,6 +155,7 @@ test('drawPermanentNTSprites', tester => {
     global.tagpro = null;
     t.end();
   });
+
   tester.end();
 });
 
@@ -161,65 +163,78 @@ test('drawPermanentNTSprites', tester => {
 test('generatePermanentNTSprites', tester => {
   tester.test('throws error when x, y out of bounds', t => {
     DrawRewireAPI.__Rewire__('CPTL', 1);
-
     t.throws(() => generatePermanentNTSprites(1, 0, [[0, 0, 0]]));
     t.throws(() => generatePermanentNTSprites(0, 1, [[0], [0], [0]]));
 
     DrawRewireAPI.__Rewire__('CPTL', 2);
-
     t.throws(() => generatePermanentNTSprites(1, 0, [[0, 0], [0, 0]]));
 
-    DrawRewireAPI.__Rewire__('CPTL', 2);
     DrawRewireAPI.__ResetDependency__('CPTL');
     t.end();
   });
 
-  tester.test('calls getPixiSquare for CPTL=1', t => {
-    const mockGetPixiSquare = sinon.spy();
-    DrawRewireAPI.__Rewire__('getPixiSquare', mockGetPixiSquare);
+  tester.test('calls drawRect for CPTL=1', t => {
+    const mockDrawRect = sinon.spy();
+    global.PIXI = {
+      Graphics: class {
+        beginFill() {
+          return this;
+        }
+        drawRect() {
+          mockDrawRect();
+          return this;
+        }
+      },
+    };
     DrawRewireAPI.__Rewire__('CPTL', 1);
     DrawRewireAPI.__Rewire__('PPCL', 40);
-    global.PIXI = { Graphics: class {} };
+    DrawRewireAPI.__Rewire__('permNTSprite', new PIXI.Graphics());
+    const traversability = [[1, 0, 1]];
 
-    generatePermanentNTSprites(0, 0, [[1, 0, 1]]);
-    t.false(mockGetPixiSquare.called);
+    generatePermanentNTSprites(0, 0, traversability);
+    t.false(mockDrawRect.called);
 
-    generatePermanentNTSprites(0, 1, [[1, 0, 1]]);
-    t.is(mockGetPixiSquare.callCount, 1);
-    t.true(mockGetPixiSquare.calledWith(0, 40));
+    generatePermanentNTSprites(0, 1, traversability);
+    t.is(mockDrawRect.callCount, 1);
 
-    DrawRewireAPI.__ResetDependency__('getPixiSquare');
+    global.PIXI = null;
     DrawRewireAPI.__ResetDependency__('CPTL');
     DrawRewireAPI.__ResetDependency__('PPCL');
-    global.PIXI = null;
+    DrawRewireAPI.__ResetDependency__('permNTSprite');
     t.end();
   });
 
-  tester.test('stores correct values in permNTSprites and calls getPixiSquare for CPTL=2', t => {
-    const mockGetPixiSquare = sinon.spy();
-    const mockPermNTSprites = [];
-
-    DrawRewireAPI.__Rewire__('permNTSprites', mockPermNTSprites);
-    DrawRewireAPI.__Rewire__('getPixiSquare', mockGetPixiSquare);
+  tester.test('calls drawRect for CPTL=2', t => {
+    const mockDrawRect = sinon.spy();
+    global.PIXI = {
+      Graphics: class {
+        beginFill() {
+          return this;
+        }
+        drawRect() {
+          mockDrawRect();
+          return this;
+        }
+      },
+    };
     DrawRewireAPI.__Rewire__('CPTL', 2);
     DrawRewireAPI.__Rewire__('PPCL', 20);
+    DrawRewireAPI.__Rewire__('permNTSprite', new PIXI.Graphics());
+    const traversability = [[1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 1, 1]];
 
-    generatePermanentNTSprites(0, 0, [[1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 1, 1]]);
-    t.notok(mockGetPixiSquare.called);
+    generatePermanentNTSprites(0, 0, traversability);
+    t.false(mockDrawRect.called);
 
-    generatePermanentNTSprites(0, 1, [[1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 1, 1]]);
+    generatePermanentNTSprites(0, 1, traversability);
+    t.is(mockDrawRect.callCount, 2);
 
-    t.is(mockGetPixiSquare.callCount, 2);
-    t.true(mockGetPixiSquare.calledWith(0, 40, 20));
-    t.true(mockGetPixiSquare.calledWith(20, 60, 20));
-
-    DrawRewireAPI.__ResetDependency__('permNTSprites');
-    DrawRewireAPI.__ResetDependency__('getPixiSquare');
+    global.PIXI = null;
     DrawRewireAPI.__ResetDependency__('CPTL');
     DrawRewireAPI.__ResetDependency__('PPCL');
-
+    DrawRewireAPI.__ResetDependency__('permNTSprite');
     t.end();
   });
+
   tester.end();
 });
 
@@ -268,6 +283,7 @@ test('updateNTSprites', tester => {
     global.tagpro = null;
     t.end();
   });
+
   tester.end();
 });
 
@@ -300,9 +316,9 @@ test('drawNavMesh()', tester => {
     mockGraph.addEdgeAndVertices(middle, left);
     mockGraph.addEdgeAndVertices(middle, down);
     mockGraph.addEdgeAndVertices(down, left);
-    const mockDrawGraph = sinon.spy();
+    const mockGetGraphGraphics = sinon.spy();
     const mockGetDTGraph = sinon.stub().returns(mockGraph);
-    DrawRewireAPI.__Rewire__('getGraphGraphics', mockDrawGraph);
+    DrawRewireAPI.__Rewire__('getGraphGraphics', mockGetGraphGraphics);
     DrawRewireAPI.__Rewire__('getDTGraph', mockGetDTGraph);
     DrawRewireAPI.__Rewire__('NAV_MESH_THICKNESS', 'thick');
     DrawRewireAPI.__Rewire__('NAV_MESH_EDGE_COLOR', 'brown');
@@ -316,7 +332,7 @@ test('drawNavMesh()', tester => {
     };
     drawNavMesh();
 
-    t.true(mockDrawGraph.calledWith(mockGraph, 'thick', 'brown', 'morebrown'));
+    t.true(mockGetGraphGraphics.calledWith(mockGraph, 'thick', 'brown', 'morebrown'));
 
     DrawRewireAPI.__ResetDependency__('drawGraph');
     DrawRewireAPI.__ResetDependency__('getDTGraph');
