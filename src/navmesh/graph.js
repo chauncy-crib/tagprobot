@@ -98,6 +98,25 @@ export function sortCounterClockwise(points) {
 }
 
 
+function H(A, B, C, E) {
+  return determinant([
+    [A.x, A.y, (A.x ** 2) + (A.y ** 2), 1],
+    [B.x, B.y, (B.x ** 2) + (B.y ** 2), 1],
+    [C.x, C.y, (C.x ** 2) + (C.y ** 2), 1],
+    [E.x, E.y, (E.x ** 2) + (E.y ** 2), 1],
+  ]);
+}
+
+
+function D(A, B, P) {
+  return determinant([
+    [A.x, A.y, 1],
+    [B.x, B.y, 1],
+    [P.x, P.y, 1],
+  ]);
+}
+
+
 /**
  * Checks if edge e is delaunay-legal with respect to the inserted point
  * @param {Point} insertedPoint - the point being added to the triangulation
@@ -109,14 +128,8 @@ export function sortCounterClockwise(points) {
  */
 export function isLegal(insertedPoint, e, oppositePoint) {
   const [A, B, C] = sortCounterClockwise([insertedPoint, e.p1, e.p2]);
-  const D = oppositePoint;
-  const matrix = [
-    [A.x, A.y, (A.x ** 2) + (A.y ** 2), 1],
-    [B.x, B.y, (B.x ** 2) + (B.y ** 2), 1],
-    [C.x, C.y, (C.x ** 2) + (C.y ** 2), 1],
-    [D.x, D.y, (D.x ** 2) + (D.y ** 2), 1],
-  ];
-  return determinant(matrix) <= 0;
+  const E = oppositePoint;
+  return H(A, B, C, E) <= 0;
 }
 
 
@@ -294,6 +307,44 @@ export class TGraph extends Graph {
       // this.polypoints.addEdge(edgeCenters[0], edgeCenters[2]);
       // this.polypoints.addEdge(edgeCenters[1], edgeCenters[2]);
     });
+  }
+
+  /**
+   * @param {Point} p
+   */
+  delaunayRemoveVertex(p) {
+    while (this.neighbors(p).length > 3) {
+      let ear = null;
+      const neighbors = sortCounterClockwise(this.neighbors(p));
+      const L = neighbors.length;
+      // find an ear to remove
+      for (let i = 0; i < L && !ear; i += 1) {
+        const v1 = neighbors[i];
+        const v2 = neighbors[(i + 1) % L];
+        const v3 = neighbors[(i + 2) % L];
+        if (D(v1, v2, v3) >= 0 && D(v1, v3, p) >= 0) {
+          // Neighbors not in this triple
+          const otherNbrs = _.reject(neighbors, n => n.equal(v1) || n.equal(v2) || n.equal(v3));
+          // Ear is delaunay if none of the other neighbors fall inside the circumcircle
+          const delaunayValid = !_.some(otherNbrs, n => H(v1, v2, v3, n) > 0);
+          if (delaunayValid) ear = [v1, v2, v3];
+        }
+      }
+      assert(!_.isNull(ear), 'Could not find valid ear to remove');
+      // Flip the diagonal to remove a neighbor of p
+      this.removeTriangleByPoints(p, ear[0], ear[1]);
+      this.removeTriangleByPoints(p, ear[1], ear[2]);
+      this.addTriangle(new Triangle(ear[0], ear[1], ear[2]));
+      this.addTriangle(new Triangle(ear[0], ear[2], p));
+    }
+    // Merge the remaining three triangles
+    const neighbors = this.neighbors(p);
+    assert(neighbors.length === 3);
+    this.removeTriangleByPoints(p, neighbors[0], neighbors[1]);
+    this.removeTriangleByPoints(p, neighbors[0], neighbors[2]);
+    this.removeTriangleByPoints(p, neighbors[1], neighbors[2]);
+    this.addTriangle(new Triangle(neighbors[0], neighbors[1], neighbors[2]));
+    this.removeVertex(p);
   }
 
   getAdjacentTriangles(t) {
