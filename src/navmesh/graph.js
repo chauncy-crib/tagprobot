@@ -65,13 +65,16 @@ export class Point {
 
 
 /**
- * Sorts points counter clockwise using code adapted from:
- * https://stackoverflow.com/questions/6989100/sort-points-in-clockwise-order
+ * Find the point in the center, and then return the points sorted counter clockwise around it,
+ *   starting at 12 o'clock. Adapted from:
+ *   https://stackoverflow.com/questions/6989100/sort-points-in-clockwise-order
+ * @param {Point[]} points
+ * @returns {Point[]} the points sorted in counter clockwise order
  */
 export function sortCounterClockwise(points) {
   const center = {
-    x: _.map(points, 'x').reduce((a, b) => a + b, 0) / points.length,
-    y: _.map(points, 'y').reduce((a, b) => a + b, 0) / points.length,
+    x: _.sumBy(points, 'x') / points.length,
+    y: _.sumBy(points, 'y') / points.length,
   };
   return points.sort((a, b) => {
     if (a.x - center.x >= 0 && b.x - center.x < 0) return true;
