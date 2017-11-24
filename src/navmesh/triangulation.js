@@ -24,7 +24,7 @@ export function getHighestPoint(vertices) {
  */
 export function delaunayTriangulation(vertices, dummyPoint1, dummyPoint2) {
   const numVertices = DTGraph.getVertices().length;
-  assert(DTGraph.getVertices().length === 0, `DTGraph had ${numVertices} vertices.`);
+  assert(numVertices === 0, `DTGraph had ${numVertices} vertices.`);
   const highestP = getHighestPoint(vertices);
 
   const t = new Triangle(highestP, dummyPoint1, dummyPoint2);
