@@ -384,27 +384,35 @@ function getGraphGraphics(graph, thickness, edgeColor, vertexColor, alpha, drawV
 
 /*
  * Draws the navigation mesh lines on the tagpro map. Runtime: O(E), O(1) if visualizations off
+ * @param {boolean} recalcSprite - true if we should regenerate the sprite before drawing it (will
+ *   redraw if the sprites have never been calculate regardless of recalcSprite's value)
  */
-export function drawNavMesh() {
+export function drawNavMesh(recalcSprite = false) {
   if (!isVisualMode()) {
     return;
   }
-  triangulationSprite = triangulationSprite || getGraphGraphics(
-    getDTGraph(),
-    NAV_MESH_THICKNESS,
-    NAV_MESH_EDGE_COLOR,
-    NAV_MESH_VERTEX_COLOR,
-    NAV_MESH_ALPHA,
-  );
+  if (triangulationSprite) tagpro.renderer.layers.foreground.removeChild(triangulationSprite);
+  if (polypointSprite) tagpro.renderer.layers.foreground.removeChild(polypointSprite);
+  if (recalcSprite || !triangulationSprite) {
+    triangulationSprite = getGraphGraphics(
+      getDTGraph(),
+      NAV_MESH_THICKNESS,
+      NAV_MESH_EDGE_COLOR,
+      NAV_MESH_VERTEX_COLOR,
+      NAV_MESH_ALPHA,
+    );
+  }
+  if (recalcSprite || !polypointSprite) {
+    polypointSprite = getGraphGraphics(
+      getDTGraph().polypoints,
+      TRIANGULATION_THICKNESS,
+      TRIANGULATION_EDGE_COLOR,
+      null,
+      TRIANGULATION_ALPHA,
+      false,
+    );
+  }
   tagpro.renderer.layers.foreground.addChild(triangulationSprite);
-  polypointSprite = polypointSprite || getGraphGraphics(
-    getDTGraph().polypoints,
-    TRIANGULATION_THICKNESS,
-    TRIANGULATION_EDGE_COLOR,
-    null,
-    TRIANGULATION_ALPHA,
-    false,
-  );
   tagpro.renderer.layers.foreground.addChild(polypointSprite);
 }
 
