@@ -192,8 +192,9 @@ test('delaunayRemoveVertex', tester => {
     t.is(mockDTGraph.triangles.size, 2);
     t.is(mockDTGraph.getVertices().length, 4);
     t.is(mockDTGraph.getEdges().length, 5);
-    // One of the diagonals are connected
+    // One of the diagonals is connected
     t.true(mockDTGraph.isConnected(v0, v2) !== mockDTGraph.isConnected(v1, v3));
+
     t.end();
   });
 
@@ -215,6 +216,7 @@ test('delaunayRemoveVertex', tester => {
     t.is(mockDTGraph.triangles.size, 3);
     t.is(mockDTGraph.getVertices().length, 5);
     t.is(mockDTGraph.getEdges().length, 7);
+
     t.end();
   });
 });
