@@ -89,7 +89,7 @@ function getAccelValues() {
     yc: Math.floor(goal.yp / PPCL),
   };
   // Runtime: O(M*CPTL^2) with visualizations on, O(M + S*CPTL^2) with visualizations off
-  const traversableCells = getMapTraversabilityInCells(map);
+  const traversableCells = getMapTraversabilityInCells(map, true);
 
   // TODO: runtime of this? Call is O(R) for now
   const shortestPath = getShortestTilePath(

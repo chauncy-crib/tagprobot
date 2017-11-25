@@ -129,3 +129,23 @@ export function tileIsOneOf(id, names) {
   }
   return false;
 }
+
+
+export function topRightNT(id) {
+  return !getTileProperty(id, 'traversable') && !tileHasName(id, 'ANGLE_WALL_1');
+}
+
+
+export function bottomRightNT(id) {
+  return !getTileProperty(id, 'traversable') && !tileHasName(id, 'ANGLE_WALL_2');
+}
+
+
+export function bottomLeftNT(id) {
+  return !getTileProperty(id, 'traversable') && !tileHasName(id, 'ANGLE_WALL_3');
+}
+
+
+export function topLeftNT(id) {
+  return !getTileProperty(id, 'traversable') && !tileHasName(id, 'ANGLE_WALL_4');
+}

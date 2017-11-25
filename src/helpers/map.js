@@ -1,15 +1,27 @@
 import _ from 'lodash';
-import { CPTL, PPCL, NT_KERNEL } from '../constants';
+import { CPTL, PPCL, PPTL, NT_KERNEL } from '../constants';
 import { assert, assertGridInBounds } from '../utils/asserts';
 import { isVisualMode } from '../utils/interface';
-import { tileHasName, getTileProperty, tileHasProperty, tileIsOneOf } from '../tiles';
+import {
+  tileHasName,
+  getTileProperty,
+  tileHasProperty,
+  tileIsOneOf,
+  bottomLeftNT,
+  bottomRightNT,
+  topLeftNT,
+  topRightNT,
+} from '../tiles';
 import {
   updateNTSprites,
   generatePermanentNTSprites,
   areTempNTSpritesDrawn,
   setNTSpritesDrawn,
+  drawNavMesh,
 } from '../draw/drawings';
 import { invertBinary2dArray, convolve } from './convolve';
+import { Point } from '../navmesh/graph';
+import { getDTGraph } from '../navmesh/triangulation';
 
 
 // A 2D array of size tagpro.map.length*CPTL by tagpro.map[0].length*CPTL. Value
@@ -25,6 +37,17 @@ let numNTOWithinBufCells = [];
 // A list of x, y pairs, which are the locations in the map that might change
 const tilesToUpdate = [];
 const tilesToUpdateValues = []; // the values stored in those locations
+
+
+function gridInBounds(grid, x, y) {
+  if (x < 0 || x >= grid.length) return false;
+  if (y < 0 || y >= grid[0].length) return false;
+  return true;
+}
+
+function oddNumberOfTrue(booleans) {
+  return _.sumBy(booleans, b => (b ? 1 : 0)) % 2 === 1;
+}
 
 
 /**
@@ -127,7 +150,6 @@ export function getTileTraversabilityInCells(tileId) {
           tileIsOneOf(tileId, ['ANGLE_WALL_1', 'ANGLE_WALL_2', 'ANGLE_WALL_3', 'ANGLE_WALL_4']),
           'tile expected to be angle wall',
         );
-        // eslint-disable-next-line no-lonely-if
         if (tileHasName(tileId, 'ANGLE_WALL_1') && yc - xc >= 0) {
           tile[xc][yc] = 0;
         } else if (tileHasName(tileId, 'ANGLE_WALL_2') && xc + yc <= CPTL - 1) {
@@ -226,12 +248,15 @@ export function initMapTraversabilityCells(map) {
  *   empty_tiles[0][0] is the upper-left corner tile. Runtime: O(M*CPTL^2) with drawings on,
  *   O(M + S*CPTL^2) with drawings off
  * @param {number} map - 2D array representing the Tagpro map
+ * @param {boolean} updateDelaunay - true if this function should also update the DTGraph if a tile
+ *   changes states
  */
-export function getMapTraversabilityInCells(map) {
+export function getMapTraversabilityInCells(map, updateDelaunay = false) {
   assert(
     tilesToUpdate.length === tilesToUpdateValues.length,
     'the number of tiles to update and the number of values stored for them are not equal',
   );
+  let delaunayUpdates = 0;
   for (let i = 0; i < tilesToUpdate.length; i++) {
     const xy = tilesToUpdate[i];
     const tileId = map[xy.xt][xy.yt];
@@ -246,6 +271,30 @@ export function getMapTraversabilityInCells(map) {
         xy.xt * CPTL,
         xy.yt * CPTL,
       );
+      const delaunayVerticesToUpdate = updateDelaunay ? [
+        new Point(xy.xt, xy.yt), // top left
+        new Point(xy.xt + 1, xy.yt), // top right
+        new Point(xy.xt, xy.yt + 1), // bottom left
+        new Point(xy.xt + 1, xy.yt + 1), // bottom right
+      ] : [];
+      const dtGraph = getDTGraph();
+      _.forEach(delaunayVerticesToUpdate, v => { // eslint-disable-line no-loop-func
+        const shouldHaveVertex = oddNumberOfTrue([
+          !gridInBounds(map, v.x - 1, v.y - 1) || bottomRightNT(map[v.x - 1][v.y - 1]),
+          !gridInBounds(map, v.x - 1, v.y) || topRightNT(map[v.x - 1][v.y]),
+          !gridInBounds(map, v.x, v.y - 1) || bottomLeftNT(map[v.x][v.y - 1]),
+          !gridInBounds(map, v.x, v.y) || topLeftNT(map[v.x][v.y]),
+        ]);
+        const vert = new Point(v.x * PPTL, v.y * PPTL);
+        if (dtGraph.hasVertex(vert) && !shouldHaveVertex) {
+          delaunayUpdates += 1;
+          dtGraph.delaunayRemoveVertex(vert);
+        }
+        if (!dtGraph.hasVertex(vert) && shouldHaveVertex) {
+          delaunayUpdates += 1;
+          dtGraph.addTriangulationVertex(vert);
+        }
+      });
       // Index of the top-left cell in the tile that just updated
       const xFirstCell = xy.xt * CPTL;
       const yFirstCell = xy.yt * CPTL;
@@ -285,5 +334,9 @@ export function getMapTraversabilityInCells(map) {
     if (!areTempNTSpritesDrawn()) updateNTSprites(xy.xt, xy.yt, mapTraversabilityCells);
   }
   if (isVisualMode()) setNTSpritesDrawn(true);
+  if (delaunayUpdates > 0) {
+    getDTGraph().calculatePolypointGraph(); // recalculate the polypoint graph
+    drawNavMesh(true); // redraw the nav-mesh, if it changed
+  }
   return mapTraversabilityCellsWithBuf;
 }

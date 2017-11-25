@@ -283,10 +283,10 @@ export class TGraph extends Graph {
   constructor() {
     super();
     this.triangles = new Set();
-    this.polypoints = new Graph();
   }
 
   calculatePolypointGraph() {
+    this.polypoints = new Graph();
     this.triangles.forEach(triangle => {
       // For adding a polypoint in center of triangle
       const triangleCenter = triangle.getCenter();
