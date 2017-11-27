@@ -1,5 +1,5 @@
 import { PPCL, BRP } from '../constants';
-import { init2dArray } from './map';
+import { init2dArray } from '../utils/mapUtils';
 import { findTile } from './finders';
 
 
