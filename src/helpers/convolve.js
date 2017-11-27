@@ -1,4 +1,4 @@
-import { init2dArray, fillGridWithSubgrid } from './map';
+import { init2dArray, fillGridWithSubgrid } from '../utils/mapUtils';
 import { assert, assertGridInBounds } from '../utils/asserts';
 
 
