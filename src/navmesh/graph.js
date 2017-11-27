@@ -98,17 +98,30 @@ export function sortCounterClockwise(points) {
 }
 
 
-function H(A, B, C, E) {
+/**
+ * @param {Point} A
+ * @param {Point} B
+ * @param {Point} C
+ * @param {Point} E
+ * @returns {boolean} a number which is positive iff D is inside the circumcircle of points A, B, C
+ */
+function detH(A, B, C, D) {
   return determinant([
     [A.x, A.y, (A.x ** 2) + (A.y ** 2), 1],
     [B.x, B.y, (B.x ** 2) + (B.y ** 2), 1],
     [C.x, C.y, (C.x ** 2) + (C.y ** 2), 1],
-    [E.x, E.y, (E.x ** 2) + (E.y ** 2), 1],
+    [D.x, D.y, (D.x ** 2) + (D.y ** 2), 1],
   ]);
 }
 
 
-function D(A, B, P) {
+/**
+ * @param {Point} A
+ * @param {Point} B
+ * @param {Point} P
+ * @returns {boolean} true if P is on the left of the edge AB
+ */
+function detD(A, B, P) {
   return determinant([
     [A.x, A.y, 1],
     [B.x, B.y, 1],
@@ -129,7 +142,7 @@ function D(A, B, P) {
 export function isLegal(insertedPoint, e, oppositePoint) {
   const [A, B, C] = sortCounterClockwise([insertedPoint, e.p1, e.p2]);
   const E = oppositePoint;
-  return H(A, B, C, E) <= 0;
+  return detH(A, B, C, E) <= 0;
 }
 
 
@@ -283,6 +296,7 @@ export class TGraph extends Graph {
   constructor() {
     super();
     this.triangles = new Set();
+    this.polypoints = null;
   }
 
   calculatePolypointGraph() {
@@ -310,25 +324,28 @@ export class TGraph extends Graph {
   }
 
   /**
-   * @param {Point} p
+   * @param {Point} p the point to remove from the triangulation graph and validly triangulate
+   *   around.
    */
   delaunayRemoveVertex(p) {
     while (this.neighbors(p).length > 3) {
       let ear = null;
       const neighbors = sortCounterClockwise(this.neighbors(p));
       const L = neighbors.length;
-      // find an ear to remove
-      for (let i = 0; i < L && !ear; i += 1) {
+      // Find an ear to remove, iterate until you find an ear
+      let i;
+      while (!ear && i < L) {
         const v1 = neighbors[i];
         const v2 = neighbors[(i + 1) % L];
         const v3 = neighbors[(i + 2) % L];
-        if (D(v1, v2, v3) >= 0 && D(v1, v3, p) >= 0) {
+        if (detD(v1, v2, v3) >= 0 && detD(v1, v3, p) >= 0) {
           // Neighbors not in this triple
           const otherNbrs = _.reject(neighbors, n => n.equal(v1) || n.equal(v2) || n.equal(v3));
           // Ear is delaunay if none of the other neighbors fall inside the circumcircle
-          const delaunayValid = !_.some(otherNbrs, n => H(v1, v2, v3, n) > 0);
+          const delaunayValid = !_.some(otherNbrs, n => detH(v1, v2, v3, n) > 0);
           if (delaunayValid) ear = [v1, v2, v3];
         }
+        i += 1;
       }
       assert(!_.isNull(ear), 'Could not find valid ear to remove');
       // Flip the diagonal to remove a neighbor of p
