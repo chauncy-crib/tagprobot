@@ -207,7 +207,7 @@ export function getMapTraversabilityInCells(map, updateDelaunay = false) {
     tilesToUpdate.length === tilesToUpdateValues.length,
     'the number of tiles to update and the number of values stored for them are not equal',
   );
-  let delaunayUpdates = 0;
+  let delaunayUpdated = false;
   for (let i = 0; i < tilesToUpdate.length; i++) {
     const xy = tilesToUpdate[i];
     const tileId = map[xy.xt][xy.yt];
@@ -238,11 +238,11 @@ export function getMapTraversabilityInCells(map, updateDelaunay = false) {
         ]);
         const vert = new Point(v.x * PPTL, v.y * PPTL);
         if (dtGraph.hasVertex(vert) && !shouldHaveVertex) {
-          delaunayUpdates += 1;
+          delaunayUpdated = true;
           dtGraph.delaunayRemoveVertex(vert);
         }
         if (!dtGraph.hasVertex(vert) && shouldHaveVertex) {
-          delaunayUpdates += 1;
+          delaunayUpdated = true;
           dtGraph.addTriangulationVertex(vert);
         }
       });
@@ -285,7 +285,7 @@ export function getMapTraversabilityInCells(map, updateDelaunay = false) {
     if (!areTempNTSpritesDrawn()) updateNTSprites(xy.xt, xy.yt, mapTraversabilityCells);
   }
   if (isVisualMode()) setNTSpritesDrawn(true);
-  if (delaunayUpdates > 0) {
+  if (delaunayUpdated) {
     getDTGraph().calculatePolypointGraph(); // recalculate the polypoint graph
     drawNavMesh(true); // redraw the nav-mesh, if it changed
   }
