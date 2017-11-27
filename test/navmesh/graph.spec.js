@@ -176,7 +176,7 @@ test('categorizePoints separates points into shared and unique', t => {
 });
 
 test('delaunayRemoveVertex', tester => {
-  tester.test('removes vertex surrounded by 4 points', t => {
+  tester.test('removes vertex surrounded by 4 points, and validly retriangulates 4 points', t => {
     const mockDTGraph = new TGraph();
     const v0 = new Point(0, 0);
     const v1 = new Point(0, 10);
@@ -198,7 +198,7 @@ test('delaunayRemoveVertex', tester => {
     t.end();
   });
 
-  tester.test('removes vertex surrounded by 5 points', t => {
+  tester.test('removes vertex surrounded by 5 points, and validly retriangulates 5 points', t => {
     const mockDTGraph = new TGraph();
     const v0 = new Point(0, 0);
     const v1 = new Point(0, 10);
@@ -206,6 +206,7 @@ test('delaunayRemoveVertex', tester => {
     const v3 = new Point(10, 0);
     const v4 = new Point(-3, 5);
     const p = new Point(3, 6);
+    // Create a pentagon, with p in the center connected to all other vertices
     mockDTGraph.addTriangle(new Triangle(p, v0, v4));
     mockDTGraph.addTriangle(new Triangle(p, v4, v1));
     mockDTGraph.addTriangle(new Triangle(p, v1, v2));
@@ -216,6 +217,10 @@ test('delaunayRemoveVertex', tester => {
     t.is(mockDTGraph.triangles.size, 3);
     t.is(mockDTGraph.getVertices().length, 5);
     t.is(mockDTGraph.getEdges().length, 7);
+    // Triangle on the left of the square is connected
+    t.true(mockDTGraph.isConnected(v0, v1));
+    // One of the diagonals is connected
+    t.true(mockDTGraph.isConnected(v0, v2) !== mockDTGraph.isConnected(v1, v3));
 
     t.end();
   });

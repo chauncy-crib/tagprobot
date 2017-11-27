@@ -283,6 +283,7 @@ export class TGraph extends Graph {
   constructor() {
     super();
     this.triangles = new Set();
+    this.polypoints = null;
   }
 
   calculatePolypointGraph() {
@@ -317,7 +318,7 @@ export class TGraph extends Graph {
       let ear = null;
       const neighbors = sortCounterClockwise(this.neighbors(p));
       const L = neighbors.length;
-      // find an ear to remove
+      // Find an ear to remove
       for (let i = 0; i < L && !ear; i += 1) {
         const v1 = neighbors[i];
         const v2 = neighbors[(i + 1) % L];
