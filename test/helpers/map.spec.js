@@ -1,9 +1,8 @@
 import test from 'tape';
 import sinon from 'sinon';
+import { init2dArray, fillGridWithSubgrid } from '../../src/utils/mapUtils';
 import {
   initMapTraversabilityCells,
-  init2dArray,
-  fillGridWithSubgrid,
   updateNumNTO,
   updateTraversabilityFromNumNTO,
   getTileTraversabilityInCells,
