@@ -185,7 +185,7 @@ export function mapToEdgeTiles(map) {
 
 /**
  * Given the tagpro map, return a Graph object containing edges along the edge of traversability.
- *   Each edge should be one tile-length one (or sqrt(2), if it lies on the diagonal of a tile)
+ *   Each edge should be length tile-length one (or sqrt(2), if it lies on the diagonal of a tile)
  * @param {{number|string}} map - the tagpro map
  * @returns {Graph}
  */
@@ -238,21 +238,15 @@ export function graphFromTagproMap(map) {
   const unmergedGraph = unmergedGraphFromTagproMap(map);
   _.forEach(unmergedGraph.getVertices(), v => {
     const neighbors = unmergedGraph.neighbors(v);
-    for (let j = 0; j < neighbors.length; j += 1) {
-      for (let k = j + 1; k < neighbors.length; k += 1) {
-        if (threePointsInLine(v, neighbors[j], neighbors[k])) {
-          unmergedGraph.removeEdge(v, neighbors[j]);
-          unmergedGraph.removeEdge(v, neighbors[k]);
-          unmergedGraph.addEdge(neighbors[j], neighbors[k]);
-        }
-      }
+    if (neighbors.length === 2 && threePointsInLine(v, neighbors[0], neighbors[1])) {
+      unmergedGraph.removeEdge(v, neighbors[0]);
+      unmergedGraph.removeEdge(v, neighbors[1]);
+      unmergedGraph.addEdge(neighbors[0], neighbors[1]);
     }
   });
   // Remove all vertices that no longer have a neighbor
   _.forEach(unmergedGraph.getVertices(), v => {
-    if (unmergedGraph.neighbors(v).length === 0) {
-      unmergedGraph.removeVertex(v);
-    }
+    if (unmergedGraph.neighbors(v).length === 0) unmergedGraph.removeVertex(v);
   });
   return unmergedGraph;
 }
