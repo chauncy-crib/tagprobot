@@ -24,17 +24,19 @@ import { getDTGraph } from './navmesh/triangulation';
 function getGoalPos() {
   const me = getMe();
   let goal;
+  const redEndzone = { xp: 1360, yp: 1560 };
+  const blueEndzone = { xp: 640, yp: 440 };
 
   // If the bot has the flag, go to the endzone
   if (me.flag) {
-    goal = amRed() ? { xp: 1320, yp: 1360 } : { xp: 440, yp: 400 };
+    goal = amRed() ? redEndzone : blueEndzone;
 
     console.log('I have the flag. Seeking endzone!');
   } else {
     const enemyFC = findEnemyFC();
     let enemyShortestPath = [];
     if (enemyFC) { // If an enemy player in view has the flag, chase
-      const enemyGoal = amBlue() ? { xp: 1320, yp: 1360 } : { xp: 440, yp: 400 };
+      const enemyGoal = amBlue() ? redEndzone : blueEndzone;
       const enemyFinalTarget = {
         xc: Math.floor(enemyGoal.xp / PPCL),
         yc: Math.floor(enemyGoal.yp / PPCL),
@@ -55,10 +57,10 @@ function getGoalPos() {
       goal.yp = enemyFC.y + enemyFC.vy;
       console.log('I see an enemy with the flag. Chasing!');
     } else if (enemyTeamHasFlag()) {
-      goal = amBlue() ? { xp: 1360, yp: 1360 } : { xp: 400, yp: 400 };
+      goal = amBlue() ? redEndzone : blueEndzone;
       console.log('Enemy has the flag. Headed towards the Enemy Endzone.');
     } else if (myTeamHasFlag()) {
-      goal = amRed() ? { xp: 1360, yp: 1360 } : { xp: 400, yp: 400 };
+      goal = amRed() ? redEndzone : blueEndzone;
       console.log('We have the flag. Headed towards our Endzone.');
     } else {
       goal = findTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
