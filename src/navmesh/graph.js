@@ -212,6 +212,12 @@ export class Graph {
     this.addEdge(p1, p2);
   }
 
+  removeEdgeAndVertices(p1, p2) {
+    this.removeEdge(p1, p2);
+    if (this.neighbors(p1).length === 0) this.removeVertex(p1);
+    if (this.neighbors(p2).length === 0) this.removeVertex(p2);
+  }
+
   removeEdge(p1, p2) {
     this.adj[p1] = _.reject(this.adj[p1], p => p.equal(p2));
     this.adj[p2] = _.reject(this.adj[p2], p => p.equal(p1));
@@ -265,6 +271,13 @@ export class Graph {
     return this.vertices;
   }
 
+  /**
+   * @returns {number} the number of vertices in the graph
+   */
+  numVertices() {
+    return this.getVertices().length;
+  }
+
   getEdges() {
     const edges = [];
     _.forEach(this.vertices, p1 => {
@@ -279,6 +292,13 @@ export class Graph {
       });
     });
     return edges;
+  }
+
+  /**
+   * @returns {number} the number of edges in the graph
+   */
+  numEdges() {
+    return this.getEdges().length;
   }
 }
 
