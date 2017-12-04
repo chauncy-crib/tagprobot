@@ -22,15 +22,14 @@ export function getHighestPoint(vertices) {
  * @param {Point[]} vertices - array of all vertices
  * @returns {Graph} graph of the triangulation of all the vertices
  */
-export function delaunayTriangulation(vertices, dummyPoint1, dummyPoint2) {
+export function delaunayTriangulation(vertices, dummyPoint1, dummyPoint2, dummyPoint3) {
   const numVertices = DTGraph.getVertices().length;
   assert(DTGraph.getVertices().length === 0, `DTGraph had ${numVertices} vertices.`);
-  const highestP = getHighestPoint(vertices);
 
-  const t = new Triangle(highestP, dummyPoint1, dummyPoint2);
+  const t = new Triangle(dummyPoint1, dummyPoint2, dummyPoint3);
   DTGraph.addTriangle(t);
 
-  const shuffledVertices = _.shuffle(_.without(vertices, highestP));
+  const shuffledVertices = _.shuffle(vertices);
   // Check if dummy triangle contains each point
   _.forEach(shuffledVertices, v => {
     assert(
@@ -41,8 +40,9 @@ export function delaunayTriangulation(vertices, dummyPoint1, dummyPoint2) {
   _.forEach(shuffledVertices, vertex => {
     DTGraph.addTriangulationVertex(vertex);
   });
-  DTGraph.removeVertexAndTriangles(dummyPoint1);
-  DTGraph.removeVertexAndTriangles(dummyPoint2);
+  _.forEach([dummyPoint1, dummyPoint2, dummyPoint3], dummyPoint => {
+    DTGraph.removeVertexAndTriangles(dummyPoint);
+  });
   DTGraph.calculatePolypointGraph();
 }
 
@@ -55,8 +55,9 @@ export function calculateNavMesh(map) {
   const mapGraph = graphFromTagproMap(map);
   delaunayTriangulation(
     mapGraph.getVertices(),
-    new Point(-3000000, -100),
-    new Point(14000000, 10000000),
+    new Point(-9999, -100),
+    new Point(9999, -100),
+    new Point(0, 9999),
   );
 }
 
