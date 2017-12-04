@@ -9,17 +9,6 @@ const DTGraph = new TGraph();
 
 /**
  * @param {Point[]} vertices - array of all vertices
- * @returns {Point} the highest and right-most vertex
- */
-export function getHighestPoint(vertices) {
-  const highestYValue = _.minBy(vertices, v => v.y).y;
-  const highestPoints = _.filter(vertices, v => v.y === highestYValue);
-  return _.maxBy(highestPoints, v => v.x);
-}
-
-
-/**
- * @param {Point[]} vertices - array of all vertices
  * @returns {Graph} graph of the triangulation of all the vertices
  */
 export function delaunayTriangulation(vertices, dummyPoint1, dummyPoint2, dummyPoint3) {
