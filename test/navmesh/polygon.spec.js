@@ -1,12 +1,15 @@
 import test from 'tape';
 import sinon from 'sinon';
+import { PPTL } from '../../src/constants';
 import {
   mapToEdgeTiles,
   unmergedGraphFromTagproMap,
   graphFromTagproMap,
+  updateUnmergedGraph,
   __RewireAPI__ as PolygonRewireAPI } from '../../src/navmesh/polygon';
 import { Point } from '../../src/navmesh/graph';
 import { __RewireAPI__ as TileRewireAPI } from '../../src/tiles';
+import { setupTiles, teardownTiles } from '../setupTiles';
 
 /* eslint-disable no-multi-spaces array-bracket-spacing */
 
@@ -36,7 +39,7 @@ function teardown() {
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
   PolygonRewireAPI.__ResetDependency__('tileHasName');
   TileRewireAPI.__ResetDependency__('tileHasName');
-  PolygonRewireAPI.__ResetDependency__('tileIsOneOf');
+  // PolygonRewireAPI.__ResetDependency__('tileIsOneOf');
 }
 
 
@@ -485,4 +488,61 @@ test('graphFromTagproMap', tester => {
   });
 
   tester.end();
+});
+
+
+test('updateUnmergedGraph', tester => {
+  tester.test('splits apart line of bombs', t => {
+    setupTiles();
+    const map = [
+      [2, 2, 2,  2,  2,  2,  2,  2,  2, 2, 2],
+      [2, 2, 10, 10, 10, 10, 10, 10, 2, 2, 2],
+      [2, 2, 2,  2,  2,  2,  2,  2,  2, 2, 2],
+    ];
+    const unmergedGraph = unmergedGraphFromTagproMap(map);
+    t.is(unmergedGraph.numVertices(), 42);
+    t.is(unmergedGraph.numEdges(), 42);
+    map[1][5] = '10.1'; // inactive bomb
+    updateUnmergedGraph(unmergedGraph, map, 1, 5);
+    t.is(unmergedGraph.numVertices(), 42);
+    t.is(unmergedGraph.numEdges(), 42);
+    t.false(unmergedGraph.isConnected(
+      new Point(1 * PPTL, 5 * PPTL),
+      new Point(1 * PPTL, 6 * PPTL),
+    ));
+    t.false(unmergedGraph.isConnected(
+      new Point(2 * PPTL, 5 * PPTL),
+      new Point(2 * PPTL, 6 * PPTL),
+    ));
+    t.true(unmergedGraph.isConnected(
+      new Point(1 * PPTL, 5 * PPTL),
+      new Point(2 * PPTL, 5 * PPTL),
+    ));
+    t.true(unmergedGraph.isConnected(
+      new Point(1 * PPTL, 6 * PPTL),
+      new Point(2 * PPTL, 6 * PPTL),
+    ));
+    map[1][5] = 10; // change it back to a bomb
+    updateUnmergedGraph(unmergedGraph, map, 1, 5);
+    teardownTiles();
+    t.is(unmergedGraph.numVertices(), 42);
+    t.is(unmergedGraph.numEdges(), 42);
+    t.true(unmergedGraph.isConnected(
+      new Point(1 * PPTL, 5 * PPTL),
+      new Point(1 * PPTL, 6 * PPTL),
+    ));
+    t.true(unmergedGraph.isConnected(
+      new Point(2 * PPTL, 5 * PPTL),
+      new Point(2 * PPTL, 6 * PPTL),
+    ));
+    t.false(unmergedGraph.isConnected(
+      new Point(1 * PPTL, 5 * PPTL),
+      new Point(2 * PPTL, 5 * PPTL),
+    ));
+    t.false(unmergedGraph.isConnected(
+      new Point(1 * PPTL, 6 * PPTL),
+      new Point(2 * PPTL, 6 * PPTL),
+    ));
+    t.end();
+  });
 });
