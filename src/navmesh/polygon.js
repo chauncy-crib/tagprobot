@@ -1,9 +1,32 @@
 import _ from 'lodash';
 import { Graph, Point } from './graph';
 import { threePointsInLine } from './graphUtils';
-import { getTileProperty, tileIsOneOf, tileHasName } from '../tiles';
+import { getTileProperty, tileIsOneOf, tileHasName, tileIsAngleWall } from '../tiles';
 import { PPTL } from '../constants';
 import { assert } from '../utils/asserts';
+
+// export function isLeftEdgeT(map, p) {
+//   return gridInBounds(map, p.x, p.y) && (getTileProperty(map[p.x][p.y], 'traversable') ||
+//     tileIsOneOf(map[p.x][p.y], ['ANGLE_WALL_3', 'ANGLE_WALL_4']));
+// }
+
+
+// export function isRightEdgeT(map, p) {
+//   return gridInBounds(map, p.x, p.y) && (getTileProperty(map[p.x][p.y], 'traversable') ||
+//     tileIsOneOf(map[p.x][p.y], ['ANGLE_WALL_1', 'ANGLE_WALL_2']));
+// }
+
+
+// export function isTopEdgeT(map, p) {
+//   return gridInBounds(map, p.x, p.y) && (getTileProperty(map[p.x][p.y], 'traversable') ||
+//     tileIsOneOf(map[p.x][p.y], ['ANGLE_WALL_1', 'ANGLE_WALL_4']));
+// }
+
+
+// export function isBottomEdgeT(map, p) {
+//   return gridInBounds(map, p.x, p.y) && (getTileProperty(map[p.x][p.y], 'traversable') ||
+//     tileIsOneOf(map[p.x][p.y], ['ANGLE_WALL_2', 'ANGLE_WALL_3']));
+// }
 
 
 /**
@@ -142,10 +165,7 @@ export function mapToEdgeTiles(map) {
   for (let xt = 0; xt < map.length; xt++) {
     for (let yt = 0; yt < map[0].length; yt++) {
       // Angle walls have a traversability edge
-      if (tileIsOneOf(
-        map[xt][yt],
-        ['ANGLE_WALL_1', 'ANGLE_WALL_2', 'ANGLE_WALL_3', 'ANGLE_WALL_4'],
-      )) {
+      if (tileIsAngleWall(map[xt][yt])) {
         // TODO: which of these is correct?
         // res.push({ xt, yt });
         if (isAngleWallTraversable(map, xt, yt)) res.push({ xt, yt });
@@ -165,6 +185,97 @@ export function mapToEdgeTiles(map) {
   return res;
 }
 
+function updateUnmergedEdgesAroundAngleWall(map, graph, xt, yt) {
+  assert(tileIsAngleWall(map[xt][yt]), 'Tile was not an angle wall');
+  const xp = xt * PPTL;
+  const yp = yt * PPTL;
+  const topLeft = new Point(xp, yp);
+  const topRight = new Point(xp + PPTL, yp);
+  const bottomLeft = new Point(xp, yp + PPTL);
+  const bottomRight = new Point(xp + PPTL, yp + PPTL);
+
+  // Add the diagonal edge of the wall
+  if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_3'])) {
+    graph.addEdgeAndVertices(topLeft, bottomRight);
+  } else if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_2', 'ANGLE_WALL_4'])) {
+    graph.addEdgeAndVertices(bottomLeft, topRight);
+  }
+
+  // Check each of the four edges of the tile, and if there is a NT-wall touch a traversable side of
+  //   tile, add a graph edge
+
+  // Check the top edge
+  if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_4'])) {
+    if (wallOnTop(map, xt, yt)) graph.addEdgeAndVertices(topLeft, topRight);
+    else graph.removeEdgeAndVertices(topLeft, topRight);
+  }
+  // Check the bottom edge
+  if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_2', 'ANGLE_WALL_3'])) {
+    if (wallOnBottom(map, xt, yt)) graph.addEdgeAndVertices(bottomLeft, bottomRight);
+    else graph.removeEdgeAndVertices(bottomLeft, bottomRight);
+  }
+  // Check the left edge
+  if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_3', 'ANGLE_WALL_4'])) {
+    if (wallOnLeft(map, xt, yt)) graph.addEdgeAndVertices(bottomLeft, topLeft);
+    else graph.removeEdgeAndVertices(bottomLeft, topLeft);
+  }
+  // Check the right edge
+  if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_2'])) {
+    if (wallOnRight(map, xt, yt)) graph.addEdgeAndVertices(bottomRight, topRight);
+    else graph.removeEdgeAndVertices(bottomRight, topRight);
+  }
+}
+
+function updateUnmergedEdgesAroundTraversableTile(map, graph, xt, yt) {
+  assert(getTileProperty(map[xt][yt], 'traversable'), 'Function called with an NT tile');
+  const xp = xt * PPTL;
+  const yp = yt * PPTL;
+  const topLeft = new Point(xp, yp);
+  const topRight = new Point(xp + PPTL, yp);
+  const bottomLeft = new Point(xp, yp + PPTL);
+  const bottomRight = new Point(xp + PPTL, yp + PPTL);
+
+  // Use similar logic as the angle wall function to update edges in the unmerged graph
+  if (wallOnLeft(map, xt, yt)) graph.addEdgeAndVertices(topLeft, bottomLeft);
+  else graph.removeEdgeAndVertices(topLeft, bottomLeft);
+
+  if (wallOnRight(map, xt, yt)) graph.addEdgeAndVertices(topRight, bottomRight);
+  else graph.removeEdgeAndVertices(topRight, bottomRight);
+
+  if (wallOnTop(map, xt, yt)) graph.addEdgeAndVertices(topLeft, topRight);
+  else graph.removeEdgeAndVertices(topLeft, topRight);
+
+  if (wallOnBottom(map, xt, yt)) graph.addEdgeAndVertices(bottomLeft, bottomRight);
+  else graph.removeEdgeAndVertices(bottomLeft, bottomRight);
+}
+
+function updateUnmergedEdgesAroundCompletelyNTTile(map, graph, xt, yt) {
+  assert(
+    !getTileProperty(map[xt][yt], 'traversable') &&
+    !tileIsAngleWall(map[xt][yt]),
+    'Function called with a traversable tile or angle wall',
+  );
+  const xp = xt * PPTL;
+  const yp = yt * PPTL;
+  const topLeft = new Point(xp, yp);
+  const topRight = new Point(xp + PPTL, yp);
+  const bottomLeft = new Point(xp, yp + PPTL);
+  const bottomRight = new Point(xp + PPTL, yp + PPTL);
+
+  // Use similar logic as the angle wall function to update edges in the unmerged graph
+  if (!wallOnLeft(map, xt, yt)) graph.addEdgeAndVertices(topLeft, bottomLeft);
+  else graph.removeEdgeAndVertices(topLeft, bottomLeft);
+
+  if (!wallOnRight(map, xt, yt)) graph.addEdgeAndVertices(topRight, bottomRight);
+  else graph.removeEdgeAndVertices(topRight, bottomRight);
+
+  if (!wallOnTop(map, xt, yt)) graph.addEdgeAndVertices(topLeft, topRight);
+  else graph.removeEdgeAndVertices(topLeft, topRight);
+
+  if (!wallOnBottom(map, xt, yt)) graph.addEdgeAndVertices(bottomLeft, bottomRight);
+  else graph.removeEdgeAndVertices(bottomLeft, bottomRight);
+}
+
 /**
  * Given the tagpro map, return a Graph object containing edges along the edge of traversability.
  *   Each edge should be length tile-length one (or sqrt(2), if it lies on the diagonal of a tile)
@@ -176,32 +287,10 @@ export function unmergedGraphFromTagproMap(map) {
   const graph = new Graph();
   _.forEach(edgeTiles, tile => {
     const { xt, yt } = tile;
-    const xp = xt * PPTL;
-    const yp = yt * PPTL;
-    const topLeft = new Point(xp, yp);
-    const topRight = new Point(xp + PPTL, yp);
-    const bottomLeft = new Point(xp, yp + PPTL);
-    const bottomRight = new Point(xp + PPTL, yp + PPTL);
-    if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_3'])) {
-      graph.addEdgeAndVertices(topLeft, bottomRight);
-    } else if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_2', 'ANGLE_WALL_4'])) {
-      graph.addEdgeAndVertices(bottomLeft, topRight);
-    }
-    if (wallOnLeft(map, xt, yt) && !tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_2'])) {
-      // Edge on left
-      graph.addEdgeAndVertices(topLeft, bottomLeft);
-    } if (wallOnRight(map, xt, yt) && !tileIsOneOf(map[xt][yt], ['ANGLE_WALL_3', 'ANGLE_WALL_4'])) {
-      // Edge on right
-      graph.addEdgeAndVertices(topRight, bottomRight);
-    } if (wallOnTop(map, xt, yt) && !tileIsOneOf(map[xt][yt], ['ANGLE_WALL_2', 'ANGLE_WALL_3'])) {
-      // Edge above
-      graph.addEdgeAndVertices(topLeft, topRight);
-    } if (
-      wallOnBottom(map, xt, yt) &&
-      !tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_4'])
-    ) {
-      // Edge below
-      graph.addEdgeAndVertices(bottomLeft, bottomRight);
+    if (tileIsAngleWall(map[xt][yt])) updateUnmergedEdgesAroundAngleWall(map, graph, xt, yt);
+    else {
+      assert(getTileProperty(map[xt][yt], 'traversable'), 'NT tile found in edgeTiles');
+      updateUnmergedEdgesAroundTraversableTile(map, graph, xt, yt);
     }
   });
   return graph;
@@ -242,5 +331,15 @@ export function graphFromTagproMap(map) {
  * @param {number} yt - y, in tiles
  */
 export function updateUnmergedGraph(unmergedGraph, map, xt, yt) {
-
+  if (tileIsAngleWall(map[xt][yt])) {
+    if (isAngleWallTraversable(map, xt, yt)) {
+      updateUnmergedEdgesAroundAngleWall(map, unmergedGraph, xt, yt);
+    } else {
+      updateUnmergedEdgesAroundCompletelyNTTile(map, unmergedGraph, xt, yt);
+    }
+  } else if (getTileProperty(map[xt][yt], 'traversable')) {
+    updateUnmergedEdgesAroundTraversableTile(map, unmergedGraph, xt, yt);
+  } else {
+    updateUnmergedEdgesAroundCompletelyNTTile(map, unmergedGraph, xt, yt);
+  }
 }
