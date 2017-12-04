@@ -1,26 +1,9 @@
 import test from 'tape';
-import sinon from 'sinon';
 import { shouldHaveTriangulationVertex } from '../../src/utils/triangulationUtils';
-import { computeTileInfo, __RewireAPI__ as TileRewireAPI } from '../../src/tiles';
-
-function setup() {
-  TileRewireAPI.__Rewire__('amBlue', sinon.stub().returns(true));
-  TileRewireAPI.__Rewire__('amRed', sinon.stub().returns(false));
-  TileRewireAPI.__Rewire__('tileInfo', {});
-  TileRewireAPI.__Rewire__('tileNames', {});
-  computeTileInfo();
-}
-
-function teardown() {
-  TileRewireAPI.__ResetDependency__('amBlue');
-  TileRewireAPI.__ResetDependency__('amRed');
-  TileRewireAPI.__ResetDependency__('tileInfo');
-  TileRewireAPI.__ResetDependency__('tileNames');
-}
-
+import { setupTiles, teardownTiles } from '../setupTiles';
 
 test('shouldHaveTriangulationVertex: handles case when squares meet at corner', t => {
-  setup();
+  setupTiles();
   const map = [
     [0, 0, 0, 0, 0, 0, 0],
     [0, 0, 2, 2, 0, 0, 0],
@@ -47,13 +30,13 @@ test('shouldHaveTriangulationVertex: handles case when squares meet at corner', 
   }
   t.is(triangulationVertices, 7);
 
-  teardown();
+  teardownTiles();
   t.end();
 });
 
 
 test('shouldHaveTriangulationVertex: handles case when two angle walls meet at edge of map', t => {
-  setup();
+  setupTiles();
   // Here, there is a diagonal "point" at the top of the map
   const map = [
     [2, 2, 1.4],
@@ -78,6 +61,6 @@ test('shouldHaveTriangulationVertex: handles case when two angle walls meet at e
   }
   t.is(triangulationVertices, 5);
 
-  teardown();
+  teardownTiles();
   t.end();
 });

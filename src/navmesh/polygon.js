@@ -146,9 +146,9 @@ export function mapToEdgeTiles(map) {
         map[xt][yt],
         ['ANGLE_WALL_1', 'ANGLE_WALL_2', 'ANGLE_WALL_3', 'ANGLE_WALL_4'],
       )) {
-        if (isAngleWallTraversable(map, xt, yt)) {
-          res.push({ xt, yt });
-        }
+        // TODO: which of these is correct?
+        // res.push({ xt, yt });
+        if (isAngleWallTraversable(map, xt, yt)) res.push({ xt, yt });
       } else if (
         // Onlyt store edges of traversable tiles
         getTileProperty(map[xt][yt], 'traversable') && (
@@ -213,7 +213,7 @@ export function unmergedGraphFromTagproMap(map) {
  *   Straight lines will be represented by a single edge (the edges are arbitrarily long). This is
  *   computed using the unmergedGraphFromTagproMap function above, and then merging edges that touch
  *   eachother and have the same slope.
- * @param {{number|string}} map - the tagpro map
+ * @param {{number|string}[][]} map - the tagpro map
  * @returns {Graph}
  */
 export function graphFromTagproMap(map) {
@@ -231,4 +231,16 @@ export function graphFromTagproMap(map) {
     if (unmergedGraph.neighbors(v).length === 0) unmergedGraph.removeVertex(v);
   });
   return unmergedGraph;
+}
+
+
+/**
+ * Given the location of a tile which changed states, update the unmerged graph
+ * @param {Graph} unmergedGraph
+ * @param {{number|string}[][]} map - the tagpro map
+ * @param {number} xt - x, in tiles
+ * @param {number} yt - y, in tiles
+ */
+export function updateUnmergedGraph(unmergedGraph, map, xt, yt) {
+
 }
