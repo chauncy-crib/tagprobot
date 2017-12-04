@@ -131,3 +131,7 @@ export function tileIsOneOf(id, names) {
   }
   return false;
 }
+
+export function tileIsAngleWall(id) {
+  return tileIsOneOf(id, ['ANGLE_WALL_1', 'ANGLE_WALL_2', 'ANGLE_WALL_3', 'ANGLE_WALL_4']);
+}
