@@ -362,8 +362,8 @@ test('graphFromTagproMap', tester => {
     ];
     const graph = graphFromTagproMap(map);
 
-    t.is(graph.getVertices().length, 6);
-    t.is(graph.getEdges().length, 6);
+    t.is(graph.getVertices().length, 7);
+    t.is(graph.getEdges().length, 8);
 
     teardown();
     t.end();
@@ -458,7 +458,7 @@ test('graphFromTagproMap', tester => {
     const graph = graphFromTagproMap(map);
 
     t.is(graph.getVertices().length, 5);
-    t.is(graph.getEdges().length, 5);
+    t.is(graph.getEdges().length, 6);
     t.same(graph.getVertices(), [
       { x: 0, y: 0 }, { x: 0, y: 120 }, { x: 120, y: 0 }, { x: 240, y: 0 }, { x: 240, y: 120 },
     ]);
