@@ -27,7 +27,7 @@ function getGoalPos() {
 
   // If the bot has the flag, go to the endzone
   if (me.flag) {
-    goal = amRed() ? { xp: 1320, yp: 1360 } : { xp: 440, yp: 400 };
+    goal = amRed() ? { xp: 1360, yp: 1560 } : { xp: 640, yp: 440 };
 
     console.log('I have the flag. Seeking endzone!');
   } else {
