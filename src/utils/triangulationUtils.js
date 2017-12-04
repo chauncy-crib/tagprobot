@@ -1,6 +1,7 @@
 import { Point } from '../navmesh/graph';
 import { gridInBounds } from './mapUtils';
 import { getTileProperty, tileIsOneOf } from '../tiles';
+import { assert } from '../utils/asserts';
 
 export function isLeftEdgeT(map, p) {
   return gridInBounds(map, p.x, p.y) && (getTileProperty(map[p.x][p.y], 'traversable') ||
@@ -42,17 +43,25 @@ export function shouldHaveTriangulationVertex(map, xt, yt) {
   const topRight = new Point(xt, yt - 1);
   const bottomLeft = new Point(xt - 1, yt);
   const bottomRight = new Point(xt, yt);
-  if (isRightEdgeT(map, topLeft)
-    !== isRightEdgeT(map, bottomLeft)) return true;
-  if (isLeftEdgeT(map, topRight)
-    !== isLeftEdgeT(map, bottomRight)) return true;
-  if (isTopEdgeT(map, bottomLeft)
-    !== isTopEdgeT(map, bottomRight)) return true;
-  if (isBottomEdgeT(map, topLeft)
-    !== isBottomEdgeT(map, topRight)) return true;
-  if (isForwardDiag(map, topLeft)
-    !== isForwardDiag(map, bottomRight)) return true;
-  if (isBackDiag(map, topRight)
-    !== isBackDiag(map, bottomLeft)) return true;
-  return false;
+  const edges = [
+    isRightEdgeT(map, topLeft) !== isLeftEdgeT(map, topRight),
+    isForwardDiag(map, topRight),
+    isBottomEdgeT(map, topRight) !== isTopEdgeT(map, bottomRight),
+    isBackDiag(map, bottomRight),
+    isRightEdgeT(map, bottomLeft) !== isLeftEdgeT(map, bottomRight),
+    isForwardDiag(map, bottomLeft),
+    isBottomEdgeT(map, topLeft) !== isTopEdgeT(map, bottomLeft),
+    isBackDiag(map, topLeft),
+  ];
+  const edgeIndices = [];
+  for (let i = 0; i < edges.length; i += 1) {
+    if (edges[i]) edgeIndices.push(i);
+  }
+  if (edgeIndices.length === 0) return false;
+  assert(
+    edgeIndices.length > 1,
+    `Only one polygon edge found coming from vertex at ${xt}, ${yt}`,
+  );
+  if (edgeIndices.length === 2) return edgeIndices[1] - edgeIndices[0] !== 4;
+  return true;
 }
