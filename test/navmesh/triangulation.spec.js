@@ -1,27 +1,10 @@
 import test from 'tape';
 import {
-  getHighestPoint,
   delaunayTriangulation,
   getDTGraph,
   __RewireAPI__ as TriangulationRewireAPI,
 } from '../../src/navmesh/triangulation';
 import { Point, TGraph } from '../../src/navmesh/graph';
-
-
-test('getHighestPoint()', tester => {
-  tester.test('returns the upper-rightmost point', t => {
-    const p1 = new Point(3, 0);
-    const p2 = new Point(0, 0);
-    const p3 = new Point(5, 1);
-    const p4 = new Point(4, 0);
-    const vertices = [p1, p2, p3, p4];
-
-    t.is(getHighestPoint(vertices), p4);
-
-    t.end();
-  });
-  tester.end();
-});
 
 
 test('delaunayTriangulation()', tester => {
