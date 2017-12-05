@@ -70,14 +70,6 @@ export function pointsOnSameSide(p1, p2, e) {
   return (z1 * z2) > 0;
 }
 
-function getIntersectingEdges(t, e) {
-  const res = [];
-  if (!pointsOnSameSide(t.p1, t.p2, e)) res.push({ p1: t.p1, p2: t.p2 });
-  if (!pointsOnSameSide(t.p2, t.p3, e)) res.push({ p1: t.p2, p2: t.p3 });
-  if (!pointsOnSameSide(t.p3, t.p1, e)) res.push({ p1: t.p3, p2: t.p1 });
-  return res;
-}
-
 export function triangleIntersectsEdge(t, e) {
   const e1 = e.p1;
   const e2 = e.p2;
@@ -141,28 +133,6 @@ export function sortCounterClockwise(points) {
     const d2 = ((b.x - center.x) * (b.x - center.x)) + ((b.y - center.y) * (b.y - center.y));
     return d1 > d2;
   });
-}
-
-
-/**
- * Checks if edge e is delaunay-legal with respect to the inserted point
- * @param {Point} insertedPoint - the point being added to the triangulation
- * @param {{p1: Point, p2: Point}} e - the edge we are checking for legality
- * @param {Point} oppositePoint - The third point of the adjacent triangle to e.p1, e.p2,
- *   insertedPoint
- * @returns {boolean} true if the opposite point is not inside the circle which touches e.p1, e.p2,
- *   insertedPoint
- */
-export function isLegal(insertedPoint, e, oppositePoint) {
-  const [A, B, C] = sortCounterClockwise([insertedPoint, e.p1, e.p2]);
-  const D = oppositePoint;
-  const matrix = [
-    [A.x, A.y, (A.x ** 2) + (A.y ** 2), 1],
-    [B.x, B.y, (B.x ** 2) + (B.y ** 2), 1],
-    [C.x, C.y, (C.x ** 2) + (C.y ** 2), 1],
-    [D.x, D.y, (D.x ** 2) + (D.y ** 2), 1],
-  ];
-  return determinant(matrix) <= 0;
 }
 
 
@@ -260,6 +230,9 @@ export class Graph {
 
 export class Triangle {
   constructor(p1, p2, p3) {
+    assert(!p1.equal(p2), 'Tried to make triangle with two of the same points');
+    assert(!p2.equal(p3), 'Tried to make triangle with two of the same points');
+    assert(!p3.equal(p1), 'Tried to make triangle with two of the same points');
     this.p1 = p1;
     this.p2 = p2;
     this.p3 = p3;
@@ -320,6 +293,7 @@ export class TGraph extends Graph {
   constructor() {
     super();
     this.triangles = new Set();
+    this.fixedAdj = {};
     this.polypoints = new Graph();
   }
 
@@ -348,9 +322,9 @@ export class TGraph extends Graph {
 
   getAdjacentTriangles(t) {
     const res = [];
-    const op1 = this.findOppositePoint(t.p1, { p1: t.p2, p2: t.p3 });
-    const op2 = this.findOppositePoint(t.p2, { p1: t.p1, p2: t.p3 });
-    const op3 = this.findOppositePoint(t.p3, { p1: t.p1, p2: t.p2 });
+    const op1 = this.findOppositePointIfNotFixed(t.p1, { p1: t.p2, p2: t.p3 });
+    const op2 = this.findOppositePointIfNotFixed(t.p2, { p1: t.p1, p2: t.p3 });
+    const op3 = this.findOppositePointIfNotFixed(t.p3, { p1: t.p1, p2: t.p2 });
     if (op3) res.push(this.findTriangle(t.p1, t.p2, op3));
     if (op2) res.push(this.findTriangle(t.p1, t.p3, op2));
     if (op1) res.push(this.findTriangle(t.p2, t.p3, op1));
@@ -441,6 +415,30 @@ export class TGraph extends Graph {
     this.removeEdge(t.p2, t.p3);
   }
 
+  // Overrides the super class function to initialize point in the fixedAdj
+  addVertex(point) {
+    assert(!_.isNil(point), 'Point was undefined');
+    // Only add vertex if it doesn't already exist in the graph
+    if (!_.has(this.adj, point)) {
+      this.fixedAdj[point] = [];
+      super.addVertex(point);
+    }
+  }
+
+  addFixedEdge(e) {
+    assert(_.has(this.fixedAdj, e.p1), `${e.p1} not initialized in the TGraph with addVertex()`);
+    assert(_.has(this.fixedAdj, e.p2), `${e.p2} not initialized in the TGraph with addVertex()`);
+    this.fixedAdj[e.p1].push(e.p2);
+    this.fixedAdj[e.p2].push(e.p1);
+    super.addEdge(e.p1, e.p2);
+  }
+
+  isEdgeFixed(e) {
+    const fixedNeighbors = this.fixedAdj[e.p1];
+    // Return true if any of p1's neighbors are equal to p2
+    return _.some(fixedNeighbors, n => n.equal(e.p2));
+  }
+
   findOppositePoint(p, e) {
     assert(this.isConnected(p, e.p1), `${p} was not connected to p1 of edge: ${e.p1}`);
     assert(this.isConnected(p, e.p2), `${p} was not connected to p2 of edge: ${e.p2}`);
@@ -453,9 +451,39 @@ export class TGraph extends Graph {
     ));
     assert(
       oppositePoint.length <= 1,
-      `Found ${oppositePoint.length} opposite points to ${e.p1} and ${e.p2}`,
+      `Found ${oppositePoint.length} opposite points to ${JSON.stringify(e)} from ${p} and they are
+      ${oppositePoint}`,
     );
     return _.isEmpty(oppositePoint) ? null : oppositePoint[0];
+  }
+
+  findOppositePointIfNotFixed(p, e) {
+    if (this.isEdgeFixed(e)) return null;
+    return this.findOppositePoint(p, e);
+  }
+
+  /**
+   * Checks if edge e is delaunay-legal with respect to the inserted point
+   * @param {Point} insertedPoint - the point being added to the triangulation
+   * @param {{p1: Point, p2: Point}} e - the edge we are checking for legality
+   * @param {Point} oppositePoint - The third point of the adjacent triangle to e.p1, e.p2,
+   *   insertedPoint
+   * @returns {boolean} true if the opposite point is not inside the circle which touches e.p1,
+   *   e.p2, insertedPoint
+   */
+  isLegal(insertedPoint, e, oppositePoint) {
+    // Fixed edges cannot be flipped, so are always legal
+    if (this.isEdgeFixed(e)) return true;
+
+    const [A, B, C] = sortCounterClockwise([insertedPoint, e.p1, e.p2]);
+    const D = oppositePoint;
+    const matrix = [
+      [A.x, A.y, (A.x ** 2) + (A.y ** 2), 1],
+      [B.x, B.y, (B.x ** 2) + (B.y ** 2), 1],
+      [C.x, C.y, (C.x ** 2) + (C.y ** 2), 1],
+      [D.x, D.y, (D.x ** 2) + (D.y ** 2), 1],
+    ];
+    return determinant(matrix) <= 0;
   }
 
   /**
@@ -463,7 +491,7 @@ export class TGraph extends Graph {
    */
   legalizeEdge(insertedPoint, e) {
     const oppositePoint = this.findOppositePoint(insertedPoint, e);
-    if (oppositePoint && !isLegal(insertedPoint, e, oppositePoint)) {
+    if (oppositePoint && !this.isLegal(insertedPoint, e, oppositePoint)) {
       this.removeTriangleByPoints(e.p1, e.p2, insertedPoint);
       this.removeTriangleByPoints(e.p1, e.p2, oppositePoint);
       this.addTriangle(new Triangle(insertedPoint, oppositePoint, e.p1));
@@ -515,13 +543,13 @@ export class TGraph extends Graph {
 
   triangulateRegion(reg) {
     console.log('triangulateRegion() with ', reg);
-    assert(reg.length > 2, `trying to triangulate region ${reg} less than 3 points`);
 
-    // Base case of region with 3 points
+    // Base cases: make triangle if region is 3 points, skip if region is <3 points
     if (reg.length === 3) {
       this.addTriangle(new Triangle(reg[0], reg[1], reg[2]));
       return;
     }
+    if (reg.length < 3) return;
 
     // Extract out the points on the edge
     const e1 = reg[0];
@@ -534,11 +562,12 @@ export class TGraph extends Graph {
       const otherPoints = _.reject(innerReg, p);
       console.log('otherPoints', otherPoints);
       // Must be delaunay-legal with respect to every other point
-      return _.every(otherPoints, other => isLegal(p, { p1: e1, p2: e2 }, other));
+      return _.every(otherPoints, other => this.isLegal(p, { p1: e1, p2: e2 }, other));
     });
     console.log('vertec c:', innerReg[cIndex]);
 
     // Make that triangle with vertex c
+    console.log('adding triangle', e1, innerReg[cIndex], e2);
     this.addTriangle(new Triangle(e1, innerReg[cIndex], e2));
 
     // Call this recursively on the two sub-regions split by this triangle
@@ -549,6 +578,7 @@ export class TGraph extends Graph {
   addConstraintEdge(e) {
     console.log('edge to be interserted:', e);
     if (this.isConnected(e.p1, e.p2)) {
+      this.addFixedEdge(e);
       return;
     }
 
@@ -557,28 +587,26 @@ export class TGraph extends Graph {
       triangleIntersectsEdge(t, e)
     ));
     console.log('intersectingTriangles', intersectingTriangles);
-    const haveEndPoint = _.filter(Array.from(this.triangles), t => (
-      t.hasPoint(e.p1)
-    ));
-    console.log('e.p1 triangles', haveEndPoint);
 
     // Delete all the intersecting triangles, but only the spanning edges
     // Keep track of pseudo-polygons above and below the edge
     const PU = [e.p1]; // the upper pseudo-polygon
     const PL = [e.p1]; // the lower pseudo-polygon
-    for (let i = 0; i < intersectingTriangles.length; i++) {
+
+    const len = intersectingTriangles.length;
+    for (let i = 0; i < len; i++) {
       const lastPU = _.last(PU);
       const lastPL = _.last(PL);
 
       // Find next triangle
-      const nextT = _.find(intersectingTriangles, t => (
+      console.log('lasts', lastPU, lastPL);
+      const nextTIndex = _.findIndex(intersectingTriangles, t => (
         t.hasPoint(lastPU) && t.hasPoint(lastPL)
       ));
+      const nextT = intersectingTriangles[nextTIndex];
       // TODO handle undefined nextT, if there's no triangle?
 
-      // Delete the edges actually intersecting the line
       console.log('nextT', nextT);
-      _.forEach(getIntersectingEdges(nextT, e), edge => this.removeEdge(edge.p1, edge.p2));
 
       // Add points to PU and PL
       if (i === 0) {
@@ -589,25 +617,29 @@ export class TGraph extends Graph {
       } else {
         // Get the third point that's not in either pseudo-polygon
         const newPoint = _.find(nextT.getPoints(), p => !p.equal(lastPU) && !p.equal(lastPL));
-        if (pointsOnSameSide(newPoint, lastPU, e)) PU.push(newPoint);
-        else PL.push(newPoint);
+
+        // Only add to a polygon if it's not e.p2
+        if (!newPoint.equal(e.p2)) {
+          if (pointsOnSameSide(newPoint, lastPU, e)) PU.push(newPoint);
+          else PL.push(newPoint);
+        }
       }
 
-      // Remove triangle
-      this.triangles.delete(nextT);
+      // Remove triangle and edges from graph and from intersectingTriangles
+      this.removeTriangleByReference(nextT);
+      intersectingTriangles.splice(nextTIndex, 1);
     }
 
     // Add e.p2 to the end of each polygon
     PU.push(e.p2);
     PL.push(e.p2);
 
-    // Add the edge to the graph (I think adding triangles will negate this step)
+    // Add the fixed edge to the graph
+    this.addFixedEdge(e);
+
     // Re-triangulate the upper and lower regions
     this.triangulateRegion(PU);
     this.triangulateRegion(PL);
-
-    // Gotta modify add point func to not flip edges that are fixed, will need to keep track of
-    // fixed edges.
   }
 }
 
