@@ -64,6 +64,52 @@ export class Point {
 }
 
 
+export function pointsOnSameSide(p1, p2, e) {
+  const z1 = ((e.p2.x - e.p1.x) * (p1.y - e.p1.y)) - ((p1.x - e.p1.x) * (e.p2.y - e.p1.y));
+  const z2 = ((e.p2.x - e.p1.x) * (p2.y - e.p1.y)) - ((p2.x - e.p1.x) * (e.p2.y - e.p1.y));
+  return (z1 * z2) > 0;
+}
+
+function getIntersectingEdges(t, e) {
+  const res = [];
+  if (!pointsOnSameSide(t.p1, t.p2, e)) res.push({ p1: t.p1, p2: t.p2 });
+  if (!pointsOnSameSide(t.p2, t.p3, e)) res.push({ p1: t.p2, p2: t.p3 });
+  if (!pointsOnSameSide(t.p3, t.p1, e)) res.push({ p1: t.p3, p2: t.p1 });
+  return res;
+}
+
+export function triangleIntersectsEdge(t, e) {
+  const e1 = e.p1;
+  const e2 = e.p2;
+  const t1 = t.p1;
+  const t2 = t.p2;
+  const t3 = t.p3;
+
+  // False if t1, t2, and t3 are all on same side of e
+  if (pointsOnSameSide(t1, t2, e) && pointsOnSameSide(t2, t3, e)) return false;
+
+  // False if e1 and e2 are both on other side of t1-t2 as t3
+  const t12 = { p1: t1, p2: t2 }; // edge between t1 and t2
+  if (!pointsOnSameSide(e1, t3, t12) && !pointsOnSameSide(e2, t3, t12)) {
+    return false;
+  }
+
+  // False if e1 and e2 are both on other side of t2-t3 as t1
+  const t23 = { p1: t2, p2: t3 }; // edge between t2 and t3
+  if (!pointsOnSameSide(e1, t1, t23) && !pointsOnSameSide(e2, t1, t23)) {
+    return false;
+  }
+
+  // False if e1 and e2 are both on other side of t3-t1 as t2
+  const t31 = { p1: t3, p2: t1 }; // edge between t3 and t1
+  if (!pointsOnSameSide(e1, t2, t31) && !pointsOnSameSide(e2, t2, t31)) {
+    return false;
+  }
+
+  return true;
+}
+
+
 /**
  * Find the point in the center, and then return the points sorted counter clockwise around it,
  *   starting at 12 o'clock. Adapted from:
@@ -258,6 +304,10 @@ export class Triangle {
     const points2 = [other.p1, other.p2, other.p3];
     // Return if p1 in points1 has some p2 in points2 where p2.equal(p1)
     return _.every(points1, p1 => _.some(points2, p2 => p2.equal(p1)));
+  }
+
+  hasPoint(p) {
+    return p.equal(this.p1) || p.equal(this.p2) || p.equal(this.p3);
   }
 }
 
@@ -462,4 +512,102 @@ export class TGraph extends Graph {
       this.legalizeEdge(p, { p1: cp.shared[1], p2: cp.unique[1] });
     }
   }
+
+  triangulateRegion(reg) {
+    console.log('triangulateRegion() with ', reg);
+    assert(reg.length > 2, `trying to triangulate region ${reg} less than 3 points`);
+
+    // Base case of region with 3 points
+    if (reg.length === 3) {
+      this.addTriangle(new Triangle(reg[0], reg[1], reg[2]));
+      return;
+    }
+
+    // Extract out the points on the edge
+    const e1 = reg[0];
+    const e2 = _.last(reg);
+    const innerReg = _.slice(reg, 1, -1);
+
+    // Find vertex c on the region that triangle [e.p1, e.p2, c] is delaunay-legal with all other
+    // points in the region
+    const cIndex = _.findIndex(innerReg, p => {
+      const otherPoints = _.reject(innerReg, p);
+      console.log('otherPoints', otherPoints);
+      // Must be delaunay-legal with respect to every other point
+      return _.every(otherPoints, other => isLegal(p, { p1: e1, p2: e2 }, other));
+    });
+    console.log('vertec c:', innerReg[cIndex]);
+
+    // Make that triangle with vertex c
+    this.addTriangle(new Triangle(e1, innerReg[cIndex], e2));
+
+    // Call this recursively on the two sub-regions split by this triangle
+    this.triangulateRegion(_.concat(e1, _.slice(innerReg, 0, cIndex + 1)));
+    this.triangulateRegion(_.concat(_.slice(innerReg, cIndex), e2));
+  }
+
+  addConstraintEdge(e) {
+    console.log('edge to be interserted:', e);
+    if (this.isConnected(e.p1, e.p2)) {
+      return;
+    }
+
+    // Find all triangles intersecting the edge
+    const intersectingTriangles = _.filter(Array.from(this.triangles), t => (
+      triangleIntersectsEdge(t, e)
+    ));
+    console.log('intersectingTriangles', intersectingTriangles);
+    const haveEndPoint = _.filter(Array.from(this.triangles), t => (
+      t.hasPoint(e.p1)
+    ));
+    console.log('e.p1 triangles', haveEndPoint);
+
+    // Delete all the intersecting triangles, but only the spanning edges
+    // Keep track of pseudo-polygons above and below the edge
+    const PU = [e.p1]; // the upper pseudo-polygon
+    const PL = [e.p1]; // the lower pseudo-polygon
+    for (let i = 0; i < intersectingTriangles.length; i++) {
+      const lastPU = _.last(PU);
+      const lastPL = _.last(PL);
+
+      // Find next triangle
+      const nextT = _.find(intersectingTriangles, t => (
+        t.hasPoint(lastPU) && t.hasPoint(lastPL)
+      ));
+      // TODO handle undefined nextT, if there's no triangle?
+
+      // Delete the edges actually intersecting the line
+      console.log('nextT', nextT);
+      _.forEach(getIntersectingEdges(nextT, e), edge => this.removeEdge(edge.p1, edge.p2));
+
+      // Add points to PU and PL
+      if (i === 0) {
+        // This is the first triangle, add one point to upper polygon and the other to lower
+        const newPoints = _.reject(nextT.getPoints(), p => p.equal(lastPU));
+        PU.push(newPoints[0]);
+        PL.push(newPoints[1]);
+      } else {
+        // Get the third point that's not in either pseudo-polygon
+        const newPoint = _.find(nextT.getPoints(), p => !p.equal(lastPU) && !p.equal(lastPL));
+        if (pointsOnSameSide(newPoint, lastPU, e)) PU.push(newPoint);
+        else PL.push(newPoint);
+      }
+
+      // Remove triangle
+      this.triangles.delete(nextT);
+    }
+
+    // Add e.p2 to the end of each polygon
+    PU.push(e.p2);
+    PL.push(e.p2);
+
+    // Add the edge to the graph (I think adding triangles will negate this step)
+    // Re-triangulate the upper and lower regions
+    this.triangulateRegion(PU);
+    this.triangulateRegion(PL);
+
+    // Gotta modify add point func to not flip edges that are fixed, will need to keep track of
+    // fixed edges.
+  }
 }
+
