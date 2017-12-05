@@ -11,9 +11,10 @@ const DTGraph = new TGraph();
  * @param {Point[]} vertices - array of all vertices
  * @returns {Graph} graph of the triangulation of all the vertices
  */
-export function delaunayTriangulation(vertices, dummyPoint1, dummyPoint2, dummyPoint3) {
+export function delaunayTriangulation(mapGraph, dummyPoint1, dummyPoint2, dummyPoint3) {
   const numVertices = DTGraph.getVertices().length;
   assert(DTGraph.getVertices().length === 0, `DTGraph had ${numVertices} vertices.`);
+  const vertices = mapGraph.getVertices();
 
   const t = new Triangle(dummyPoint1, dummyPoint2, dummyPoint3);
   DTGraph.addTriangle(t);
@@ -29,6 +30,12 @@ export function delaunayTriangulation(vertices, dummyPoint1, dummyPoint2, dummyP
   _.forEach(shuffledVertices, vertex => {
     DTGraph.addTriangulationVertex(vertex);
   });
+
+  const shuffledEdges = _.shuffle(mapGraph.getEdges());
+  _.forEach(shuffledEdges, e => {
+    DTGraph.addConstraintEdge(e);
+  });
+
   _.forEach([dummyPoint1, dummyPoint2, dummyPoint3], dummyPoint => {
     DTGraph.removeVertexAndTriangles(dummyPoint);
   });
@@ -43,7 +50,7 @@ export function delaunayTriangulation(vertices, dummyPoint1, dummyPoint2, dummyP
 export function calculateNavMesh(map) {
   const mapGraph = graphFromTagproMap(map);
   delaunayTriangulation(
-    mapGraph.getVertices(),
+    mapGraph,
     new Point(-9999, -100),
     new Point(9999, -100),
     new Point(0, 9999),
