@@ -16,9 +16,12 @@ test('delaunayTriangulation()', tester => {
     const p2 = new Point(19, 0);
     const p3 = new Point(19, 16);
     const p4 = new Point(20, 8);
-    const vertices = [p1, p2, p3, p4];
+    const mapGraph = {
+      getEdges: () => [],
+      getVertices: () => [p1, p2, p3, p4],
+    };
 
-    delaunayTriangulation(vertices, new Point(-100, 50), new Point(100, 50), new Point(0, -50));
+    delaunayTriangulation(mapGraph, new Point(-100, 50), new Point(100, 50), new Point(0, -50));
     const DTGraph = getDTGraph();
     t.true(DTGraph.isConnected(p1, p4));
     t.true(DTGraph.isConnected(p1, p2));
@@ -44,9 +47,12 @@ test('delaunayTriangulation()', tester => {
     const p2 = new Point(13, 0);
     const p3 = new Point(13, 16);
     const p4 = new Point(20, 8);
-    const vertices = [p1, p2, p3, p4];
+    const mapGraph = {
+      getEdges: () => [],
+      getVertices: () => [p1, p2, p3, p4],
+    };
 
-    delaunayTriangulation(vertices, new Point(-100, 50), new Point(100, 50), new Point(0, -50));
+    delaunayTriangulation(mapGraph, new Point(-100, 50), new Point(100, 50), new Point(0, -50));
     const DTGraph = getDTGraph();
     t.false(DTGraph.isConnected(p1, p4));
     t.true(DTGraph.isConnected(p1, p2));
@@ -71,9 +77,12 @@ test('delaunayTriangulation()', tester => {
     const p2 = new Point(0, 10);
     const p3 = new Point(-3, 8);
     const p4 = new Point(0, 2); // on line between p1 and p2
-    const vertices = [p1, p2, p3, p4];
+    const mapGraph = {
+      getEdges: () => [],
+      getVertices: () => [p1, p2, p3, p4],
+    };
 
-    delaunayTriangulation(vertices, new Point(-40, 40), new Point(40, 40), new Point(0, -40));
+    delaunayTriangulation(mapGraph, new Point(-40, 40), new Point(40, 40), new Point(0, -40));
     const DTGraph = getDTGraph();
     t.is(DTGraph.getVertices().length, 4);
     t.is(DTGraph.triangles.size, 2);
@@ -89,8 +98,11 @@ test('delaunayTriangulation()', tester => {
     const p2 = new Point(0, 12);
     const p3 = new Point(12, 0);
     const p4 = new Point(12, 12);
-    const vertices = [p1, p2, p3, p4];
-    delaunayTriangulation(vertices, new Point(-200, -5), new Point(20, 200), new Point(13, -1));
+    const mapGraph = {
+      getEdges: () => [],
+      getVertices: () => [p1, p2, p3, p4],
+    };
+    delaunayTriangulation(mapGraph, new Point(-200, -5), new Point(20, 200), new Point(13, -1));
     const pp = getDTGraph().polypoints;
 
     // there are two valid triangulations for a square of vertices
