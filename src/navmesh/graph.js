@@ -434,6 +434,7 @@ export class TGraph extends Graph {
   }
 
   isEdgeFixed(e) {
+    assert(this.isConnected(e.p1, e.p2), `${JSON.stringify(e)} is not a connected edge`);
     const fixedNeighbors = this.fixedAdj[e.p1];
     // Return true if any of p1's neighbors are equal to p2
     return _.some(fixedNeighbors, n => n.equal(e.p2));
