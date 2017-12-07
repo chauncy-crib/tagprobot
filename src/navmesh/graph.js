@@ -64,12 +64,23 @@ export class Point {
 }
 
 
+/**
+ * @param {Point} p1
+ * @param {Point} p2
+ * @param {{p1: Point, p2: Point}} e - an edge
+ * @returns {boolean} if the two points are on the same side of the edge
+ */
 export function pointsOnSameSide(p1, p2, e) {
   const z1 = ((e.p2.x - e.p1.x) * (p1.y - e.p1.y)) - ((p1.x - e.p1.x) * (e.p2.y - e.p1.y));
   const z2 = ((e.p2.x - e.p1.x) * (p2.y - e.p1.y)) - ((p2.x - e.p1.x) * (e.p2.y - e.p1.y));
   return (z1 * z2) > 0;
 }
 
+/**
+ * @param {Triangle} t
+ * @param {{p1: Point, p2: Point}} e - an edge
+ * @returns {boolean} if the triangle intersects or touches the edge
+ */
 export function triangleIntersectsEdge(t, e) {
   const e1 = e.p1;
   const e2 = e.p2;
@@ -415,7 +426,9 @@ export class TGraph extends Graph {
     this.removeEdge(t.p2, t.p3);
   }
 
-  // Overrides the super class function to initialize point in the fixedAdj
+  /**
+   * Overrides the super class function to initialize point in the fixedAdj
+   */
   addVertex(point) {
     assert(!_.isNil(point), 'Point was undefined');
     // Only add vertex if it doesn't already exist in the graph
@@ -435,7 +448,7 @@ export class TGraph extends Graph {
 
   isEdgeFixed(e) {
     const fixedNeighbors = this.fixedAdj[e.p1];
-    // Return true if any of p1's neighbors are equal to p2
+    // Return true if any of p1's fixedNeighbors are equal to p2
     return _.some(fixedNeighbors, n => n.equal(e.p2));
   }
 
@@ -469,7 +482,7 @@ export class TGraph extends Graph {
    * @param {Point} oppositePoint - The third point of the adjacent triangle to e.p1, e.p2,
    *   insertedPoint
    * @returns {boolean} true if the opposite point is not inside the circle which touches e.p1,
-   *   e.p2, insertedPoint
+   *   e.p2, insertedPoint or if edge is fixed
    */
   isLegal(insertedPoint, e, oppositePoint) {
     // Fixed edges cannot be flipped, so are always legal
@@ -541,9 +554,11 @@ export class TGraph extends Graph {
     }
   }
 
+  /**
+   * Recursively triangulates an un-triangulated region of points
+   * @param {Point[]} reg - the region defined by an array of points
+   */
   triangulateRegion(reg) {
-    console.log('triangulateRegion() with ', reg);
-
     // Base cases: make triangle if region is 3 points, skip if region is <3 points
     if (reg.length === 3) {
       this.addTriangle(new Triangle(reg[0], reg[1], reg[2]));
@@ -560,14 +575,11 @@ export class TGraph extends Graph {
     // points in the region
     const cIndex = _.findIndex(innerReg, p => {
       const otherPoints = _.reject(innerReg, p);
-      console.log('otherPoints', otherPoints);
       // Must be delaunay-legal with respect to every other point
       return _.every(otherPoints, other => this.isLegal(p, { p1: e1, p2: e2 }, other));
     });
-    console.log('vertec c:', innerReg[cIndex]);
 
     // Make that triangle with vertex c
-    console.log('adding triangle', e1, innerReg[cIndex], e2);
     this.addTriangle(new Triangle(e1, innerReg[cIndex], e2));
 
     // Call this recursively on the two sub-regions split by this triangle
@@ -575,8 +587,12 @@ export class TGraph extends Graph {
     this.triangulateRegion(_.concat(_.slice(innerReg, cIndex), e2));
   }
 
+  /**
+   * Adds an edge to the graph as a constrained edge and re-triangulates the affected surrounding
+   *   region
+   * @param {{p1: Point, p2: Point}} e - the edge to add
+   */
   addConstraintEdge(e) {
-    console.log('edge to be interserted:', e);
     if (this.isConnected(e.p1, e.p2)) {
       this.addFixedEdge(e);
       return;
@@ -586,42 +602,36 @@ export class TGraph extends Graph {
     const intersectingTriangles = _.filter(Array.from(this.triangles), t => (
       triangleIntersectsEdge(t, e)
     ));
-    console.log('intersectingTriangles', intersectingTriangles);
 
-    // Delete all the intersecting triangles, but only the spanning edges
-    // Keep track of pseudo-polygons above and below the edge
-    const PU = [e.p1]; // the upper pseudo-polygon
-    const PL = [e.p1]; // the lower pseudo-polygon
+    // Keep track of regions above and below the edge
+    const RU = [e.p1]; // upper region
+    const RL = [e.p1]; // lower region
 
     const len = intersectingTriangles.length;
     for (let i = 0; i < len; i++) {
-      const lastPU = _.last(PU);
-      const lastPL = _.last(PL);
+      const lastRU = _.last(RU);
+      const lastRL = _.last(RL);
 
       // Find next triangle
-      console.log('lasts', lastPU, lastPL);
       const nextTIndex = _.findIndex(intersectingTriangles, t => (
-        t.hasPoint(lastPU) && t.hasPoint(lastPL)
+        t.hasPoint(lastRU) && t.hasPoint(lastRL)
       ));
       const nextT = intersectingTriangles[nextTIndex];
-      // TODO handle undefined nextT, if there's no triangle?
 
-      console.log('nextT', nextT);
-
-      // Add points to PU and PL
+      // Add points to RU and RL
       if (i === 0) {
         // This is the first triangle, add one point to upper polygon and the other to lower
-        const newPoints = _.reject(nextT.getPoints(), p => p.equal(lastPU));
-        PU.push(newPoints[0]);
-        PL.push(newPoints[1]);
+        const newPoints = _.reject(nextT.getPoints(), p => p.equal(lastRU));
+        RU.push(newPoints[0]);
+        RL.push(newPoints[1]);
       } else {
         // Get the third point that's not in either pseudo-polygon
-        const newPoint = _.find(nextT.getPoints(), p => !p.equal(lastPU) && !p.equal(lastPL));
+        const newPoint = _.find(nextT.getPoints(), p => !p.equal(lastRU) && !p.equal(lastRL));
 
         // Only add to a polygon if it's not e.p2
         if (!newPoint.equal(e.p2)) {
-          if (pointsOnSameSide(newPoint, lastPU, e)) PU.push(newPoint);
-          else PL.push(newPoint);
+          if (pointsOnSameSide(newPoint, lastRU, e)) RU.push(newPoint);
+          else RL.push(newPoint);
         }
       }
 
@@ -631,15 +641,15 @@ export class TGraph extends Graph {
     }
 
     // Add e.p2 to the end of each polygon
-    PU.push(e.p2);
-    PL.push(e.p2);
+    RU.push(e.p2);
+    RL.push(e.p2);
 
     // Add the fixed edge to the graph
     this.addFixedEdge(e);
 
     // Re-triangulate the upper and lower regions
-    this.triangulateRegion(PU);
-    this.triangulateRegion(PL);
+    this.triangulateRegion(RU);
+    this.triangulateRegion(RL);
   }
 }
 
