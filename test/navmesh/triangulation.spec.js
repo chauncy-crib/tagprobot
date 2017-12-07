@@ -39,6 +39,36 @@ test('delaunayTriangulation()', tester => {
     t.end();
   });
 
+  tester.test('overwrites horizontal line when vertical line is constrained', t => {
+    const mockDTGraph = new TGraph();
+    TriangulationRewireAPI.__Rewire__('DTGraph', mockDTGraph);
+    const p1 = new Point(0, 8);
+    const p2 = new Point(19, 0);
+    const p3 = new Point(19, 16);
+    const p4 = new Point(20, 8);
+    const mapGraph = {
+      getEdges: () => [{ p1: p2, p2: p3 }], // Make a constrained edge between p2 and p3
+      getVertices: () => [p1, p2, p3, p4],
+    };
+
+    delaunayTriangulation(mapGraph, new Point(-100, 50), new Point(100, 50), new Point(0, -50));
+    const DTGraph = getDTGraph();
+    t.false(DTGraph.isConnected(p1, p4));
+    t.true(DTGraph.isConnected(p1, p2));
+    t.true(DTGraph.isConnected(p1, p3));
+    t.true(DTGraph.isConnected(p2, p4));
+    t.true(DTGraph.isConnected(p3, p4));
+    t.true(DTGraph.isConnected(p2, p3));
+    t.is(DTGraph.getEdges().length, 5);
+    t.is(DTGraph.getVertices().length, 4);
+    t.is(DTGraph.triangles.size, 2);
+    t.is(DTGraph.polypoints.getVertices().length, 2);
+    t.is(DTGraph.polypoints.getEdges().length, 0);
+    TriangulationRewireAPI.__ResetDependency__('DTGraph');
+
+    t.end();
+  });
+
   tester.test('creates legal vertical line', t => {
     const mockDTGraph = new TGraph();
     TriangulationRewireAPI.__Rewire__('DTGraph', mockDTGraph);
@@ -65,6 +95,37 @@ test('delaunayTriangulation()', tester => {
     t.is(DTGraph.triangles.size, 2);
     t.is(DTGraph.polypoints.getVertices().length, 2);
     t.is(DTGraph.polypoints.getEdges().length, 1);
+    TriangulationRewireAPI.__ResetDependency__('DTGraph');
+
+    t.end();
+  });
+
+  tester.test('overwrites vertical line when horizontal line is constrained', t => {
+    const mockDTGraph = new TGraph();
+    TriangulationRewireAPI.__Rewire__('DTGraph', mockDTGraph);
+    // Vertical line between p2 and p3
+    const p1 = new Point(0, 8);
+    const p2 = new Point(13, 0);
+    const p3 = new Point(13, 16);
+    const p4 = new Point(20, 8);
+    const mapGraph = {
+      getEdges: () => [{ p1, p2: p4 }], // Make a constrained edge between p1 and p4
+      getVertices: () => [p1, p2, p3, p4],
+    };
+
+    delaunayTriangulation(mapGraph, new Point(-100, 50), new Point(100, 50), new Point(0, -50));
+    const DTGraph = getDTGraph();
+    t.true(DTGraph.isConnected(p1, p4));
+    t.true(DTGraph.isConnected(p1, p2));
+    t.true(DTGraph.isConnected(p1, p3));
+    t.true(DTGraph.isConnected(p2, p4));
+    t.true(DTGraph.isConnected(p3, p4));
+    t.false(DTGraph.isConnected(p2, p3));
+    t.is(DTGraph.getEdges().length, 5);
+    t.is(DTGraph.getVertices().length, 4);
+    t.is(DTGraph.triangles.size, 2);
+    t.is(DTGraph.polypoints.getVertices().length, 2);
+    t.is(DTGraph.polypoints.getEdges().length, 0);
     TriangulationRewireAPI.__ResetDependency__('DTGraph');
 
     t.end();
