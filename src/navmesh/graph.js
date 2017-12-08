@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { assert } from '../utils/asserts';
+import { findUpperAndLowerPoints } from './graphUtils';
 
 export function determinant(matrix) {
   const N = matrix.length;
@@ -608,50 +609,14 @@ export class TGraph extends Graph {
     }
 
     // Find all triangles intersecting the edge
-    let intersectingTriangles = _.filter(Array.from(this.triangles), t => (
+    const intersectingTriangles = _.filter(Array.from(this.triangles), t => (
       triangleIntersectsEdge(t, e)
     ));
 
-    // Keep track of the points in order in the regions above and below the edge
-    const upperPoints = [e.p1];
-    const lowerPoints = [e.p1];
+    const { upperPoints, lowerPoints } = findUpperAndLowerPoints(intersectingTriangles, e);
 
-    while (!_.isEmpty(intersectingTriangles)) {
-      const lastUpperPoint = _.last(upperPoints);
-      const lastLowerPoint = _.last(lowerPoints);
-
-      // Find next triangle
-      const nextT = _.find(intersectingTriangles, t => (
-        t.hasPoint(lastUpperPoint) && t.hasPoint(lastLowerPoint)
-      ));
-
-      // Add points to upperPoints and lowerPoints
-      if (upperPoints.length === 1) {
-        // This is the first triangle, add one point to upper polygon and the other to lower
-        const newPoints = _.reject(nextT.getPoints(), p => p.equal(lastUpperPoint));
-        upperPoints.push(newPoints[0]);
-        lowerPoints.push(newPoints[1]);
-      } else {
-        // Get the third point that's not in either pseudo-polygon
-        const newPoint = _.find(nextT.getPoints(), p => (
-          !p.equal(lastUpperPoint) && !p.equal(lastLowerPoint)
-        ));
-
-        if (newPoint.equal(e.p2)) {
-          // This is the last point, add it to both regions
-          upperPoints.push(newPoint);
-          lowerPoints.push(newPoint);
-        } else {
-          // Push point to either upper or lower region
-          if (pointsOnSameSide(newPoint, lastUpperPoint, e)) upperPoints.push(newPoint);
-          else lowerPoints.push(newPoint);
-        }
-      }
-
-      // Remove triangle and edges from graph and from intersectingTriangles
-      this.removeTriangleByReference(nextT);
-      intersectingTriangles = _.reject(intersectingTriangles, nextT);
-    }
+    // Remove all intersecting triangles
+    _.forEach(intersectingTriangles, t => this.removeTriangleByReference(t));
 
     // Add the fixed edge to the graph
     this.addFixedEdge(e);
