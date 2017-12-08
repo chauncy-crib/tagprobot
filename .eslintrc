@@ -31,6 +31,7 @@
       ObjectPattern: { minProperties: 5, multiline: true, consistent: true }
     }],
     "no-param-reassign": "off",
+    "no-lonely-if": "off",
   },
   // these are globals made available through either the tagpro API or by
   // requiring them in src/index.js

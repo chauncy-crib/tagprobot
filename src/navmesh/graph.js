@@ -63,6 +63,19 @@ export class Point {
   }
 }
 
+/**
+ * @param {Point} A
+ * @param {Point} B
+ * @param {Point} P
+ * @returns {number} a number which is positive iff P is on the left of the edge AB
+ */
+function detD(A, B, P) {
+  return determinant([
+    [A.x, A.y, 1],
+    [B.x, B.y, 1],
+    [P.x, P.y, 1],
+  ]);
+}
 
 /**
  * @param {Point} p1
@@ -71,9 +84,7 @@ export class Point {
  * @returns {boolean} if the two points are on the same side of the edge
  */
 export function pointsOnSameSide(p1, p2, e) {
-  const z1 = ((e.p2.x - e.p1.x) * (p1.y - e.p1.y)) - ((p1.x - e.p1.x) * (e.p2.y - e.p1.y));
-  const z2 = ((e.p2.x - e.p1.x) * (p2.y - e.p1.y)) - ((p2.x - e.p1.x) * (e.p2.y - e.p1.y));
-  return (z1 * z2) > 0;
+  return detD(e.p1, e.p2, p1) * detD(e.p1, e.p2, p2) > 0;
 }
 
 /**
@@ -205,13 +216,17 @@ export class Graph {
     return _.has(this.adj, p);
   }
 
+  /**
+   * Adds a point to the graph
+   * @returns {boolean} if the point was successfully added
+   */
   addVertex(point) {
     assert(!_.isNil(point), 'Point was undefined');
     // Only add vertex if it doesn't already exist in the graph
-    if (!_.has(this.adj, point)) {
-      this.adj[point] = [];
-      this.vertices.push(point);
-    }
+    if (_.has(this.adj, point)) return false;
+    this.adj[point] = [];
+    this.vertices.push(point);
+    return true;
   }
 
   /**
@@ -241,9 +256,10 @@ export class Graph {
 
 export class Triangle {
   constructor(p1, p2, p3) {
-    assert(!p1.equal(p2), 'Tried to make triangle with two of the same points');
-    assert(!p2.equal(p3), 'Tried to make triangle with two of the same points');
-    assert(!p3.equal(p1), 'Tried to make triangle with two of the same points');
+    assert(
+      !(p1.equal(p2) || p1.equal(p3) || p3.equal(p2)),
+      'Tried to make triangle with two of the same points',
+    );
     this.p1 = p1;
     this.p2 = p2;
     this.p3 = p3;
@@ -430,20 +446,13 @@ export class TGraph extends Graph {
    * Overrides the super class function to initialize point in the fixedAdj
    */
   addVertex(point) {
-    assert(!_.isNil(point), 'Point was undefined');
-    // Only add vertex if it doesn't already exist in the graph
-    if (!_.has(this.adj, point)) {
-      this.fixedAdj[point] = [];
-      super.addVertex(point);
-    }
+    if (super.addVertex(point)) this.fixedAdj[point] = [];
   }
 
   addFixedEdge(e) {
-    assert(_.has(this.fixedAdj, e.p1), `${e.p1} not initialized in the TGraph with addVertex()`);
-    assert(_.has(this.fixedAdj, e.p2), `${e.p2} not initialized in the TGraph with addVertex()`);
+    super.addEdge(e.p1, e.p2);
     this.fixedAdj[e.p1].push(e.p2);
     this.fixedAdj[e.p2].push(e.p1);
-    super.addEdge(e.p1, e.p2);
   }
 
   isEdgeFixed(e) {
@@ -557,35 +566,33 @@ export class TGraph extends Graph {
 
   /**
    * Recursively triangulates an un-triangulated region of points
-   * @param {Point[]} reg - the region defined by an array of points
+   * @param {Point[]} reg - the region defined by an array of points connected in a cycle
    */
   triangulateRegion(reg) {
     // Base cases: make triangle if region is 3 points, skip if region is <3 points
-    if (reg.length === 3) {
-      this.addTriangle(new Triangle(reg[0], reg[1], reg[2]));
-      return;
-    }
-    if (reg.length < 3) return;
+    if (reg.length === 3) this.addTriangle(new Triangle(reg[0], reg[1], reg[2]));
+    if (reg.length <= 3) return;
 
     // Extract out the points on the edge
-    const e1 = reg[0];
-    const e2 = _.last(reg);
+    const e = { p1: reg[0], p2: _.last(reg) };
+    assert(this.isConnected(e.p1, e.p2), `the edge of region ${reg} was not connected`);
+    // Slice off the first and last element to get the inner region
     const innerReg = _.slice(reg, 1, -1);
 
-    // Find vertex c on the region that triangle [e.p1, e.p2, c] is delaunay-legal with all other
+    // Find vertex c on the region that triangle [e1, e2, c] is delaunay-legal with all other
     // points in the region
     const cIndex = _.findIndex(innerReg, p => {
       const otherPoints = _.reject(innerReg, p);
       // Must be delaunay-legal with respect to every other point
-      return _.every(otherPoints, other => this.isLegal(p, { p1: e1, p2: e2 }, other));
+      return _.every(otherPoints, other => this.isLegal(p, e, other));
     });
 
     // Make that triangle with vertex c
-    this.addTriangle(new Triangle(e1, innerReg[cIndex], e2));
+    this.addTriangle(new Triangle(e.p1, innerReg[cIndex], e.p2));
 
     // Call this recursively on the two sub-regions split by this triangle
-    this.triangulateRegion(_.concat(e1, _.slice(innerReg, 0, cIndex + 1)));
-    this.triangulateRegion(_.concat(_.slice(innerReg, cIndex), e2));
+    this.triangulateRegion(_.concat(e.p1, _.slice(innerReg, 0, cIndex + 1)));
+    this.triangulateRegion(_.concat(_.slice(innerReg, cIndex, innerReg.length), e.p2));
   }
 
   /**
@@ -594,63 +601,64 @@ export class TGraph extends Graph {
    * @param {{p1: Point, p2: Point}} e - the edge to add
    */
   addConstraintEdge(e) {
+    // If edge already exists, just make it fixed since everything is already triangulated
     if (this.isConnected(e.p1, e.p2)) {
       this.addFixedEdge(e);
       return;
     }
 
     // Find all triangles intersecting the edge
-    const intersectingTriangles = _.filter(Array.from(this.triangles), t => (
+    let intersectingTriangles = _.filter(Array.from(this.triangles), t => (
       triangleIntersectsEdge(t, e)
     ));
 
-    // Keep track of regions above and below the edge
-    const RU = [e.p1]; // upper region
-    const RL = [e.p1]; // lower region
+    // Keep track of the points in order in the regions above and below the edge
+    const upperPoints = [e.p1];
+    const lowerPoints = [e.p1];
 
-    const len = intersectingTriangles.length;
-    for (let i = 0; i < len; i++) {
-      const lastRU = _.last(RU);
-      const lastRL = _.last(RL);
+    while (!_.isEmpty(intersectingTriangles)) {
+      const lastUpperPoint = _.last(upperPoints);
+      const lastLowerPoint = _.last(lowerPoints);
 
       // Find next triangle
-      const nextTIndex = _.findIndex(intersectingTriangles, t => (
-        t.hasPoint(lastRU) && t.hasPoint(lastRL)
+      const nextT = _.find(intersectingTriangles, t => (
+        t.hasPoint(lastUpperPoint) && t.hasPoint(lastLowerPoint)
       ));
-      const nextT = intersectingTriangles[nextTIndex];
 
-      // Add points to RU and RL
-      if (i === 0) {
+      // Add points to upperPoints and lowerPoints
+      if (upperPoints.length === 1) {
         // This is the first triangle, add one point to upper polygon and the other to lower
-        const newPoints = _.reject(nextT.getPoints(), p => p.equal(lastRU));
-        RU.push(newPoints[0]);
-        RL.push(newPoints[1]);
+        const newPoints = _.reject(nextT.getPoints(), p => p.equal(lastUpperPoint));
+        upperPoints.push(newPoints[0]);
+        lowerPoints.push(newPoints[1]);
       } else {
         // Get the third point that's not in either pseudo-polygon
-        const newPoint = _.find(nextT.getPoints(), p => !p.equal(lastRU) && !p.equal(lastRL));
+        const newPoint = _.find(nextT.getPoints(), p => (
+          !p.equal(lastUpperPoint) && !p.equal(lastLowerPoint)
+        ));
 
-        // Only add to a polygon if it's not e.p2
-        if (!newPoint.equal(e.p2)) {
-          if (pointsOnSameSide(newPoint, lastRU, e)) RU.push(newPoint);
-          else RL.push(newPoint);
+        if (newPoint.equal(e.p2)) {
+          // This is the last point, add it to both regions
+          upperPoints.push(newPoint);
+          lowerPoints.push(newPoint);
+        } else {
+          // Push point to either upper or lower region
+          if (pointsOnSameSide(newPoint, lastUpperPoint, e)) upperPoints.push(newPoint);
+          else lowerPoints.push(newPoint);
         }
       }
 
       // Remove triangle and edges from graph and from intersectingTriangles
       this.removeTriangleByReference(nextT);
-      intersectingTriangles.splice(nextTIndex, 1);
+      intersectingTriangles = _.reject(intersectingTriangles, nextT);
     }
-
-    // Add e.p2 to the end of each polygon
-    RU.push(e.p2);
-    RL.push(e.p2);
 
     // Add the fixed edge to the graph
     this.addFixedEdge(e);
 
     // Re-triangulate the upper and lower regions
-    this.triangulateRegion(RU);
-    this.triangulateRegion(RL);
+    this.triangulateRegion(upperPoints);
+    this.triangulateRegion(lowerPoints);
   }
 }
 
