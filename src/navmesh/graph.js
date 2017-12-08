@@ -63,6 +63,19 @@ export class Point {
   }
 }
 
+/**
+ * @param {Point} A
+ * @param {Point} B
+ * @param {Point} P
+ * @returns {number} a number which is positive iff P is on the left of the edge AB
+ */
+function detD(A, B, P) {
+  return determinant([
+    [A.x, A.y, 1],
+    [B.x, B.y, 1],
+    [P.x, P.y, 1],
+  ]);
+}
 
 /**
  * @param {Point} p1
@@ -71,9 +84,7 @@ export class Point {
  * @returns {boolean} if the two points are on the same side of the edge
  */
 export function pointsOnSameSide(p1, p2, e) {
-  const z1 = ((e.p2.x - e.p1.x) * (p1.y - e.p1.y)) - ((p1.x - e.p1.x) * (e.p2.y - e.p1.y));
-  const z2 = ((e.p2.x - e.p1.x) * (p2.y - e.p1.y)) - ((p2.x - e.p1.x) * (e.p2.y - e.p1.y));
-  return (z1 * z2) > 0;
+  return detD(e.p1, e.p2, p1) * detD(e.p1, e.p2, p2) > 0;
 }
 
 /**
@@ -205,13 +216,17 @@ export class Graph {
     return _.has(this.adj, p);
   }
 
+  /**
+   * Adds a point to the graph
+   * @returns {boolean} if the point was successfully added
+   */
   addVertex(point) {
     assert(!_.isNil(point), 'Point was undefined');
     // Only add vertex if it doesn't already exist in the graph
-    if (!_.has(this.adj, point)) {
-      this.adj[point] = [];
-      this.vertices.push(point);
-    }
+    if (_.has(this.adj, point)) return false;
+    this.adj[point] = [];
+    this.vertices.push(point);
+    return true;
   }
 
   /**
@@ -241,9 +256,10 @@ export class Graph {
 
 export class Triangle {
   constructor(p1, p2, p3) {
-    assert(!p1.equal(p2), 'Tried to make triangle with two of the same points');
-    assert(!p2.equal(p3), 'Tried to make triangle with two of the same points');
-    assert(!p3.equal(p1), 'Tried to make triangle with two of the same points');
+    assert(
+      !(p1.equal(p2) || p1.equal(p3) || p3.equal(p2)),
+      'Tried to make triangle with two of the same points',
+    );
     this.p1 = p1;
     this.p2 = p2;
     this.p3 = p3;
@@ -430,20 +446,13 @@ export class TGraph extends Graph {
    * Overrides the super class function to initialize point in the fixedAdj
    */
   addVertex(point) {
-    assert(!_.isNil(point), 'Point was undefined');
-    // Only add vertex if it doesn't already exist in the graph
-    if (!_.has(this.adj, point)) {
-      this.fixedAdj[point] = [];
-      super.addVertex(point);
-    }
+    if (super.addVertex(point)) this.fixedAdj[point] = [];
   }
 
   addFixedEdge(e) {
-    assert(_.has(this.fixedAdj, e.p1), `${e.p1} not initialized in the TGraph with addVertex()`);
-    assert(_.has(this.fixedAdj, e.p2), `${e.p2} not initialized in the TGraph with addVertex()`);
+    super.addEdge(e.p1, e.p2);
     this.fixedAdj[e.p1].push(e.p2);
     this.fixedAdj[e.p2].push(e.p1);
-    super.addEdge(e.p1, e.p2);
   }
 
   isEdgeFixed(e) {
@@ -557,35 +566,32 @@ export class TGraph extends Graph {
 
   /**
    * Recursively triangulates an un-triangulated region of points
-   * @param {Point[]} reg - the region defined by an array of points
+   * @param {Point[]} reg - the region defined by an array of points connected in a cycle
    */
   triangulateRegion(reg) {
     // Base cases: make triangle if region is 3 points, skip if region is <3 points
-    if (reg.length === 3) {
-      this.addTriangle(new Triangle(reg[0], reg[1], reg[2]));
-      return;
-    }
-    if (reg.length < 3) return;
+    if (reg.length === 3) this.addTriangle(new Triangle(reg[0], reg[1], reg[2]));
+    if (reg.length <= 3) return;
 
     // Extract out the points on the edge
-    const e1 = reg[0];
-    const e2 = _.last(reg);
+    const e = { p1: reg[0], p2: _.last(reg) };
+    // Slice off the first and last element to get the inner region
     const innerReg = _.slice(reg, 1, -1);
 
-    // Find vertex c on the region that triangle [e.p1, e.p2, c] is delaunay-legal with all other
+    // Find vertex c on the region that triangle [e1, e2, c] is delaunay-legal with all other
     // points in the region
     const cIndex = _.findIndex(innerReg, p => {
       const otherPoints = _.reject(innerReg, p);
       // Must be delaunay-legal with respect to every other point
-      return _.every(otherPoints, other => this.isLegal(p, { p1: e1, p2: e2 }, other));
+      return _.every(otherPoints, other => this.isLegal(p, e, other));
     });
 
     // Make that triangle with vertex c
-    this.addTriangle(new Triangle(e1, innerReg[cIndex], e2));
+    this.addTriangle(new Triangle(e.p1, innerReg[cIndex], e.p2));
 
     // Call this recursively on the two sub-regions split by this triangle
-    this.triangulateRegion(_.concat(e1, _.slice(innerReg, 0, cIndex + 1)));
-    this.triangulateRegion(_.concat(_.slice(innerReg, cIndex), e2));
+    this.triangulateRegion(_.concat(e.p1, _.slice(innerReg, 0, cIndex + 1)));
+    this.triangulateRegion(_.concat(_.slice(innerReg, cIndex), e.p2));
   }
 
   /**
