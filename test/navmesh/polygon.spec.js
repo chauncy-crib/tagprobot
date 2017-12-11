@@ -6,6 +6,7 @@ import {
   unmergedGraphFromTagproMap,
   graphFromTagproMap,
   updateUnmergedGraph,
+  updateMergedGraph,
   __RewireAPI__ as PolygonRewireAPI } from '../../src/navmesh/polygon';
 import { Point } from '../../src/navmesh/graph';
 import { __RewireAPI__ as TileRewireAPI } from '../../src/tiles';
@@ -524,7 +525,6 @@ test('updateUnmergedGraph', tester => {
     ));
     map[1][5] = 10; // change it back to a bomb
     updateUnmergedGraph(unmergedGraph, map, 1, 5);
-    teardownTiles();
     t.is(unmergedGraph.numVertices(), 42);
     t.is(unmergedGraph.numEdges(), 42);
     t.true(unmergedGraph.isConnected(
@@ -543,6 +543,31 @@ test('updateUnmergedGraph', tester => {
       new Point(1 * PPTL, 6 * PPTL),
       new Point(2 * PPTL, 6 * PPTL),
     ));
+    teardownTiles();
+    t.end();
+  });
+});
+
+
+test('updateMergedGraph', tester => {
+  tester.test('splits apart line of bombs', t => {
+    setupTiles();
+    const map = [
+      [2, 2, 2,  2,  2,  2,  2,  2,  2, 2, 2],
+      [2, 2, 10, 10, 10, 10, 10, 10, 2, 2, 2],
+      [2, 2, 2,  2,  2,  2,  2,  2,  2, 2, 2],
+    ];
+    const unmergedGraph = unmergedGraphFromTagproMap(map);
+    const mergedGraph = graphFromTagproMap(map);
+    t.is(mergedGraph.numVertices(), 8);
+    t.is(mergedGraph.numEdges(), 8);
+    map[1][5] = '10.1'; // inactive bomb
+    updateUnmergedGraph(unmergedGraph, map, 1, 5);
+    updateMergedGraph(mergedGraph, unmergedGraph, map, 1, 5);
+    t.is(mergedGraph.numVertices(), 12);
+    t.is(mergedGraph.numEdges(), 12);
+    t.true(true);
+    teardownTiles();
     t.end();
   });
 });
