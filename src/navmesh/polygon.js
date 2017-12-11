@@ -297,6 +297,16 @@ export function unmergedGraphFromTagproMap(map) {
 }
 
 
+export function squashVertex(mergedGraph, vertex) {
+  const neighbors = mergedGraph.neighbors(vertex);
+  if (neighbors.length === 2 && threePointsInLine(vertex, neighbors[0], neighbors[1])) {
+    mergedGraph.removeEdge(vertex, neighbors[0]);
+    mergedGraph.removeEdge(vertex, neighbors[1]);
+    mergedGraph.addEdge(neighbors[0], neighbors[1]);
+  }
+}
+
+
 /**
  * Given the tagpro map, return a Graph object containing edges along the edge of traversability.
  *   Straight lines will be represented by a single edge (the edges are arbitrarily long). This is
@@ -308,12 +318,7 @@ export function unmergedGraphFromTagproMap(map) {
 export function graphFromTagproMap(map) {
   const unmergedGraph = unmergedGraphFromTagproMap(map);
   _.forEach(unmergedGraph.getVertices(), v => {
-    const neighbors = unmergedGraph.neighbors(v);
-    if (neighbors.length === 2 && threePointsInLine(v, neighbors[0], neighbors[1])) {
-      unmergedGraph.removeEdge(v, neighbors[0]);
-      unmergedGraph.removeEdge(v, neighbors[1]);
-      unmergedGraph.addEdge(neighbors[0], neighbors[1]);
-    }
+    squashVertex(unmergedGraph, v);
   });
   // Remove all vertices that no longer have a neighbor
   _.forEach(unmergedGraph.getVertices(), v => {
@@ -343,3 +348,85 @@ export function updateUnmergedGraph(unmergedGraph, map, xt, yt) {
     updateUnmergedEdgesAroundCompletelyNTTile(map, unmergedGraph, xt, yt);
   }
 }
+
+function updateMergedEdge(mergedGraph, unmergedGraph, bigE, smallE) {
+  // Make sure the bigE is an edge in the mergedGraph
+  assert(mergedGraph.isConnected(bigE.p1, bigE.p2));
+  // If these edges are vertical
+  const vert = bigE.p1.x === bigE.p2.x;
+  // Find the left-most, or if they're vertical, top-most points of each edge
+  const bigP1 = _.minBy([bigE.p1, bigE.p2], p => (vert ? p.y : p.x));
+  const bigP2 = _.maxBy([bigE.p1, bigE.p2], p => (vert ? p.y : p.x));
+  const smallP1 = _.minBy([smallE.p1, smallE.p2], p => (vert ? p.y : p.x));
+  const smallP2 = _.maxBy([smallE.p1, smallE.p2], p => (vert ? p.y : p.x));
+  // If lines are vertical, than P1s should have smaller Y
+  assert(!vert || bigP1.y <= bigP2.y);
+  assert(!vert || smallP1.y <= smallP2.y);
+
+  // Case 1: completely surrounding
+  if ((vert && (bigP1.y <= smallP1.y && bigP2.y >= smallP1.y)) ||
+               (bigP1.x <= smallP1.x && bigP2.x >= smallP1.x)) {
+    mergedGraph.removeEdge(bigP1, bigP2);
+    const e1 = { p1: bigP1, p2: smallP1 };
+    const e2 = { p1: smallP2, p2: bigP2 };
+    if (!e1.p1.equal(e1.p2)) {
+      mergedGraph.addEdgeAndVertices(e1.p1, e1.p2);
+    }
+    if (!e2.p1.equal(e2.p2)) {
+      mergedGraph.addEdgeAndVertices(e2.p1, e2.p2);
+    }
+  }
+  // // Case 2: no overlap and touching
+  // if (bigP2.equal(smallP1) || bigP1.equal(smallP2)) {
+  //   // Merge the edges
+  //   if (smallE.isConnected(smallP1, smallP2)) {
+  //     mergedGraph.removeEdge(bigP1, bigP2);
+  //     mergedGraph.addEdge(
+  //       _.minBy([bigP1, smallP1], p => [p.x, p.y]),
+  //       _.maxBy([bigP2, smallP2], p => [p.x, p.y]),
+  //     );
+  //   }
+  //   // Don't add the smallE
+  //   return false;
+  // }
+  // // Case 3: no overlap, no touching
+  // return smallE.isConnected(smallP1, smallP2);
+}
+
+/**
+ * Given the location of a tile which changed states, update the merged graph
+ * @param {Graph} mergedGraph
+ * @param {Graph} unmergedGraph
+ * @param {{number|string}[][]} map - the tagpro map
+ * @param {number} xt - x, in tiles
+ * @param {number} yt - y, in tiles
+ */
+export function updateMergedGraph(mergedGraph, unmergedGraph, map, xt, yt) {
+  const xp = xt * PPTL;
+  const yp = yt * PPTL;
+  const topLeft = new Point(xp, yp);
+  const topRight = new Point(xp + PPTL, yp);
+  const bottomLeft = new Point(xp, yp + PPTL);
+  const bottomRight = new Point(xp + PPTL, yp + PPTL);
+  const edges = [
+    { p1: topLeft, p2: topRight },
+    { p1: topLeft, p2: bottomLeft },
+    { p1: bottomLeft, p2: bottomRight },
+    { p1: topRight, p2: bottomRight },
+    { p1: topLeft, p2: bottomRight },
+    { p1: bottomLeft, p2: topRight },
+  ];
+  _.forEach(edges, smallE => {
+    const inlineEdges = _.filter(mergedGraph.getEdges(), e => edgesInALine(e, smallE));
+    _.forEach(inlineEdges, bigE => {
+      updateMergedEdge(mergedGraph, unmergedGraph, bigE, smallE);
+    });
+    if (unmergedGraph.isConnected(smallE.p1, smallE.p2)) {
+      mergedGraph.addEdgeAndVertices(smallE.p1, smallE.p2);
+    }
+  });
+  _.forEach([topLeft, topRight, bottomLeft, bottomRight], v => {
+    if (mergedGraph.hasVertex(v)) squashVertex(mergedGraph, v);
+  });
+}
+
