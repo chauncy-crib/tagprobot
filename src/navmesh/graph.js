@@ -93,7 +93,7 @@ export function pointsOnSameSide(p1, p2, e) {
  * @param {{p1: Point, p2: Point}} e - an edge
  * @returns {boolean} if the triangle intersects or touches the edge
  */
-export function triangleIntersectsEdge(t, e) {
+export function isTriangleIntersectingEdge(t, e) {
   const e1 = e.p1;
   const e2 = e.p2;
   const t1 = t.p1;
@@ -105,21 +105,15 @@ export function triangleIntersectsEdge(t, e) {
 
   // False if e1 and e2 are both on other side of t1-t2 as t3
   const t12 = { p1: t1, p2: t2 }; // edge between t1 and t2
-  if (!pointsOnSameSide(e1, t3, t12) && !pointsOnSameSide(e2, t3, t12)) {
-    return false;
-  }
+  if (!pointsOnSameSide(e1, t3, t12) && !pointsOnSameSide(e2, t3, t12)) return false;
 
   // False if e1 and e2 are both on other side of t2-t3 as t1
   const t23 = { p1: t2, p2: t3 }; // edge between t2 and t3
-  if (!pointsOnSameSide(e1, t1, t23) && !pointsOnSameSide(e2, t1, t23)) {
-    return false;
-  }
+  if (!pointsOnSameSide(e1, t1, t23) && !pointsOnSameSide(e2, t1, t23)) return false;
 
   // False if e1 and e2 are both on other side of t3-t1 as t2
   const t31 = { p1: t3, p2: t1 }; // edge between t3 and t1
-  if (!pointsOnSameSide(e1, t2, t31) && !pointsOnSameSide(e2, t2, t31)) {
-    return false;
-  }
+  if (!pointsOnSameSide(e1, t2, t31) && !pointsOnSameSide(e2, t2, t31)) return false;
 
   return true;
 }
@@ -165,8 +159,8 @@ export function sortCounterClockwise(points) {
  * @param {{p1: Point, p2: Point}} e - the edge we are checking for legality
  * @param {Point} oppositePoint - The third point of the adjacent triangle to e.p1, e.p2,
  *   insertedPoint
- * @returns {boolean} true if the opposite point is not inside the circle which touches e.p1,
- *   e.p2, insertedPoint
+ * @returns {boolean} true if the opposite point is not inside the circle which touches e.p1, e.p2,
+ *   insertedPoint
  */
 export function isLegal(insertedPoint, e, oppositePoint) {
   const [A, B, C] = sortCounterClockwise([insertedPoint, e.p1, e.p2]);
@@ -485,6 +479,12 @@ export class TGraph extends Graph {
     return _.some(fixedNeighbors, n => n.equal(e.p2));
   }
 
+  /**
+   * @param {Point} p
+   * @param {{p1: Point, p2: Point}} e - an edge
+   * @returns {Point|null} the point on the other side of edge e with respect to p, or null if the
+   *   edge is fixed or is on the edge of the whole graph
+   */
   findOppositePoint(p, e) {
     assert(this.isConnected(p, e.p1), `${p} was not connected to p1 of edge: ${e.p1}`);
     assert(this.isConnected(p, e.p2), `${p} was not connected to p2 of edge: ${e.p2}`);
@@ -578,7 +578,7 @@ export class TGraph extends Graph {
     const innerReg = _.slice(reg, 1, -1);
 
     // Find vertex c on the region that triangle [e1, e2, c] is delaunay-legal with all other
-    // points in the region
+    //   points in the region
     const cIndex = _.findIndex(innerReg, p => {
       const otherPoints = _.reject(innerReg, p);
       // Must be delaunay-legal with respect to every other point
@@ -607,7 +607,7 @@ export class TGraph extends Graph {
 
     // Find all triangles intersecting the edge
     const intersectingTriangles = _.filter(Array.from(this.triangles), t => (
-      triangleIntersectsEdge(t, e)
+      isTriangleIntersectingEdge(t, e)
     ));
 
     const { upperPoints, lowerPoints } = findUpperAndLowerPoints(intersectingTriangles, e);
