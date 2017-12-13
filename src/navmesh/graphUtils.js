@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { pointsOnSameSide } from './graph';
 
 /**
- * @param {Triangle[]} intersectingTriangles - array of triangle that intersect the edge
+ * @param {Triangle[]} intersectingTriangles - array of triangles that intersect the edge
  * @param {{p1: Point, p2: Point}} e - the edge
  * @returns {{upperPoints: Point[], lowerPoints: Point[]}} the ordered points of the upper and lower
  *   regions that share the edge
