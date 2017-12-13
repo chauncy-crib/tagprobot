@@ -160,6 +160,28 @@ export function sortCounterClockwise(points) {
 
 
 /**
+ * Checks if edge e is delaunay-legal with respect to the inserted point
+ * @param {Point} insertedPoint - the point being added to the triangulation
+ * @param {{p1: Point, p2: Point}} e - the edge we are checking for legality
+ * @param {Point} oppositePoint - The third point of the adjacent triangle to e.p1, e.p2,
+ *   insertedPoint
+ * @returns {boolean} true if the opposite point is not inside the circle which touches e.p1,
+ *   e.p2, insertedPoint
+ */
+export function isLegal(insertedPoint, e, oppositePoint) {
+  const [A, B, C] = sortCounterClockwise([insertedPoint, e.p1, e.p2]);
+  const D = oppositePoint;
+  const matrix = [
+    [A.x, A.y, (A.x ** 2) + (A.y ** 2), 1],
+    [B.x, B.y, (B.x ** 2) + (B.y ** 2), 1],
+    [C.x, C.y, (C.x ** 2) + (C.y ** 2), 1],
+    [D.x, D.y, (D.x ** 2) + (D.y ** 2), 1],
+  ];
+  return determinant(matrix) <= 0;
+}
+
+
+/**
  * Represents the polygons as a graph, with vertices and edges surrounding the polygons.
  */
 export class Graph {
@@ -350,9 +372,9 @@ export class TGraph extends Graph {
 
   getAdjacentTriangles(t) {
     const res = [];
-    const op1 = this.findOppositePointIfNotFixed(t.p1, { p1: t.p2, p2: t.p3 });
-    const op2 = this.findOppositePointIfNotFixed(t.p2, { p1: t.p1, p2: t.p3 });
-    const op3 = this.findOppositePointIfNotFixed(t.p3, { p1: t.p1, p2: t.p2 });
+    const op1 = this.findOppositePoint(t.p1, { p1: t.p2, p2: t.p3 });
+    const op2 = this.findOppositePoint(t.p2, { p1: t.p1, p2: t.p3 });
+    const op3 = this.findOppositePoint(t.p3, { p1: t.p1, p2: t.p2 });
     if (op3) res.push(this.findTriangle(t.p1, t.p2, op3));
     if (op2) res.push(this.findTriangle(t.p1, t.p3, op2));
     if (op1) res.push(this.findTriangle(t.p2, t.p3, op1));
@@ -457,6 +479,7 @@ export class TGraph extends Graph {
   }
 
   isEdgeFixed(e) {
+    assert(this.isConnected(e.p1, e.p2), `${JSON.stringify(e)} is not a connected edge`);
     const fixedNeighbors = this.fixedAdj[e.p1];
     // Return true if any of p1's fixedNeighbors are equal to p2
     return _.some(fixedNeighbors, n => n.equal(e.p2));
@@ -465,6 +488,10 @@ export class TGraph extends Graph {
   findOppositePoint(p, e) {
     assert(this.isConnected(p, e.p1), `${p} was not connected to p1 of edge: ${e.p1}`);
     assert(this.isConnected(p, e.p2), `${p} was not connected to p2 of edge: ${e.p2}`);
+
+    // No opposite point to a fixed edge
+    if (this.isEdgeFixed(e)) return null;
+
     const n1 = this.neighbors(e.p1);
     const n2 = this.neighbors(e.p2);
     const sharedPoints = _.intersectionBy(n1, n2, point => point.toString());
@@ -480,41 +507,12 @@ export class TGraph extends Graph {
     return _.isEmpty(oppositePoint) ? null : oppositePoint[0];
   }
 
-  findOppositePointIfNotFixed(p, e) {
-    if (this.isEdgeFixed(e)) return null;
-    return this.findOppositePoint(p, e);
-  }
-
-  /**
-   * Checks if edge e is delaunay-legal with respect to the inserted point
-   * @param {Point} insertedPoint - the point being added to the triangulation
-   * @param {{p1: Point, p2: Point}} e - the edge we are checking for legality
-   * @param {Point} oppositePoint - The third point of the adjacent triangle to e.p1, e.p2,
-   *   insertedPoint
-   * @returns {boolean} true if the opposite point is not inside the circle which touches e.p1,
-   *   e.p2, insertedPoint or if edge is fixed
-   */
-  isLegal(insertedPoint, e, oppositePoint) {
-    // Fixed edges cannot be flipped, so are always legal
-    if (this.isEdgeFixed(e)) return true;
-
-    const [A, B, C] = sortCounterClockwise([insertedPoint, e.p1, e.p2]);
-    const D = oppositePoint;
-    const matrix = [
-      [A.x, A.y, (A.x ** 2) + (A.y ** 2), 1],
-      [B.x, B.y, (B.x ** 2) + (B.y ** 2), 1],
-      [C.x, C.y, (C.x ** 2) + (C.y ** 2), 1],
-      [D.x, D.y, (D.x ** 2) + (D.y ** 2), 1],
-    ];
-    return determinant(matrix) <= 0;
-  }
-
   /**
    * If the edge e is not delaunay-legal, flip it, and recursively legalize the resulting triangles
    */
   legalizeEdge(insertedPoint, e) {
     const oppositePoint = this.findOppositePoint(insertedPoint, e);
-    if (oppositePoint && !this.isLegal(insertedPoint, e, oppositePoint)) {
+    if (oppositePoint && !isLegal(insertedPoint, e, oppositePoint)) {
       this.removeTriangleByPoints(e.p1, e.p2, insertedPoint);
       this.removeTriangleByPoints(e.p1, e.p2, oppositePoint);
       this.addTriangle(new Triangle(insertedPoint, oppositePoint, e.p1));
@@ -584,7 +582,7 @@ export class TGraph extends Graph {
     const cIndex = _.findIndex(innerReg, p => {
       const otherPoints = _.reject(innerReg, p);
       // Must be delaunay-legal with respect to every other point
-      return _.every(otherPoints, other => this.isLegal(p, e, other));
+      return _.every(otherPoints, other => isLegal(p, e, other));
     });
 
     // Make that triangle with vertex c
