@@ -4,7 +4,7 @@ import {
   isLegal,
   sortCounterClockwise,
   pointsOnSameSide,
-  triangleIntersectsEdge,
+  isTriangleIntersectingEdge,
   Point,
   Triangle,
   TGraph,
@@ -211,12 +211,12 @@ test('pointsOnSameSide()', tester => {
   tester.end();
 });
 
-test('triangleIntersectsEdge()', tester => {
+test('isTriangleIntersectingEdge()', tester => {
   tester.test('returns true when two edges intersect edge', t => {
     const edge = { p1: new Point(2, 0), p2: new Point(4, 0) };
     const triangle = new Triangle(new Point(3, -1), new Point(3, 1), new Point(4, 1));
 
-    t.true(triangleIntersectsEdge(triangle, edge));
+    t.true(isTriangleIntersectingEdge(triangle, edge));
 
     t.end();
   });
@@ -225,7 +225,7 @@ test('triangleIntersectsEdge()', tester => {
     const edge = { p1: new Point(2, 0), p2: new Point(4, 0) };
     const triangle = new Triangle(new Point(3, -1), new Point(3, 1), new Point(5, 0));
 
-    t.true(triangleIntersectsEdge(triangle, edge));
+    t.true(isTriangleIntersectingEdge(triangle, edge));
 
     t.end();
   });
@@ -234,7 +234,7 @@ test('triangleIntersectsEdge()', tester => {
     const edge = { p1: new Point(2, 0), p2: new Point(4, 0) };
     const triangle = new Triangle(new Point(3, -1), new Point(3, 0), new Point(4, -1));
 
-    t.true(triangleIntersectsEdge(triangle, edge));
+    t.true(isTriangleIntersectingEdge(triangle, edge));
 
     t.end();
   });
@@ -243,7 +243,7 @@ test('triangleIntersectsEdge()', tester => {
     const edge = { p1: new Point(2, 0), p2: new Point(4, 0) };
     const triangle = new Triangle(new Point(3, -1), new Point(2, 0), new Point(4, -1));
 
-    t.false(triangleIntersectsEdge(triangle, edge));
+    t.false(isTriangleIntersectingEdge(triangle, edge));
 
     t.end();
   });
@@ -252,7 +252,7 @@ test('triangleIntersectsEdge()', tester => {
     const edge = { p1: new Point(2, 0), p2: new Point(4, 0) };
     const triangle = new Triangle(new Point(3, -1), new Point(3, -2), new Point(4, -1));
 
-    t.false(triangleIntersectsEdge(triangle, edge));
+    t.false(isTriangleIntersectingEdge(triangle, edge));
 
     t.end();
   });
@@ -261,7 +261,7 @@ test('triangleIntersectsEdge()', tester => {
     const edge = { p1: new Point(2, 0), p2: new Point(4, 0) };
     const triangle = new Triangle(new Point(3, 1), new Point(3, 2), new Point(4, 1));
 
-    t.false(triangleIntersectsEdge(triangle, edge));
+    t.false(isTriangleIntersectingEdge(triangle, edge));
 
     t.end();
   });
@@ -270,7 +270,7 @@ test('triangleIntersectsEdge()', tester => {
     const edge = { p1: new Point(2, 0), p2: new Point(4, 0) };
     const triangle = new Triangle(new Point(0, 1), new Point(0, 2), new Point(1, 1));
 
-    t.false(triangleIntersectsEdge(triangle, edge));
+    t.false(isTriangleIntersectingEdge(triangle, edge));
 
     t.end();
   });
@@ -279,7 +279,7 @@ test('triangleIntersectsEdge()', tester => {
     const edge = { p1: new Point(2, 0), p2: new Point(4, 0) };
     const triangle = new Triangle(new Point(5, 1), new Point(5, 2), new Point(6, 1));
 
-    t.false(triangleIntersectsEdge(triangle, edge));
+    t.false(isTriangleIntersectingEdge(triangle, edge));
 
     t.end();
   });
