@@ -5,7 +5,7 @@
 import _ from 'lodash';
 import { runAstar, State } from '../helpers/path';
 import { assert } from '../../src/utils/asserts';
-import { Point } from './graph';
+import { Point, Polypoint, pointsOnSameSide } from './graph';
 
 
 export class PolypointState extends State {
@@ -45,6 +45,125 @@ export class PolypointState extends State {
   }
 }
 
+
+/**
+ * @param {PolypointState[]} path
+ * @returns {{leftPoints: Point[], rightPoints: Point[]}} list of the left and right points in each
+ *   portal, where the edge (leftPoints[n], rightPoints[n]) represents the nth portal
+ */
+function getPortals(path) {
+  const leftPoints = [];
+  const rightPoints = [];
+  for (let i = 1; i < path.length; i++) {
+    // The two points in this portal are the two points shared by the previous triangle in the path
+    const prevPoints = path[i - 1].point.t.getPoints();
+    const thisPoints = path[i].point.t.getPoints();
+    const portalPoints = _.intersectionBy(prevPoints, thisPoints, p => p.toString());
+    assert(
+      portalPoints.length === 2,
+      `found ${portalPoints.length} shared points between triangles`,
+    );
+
+    if (i === 1) {
+      // This is the first iteration, arbitrarily add one point to each list
+      leftPoints.push(portalPoints[0]);
+      rightPoints.push(portalPoints[1]);
+    } else {
+      // Consecutive portals are connected by one same point, figure out which point to add to which
+      //   list by checking which list ends in one of the portal points
+      const samePointLeft = _.remove(portalPoints, p => p.equal(_.last(leftPoints)));
+      if (!_.isEmpty(samePointLeft)) {
+        leftPoints.push(samePointLeft[0]);
+        rightPoints.push(portalPoints[0]);
+      } else {
+        const samePointRight = _.remove(portalPoints, p => p.equal(_.last(rightPoints)));
+        assert(samePointRight.length === 1, 'portalPoints does not share a point with either list');
+        rightPoints.push(samePointRight[0]);
+        leftPoints.push(portalPoints[0]);
+      }
+    }
+  }
+
+  // Push the last state point to each list
+  const lastState = _.last(path);
+  rightPoints.push(lastState.point);
+  leftPoints.push(lastState.point);
+
+  return [leftPoints, rightPoints];
+}
+
+
+/**
+ * @param {PolypointState[]} path
+ * @returns {PolypointState[]} a list of states, starting from the startState to the targetState
+ *   that are funnelled to be as straight as possible
+ */
+export function funnelPolypoints(path) {
+  const [leftPoints, rightPoints] = getPortals(path);
+
+  const funnelledPath = [path[0]];
+  let startPoint = path[0].point; // the apex of the funnel
+  let leftI = 0; // the index in leftPoints of the left point of the funnel
+  let rightI = 0; // the index in rightPoints of the right point of the funnel
+
+  for (let i = 1; i < leftPoints.length; i++) {
+    const currLeft = leftPoints[leftI];
+    const currRight = rightPoints[rightI];
+    const leftEdge = { p1: startPoint, p2: currLeft };
+    const rightEdge = { p1: startPoint, p2: currRight };
+    const newLeft = leftPoints[i];
+    const newRight = rightPoints[i];
+
+    if (!currLeft.equal(newLeft) && i > leftI) {
+      // New left point is different
+      if (pointsOnSameSide(newLeft, currRight, leftEdge)) {
+        // New left point narrows the funnel
+        if (!pointsOnSameSide(newLeft, currLeft, rightEdge)) {
+          // New left point crosses over other side
+          // Insert right point to path
+          funnelledPath.push(new PolypointState(currRight));
+          // Restart funnel from right point
+          startPoint = currRight;
+
+          // Find next funnel index
+          while (rightPoints[rightI].equal(currRight)) rightI += 1;
+          leftI = rightI;
+          i = rightI;
+        } else {
+          // Update left side of funnel
+          leftI = i;
+        }
+      }
+    }
+    if (!currRight.equal(newRight) && i > rightI) {
+      // New right point is different
+      if (pointsOnSameSide(newRight, currLeft, rightEdge)) {
+        // New right point narrows the funnel
+        if (!pointsOnSameSide(newRight, currRight, leftEdge)) {
+          // New right point crosses over other side
+          // Insert left point to path
+          funnelledPath.push(new PolypointState(currLeft));
+          // Restart funnel from left point
+          startPoint = currLeft;
+
+          // Find next funnel index
+          while (leftPoints[leftI].equal(currLeft)) leftI += 1;
+          rightI = leftI;
+          i = leftI;
+        } else {
+          // Update right side of funnel
+          rightI = i;
+        }
+      }
+    }
+  }
+
+  // Add the target point
+  funnelledPath.push(_.last(path));
+  return funnelledPath;
+}
+
+
 /**
  * @param {Object} me - object with bot's position in pixels, xp and yp
  * @param {Object} target - object with target's position in pixels, xp and yp
@@ -67,7 +186,9 @@ export function getShortestPolypointPath(me, target, tGraph) {
 
   // Place the starting and final locations on the path, and remove the polypoint in the triangle we
   //   are currently in
-  const initialPositionState = new PolypointState(new Point(me.xp, me.yp));
-  const targetPositionState = new PolypointState(new Point(target.xp, target.yp));
-  return [initialPositionState].concat(path.slice(1)).concat(targetPositionState);
+  const initialPositionState = new PolypointState(new Polypoint(me.xp, me.yp, startTriangle));
+  const targetPositionState = new PolypointState(new Polypoint(target.xp, target.yp, endTriangle));
+  const fullPath = [initialPositionState].concat(_.slice(path, 1, -1)).concat(targetPositionState);
+
+  return funnelPolypoints(fullPath);
 }

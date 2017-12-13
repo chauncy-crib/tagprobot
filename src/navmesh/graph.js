@@ -271,11 +271,27 @@ export class Graph {
 }
 
 
+/**
+ * Same as a Point, but keeps a reference to its containing triangle for funneling.
+ */
+export class Polypoint extends Point {
+  constructor(x, y, triangle) {
+    super(x, y);
+    this.t = triangle;
+  }
+}
+
+
 export class Triangle {
   constructor(p1, p2, p3) {
     assert(
       !(p1.equal(p2) || p1.equal(p3) || p3.equal(p2)),
       'Tried to make triangle with two of the same points',
+    );
+    assert(
+      !((p1.x === p2.x && p2.x === p3.x) ||
+      (p1.y === p2.y && p2.y === p3.y)),
+      'Tried to make a triangle with no area',
     );
     this.p1 = p1;
     this.p2 = p2;
@@ -283,12 +299,13 @@ export class Triangle {
   }
 
   /**
-   * @returns {Point} the center point of the triangle
+   * @returns {Polypoint} the center point of the triangle
    */
   getCenter() {
-    return new Point(
+    return new Polypoint(
       Math.round((this.p1.x + this.p2.x + this.p3.x) / 3),
       Math.round((this.p1.y + this.p2.y + this.p3.y) / 3),
+      this,
     );
   }
 
@@ -343,7 +360,7 @@ export class TGraph extends Graph {
 
   calculatePolypointGraph() {
     this.triangles.forEach(triangle => {
-      // For adding a polypoint in center of triangle
+      // Add a polypoint in center of triangle
       const triangleCenter = triangle.getCenter();
       this.polypoints.addVertex(triangleCenter);
       _.forEach(this.getAdjacentTriangles(triangle), t => {
@@ -351,16 +368,6 @@ export class TGraph extends Graph {
         this.polypoints.addVertex(adjCenter);
         this.polypoints.addEdge(triangleCenter, adjCenter);
       });
-      // Connect edge centers to triangle center
-      // const edgeCenters = triangle.getEdgeCenters();
-      // _.forEach(edgeCenters, ep => {
-      //   this.polypoints.addVertex(ep);
-      //   this.polypoints.addEdge(ep, triangleCenter);
-      // });
-      // Connect all edge centers to eachother
-      // this.polypoints.addEdge(edgeCenters[0], edgeCenters[1]);
-      // this.polypoints.addEdge(edgeCenters[0], edgeCenters[2]);
-      // this.polypoints.addEdge(edgeCenters[1], edgeCenters[2]);
     });
   }
 

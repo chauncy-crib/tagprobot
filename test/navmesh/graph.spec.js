@@ -162,6 +162,26 @@ test('findContainingTriangles finds containing triangles', t => {
   t.end();
 });
 
+test('triangulateRegion does not create flat triangle when points are in a line', t => {
+  const tGraph = new TGraph();
+  const p1 = new Point(1080, 640);
+  const p2 = new Point(1200, 680);
+  const p3 = new Point(1200, 720);
+  const p4 = new Point(1200, 760);
+  tGraph.addEdgeAndVertices(p1, p2);
+  tGraph.addEdgeAndVertices(p2, p3);
+  tGraph.addEdgeAndVertices(p3, p4);
+  tGraph.addEdgeAndVertices(p4, p1);
+  tGraph.addFixedEdge({ p1, p2: p4 });
+  t.doesNotThrow(() => tGraph.triangulateRegion([p1, p2, p3, p4]));
+
+  t.true(tGraph.findTriangle(p1, p4, p3) !== null);
+  t.true(tGraph.findTriangle(p1, p2, p3) !== null);
+  t.true(tGraph.findTriangle(p1, p4, p2) === null);
+
+  t.end();
+});
+
 test('categorizePoints separates points into shared and unique', t => {
   const p1 = new Point(0, 0);
   const p2 = new Point(-3, 8);
