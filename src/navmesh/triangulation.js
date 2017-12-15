@@ -1,14 +1,16 @@
 import _ from 'lodash';
-import { graphFromTagproMap } from './polygon';
+import { unmergedGraphFromTagproMap, graphFromTagproMap } from './polygon';
 import { TGraph, Point, Triangle } from './graph';
 import { assert } from '../utils/asserts';
 
 
+let unmergedGraph;
+let mergedGraph;
 const DTGraph = new TGraph();
 
 
 /**
- * @param {Point[]} vertices - array of all vertices
+ * @param {Graph} mapGraph - a graph with vertices and edges surrounding the traversable area
  * @returns {Graph} graph of the triangulation of all the vertices
  */
 export function delaunayTriangulation(mapGraph, dummyPoint1, dummyPoint2, dummyPoint3) {
@@ -48,9 +50,10 @@ export function delaunayTriangulation(mapGraph, dummyPoint1, dummyPoint2, dummyP
  * @returns {Graph} graph of the triangulation of all the vertices
  */
 export function calculateNavMesh(map) {
-  const mapGraph = graphFromTagproMap(map);
+  unmergedGraph = unmergedGraphFromTagproMap(map);
+  mergedGraph = graphFromTagproMap(map, unmergedGraph);
   delaunayTriangulation(
-    mapGraph,
+    mergedGraph,
     new Point(-9999, -100),
     new Point(9999, -100),
     new Point(0, 9999),

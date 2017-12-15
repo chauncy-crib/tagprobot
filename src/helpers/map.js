@@ -212,8 +212,8 @@ export function getMapTraversabilityInCells(map) {
       const yFirstCell = xy.yt * CPTL;
 
       // When a tile's traversability is changed, everything within the reach of the NT_KERNEL will
-      // be changed as well. Here, we define the affected area so that we know where to dynamically
-      // update numNTOWithinBufCells and mapTraversabilityCellsWithBuf.
+      //   be changed as well. Here, we define the affected area so that we know where to
+      //   dynamically update numNTOWithinBufCells and mapTraversabilityCellsWithBuf.
       const ntKernelReach = Math.floor(NT_KERNEL.length / 2);
       const minXCell = xFirstCell - ntKernelReach;
       const minYCell = yFirstCell - ntKernelReach;
