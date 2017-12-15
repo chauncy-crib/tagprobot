@@ -413,6 +413,8 @@ export function updateMergedGraph(mergedGraph, unmergedGraph, map, xt, yt) {
     { p1: topLeft, p2: bottomRight },
     { p1: bottomLeft, p2: topRight },
   ];
+  const beforeVertices = mergedGraph.getVertices();
+  const beforeEdges = mergedGraph.getEdges();
   _.forEach(edges, smallE => {
     const inlineEdges = edgesInLineWith(mergedGraph, smallE);
     _.forEach(inlineEdges, bigE => {
@@ -437,5 +439,18 @@ export function updateMergedGraph(mergedGraph, unmergedGraph, map, xt, yt) {
     if (mergedGraph.neighbors(point).length === 0) mergedGraph.removeVertex(point);
     if (mergedGraph.hasVertex(point)) squashVertex(mergedGraph, point);
   }
+  const edgeEqual = (e1, e2) => (e1.p1.equal(e2.p1) && e1.p2.equal(e2.p2)) ||
+           (e1.p1.equal(e2.p2) && e1.p2.equal(e2.p1));
+  const afterVertices = mergedGraph.getVertices();
+  const afterEdges = mergedGraph.getEdges();
+  // Unfix all edges that existed before but do not anymore
+  const unfixEdges = _.reject(beforeEdges, b => _.some(afterEdges, a => edgeEqual(a, b)));
+  // Add constraining edges that didn't exist previously
+  const constrainingEdges = _.reject(afterEdges, a => _.some(beforeEdges, b => edgeEqual(a, b)));
+  // Remove vertices that now are not in the merged graph
+  const removeVertices = _.reject(beforeVertices, b => _.some(afterVertices, a => a.equal(b)));
+  // Add vertices that were not previously in the merged graph
+  const addVertices = _.reject(afterVertices, a => _.some(beforeVertices, b => a.equal(b)));
+  return { unfixEdges, constrainingEdges, removeVertices, addVertices };
 }
 

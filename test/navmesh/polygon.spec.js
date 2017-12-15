@@ -568,12 +568,21 @@ test('updateMergedGraph', tester => {
     ];
     const unmergedGraph = unmergedGraphFromTagproMap(map);
     const mergedGraph = graphFromTagproMap(map, unmergedGraph);
+    t.is(mergedGraph.numVertices(), 8);
     map[1][5] = '10.1'; // inactive bomb
     updateUnmergedGraph(unmergedGraph, map, 1, 5);
-    updateMergedGraph(mergedGraph, unmergedGraph, map, 1, 5);
+
+    // const O = updateMergedGraph(mergedGraph, unmergedGraph, map, 1, 5);
+    // console.log(O);
+    const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
+      updateMergedGraph(mergedGraph, unmergedGraph, map, 1, 5);
 
     t.is(mergedGraph.numVertices(), 12);
     t.is(mergedGraph.numEdges(), 12);
+    t.is(unfixEdges.length, 2);
+    t.is(constrainingEdges.length, 6);
+    t.is(removeVertices.length, 0);
+    t.is(addVertices.length, 4);
 
     teardownTiles();
     t.end();
@@ -595,10 +604,17 @@ test('updateMergedGraph', tester => {
 
     map[2][3] = '10.1';
     updateUnmergedGraph(unmergedGraph, map, 2, 3);
-    updateMergedGraph(mergedGraph, unmergedGraph, map, 2, 3);
+
+    const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
+      updateMergedGraph(mergedGraph, unmergedGraph, map, 2, 3);
 
     t.is(mergedGraph.numVertices(), 10);
     t.is(mergedGraph.numEdges(), 11);
+
+    t.is(unfixEdges.length, 3);
+    t.is(constrainingEdges.length, 4);
+    t.is(removeVertices.length, 1);
+    t.is(addVertices.length, 1);
 
     teardownTiles();
     t.end();
