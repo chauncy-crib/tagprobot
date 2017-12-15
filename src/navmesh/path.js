@@ -63,23 +63,24 @@ function getPortals(path) {
       portalPoints.length === 2,
       `found ${portalPoints.length} shared points between triangles`,
     );
+    const [p1, p2] = portalPoints;
 
     if (i === 1) {
       // This is the first iteration, arbitrarily add one point to each list
-      leftPoints.push(portalPoints[0]);
-      rightPoints.push(portalPoints[1]);
+      leftPoints.push(p1);
+      rightPoints.push(p2);
     } else {
       // Consecutive portals are connected by one same point, figure out which point to add to which
       //   list by checking which list ends in one of the portal points
-      const samePointLeft = _.remove(portalPoints, p => p.equal(_.last(leftPoints)));
-      if (!_.isEmpty(samePointLeft)) {
-        leftPoints.push(samePointLeft[0]);
-        rightPoints.push(portalPoints[0]);
+      const p1IsRepeat = _.last(leftPoints).equal(p1) || _.last(rightPoints).equal(p1);
+      const repeatPoint = p1IsRepeat ? p1 : p2;
+      const otherPoint = p1IsRepeat ? p2 : p1;
+      if (_.last(leftPoints).equal(repeatPoint)) {
+        leftPoints.push(repeatPoint);
+        rightPoints.push(otherPoint);
       } else {
-        const samePointRight = _.remove(portalPoints, p => p.equal(_.last(rightPoints)));
-        assert(samePointRight.length === 1, 'portalPoints does not share a point with either list');
-        rightPoints.push(samePointRight[0]);
-        leftPoints.push(portalPoints[0]);
+        leftPoints.push(otherPoint);
+        rightPoints.push(repeatPoint);
       }
     }
   }
@@ -106,19 +107,22 @@ export function funnelPolypoints(path) {
   let leftI = 0; // the index in leftPoints of the left point of the funnel
   let rightI = 0; // the index in rightPoints of the right point of the funnel
 
-  for (let i = 1; i < leftPoints.length; i++) {
+  for (let portalIndex = 1; portalIndex < leftPoints.length; portalIndex++) {
     const currLeft = leftPoints[leftI];
     const currRight = rightPoints[rightI];
     const leftEdge = { p1: startPoint, p2: currLeft };
     const rightEdge = { p1: startPoint, p2: currRight };
-    const newLeft = leftPoints[i];
-    const newRight = rightPoints[i];
+    const newLeft = leftPoints[portalIndex];
+    const newRight = rightPoints[portalIndex];
 
-    if (!currLeft.equal(newLeft) && i > leftI) {
+    if (!currLeft.equal(newLeft) && portalIndex > leftI) {
       // New left point is different
       if (pointsOnSameSide(newLeft, currRight, leftEdge)) {
         // New left point narrows the funnel
-        if (!pointsOnSameSide(newLeft, currLeft, rightEdge)) {
+        if (pointsOnSameSide(newLeft, currLeft, rightEdge)) {
+          // New left point does not cross over, update left side of funnel
+          leftI = portalIndex;
+        } else {
           // New left point crosses over other side
           // Insert right point to path
           funnelledPath.push(new PolypointState(currRight));
@@ -128,18 +132,18 @@ export function funnelPolypoints(path) {
           // Find next funnel index
           while (rightPoints[rightI].equal(currRight)) rightI += 1;
           leftI = rightI;
-          i = rightI;
-        } else {
-          // Update left side of funnel
-          leftI = i;
+          portalIndex = rightI;
         }
       }
     }
-    if (!currRight.equal(newRight) && i > rightI) {
+    if (!currRight.equal(newRight) && portalIndex > rightI) {
       // New right point is different
       if (pointsOnSameSide(newRight, currLeft, rightEdge)) {
         // New right point narrows the funnel
-        if (!pointsOnSameSide(newRight, currRight, leftEdge)) {
+        if (pointsOnSameSide(newRight, currRight, leftEdge)) {
+          // New right point does not cross over, update right side of funnel
+          rightI = portalIndex;
+        } else {
           // New right point crosses over other side
           // Insert left point to path
           funnelledPath.push(new PolypointState(currLeft));
@@ -149,10 +153,7 @@ export function funnelPolypoints(path) {
           // Find next funnel index
           while (leftPoints[leftI].equal(currLeft)) leftI += 1;
           rightI = leftI;
-          i = leftI;
-        } else {
-          // Update right side of funnel
-          rightI = i;
+          portalIndex = leftI;
         }
       }
     }

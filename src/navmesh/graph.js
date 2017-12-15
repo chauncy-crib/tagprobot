@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { assert } from '../utils/asserts';
-import { findUpperAndLowerPoints } from './graphUtils';
+import { findUpperAndLowerPoints, threePointsInLine } from './graphUtils';
 
 export function determinant(matrix) {
   const N = matrix.length;
@@ -289,8 +289,7 @@ export class Triangle {
       'Tried to make triangle with two of the same points',
     );
     assert(
-      !((p1.x === p2.x && p2.x === p3.x) ||
-      (p1.y === p2.y && p2.y === p3.y)),
+      !threePointsInLine(p1, p2, p3),
       'Tried to make a triangle with no area',
     );
     this.p1 = p1;
