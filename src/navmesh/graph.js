@@ -280,7 +280,8 @@ export class Graph {
    * @returns {Point[]} all vertices in the graph
    */
   getVertices() {
-    return this.vertices;
+    // Return a copy of the vertices list
+    return this.vertices.slice();
   }
 
   /**
