@@ -559,14 +559,38 @@ test('updateMergedGraph', tester => {
     ];
     const unmergedGraph = unmergedGraphFromTagproMap(map);
     const mergedGraph = graphFromTagproMap(map);
-    t.is(mergedGraph.numVertices(), 8);
-    t.is(mergedGraph.numEdges(), 8);
     map[1][5] = '10.1'; // inactive bomb
     updateUnmergedGraph(unmergedGraph, map, 1, 5);
     updateMergedGraph(mergedGraph, unmergedGraph, map, 1, 5);
+
     t.is(mergedGraph.numVertices(), 12);
     t.is(mergedGraph.numEdges(), 12);
-    t.true(true);
+
+    teardownTiles();
+    t.end();
+  });
+
+  tester.test('handles bomb between line of angle walls', t => {
+    setupTiles();
+    const map = [
+      [2, 2, 2, 2, 1.4],
+      [2, 2, 2, 1.4, 1.2],
+      [2, 2, 1.4, 10, 2],
+      [2, 1.4, 1.2, 2, 2],
+    ];
+    const unmergedGraph = unmergedGraphFromTagproMap(map);
+    const mergedGraph = graphFromTagproMap(map);
+
+    t.is(mergedGraph.numVertices(), 10);
+    t.is(mergedGraph.numEdges(), 10);
+
+    map[2][3] = '10.1';
+    updateUnmergedGraph(unmergedGraph, map, 2, 3);
+    updateMergedGraph(mergedGraph, unmergedGraph, map, 2, 3);
+
+    t.is(mergedGraph.numVertices(), 10);
+    t.is(mergedGraph.numEdges(), 11);
+
     teardownTiles();
     t.end();
   });
