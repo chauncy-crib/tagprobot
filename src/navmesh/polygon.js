@@ -320,16 +320,17 @@ export function squashVertex(mergedGraph, vertex) {
  * @param {{number|string}[][]} map - the tagpro map
  * @returns {Graph}
  */
-export function graphFromTagproMap(map) {
-  const unmergedGraph = unmergedGraphFromTagproMap(map);
-  _.forEach(unmergedGraph.getVertices(), v => {
-    squashVertex(unmergedGraph, v);
+export function graphFromTagproMap(map, unmergedGraph) {
+  // const unmergedGraph = unmergedGraphFromTagproMap(map);
+  const G = unmergedGraph.copy();
+  _.forEach(G.getVertices(), v => {
+    squashVertex(G, v);
   });
   // Remove all vertices that no longer have a neighbor
-  _.forEach(unmergedGraph.getVertices(), v => {
-    if (unmergedGraph.neighbors(v).length === 0) unmergedGraph.removeVertex(v);
+  _.forEach(G.getVertices(), v => {
+    if (G.neighbors(v).length === 0) G.removeVertex(v);
   });
-  return unmergedGraph;
+  return G;
 }
 
 
@@ -369,7 +370,7 @@ function updateMergedEdge(mergedGraph, unmergedGraph, bigE, smallE) {
   assert(!vert || bigP1.y <= bigP2.y);
   assert(!vert || smallP1.y <= smallP2.y);
 
-  // Case 1: completely surrounding
+  // Check if the big edge completely surrounds the small edge
   if ((vert && (bigP1.y <= smallP1.y && bigP2.y >= smallP2.y)) ||
                (bigP1.x <= smallP1.x && bigP2.x >= smallP2.x)) {
     mergedGraph.removeEdge(bigP1, bigP2);
@@ -382,21 +383,6 @@ function updateMergedEdge(mergedGraph, unmergedGraph, bigE, smallE) {
       mergedGraph.addEdgeAndVertices(e2.p1, e2.p2);
     }
   }
-  // // Case 2: no overlap and touching
-  // if (bigP2.equal(smallP1) || bigP1.equal(smallP2)) {
-  //   // Merge the edges
-  //   if (smallE.isConnected(smallP1, smallP2)) {
-  //     mergedGraph.removeEdge(bigP1, bigP2);
-  //     mergedGraph.addEdge(
-  //       _.minBy([bigP1, smallP1], p => [p.x, p.y]),
-  //       _.maxBy([bigP2, smallP2], p => [p.x, p.y]),
-  //     );
-  //   }
-  //   // Don't add the smallE
-  //   return false;
-  // }
-  // // Case 3: no overlap, no touching
-  // return smallE.isConnected(smallP1, smallP2);
 }
 
 export function edgesInLineWith(graph, e) {

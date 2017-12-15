@@ -240,10 +240,22 @@ export class Graph {
     return _.some(N, n => n.equals(p2));
   }
 
+  copy() {
+    const g = new Graph();
+    _.forEach(this.getVertices(), v => {
+      g.addVertex(v);
+    });
+    _.forEach(this.getEdges(), e => {
+      g.addEdge(e.p1, e.p2);
+    });
+    return g;
+  }
+
   /**
    * @returns {Point[]} the neighbors of the point
    */
   neighbors(p) {
+    assert(this.hasVertex(p), `Cannot find neighbors of vertex not in graph: ${p}`);
     return this.adj[p];
   }
 
