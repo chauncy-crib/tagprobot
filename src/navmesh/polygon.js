@@ -29,6 +29,11 @@ import { assert } from '../utils/asserts';
 // }
 
 
+function edgesInALine(e1, e2) {
+  return threePointsInLine(e1.p1, e1.p2, e2.p1) && threePointsInLine(e1.p1, e1.p2, e2.p2);
+}
+
+
 /**
  * Given the tagpro map and a traversable tile location, return if there is an NT wall (or the edge
  *   of the map) on the left.
@@ -300,8 +305,8 @@ export function unmergedGraphFromTagproMap(map) {
 export function squashVertex(mergedGraph, vertex) {
   const neighbors = mergedGraph.neighbors(vertex);
   if (neighbors.length === 2 && threePointsInLine(vertex, neighbors[0], neighbors[1])) {
-    mergedGraph.removeEdge(vertex, neighbors[0]);
-    mergedGraph.removeEdge(vertex, neighbors[1]);
+    mergedGraph.removeEdgeAndVertices(vertex, neighbors[0]);
+    mergedGraph.removeEdgeAndVertices(vertex, neighbors[1]);
     mergedGraph.addEdge(neighbors[0], neighbors[1]);
   }
 }
@@ -352,6 +357,7 @@ export function updateUnmergedGraph(unmergedGraph, map, xt, yt) {
 function updateMergedEdge(mergedGraph, unmergedGraph, bigE, smallE) {
   // Make sure the bigE is an edge in the mergedGraph
   assert(mergedGraph.isConnected(bigE.p1, bigE.p2));
+  assert(edgesInALine(bigE, smallE));
   // If these edges are vertical
   const vert = bigE.p1.x === bigE.p2.x;
   // Find the left-most, or if they're vertical, top-most points of each edge
@@ -364,8 +370,8 @@ function updateMergedEdge(mergedGraph, unmergedGraph, bigE, smallE) {
   assert(!vert || smallP1.y <= smallP2.y);
 
   // Case 1: completely surrounding
-  if ((vert && (bigP1.y <= smallP1.y && bigP2.y >= smallP1.y)) ||
-               (bigP1.x <= smallP1.x && bigP2.x >= smallP1.x)) {
+  if ((vert && (bigP1.y <= smallP1.y && bigP2.y >= smallP2.y)) ||
+               (bigP1.x <= smallP1.x && bigP2.x >= smallP2.x)) {
     mergedGraph.removeEdge(bigP1, bigP2);
     const e1 = { p1: bigP1, p2: smallP1 };
     const e2 = { p1: smallP2, p2: bigP2 };
@@ -393,6 +399,11 @@ function updateMergedEdge(mergedGraph, unmergedGraph, bigE, smallE) {
   // return smallE.isConnected(smallP1, smallP2);
 }
 
+export function edgesInLineWith(graph, e) {
+  const inlineEdges = _.filter(graph.getEdges(), edge => edgesInALine(e, edge));
+  return inlineEdges;
+}
+
 /**
  * Given the location of a tile which changed states, update the merged graph
  * @param {Graph} mergedGraph
@@ -417,7 +428,7 @@ export function updateMergedGraph(mergedGraph, unmergedGraph, map, xt, yt) {
     { p1: bottomLeft, p2: topRight },
   ];
   _.forEach(edges, smallE => {
-    const inlineEdges = _.filter(mergedGraph.getEdges(), e => edgesInALine(e, smallE));
+    const inlineEdges = edgesInLineWith(mergedGraph, smallE);
     _.forEach(inlineEdges, bigE => {
       updateMergedEdge(mergedGraph, unmergedGraph, bigE, smallE);
     });
@@ -425,8 +436,20 @@ export function updateMergedGraph(mergedGraph, unmergedGraph, map, xt, yt) {
       mergedGraph.addEdgeAndVertices(smallE.p1, smallE.p2);
     }
   });
-  _.forEach([topLeft, topRight, bottomLeft, bottomRight], v => {
-    if (mergedGraph.hasVertex(v)) squashVertex(mergedGraph, v);
-  });
+  const surroundingPoints = [topLeft, topRight, bottomRight, bottomLeft];
+  for (let i = 0; i < surroundingPoints.length; i += 1) {
+    const point = surroundingPoints[i];
+    const dummyDiag = {
+      p1: new Point(point.x - 1, point.y + ((i % 2) ? -1 : 1)),
+      p2: new Point(point.x + 1, point.y + ((i % 2) ? 1 : -1)),
+    };
+    const inlineDiagEdges = edgesInLineWith(mergedGraph, dummyDiag);
+    _.forEach(inlineDiagEdges, diagEdge => {
+      // Split apart the diagonal edge if it contains the point
+      updateMergedEdge(mergedGraph, unmergedGraph, diagEdge, { p1: point, p2: point });
+    });
+    if (mergedGraph.neighbors(point).length === 0) mergedGraph.removeVertex(point);
+    if (mergedGraph.hasVertex(point)) squashVertex(mergedGraph, point);
+  }
 }
 
