@@ -50,3 +50,23 @@ export function findUpperAndLowerPoints(intersectingTriangles, e) {
   }
   return { upperPoints, lowerPoints };
 }
+
+
+/**
+ * @param {Point} p1
+ * @param {Point} p2
+ * @param {Point} p3
+ * @returns {boolean} true if all points are colinear
+ */
+export function threePointsInLine(p1, p2, p3) {
+  const x1 = p2.x - p1.x;
+  const x2 = p2.x - p3.x;
+  const y1 = p2.y - p1.y;
+  const y2 = p2.y - p3.y;
+  if (x1 === 0 || x2 === 0) {
+    return x1 === x2;
+  }
+  // Use line slopes to calculate if all three points are in a line
+  return y1 * x2 === y2 * x1;
+}
+
