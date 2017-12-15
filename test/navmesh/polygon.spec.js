@@ -297,7 +297,8 @@ test('graphFromTagproMap', tester => {
       [0, 0, 0, 0, 0, 0],
       [0, 1, 1, 0, 0, 0],
     ];
-    const graph = graphFromTagproMap(map);
+    const unmergedGraph = unmergedGraphFromTagproMap(map);
+    const graph = graphFromTagproMap(map, unmergedGraph);
 
     t.is(graph.getVertices().length, 4);
     t.is(graph.getEdges().length, 4);
@@ -314,7 +315,8 @@ test('graphFromTagproMap', tester => {
       [0, 1, 1, 0],
       [0, 0, 0, 0],
     ];
-    const graph = graphFromTagproMap(map);
+    const unmergedGraph = unmergedGraphFromTagproMap(map);
+    const graph = graphFromTagproMap(map, unmergedGraph);
 
     t.is(graph.getVertices().length, 4);
     t.is(graph.getEdges().length, 4);
@@ -346,7 +348,8 @@ test('graphFromTagproMap', tester => {
       [0, 1, 1, 1, 1, 1, 0],
       [0, 0, 0, 0, 0, 0, 0],
     ];
-    const graph = graphFromTagproMap(map);
+    const unmergedGraph = unmergedGraphFromTagproMap(map);
+    const graph = graphFromTagproMap(map, unmergedGraph);
 
     t.is(graph.getVertices().length, 8);
     t.is(graph.getEdges().length, 8);
@@ -364,7 +367,8 @@ test('graphFromTagproMap', tester => {
       [0, 0, 0, 0, 1, 1, 0],
       [0, 0, 0, 0, 0, 0, 0],
     ];
-    const graph = graphFromTagproMap(map);
+    const unmergedGraph = unmergedGraphFromTagproMap(map);
+    const graph = graphFromTagproMap(map, unmergedGraph);
 
     t.is(graph.getVertices().length, 7);
     t.is(graph.getEdges().length, 8);
@@ -383,7 +387,8 @@ test('graphFromTagproMap', tester => {
       [0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    const graph = graphFromTagproMap(map);
+    const unmergedGraph = unmergedGraphFromTagproMap(map);
+    const graph = graphFromTagproMap(map, unmergedGraph);
 
     t.is(graph.getVertices().length, 14);
     t.is(graph.getEdges().length, 14);
@@ -411,7 +416,8 @@ test('graphFromTagproMap', tester => {
       [0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    const graph = graphFromTagproMap(map);
+    const unmergedGraph = unmergedGraphFromTagproMap(map);
+    const graph = graphFromTagproMap(map, unmergedGraph);
 
     t.is(graph.getVertices().length, 22);
     t.is(graph.getEdges().length, 22);
@@ -431,7 +437,8 @@ test('graphFromTagproMap', tester => {
       [1, 1,   1.1, 1.2, 1,   1],
       [1, 1,   1,   1,   1,   1],
     ];
-    const graph = graphFromTagproMap(map);
+    const unmergedGraph = unmergedGraphFromTagproMap(map);
+    const graph = graphFromTagproMap(map, unmergedGraph);
 
     t.is(graph.getVertices().length, 8);
     t.is(graph.getEdges().length, 8);
@@ -459,7 +466,8 @@ test('graphFromTagproMap', tester => {
       [1, 1.1, 0],
       [1, 1, 1.1],
     ];
-    const graph = graphFromTagproMap(map);
+    const unmergedGraph = unmergedGraphFromTagproMap(map);
+    const graph = graphFromTagproMap(map, unmergedGraph);
 
     t.is(graph.getVertices().length, 5);
     t.is(graph.getEdges().length, 6);
@@ -479,7 +487,8 @@ test('graphFromTagproMap', tester => {
       [1,   1.4, 1.2, 0  ],
       [1.4, 1.2, 0,   0  ],
     ];
-    const graph = graphFromTagproMap(map);
+    const unmergedGraph = unmergedGraphFromTagproMap(map);
+    const graph = graphFromTagproMap(map, unmergedGraph);
 
     t.is(graph.getVertices().length, 3);
     t.is(graph.getEdges().length, 3);
@@ -558,7 +567,7 @@ test('updateMergedGraph', tester => {
       [2, 2, 2,  2,  2,  2,  2,  2,  2, 2, 2],
     ];
     const unmergedGraph = unmergedGraphFromTagproMap(map);
-    const mergedGraph = graphFromTagproMap(map);
+    const mergedGraph = graphFromTagproMap(map, unmergedGraph);
     map[1][5] = '10.1'; // inactive bomb
     updateUnmergedGraph(unmergedGraph, map, 1, 5);
     updateMergedGraph(mergedGraph, unmergedGraph, map, 1, 5);
@@ -579,7 +588,7 @@ test('updateMergedGraph', tester => {
       [2, 1.4, 1.2, 2, 2],
     ];
     const unmergedGraph = unmergedGraphFromTagproMap(map);
-    const mergedGraph = graphFromTagproMap(map);
+    const mergedGraph = graphFromTagproMap(map, unmergedGraph);
 
     t.is(mergedGraph.numVertices(), 10);
     t.is(mergedGraph.numEdges(), 10);
