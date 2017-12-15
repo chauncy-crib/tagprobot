@@ -100,60 +100,49 @@ function getPortals(path) {
  *   that are funnelled to be as straight as possible
  */
 export function funnelPolypoints(path) {
-  const [leftPoints, rightPoints] = getPortals(path);
+  const allPortalPoints = getPortals(path);
+  const [leftPoints, rightPoints] = allPortalPoints;
 
   const funnelledPath = [path[0]];
   let startPoint = path[0].point; // the apex of the funnel
-  let leftI = 0; // the index in leftPoints of the left point of the funnel
-  let rightI = 0; // the index in rightPoints of the right point of the funnel
+  const funnelIndices = [0, 0]; // the indices of the left and right points in the funnel
 
   for (let portalIndex = 1; portalIndex < leftPoints.length; portalIndex++) {
-    const currLeft = leftPoints[leftI];
-    const currRight = rightPoints[rightI];
+    const currLeft = leftPoints[funnelIndices[0]];
+    const currRight = rightPoints[funnelIndices[1]];
     const leftEdge = { p1: startPoint, p2: currLeft };
     const rightEdge = { p1: startPoint, p2: currRight };
     const newLeft = leftPoints[portalIndex];
     const newRight = rightPoints[portalIndex];
 
-    if (!currLeft.equal(newLeft) && portalIndex > leftI) {
-      // New left point is different
-      if (pointsOnSameSide(newLeft, currRight, leftEdge)) {
-        // New left point narrows the funnel
-        if (pointsOnSameSide(newLeft, currLeft, rightEdge)) {
-          // New left point does not cross over, update left side of funnel
-          leftI = portalIndex;
-        } else {
-          // New left point crosses over other side
-          // Insert right point to path
-          funnelledPath.push(new PolypointState(currRight));
-          // Restart funnel from right point
-          startPoint = currRight;
+    const funnelPoints = [currLeft, currRight];
+    const edges = [leftEdge, rightEdge];
+    const portalPoints = [newLeft, newRight];
 
-          // Find next funnel index
-          while (rightPoints[rightI].equal(currRight)) rightI += 1;
-          leftI = rightI;
-          portalIndex = rightI;
-        }
-      }
-    }
-    if (!currRight.equal(newRight) && portalIndex > rightI) {
-      // New right point is different
-      if (pointsOnSameSide(newRight, currLeft, rightEdge)) {
-        // New right point narrows the funnel
-        if (pointsOnSameSide(newRight, currRight, leftEdge)) {
-          // New right point does not cross over, update right side of funnel
-          rightI = portalIndex;
-        } else {
-          // New right point crosses over other side
-          // Insert left point to path
-          funnelledPath.push(new PolypointState(currLeft));
-          // Restart funnel from left point
-          startPoint = currLeft;
+    // Look for funnel updates for the left and the right side
+    for (let i = 0; i < 2; i++) {
+      const j = i === 0 ? 1 : 0; // the other index
+      if (!funnelPoints[i].equal(portalPoints[i]) && portalIndex > funnelIndices[i]) {
+        // New point is different
+        if (pointsOnSameSide(portalPoints[i], funnelPoints[j], edges[i])) {
+          // New point narrows the funnel
+          if (pointsOnSameSide(portalPoints[i], funnelPoints[i], edges[j])) {
+            // New point does not cross over, update that side of funnel
+            funnelIndices[i] = portalIndex;
+          } else {
+            // New point crosses over other side
+            // Insert other point to path
+            funnelledPath.push(new PolypointState(funnelPoints[j]));
+            // Restart funnel from right point
+            startPoint = funnelPoints[j];
 
-          // Find next funnel index
-          while (leftPoints[leftI].equal(currLeft)) leftI += 1;
-          rightI = leftI;
-          portalIndex = leftI;
+            // Find next funnel index
+            while (allPortalPoints[j][funnelIndices[j]].equal(funnelPoints[j])) {
+              funnelIndices[j] += 1;
+            }
+            funnelIndices[i] = funnelIndices[j];
+            portalIndex = funnelIndices[j];
+          }
         }
       }
     }
