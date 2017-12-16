@@ -496,11 +496,13 @@ test('getMapTraversabilityInCells', tester => {
     const tempT = 'tempT';
     // mock the results of getTileTraversabilityInCells
     const mockGetTileTraversabilityInCells = sinon.stub();
+    const mockUpdateAndDrawNavMesh = sinon.stub();
     mockGetTileTraversabilityInCells.withArgs(permNT).returns([[0]]);
     mockGetTileTraversabilityInCells.withArgs(tempNT).returns([[0]]);
     mockGetTileTraversabilityInCells.withArgs(permT).returns([[1]]);
     mockGetTileTraversabilityInCells.withArgs(tempT).returns([[1]]);
     MapRewireAPI.__Rewire__('getTileTraversabilityInCells', mockGetTileTraversabilityInCells);
+    MapRewireAPI.__Rewire__('updateAndRedrawNavmesh', mockUpdateAndDrawNavMesh);
     // Mock the results of getTileProperty
     const mockGetTileProperty = sinon.stub();
     mockGetTileProperty.withArgs('permT', 'traversable').returns(true);
@@ -598,6 +600,7 @@ test('getMapTraversabilityInCells', tester => {
     MapRewireAPI.__ResetDependency__('getTileTraversabilityInCells');
     MapRewireAPI.__ResetDependency__('getTileProperty');
     MapRewireAPI.__ResetDependency__('areTempNTSpritesDrawn');
+    MapRewireAPI.__ResetDependency__('updateAndRedrawNavmesh');
     t.end();
   });
 
