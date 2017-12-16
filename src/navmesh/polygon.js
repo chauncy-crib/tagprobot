@@ -372,7 +372,7 @@ function updateMergedEdge(mergedGraph, unmergedGraph, bigE, smallE) {
 
   // Check if the big edge completely surrounds the small edge
   if ((vert && (bigP1.y <= smallP1.y && bigP2.y >= smallP2.y)) ||
-               (bigP1.x <= smallP1.x && bigP2.x >= smallP2.x)) {
+      (!vert && (bigP1.x <= smallP1.x && bigP2.x >= smallP2.x))) {
     mergedGraph.removeEdge(bigP1, bigP2);
     const e1 = { p1: bigP1, p2: smallP1 };
     const e2 = { p1: smallP2, p2: bigP2 };

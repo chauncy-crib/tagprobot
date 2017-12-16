@@ -429,15 +429,17 @@ export function redrawNavMesh() {
   if (!isVisualMode()) return;
   tagpro.renderer.layers.foreground.removeChild(polypointSprite);
   tagpro.renderer.layers.foreground.removeChild(triangulationSprite);
-  triangulationSprite = triangulationSprite || getGraphGraphics(
+  triangulationSprite = getGraphGraphics(
     getDTGraph(),
     NAV_MESH_THICKNESS,
     NAV_MESH_EDGE_COLOR,
     NAV_MESH_VERTEX_COLOR,
     NAV_MESH_ALPHA,
+    true,
+    e => getDTGraph().hasFixedEdge(e),
   );
   tagpro.renderer.layers.foreground.addChild(triangulationSprite);
-  polypointSprite = polypointSprite || getGraphGraphics(
+  polypointSprite = getGraphGraphics(
     getDTGraph().polypoints,
     TRIANGULATION_THICKNESS,
     TRIANGULATION_EDGE_COLOR,
@@ -460,7 +462,7 @@ export function drawNavMesh() {
     NAV_MESH_VERTEX_COLOR,
     NAV_MESH_ALPHA,
     true,
-    e => getDTGraph().hasConstrainedEdge(e),
+    e => getDTGraph().hasFixedEdge(e),
   );
   tagpro.renderer.layers.foreground.addChild(triangulationSprite);
   polypointSprite = polypointSprite || getGraphGraphics(
