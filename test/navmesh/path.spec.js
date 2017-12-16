@@ -1,10 +1,17 @@
 import test from 'tape';
 import { Polypoint, Point, Triangle } from '../../src/navmesh/graph';
-import { PolypointState, funnelPolypoints } from '../../src/navmesh/path';
+import {
+  PolypointState,
+  funnelPolypoints,
+  __RewireAPI__ as PathRewireAPI,
+} from '../../src/navmesh/path';
 
+
+const mockGetClearancePoint = cornerPoint => cornerPoint;
 
 test('funnelPolypoints()', tester => {
   tester.test('stretches around a corner to the top', t => {
+    PathRewireAPI.__Rewire__('getClearancePoint', mockGetClearancePoint);
     const FP = [
       new Point(35, 75),
       new Point(107, 57),
@@ -35,10 +42,12 @@ test('funnelPolypoints()', tester => {
     const funnelledPoints = funnelPolypoints(path).map(state => state.point);
     t.same(funnelledPoints, [path[0].point, FP[3], FP[7], path[10].point]);
 
+    PathRewireAPI.__ResetDependency__('getClearancePoint');
     t.end();
   });
 
   tester.test('stretches around a corner to the bottom', t => {
+    PathRewireAPI.__Rewire__('getClearancePoint', mockGetClearancePoint);
     const FP = [
       new Point(35, 75),
       new Point(107, 57),
@@ -69,10 +78,12 @@ test('funnelPolypoints()', tester => {
     const funnelledPoints = funnelPolypoints(path).map(state => state.point);
     t.same(funnelledPoints, [path[0].point, FP[3], FP[8], FP[10], path[10].point]);
 
+    PathRewireAPI.__ResetDependency__('getClearancePoint');
     t.end();
   });
 
   tester.test('stretches properly around command center spawn point', t => {
+    PathRewireAPI.__Rewire__('getClearancePoint', mockGetClearancePoint);
     const triangles = [
       new Triangle(new Point(760, 560), new Point(840, 600), new Point(800, 480)),
       new Triangle(new Point(800, 480), new Point(960, 640), new Point(840, 600)),
@@ -101,6 +112,7 @@ test('funnelPolypoints()', tester => {
     const funnelledPoints = funnelPolypoints(path).map(state => state.point);
     t.same(funnelledPoints, [path[0].point, triangles[1].p3, triangles[3].p3, path[9].point]);
 
+    PathRewireAPI.__ResetDependency__('getClearancePoint');
     t.end();
   });
 

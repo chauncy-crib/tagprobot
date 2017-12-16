@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { runAstar, State } from '../helpers/path';
 import { assert } from '../../src/utils/asserts';
 import { Point, Polypoint, pointsOnSameSide } from './graph';
+import { getClearancePoint } from './graphUtils';
 
 
 export class PolypointState extends State {
@@ -66,7 +67,11 @@ function getPortals(path) {
     const [p1, p2] = portalPoints;
 
     if (i === 1) {
-      // This is the first iteration, arbitrarily add one point to each list
+      // This is the first iteration, add the first triangle point and then arbitrarily add one
+      //   point to each list
+      const trianglePoint = _.difference(prevPoints, portalPoints);
+      leftPoints.push(trianglePoint[0]);
+      rightPoints.push(trianglePoint[0]);
       leftPoints.push(p1);
       rightPoints.push(p2);
     } else {
@@ -108,9 +113,9 @@ export function funnelPolypoints(path) {
 
   const funnelledPath = [path[0]];
   let startPoint = path[0].point; // the apex of the funnel
-  const funnelIndices = [0, 0]; // the indices of the left and right points in the funnel
+  const funnelIndices = [1, 1]; // the indices of the left and right points in the funnel
 
-  for (let portalIndex = 1; portalIndex < leftPoints.length; portalIndex++) {
+  for (let portalIndex = 2; portalIndex < leftPoints.length; portalIndex++) {
     const currLeft = leftPoints[funnelIndices[0]];
     const currRight = rightPoints[funnelIndices[1]];
     const leftEdge = { p1: startPoint, p2: currLeft };
@@ -134,15 +139,26 @@ export function funnelPolypoints(path) {
             funnelIndices[curr] = portalIndex;
           } else {
             // New point crosses over other side
-            // Insert other point to path
-            funnelledPath.push(new PolypointState(funnelPoints[other]));
-            // Restart funnel from right point
-            startPoint = funnelPoints[other];
-
+            // Find previous funnel index
+            let prevI = funnelIndices[other];
+            while (allPortalPoints[other][prevI].equal(funnelPoints[other])) {
+              prevI -= 1;
+            }
             // Find next funnel index
             while (allPortalPoints[other][funnelIndices[other]].equal(funnelPoints[other])) {
               funnelIndices[other] += 1;
             }
+
+            // Insert other point with clearance to path
+            const clearancePoint = getClearancePoint(
+              funnelPoints[other],
+              allPortalPoints[other][prevI],
+              allPortalPoints[other][funnelIndices[other]],
+            );
+            funnelledPath.push(new PolypointState(clearancePoint));
+
+            // Restart funnel from right point
+            startPoint = funnelPoints[other];
             funnelIndices[curr] = funnelIndices[other];
             portalIndex = funnelIndices[other];
           }
