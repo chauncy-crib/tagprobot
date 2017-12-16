@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { assert } from '../utils/asserts';
+import { redrawNavMesh } from '../draw/drawings';
 import { findUpperAndLowerPoints, threePointsInLine, detD, detH } from './graphUtils';
 
 /**
@@ -99,8 +100,8 @@ export function isTriangleIntersectingEdge(t, e) {
  * @param {Point[]} points
  * @returns {Point[]} the points sorted in counter clockwise order
  */
-export function sortCounterClockwise(points) {
-  const center = {
+export function sortCounterClockwise(points, inputCenter) {
+  const center = inputCenter || {
     x: _.sumBy(points, 'x') / points.length,
     y: _.sumBy(points, 'y') / points.length,
   };
@@ -288,6 +289,9 @@ export class Triangle {
       !(checkEmpty && threePointsInLine(p1, p2, p3)),
       'Tried to make a triangle with no area',
     );
+    // if (threePointsInLine(p1, p2, p3)) {
+    //   console.log(`WARNING: ${p1}, ${p2}, ${p3}`);
+    // }
     this.p1 = p1;
     this.p2 = p2;
     this.p3 = p3;
@@ -338,8 +342,25 @@ export class Triangle {
   hasPoint(p) {
     return p.equals(this.p1) || p.equals(this.p2) || p.equals(this.p3);
   }
+
+  toString() {
+    return JSON.stringify({ p1: this.p1, p2: this.p2, p3: this.p3 });
+  }
 }
 
+function drawLine(p1, p2, color) {
+  const edgeGraphic = new PIXI.Graphics();
+  edgeGraphic.lineStyle(4, color, 0.3);
+  edgeGraphic.moveTo(p1.x, p1.y).lineTo(p2.x, p2.y);
+  tagpro.renderer.layers.foreground.addChild(edgeGraphic);
+}
+
+function drawCircle(p, color) {
+  const pointGraphic = new PIXI.Graphics();
+  pointGraphic.lineStyle(7, color, 1);
+  pointGraphic.drawCircle(p.x, p.y, 7);
+  tagpro.renderer.layers.foreground.addChild(pointGraphic);
+}
 
 /*
  * Extend the Graph class to represent the delaunay triangles. Contains triangle objects in addition
@@ -357,9 +378,47 @@ export class TGraph extends Graph {
     return this.triangles.size;
   }
 
+  verifyTriangles() {
+    let valid = true;
+    this.triangles.forEach(triangle => {
+      if (valid && (!this.hasVertex(triangle.p1)
+        || !this.hasVertex(triangle.p2) || !this.hasVertex(triangle.p3))) {
+        const edgeGraphic = new PIXI.Graphics();
+        edgeGraphic.lineStyle(4, 0xff0000, 1);
+        edgeGraphic.moveTo(triangle.p1.x, triangle.p1.y).lineTo(triangle.p2.x, triangle.p2.y);
+        edgeGraphic.moveTo(triangle.p2.x, triangle.p2.y).lineTo(triangle.p3.x, triangle.p3.y);
+        edgeGraphic.moveTo(triangle.p3.x, triangle.p3.y).lineTo(triangle.p1.x, triangle.p1.y);
+        tagpro.renderer.layers.foreground.addChild(edgeGraphic);
+        valid = false;
+        console.log('TRIANGLES NOT VALID');
+      }
+    });
+    return valid;
+  }
+
   calculatePolypointGraph() {
     this.polypoints = new Graph();
     this.triangles.forEach(triangle => {
+      // if (!this.hasVertex(triangle.p1) || !this.hasVertex(triangle.p2) || !this.hasVertex(triangle.p3)) {
+      //   const edgeGraphic = new PIXI.Graphics();
+      //   edgeGraphic.lineStyle(4, 0xff0000, 1);
+      //   edgeGraphic.moveTo(triangle.p1.x, triangle.p1.y).lineTo(triangle.p2.x, triangle.p2.y);
+      //   edgeGraphic.moveTo(triangle.p2.x, triangle.p2.y).lineTo(triangle.p3.x, triangle.p3.y);
+      //   edgeGraphic.moveTo(triangle.p3.x, triangle.p3.y).lineTo(triangle.p1.x, triangle.p1.y);
+      //   tagpro.renderer.layers.foreground.addChild(edgeGraphic);
+      // }
+      // assert(
+      //   this.hasVertex(triangle.p1),
+      //   `Graph has triangle ${triangle} but not vertex ${triangle.p1}`,
+      // );
+      // assert(
+      //   this.hasVertex(triangle.p2),
+      //   `Graph has triangle ${triangle} but not vertex ${triangle.p2}`,
+      // );
+      // assert(
+      //   this.hasVertex(triangle.p3),
+      //   `Graph has triangle ${triangle} but not vertex ${triangle.p3}`,
+      // );
       // Add a polypoint in center of triangle
       const triangleCenter = triangle.getCenter();
       this.polypoints.addVertex(triangleCenter);
@@ -373,6 +432,11 @@ export class TGraph extends Graph {
 
   getAdjacentTriangles(t) {
     const res = [];
+    // const edgeGraphic = new PIXI.Graphics();
+    // edgeGraphic.lineStyle(4, 0xff0000, 1);
+    // edgeGraphic.moveTo(t.p1.x, t.p1.y).lineTo(t.p2.x, t.p2.y);
+    // edgeGraphic.moveTo(t.p2.x, t.p2.y).lineTo(t.p3.x, t.p3.y);
+    // edgeGraphic.moveTo(t.p3.x, t.p3.y).lineTo(t.p1.x, t.p1.y);
     const op1 = this.findOppositePoint(t.p1, { p1: t.p2, p2: t.p3 });
     const op2 = this.findOppositePoint(t.p2, { p1: t.p1, p2: t.p3 });
     const op3 = this.findOppositePoint(t.p3, { p1: t.p1, p2: t.p2 });
@@ -494,6 +558,16 @@ export class TGraph extends Graph {
    *   edge is fixed or is on the edge of the whole graph
    */
   findOppositePoint(p, e) {
+    if (!this.isConnected(p, e.p1) || !this.isConnected(p, e.p2)) {
+      // const edgeGraphic = new PIXI.Graphics();
+      // edgeGraphic.lineStyle(4, 0x0000ff, 1);
+      // edgeGraphic
+      //   .moveTo(e.p1.x, e.p1.y)
+      //   .lineTo(e.p2.x, e.p2.y);
+      // edgeGraphic.drawCircle(p.x, p.y, 7);
+      // tagpro.renderer.layers.foreground.addChild(edgeGraphic);
+    }
+
     assert(this.isConnected(p, e.p1), `${p} was not connected to p1 of edge: ${e.p1}`);
     assert(this.isConnected(p, e.p2), `${p} was not connected to p2 of edge: ${e.p2}`);
 
@@ -602,6 +676,7 @@ export class TGraph extends Graph {
     this.triangulateRegion(_.concat(_.slice(innerReg, cIndex, innerReg.length), e.p2));
   }
 
+
   /**
    * Adds an edge to the graph as a constrained edge and re-triangulates the affected surrounding
    *   region
@@ -613,6 +688,8 @@ export class TGraph extends Graph {
       this.addFixedEdge(e);
       return;
     }
+    console.log('ADDING CONSTRAINT EDGE', e);
+
 
     // Find all triangles intersecting the edge
     const intersectingTriangles = _.filter(Array.from(this.triangles), t => (
@@ -661,12 +738,21 @@ export class TGraph extends Graph {
    *   around.
    */
   delaunayRemoveVertex(p) {
-    const N = sortCounterClockwise(this.neighbors(p));
-    // Make sure all neighbors are connected to eachother, forming a cycle
-    for (let i = 1; i < N.length; i++) { assert(this.isConnected(N[i - 1], N[i])); }
+    // console.log(`REMOVING ${p}`);
+    // console.log(sortCounterClockwise(this.neighbors(p)));
+    const N = sortCounterClockwise(this.neighbors(p), p);
+    // console.log(N);
+    // Make sure all N are connected to eachother, forming a cycle
+    for (let i = 0; i < N.length; i++) {
+      if (!this.isConnected(N[(i === 0) ? N.length - 1 : i - 1], N[i])) {
+        drawLine(N[(i === 0) ? N.length - 1 : i - 1], N[i], 0x0000ff);
+        drawCircle(p, 0x0000ff);
+        assert(false);
+      }
+    }
     while (this.neighbors(p).length > 3) {
       let ear = null;
-      const neighbors = sortCounterClockwise(this.neighbors(p));
+      const neighbors = sortCounterClockwise(this.neighbors(p), p);
       const L = neighbors.length;
       // Find an ear to remove, iterate until you find an ear
       let i = 0;
@@ -684,11 +770,15 @@ export class TGraph extends Graph {
         i += 1;
       }
       assert(!_.isNull(ear), 'Could not find valid ear to remove');
+      // console.log(`EAR: ${ear}`);
       // Flip the diagonal to remove a neighbor of p
       this.removeTriangleByPoints(p, ear[0], ear[1]);
       this.removeTriangleByPoints(p, ear[1], ear[2]);
       this.addTriangle(new Triangle(ear[0], ear[1], ear[2]));
       this.addTriangle(new Triangle(ear[0], ear[2], p, false));
+      if (!this.verifyTriangles()) {
+        return false;
+      }
     }
     // Merge the remaining three triangles
     const neighbors = this.neighbors(p);
@@ -698,6 +788,8 @@ export class TGraph extends Graph {
     this.removeTriangleByPoints(p, neighbors[1], neighbors[2]);
     this.addTriangle(new Triangle(neighbors[0], neighbors[1], neighbors[2]));
     this.removeVertex(p);
+    redrawNavMesh();
+    return this.verifyTriangles();
   }
 
   unfixEdge(e) {
@@ -708,8 +800,14 @@ export class TGraph extends Graph {
   }
 
   dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices) {
+    console.log('Unfixed', unfixEdges);
+    console.log('Removed', removeVertices);
+    console.log('Added', addVertices);
+    console.log('Constrained', constrainingEdges);
     _.forEach(unfixEdges, e => { this.unfixEdge(e); });
-    _.forEach(removeVertices, v => { this.delaunayRemoveVertex(v); });
+    for (let i = 0; i < removeVertices.length; i++) {
+      if (!this.delaunayRemoveVertex(removeVertices[i])) return;
+    }
     _.forEach(addVertices, v => { this.addTriangulationVertex(v); });
     _.forEach(constrainingEdges, e => { this.addConstraintEdge(e); });
   }
