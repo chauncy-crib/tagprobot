@@ -45,6 +45,15 @@ export function delaunayTriangulation(mapGraph, dummyPoint1, dummyPoint2, dummyP
 }
 
 
+export function getMergedGraph() {
+  return mergedGraph;
+}
+
+export function getUnmergedGraph() {
+  return unmergedGraph;
+}
+
+
 /**
  * @param {num} map - array of all vertices
  * @returns {Graph} graph of the triangulation of all the vertices
