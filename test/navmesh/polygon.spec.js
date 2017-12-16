@@ -646,18 +646,30 @@ test('dynamicUpdate', tester => {
     updateUnmergedGraph(getUnmergedGraph(), map, 2, 2);
     const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
       updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, 2, 2);
+    // mockDTGraph.triangles.forEach(tr => { console.log(tr); });
     t.is(unfixEdges.length, 4);
     t.is(constrainingEdges.length, 0);
     t.is(removeVertices.length, 4);
     t.is(addVertices.length, 0);
     mockDTGraph.dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
+    // TEST CASE FOR ONLY REMOVE FIRST VERTEX
+    // t.is(mockDTGraph.numTriangles(), 8);
+    // t.is(mockDTGraph.numVertices(), 7);
+    // t.is(mockDTGraph.numEdges(), 14);
+    // t.is(mockDTGraph.numFixedEdges(), 4);
+    // TEST CASE FOR ONLY REMOVE FIRST TWO VERTICES
+    // t.is(mockDTGraph.numTriangles(), 6);
+    // t.is(mockDTGraph.numVertices(), 6);
+    // t.is(mockDTGraph.numEdges(), 11);
+    // t.is(mockDTGraph.numFixedEdges(), 4);
 
+
+    // TEST CASE FOR THE WHOLE THING
     t.is(mockDTGraph.numTriangles(), 2);
     t.is(mockDTGraph.numVertices(), 4);
     t.is(mockDTGraph.numEdges(), 5);
     t.is(mockDTGraph.numFixedEdges(), 4);
 
-    t.true(false);
     teardownTiles();
     t.end();
   });
