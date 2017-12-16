@@ -283,13 +283,9 @@ export class Polypoint extends Point {
 
 
 export class Triangle {
-  constructor(p1, p2, p3) {
+  constructor(p1, p2, p3, checkEmpty = true) {
     assert(
-      !(p1.equal(p2) || p1.equal(p3) || p3.equal(p2)),
-      'Tried to make triangle with two of the same points',
-    );
-    assert(
-      !threePointsInLine(p1, p2, p3),
+      !(checkEmpty && threePointsInLine(p1, p2, p3)),
       'Tried to make a triangle with no area',
     );
     this.p1 = p1;
@@ -354,10 +350,15 @@ export class TGraph extends Graph {
     super();
     this.triangles = new Set();
     this.fixedAdj = {};
-    this.polypoints = new Graph();
+    this.polypoints = null;
+  }
+
+  numTriangles() {
+    return this.triangles.size;
   }
 
   calculatePolypointGraph() {
+    this.polypoints = new Graph();
     this.triangles.forEach(triangle => {
       // Add a polypoint in center of triangle
       const triangleCenter = triangle.getCenter();
@@ -428,7 +429,7 @@ export class TGraph extends Graph {
    *   points
    */
   findTriangle(p1, p2, p3) {
-    const r = new Triangle(p1, p2, p3);
+    const r = new Triangle(p1, p2, p3, false);
     let res = null;
     this.triangles.forEach(t => {
       if (r.equal(t)) res = t;
@@ -534,6 +535,7 @@ export class TGraph extends Graph {
    *   insertion
    */
   addTriangulationVertex(p) {
+    assert(!this.hasVertex(p));
     const containingTriangles = this.findContainingTriangles(p);
     assert(
       containingTriangles.length > 0 && containingTriangles.length <= 2,
@@ -630,11 +632,38 @@ export class TGraph extends Graph {
     this.triangulateRegion(lowerPoints);
   }
 
+  hasFixedEdge(e) {
+    return _.some(this.fixedAdj[e.p1], n => n.equal(e.p2));
+  }
+
+  getFixedEdges() {
+    const edges = [];
+    _.forEach(this.vertices, p1 => {
+      _.forEach(this.fixedAdj[p1], p2 => {
+        const edgeExists = _.some(edges, e => (
+          (e.p1.equal(p1) && e.p2.equal(p2)) ||
+          (e.p1.equal(p2) && e.p2.equal(p1))
+        ));
+        if (!edgeExists) {
+          edges.push({ p1, p2 });
+        }
+      });
+    });
+    return edges;
+  }
+
+  numFixedEdges() {
+    return this.getFixedEdges().length;
+  }
+
   /**
    * @param {Point} p the point to remove from the triangulation graph and validly triangulate
    *   around.
    */
   delaunayRemoveVertex(p) {
+    const N = sortCounterClockwise(this.neighbors(p));
+    // Make sure all neighbors are connected to eachother, forming a cycle
+    for (let i = 1; i < N.length; i++) { assert(this.isConnected(N[i - 1], N[i])); }
     while (this.neighbors(p).length > 3) {
       let ear = null;
       const neighbors = sortCounterClockwise(this.neighbors(p));
@@ -659,7 +688,7 @@ export class TGraph extends Graph {
       this.removeTriangleByPoints(p, ear[0], ear[1]);
       this.removeTriangleByPoints(p, ear[1], ear[2]);
       this.addTriangle(new Triangle(ear[0], ear[1], ear[2]));
-      this.addTriangle(new Triangle(ear[0], ear[2], p));
+      this.addTriangle(new Triangle(ear[0], ear[2], p, false));
     }
     // Merge the remaining three triangles
     const neighbors = this.neighbors(p);
@@ -671,5 +700,18 @@ export class TGraph extends Graph {
     this.removeVertex(p);
   }
 
+  unfixEdge(e) {
+    assert(this.isConnected(e.p1, e.p2), `Edge ${JSON.stringify(e)} not in graph`);
+    const { p1, p2 } = e;
+    this.fixedAdj[p1] = _.reject(this.fixedAdj[p1], p => p.equal(p2));
+    this.fixedAdj[p2] = _.reject(this.fixedAdj[p2], p => p.equal(p1));
+  }
+
+  dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices) {
+    _.forEach(unfixEdges, e => { this.unfixEdge(e); });
+    _.forEach(removeVertices, v => { this.delaunayRemoveVertex(v); });
+    _.forEach(addVertices, v => { this.addTriangulationVertex(v); });
+    _.forEach(constrainingEdges, e => { this.addConstraintEdge(e); });
+  }
 }
 
