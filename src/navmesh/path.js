@@ -100,6 +100,9 @@ function getPortals(path) {
  *   that are funnelled to be as straight as possible
  */
 export function funnelPolypoints(path) {
+  // Don't bother funnelling if our path has no intermediate polypoints
+  if (path.length <= 2) return path;
+
   const allPortalPoints = getPortals(path);
   const [leftPoints, rightPoints] = allPortalPoints;
 
