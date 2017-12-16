@@ -19,9 +19,9 @@ import {
   TRIANGULATION_THICKNESS,
 } from '../constants';
 import { getDTGraph } from '../navmesh/triangulation';
-import { init2dArray } from '../helpers/map';
 import { isVisualMode } from '../utils/interface';
 import { assertGridInBounds } from '../utils/asserts';
+import { init2dArray } from '../utils/mapUtils';
 
 
 let allyCellPathGraphics = null; // PIXI Graphics for drawing the bot's current planned path
@@ -396,11 +396,20 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
  * @param {number} color - a hex color
  * @param {number} alpha - an alpha value
  */
-function getGraphGraphics(graph, thickness, edgeColor, vertexColor, alpha, drawVertices = true) {
+function getGraphGraphics(
+  graph, thickness, edgeColor, vertexColor, alpha, drawVertices = true,
+  edgeCheck = () => false, specialEdgeColor = 0x42aaf4,
+) {
   const graphGraphics = new PIXI.Graphics();
 
+  let currEdgeColor = edgeColor;
   graphGraphics.lineStyle(thickness, edgeColor, alpha);
   _.forEach(graph.getEdges(), edge => {
+    const nextEdgeColor = edgeCheck(edge) ? specialEdgeColor : edgeColor;
+    if (nextEdgeColor !== currEdgeColor) {
+      graphGraphics.lineStyle(thickness, nextEdgeColor, edgeCheck(edge) ? 1 : alpha);
+      currEdgeColor = nextEdgeColor;
+    }
     graphGraphics
       .moveTo(edge.p1.x, edge.p1.y)
       .lineTo(edge.p2.x, edge.p2.y);
@@ -416,6 +425,28 @@ function getGraphGraphics(graph, thickness, edgeColor, vertexColor, alpha, drawV
   return graphGraphics;
 }
 
+export function redrawNavMesh() {
+  if (!isVisualMode()) return;
+  tagpro.renderer.layers.foreground.removeChild(polypointSprite);
+  tagpro.renderer.layers.foreground.removeChild(triangulationSprite);
+  triangulationSprite = triangulationSprite || getGraphGraphics(
+    getDTGraph(),
+    NAV_MESH_THICKNESS,
+    NAV_MESH_EDGE_COLOR,
+    NAV_MESH_VERTEX_COLOR,
+    NAV_MESH_ALPHA,
+  );
+  tagpro.renderer.layers.foreground.addChild(triangulationSprite);
+  polypointSprite = polypointSprite || getGraphGraphics(
+    getDTGraph().polypoints,
+    TRIANGULATION_THICKNESS,
+    TRIANGULATION_EDGE_COLOR,
+    null,
+    TRIANGULATION_ALPHA,
+    false,
+  );
+  tagpro.renderer.layers.foreground.addChild(polypointSprite);
+}
 
 /*
  * Draws the navigation mesh lines on the tagpro map. Runtime: O(E), O(1) if visualizations off
@@ -428,6 +459,8 @@ export function drawNavMesh() {
     NAV_MESH_EDGE_COLOR,
     NAV_MESH_VERTEX_COLOR,
     NAV_MESH_ALPHA,
+    true,
+    e => getDTGraph().hasConstrainedEdge(e),
   );
   tagpro.renderer.layers.foreground.addChild(triangulationSprite);
   polypointSprite = polypointSprite || getGraphGraphics(

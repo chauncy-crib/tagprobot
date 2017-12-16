@@ -9,8 +9,11 @@ import {
   generatePermanentNTSprites,
   areTempNTSpritesDrawn,
   setNTSpritesDrawn,
+  redrawNavMesh,
 } from '../draw/drawings';
 import { invertBinary2dArray, convolve } from './convolve';
+import { getDTGraph, getMergedGraph, getUnmergedGraph } from '../navmesh/triangulation';
+import { updateMergedGraph, updateUnmergedGraph } from '../navmesh/polygon';
 
 
 // A 2D array of size tagpro.map.length*CPTL by tagpro.map[0].length*CPTL. Value
@@ -180,6 +183,15 @@ export function initMapTraversabilityCells(map) {
   );
 }
 
+export function updateAndRedrawNavmesh(map, xt, yt) {
+  updateUnmergedGraph(getUnmergedGraph(), map, xt, yt);
+  const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
+    updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, xt, yt);
+  getDTGraph().dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
+  getDTGraph().calculatePolypointGraph();
+  redrawNavMesh();
+}
+
 /**
  * Returns a 2D array of traversable (1) and blocked (0) cells. Size of return grid is map.length *
  *   CPTL. The 2D array is an array of the columns in the game. empty_tiles[0] is the left-most
@@ -239,7 +251,10 @@ export function getMapTraversabilityInCells(map) {
       // If the NT sprites are already on the screen, update the sprites for this tile, because
       //   the tile has changed state
       if (areTempNTSpritesDrawn()) updateNTSprites(xy.xt, xy.yt, mapTraversabilityCells);
+
+      updateAndRedrawNavmesh(map, xy.xt, xy.yt);
     }
+
     // If the NT sprites are not already on the screen, then update the sprites for all tiles. This
     //   ensures that when visual mode is turned on, new sprites are generated for all temp-NT
     //   tiles. If visual mode is off, then the call to updateNTSprites does nothing.
