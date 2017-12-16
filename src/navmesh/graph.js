@@ -629,5 +629,47 @@ export class TGraph extends Graph {
     this.triangulateRegion(upperPoints);
     this.triangulateRegion(lowerPoints);
   }
+
+  /**
+   * @param {Point} p the point to remove from the triangulation graph and validly triangulate
+   *   around.
+   */
+  delaunayRemoveVertex(p) {
+    while (this.neighbors(p).length > 3) {
+      let ear = null;
+      const neighbors = sortCounterClockwise(this.neighbors(p));
+      const L = neighbors.length;
+      // Find an ear to remove, iterate until you find an ear
+      let i = 0;
+      while (!ear && i < L) {
+        const v1 = neighbors[i];
+        const v2 = neighbors[(i + 1) % L];
+        const v3 = neighbors[(i + 2) % L];
+        if (detD(v1, v2, v3) >= 0 && detD(v1, v3, p) >= 0) {
+          // Neighbors not in this triple
+          const otherNbrs = _.reject(neighbors, n => n.equal(v1) || n.equal(v2) || n.equal(v3));
+          // Ear is delaunay if none of the other neighbors fall inside the circumcircle
+          const delaunayValid = !_.some(otherNbrs, n => detH(v1, v2, v3, n) > 0);
+          if (delaunayValid) ear = [v1, v2, v3];
+        }
+        i += 1;
+      }
+      assert(!_.isNull(ear), 'Could not find valid ear to remove');
+      // Flip the diagonal to remove a neighbor of p
+      this.removeTriangleByPoints(p, ear[0], ear[1]);
+      this.removeTriangleByPoints(p, ear[1], ear[2]);
+      this.addTriangle(new Triangle(ear[0], ear[1], ear[2]));
+      this.addTriangle(new Triangle(ear[0], ear[2], p));
+    }
+    // Merge the remaining three triangles
+    const neighbors = this.neighbors(p);
+    assert(neighbors.length === 3);
+    this.removeTriangleByPoints(p, neighbors[0], neighbors[1]);
+    this.removeTriangleByPoints(p, neighbors[0], neighbors[2]);
+    this.removeTriangleByPoints(p, neighbors[1], neighbors[2]);
+    this.addTriangle(new Triangle(neighbors[0], neighbors[1], neighbors[2]));
+    this.removeVertex(p);
+  }
+
 }
 
