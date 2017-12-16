@@ -3,7 +3,7 @@ import { getMapTraversabilityInCells } from './helpers/map';
 import { findTile, findEnemyFC } from './helpers/finders';
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe, amBlue, amRed } from './helpers/player';
-import { getShortestTilePath } from './helpers/path';
+import { getShortestCellPath } from './helpers/path';
 import { isAutonomousMode, isVisualMode, move, dequeueChatMessages } from './utils/interface';
 import { drawAllyCellPath, drawEnemyCellPath, drawPolypointPath } from './draw/drawings';
 import { desiredAccelerationMultiplier } from './helpers/physics';
@@ -43,7 +43,7 @@ function getGoalPos() {
       const { map } = tagpro;
       // Runtime: O(M*CPTL^2) with visualizations on, O(M + S*CPTL^2) with visualizations off
       const traversableCells = getMapTraversabilityInCells(map);
-      enemyShortestPath = getShortestTilePath(
+      enemyShortestPath = getShortestCellPath(
         { xc: enemyFC.xc, yc: enemyFC.yc },
         { xc: enemyFinalTarget.xc, yc: enemyFinalTarget.yc },
         traversableCells,
@@ -91,7 +91,7 @@ function getAccelValues() {
   const traversableCells = getMapTraversabilityInCells(map);
 
   // TODO: runtime of this? Call is O(R) for now
-  const shortestPath = getShortestTilePath(
+  const shortestPath = getShortestCellPath(
     { xc: me.xc, yc: me.yc },
     { xc: finalTarget.xc, yc: finalTarget.yc },
     traversableCells,

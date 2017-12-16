@@ -188,7 +188,7 @@ export function runAstar(startState, targetState, neighborParam) {
  * @param {number} traversabilityCells - 2D array of cells. Traversable cells are 1s, others are 0.
  * @returns {PathState[]} a list of states, starting from the startState to the targetState
  */
-export function getShortestTilePath(me, target, traversabilityCells) {
+export function getShortestCellPath(me, target, traversabilityCells) {
   assert(_.has(me, 'xc'));
   assert(_.has(me, 'yc'));
   assert(_.has(target, 'xc'));

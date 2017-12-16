@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import test from 'tape';
 import {
-  getShortestTilePath,
+  getShortestCellPath,
   PathState,
   __RewireAPI__ as PathRewireAPI } from '../../src/helpers/path';
 
@@ -75,7 +75,7 @@ test('test neighbors have correct g values', t => {
 });
 
 
-test('test getShortestTilePath returns shortest path without diagonals', t => {
+test('test getShortestCellPath returns shortest path without diagonals', t => {
   PathRewireAPI.__Rewire__('DIAGONAL', false);
   const inputMap = [
     [1, 0, 1, 1, 1, 1, 1, 1],
@@ -83,7 +83,7 @@ test('test getShortestTilePath returns shortest path without diagonals', t => {
     [1, 0, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1],
   ];
-  const shortestPath = getShortestTilePath(
+  const shortestPath = getShortestCellPath(
     { xc: 0, yc: 0 },
     { xc: 0, yc: 2 },
     inputMap,
@@ -95,7 +95,7 @@ test('test getShortestTilePath returns shortest path without diagonals', t => {
 });
 
 
-test('getShortestTilePath()', tester => {
+test('getShortestCellPath()', tester => {
   tester.test('returns shortest path with diagonals', t => {
     PathRewireAPI.__Rewire__('DIAGONAL', true);
     const inputMap = [
@@ -104,7 +104,7 @@ test('getShortestTilePath()', tester => {
       [1, 0, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1],
     ];
-    const shortestDiagonalPath = getShortestTilePath(
+    const shortestDiagonalPath = getShortestCellPath(
       { xc: 0, yc: 0 },
       { xc: 0, yc: 2 },
       inputMap,
@@ -126,7 +126,7 @@ test('getShortestTilePath()', tester => {
       [1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1],
     ];
-    const impossiblePath = getShortestTilePath(
+    const impossiblePath = getShortestCellPath(
       { xc: 0, yc: 4 },
       { xc: 5, yc: 5 },
       impossibleMap,
@@ -148,14 +148,14 @@ test('getShortestTilePath()', tester => {
       [1, 1, 1, 1, 1, 1, 1, 1],
     ];
     t.throws(() => {
-      getShortestTilePath(
+      getShortestCellPath(
         { xc: 6, yc: 3 },
         { xc: 3, yc: 6 },
         impossibleMap,
       );
     });
     t.throws(() => {
-      getShortestTilePath(
+      getShortestCellPath(
         { xc: 2, yc: 3 },
         { xc: 3, yc: 8 },
         impossibleMap,
@@ -189,7 +189,7 @@ test('getShortestTilePath()', tester => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    const shortestDiagonalPath = getShortestTilePath(
+    const shortestDiagonalPath = getShortestCellPath(
       { xc: 0, yc: 2 },
       { xc: 8, yc: 28 },
       map,
