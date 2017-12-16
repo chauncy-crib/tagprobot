@@ -7,6 +7,9 @@ export const TEAMS = {
   BLUE: 2,
 };
 
+export const RED_ENDZONE = { xp: 1360, yp: 1560 };
+export const BLUE_ENDZONE = { xp: 640, yp: 440 };
+
 // Pixels per tile length
 export const PPTL = 40;
 
