@@ -4,6 +4,7 @@ import { findTile, findEnemyFC } from './helpers/finders';
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
 import { getMe, amBlue, amRed } from './helpers/player';
 import { getShortestCellPath } from './helpers/path';
+import { chaseEnemyFC } from './helpers/fsm';
 import { isAutonomousMode, isVisualMode, move, dequeueChatMessages } from './utils/interface';
 import { drawAllyCellPath, drawEnemyCellPath, drawPolypointPath } from './draw/drawings';
 import { desiredAccelerationMultiplier } from './helpers/physics';
@@ -23,7 +24,7 @@ import { getDTGraph } from './navmesh/triangulation';
  */
 function getGoalPos() {
   const me = getMe();
-  let goal;
+  let goal = {};
 
   // If the bot has the flag, go to the endzone
   if (me.flag) {
@@ -31,27 +32,9 @@ function getGoalPos() {
     console.log('I have the flag. Seeking endzone!');
   } else {
     const enemyFC = findEnemyFC();
-    let enemyShortestPath = [];
+    const enemyShortestPath = [];
     if (enemyFC) { // If an enemy player in view has the flag, chase
-      const enemyGoal = amBlue() ? RED_ENDZONE : BLUE_ENDZONE;
-      const enemyFinalTarget = {
-        xc: Math.floor(enemyGoal.xp / PPCL),
-        yc: Math.floor(enemyGoal.yp / PPCL),
-      };
-      enemyFC.xc = Math.floor((enemyFC.x + (PPCL / 2)) / PPCL);
-      enemyFC.yc = Math.floor((enemyFC.y + (PPCL / 2)) / PPCL);
-      const { map } = tagpro;
-      // Runtime: O(M*CPTL^2) with visualizations on, O(M + S*CPTL^2) with visualizations off
-      const traversableCells = getMapTraversabilityInCells(map);
-      enemyShortestPath = getShortestCellPath(
-        { xc: enemyFC.xc, yc: enemyFC.yc },
-        { xc: enemyFinalTarget.xc, yc: enemyFinalTarget.yc },
-        traversableCells,
-      );
-      // Runtime: O(B), O(1) if visualizations off
-      goal = enemyFC;
-      goal.xp = enemyFC.x + enemyFC.vx;
-      goal.yp = enemyFC.y + enemyFC.vy;
+      chaseEnemyFC(me, goal, enemyFC, enemyShortestPath);
       console.log('I see an enemy with the flag. Chasing!');
     } else if (enemyTeamHasFlag()) {
       goal = amBlue() ? RED_ENDZONE : BLUE_ENDZONE;
