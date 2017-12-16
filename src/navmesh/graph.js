@@ -46,6 +46,18 @@ export class Point {
     return new Point(x, y);
   }
 
+  add(other) {
+    const x = this.x + other.x;
+    const y = this.y + other.y;
+    return new Point(x, y);
+  }
+
+  times(scalar) {
+    const x = this.x * scalar;
+    const y = this.y * scalar;
+    return new Point(x, y);
+  }
+
   distance(other) {
     return Math.sqrt(this.distanceSquared(other));
   }

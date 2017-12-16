@@ -1,5 +1,8 @@
 import _ from 'lodash';
-import { pointsOnSameSide } from './graph';
+import { Point, pointsOnSameSide } from './graph';
+// TODO this errors in the test when I uncomment this and I have no idea why
+// import { BRP } from '../constants';
+const BRP = 19;
 
 /**
  * @param {Triangle[]} intersectingTriangles - array of triangles that intersect the edge
@@ -70,3 +73,33 @@ export function threePointsInLine(p1, p2, p3) {
   return y1 * x2 === y2 * x1;
 }
 
+
+/**
+ * @param {Point} cornerPoint - the point on the corner that needs clearance
+ * @param {Point} prevPoint - the previous point on the corner
+ * @param {Point} nextPoint - the next point on the corner
+ * @returns {Point} a point that is BRP away from the cornerPoint in the corner's normal direction
+ */
+export function getClearancePoint(cornerPoint, prevPoint, nextPoint) {
+  const nextAngle = Math.atan2(
+    nextPoint.y - cornerPoint.y,
+    nextPoint.x - cornerPoint.x,
+  );
+  const prevAngle = Math.atan2(
+    prevPoint.y - cornerPoint.y,
+    prevPoint.x - cornerPoint.x,
+  );
+
+  // Minimum distance between angles
+  let distance = nextAngle - prevAngle;
+  if (Math.abs(distance) > Math.PI) distance -= Math.PI * (distance > 0 ? 2 : -2);
+
+  // Calculate perpendicular to average angle
+  const angle = prevAngle + (distance / 2) + (Math.PI);
+
+  const normal = new Point(Math.cos(angle), Math.sin(angle));
+
+  // Insert other point to path
+  // return cornerPoint.add(normal.times(Math.sqrt(2)));
+  return cornerPoint.add(normal.times(BRP));
+}
