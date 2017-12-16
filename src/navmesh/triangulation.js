@@ -15,7 +15,7 @@ const DTGraph = new TGraph();
  */
 export function delaunayTriangulation(mapGraph, dummyPoint1, dummyPoint2, dummyPoint3) {
   const numVertices = DTGraph.getVertices().length;
-  assert(DTGraph.getVertices().length === 0, `DTGraph had ${numVertices} vertices.`);
+  assert(numVertices === 0, `DTGraph had ${numVertices} vertices.`);
   const vertices = mapGraph.getVertices();
 
   const t = new Triangle(dummyPoint1, dummyPoint2, dummyPoint3);
