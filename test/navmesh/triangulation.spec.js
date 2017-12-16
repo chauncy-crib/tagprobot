@@ -1,6 +1,7 @@
 import test from 'tape';
 import {
   delaunayTriangulation,
+  calculateNavMesh,
   getDTGraph,
   __RewireAPI__ as TriangulationRewireAPI,
 } from '../../src/navmesh/triangulation';
