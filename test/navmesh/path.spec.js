@@ -103,4 +103,20 @@ test('funnelPolypoints()', tester => {
 
     t.end();
   });
+
+  tester.test('funnels properly with only two states in path', t => {
+    const triangles = [
+      new Triangle(new Point(760, 560), new Point(840, 600), new Point(800, 480)),
+      new Triangle(new Point(800, 480), new Point(960, 640), new Point(840, 600)),
+    ];
+    const path = [
+      new PolypointState(new Polypoint(696, 569, triangles[0])),
+      new PolypointState(new Polypoint(900, 600, triangles[1])),
+    ];
+
+    const funnelledPoints = funnelPolypoints(path).map(state => state.point);
+    t.same(funnelledPoints, [path[0].point, path[1].point]);
+
+    t.end();
+  });
 });
