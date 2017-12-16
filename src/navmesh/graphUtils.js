@@ -12,6 +12,7 @@ const CLEARANCE = 19;
  *   regions that share the edge
  */
 export function findUpperAndLowerPoints(intersectingTriangles, e) {
+  // console.log(intersectingTriangles, e);
   let triangles = intersectingTriangles;
   // Keep track of the points in order in the regions above and below the edge
   const upperPoints = [e.p1];
@@ -25,6 +26,8 @@ export function findUpperAndLowerPoints(intersectingTriangles, e) {
     const nextT = _.find(triangles, t => (
       t.hasPoint(lastUpperPoint) && t.hasPoint(lastLowerPoint)
     ));
+
+    assert(!_.isNil(nextT), 'Could not find triangle containing both last upper and last lower');
 
     // Add points to upperPoints and lowerPoints
     if (upperPoints.length === 1) {
