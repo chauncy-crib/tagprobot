@@ -20,11 +20,11 @@ export function chaseEnemyFC(me, goal, enemyFC, enemyShortestPath) {
 
   // Set goal as the interception point
   const interceptionPolypoint = _.find(enemyShortestPath, polypoint =>
-    getDist(polypoint.x, polypoint.y, me.x, me.y) <
-      getDist(polypoint.x, polypoint.y, enemyFC.x, enemyFC.y));
+    getDist(polypoint.point.x, polypoint.point.y, me.x, me.y) <
+      getDist(polypoint.point.x, polypoint.point.y, enemyFC.x, enemyFC.y));
   if (interceptionPolypoint) {
-    goal.xp = interceptionPolypoint.x;
-    goal.yp = interceptionPolypoint.y;
+    goal.xp = interceptionPolypoint.point.x;
+    goal.yp = interceptionPolypoint.point.y;
   } else {
     goal.xp = enemyFC.x + enemyFC.vx;
     goal.yp = enemyFC.y + enemyFC.vy;
