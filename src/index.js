@@ -1,5 +1,6 @@
 import botLoop from './bot';
 import { computeTileInfo } from './tiles';
+import { setupIsCenterFlag } from './helpers/constants';
 import { setupMe } from './helpers/player';
 import { initMapTraversabilityCells } from './helpers/map';
 import {
@@ -56,6 +57,7 @@ function start() {
   setupMe();
   setupVelocity();
   computeTileInfo();
+  setupIsCenterFlag();
   chatHelpMenu();
 
   initMapTraversabilityCells(tagpro.map);
