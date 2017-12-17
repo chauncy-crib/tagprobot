@@ -1,4 +1,6 @@
-import { TEAMS } from '../constants';
+import { TEAMS, RED_ENDZONE, BLUE_ENDZONE } from '../constants';
+import { isCenterFlag } from './constants';
+import { findTile } from './finders';
 
 let me;
 
@@ -34,4 +36,10 @@ export function getEnemyEndzoneTileName() {
 // Returns whether or not ally team's flag is taken
 export function isAllyFlagTaken() {
   return amBlue() ? tagpro.ui.blueFlagTaken : tagpro.ui.redFlagTaken;
+}
+
+export function getEnemyGoal() {
+  if (isCenterFlag()) return amBlue() ? RED_ENDZONE : BLUE_ENDZONE;
+  return amBlue() ? findTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
+    findTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
 }
