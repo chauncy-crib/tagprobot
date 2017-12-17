@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { Point, pointsOnSameSide } from '../navmesh/graph';
 import { assert } from '../utils/asserts';
 
-const BRP = 19;
+const CLEARANCE = 19;
 
 /**
  * @param {Triangle[]} intersectingTriangles - array of triangles that intersect the edge
@@ -90,7 +90,8 @@ export function areEdgesColinnear(e1, e2) {
  * @param {Point} cornerPoint - the point on the corner that needs clearance
  * @param {Point} prevPoint - the previous point on the corner
  * @param {Point} nextPoint - the next point on the corner
- * @returns {Point} a point that is BRP away from the cornerPoint in the corner's normal direction
+ * @returns {Point} a point that is CLEARANCE away from the cornerPoint in the corner's normal
+ *   direction
  */
 export function getClearancePoint(cornerPoint, prevPoint, nextPoint) {
   const nextAngle = Math.atan2(
@@ -112,7 +113,7 @@ export function getClearancePoint(cornerPoint, prevPoint, nextPoint) {
   const normal = new Point(Math.cos(angle), Math.sin(angle));
 
   // Insert other point to path
-  return cornerPoint.add(normal.times(BRP));
+  return cornerPoint.add(normal.times(CLEARANCE));
 }
 
 

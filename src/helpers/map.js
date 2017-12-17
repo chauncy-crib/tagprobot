@@ -11,10 +11,9 @@ import {
   generatePermanentNTSprites,
   areTempNTSpritesDrawn,
   setNTSpritesDrawn,
-  drawNavMesh,
 } from '../draw/drawings';
 import { invertBinary2dArray, convolve } from './convolve';
-import { getDTGraph, getMergedGraph, getUnmergedGraph } from '../navmesh/triangulation';
+import { getMergedGraph, getUnmergedGraph } from '../navmesh/triangulation';
 import { updateMergedGraph, updateUnmergedGraph } from '../navmesh/polygon';
 /* eslint-enable no-unused-vars */
 
