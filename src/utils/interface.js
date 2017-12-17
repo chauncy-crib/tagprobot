@@ -6,11 +6,13 @@ import {
   drawKeyPresses,
   currKeyPresses,
   drawNavMesh,
+  toggleKeyPressVis,
 } from '../draw/drawings';
 
 
 const KEY_CODES = {
   H: 72,
+  K: 75,
   Q: 81,
   V: 86,
 };
@@ -70,7 +72,12 @@ export function chatHelpMenu() {
     '--- Help Menu',
     '--- H: print this help menu',
     '--- Q: toggle autonomous mode',
-    '--- V: toggle visuals',
+    '--- V: Draw all/Clear all',
+    '--- T: toggle triangles',
+    '--- P: toggle triangle dual-graph',
+    '--- R: toggle traversability',
+    '--- A: toggle paths',
+    '--- K: toggle keypresses',
     '---',
   ];
   menu.forEach(item => {
@@ -127,10 +134,14 @@ export function onKeyDown(event) {
       if (!visuals) {
         clearSprites();
       } else {
+        toggleKeyPressVis(true);
         drawPermanentNTSprites();
-        drawBlankKeyPresses();
         drawNavMesh();
       }
+      break;
+    }
+    case KEY_CODES.K: {
+      toggleKeyPressVis();
       break;
     }
     default:
