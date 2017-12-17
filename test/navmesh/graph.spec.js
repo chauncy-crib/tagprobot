@@ -8,7 +8,7 @@ import {
   Triangle,
   TGraph,
 } from '../../src/navmesh/graph';
-import { determinant } from '../../src/navmesh/graphUtils';
+import { determinant } from '../../src/utils/graphUtils';
 
 
 test('determinant returns correct value for a 3x3', t => {
