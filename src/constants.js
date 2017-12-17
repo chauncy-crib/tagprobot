@@ -46,9 +46,6 @@ export const TRIANGULATION_EDGE_COLOR = 0x006600; // Turquoise
 export const TRIANGULATION_ALPHA = 0.2;
 export const TRIANGULATION_THICKNESS = 4;
 
-// Numbers of cells along the shortest path to lookeahead and seek toward
-export const LOOKAHEAD = 3;
-
 // Tagpro physics
 const maxSpeedMPS = 2.5; // meters per second
 const accelerationMPF = 0.025; // meters per frame

@@ -9,7 +9,7 @@ import { Point } from '../../src/navmesh/graph';
 
 test('getClearancePoint()', tester => {
   tester.test('works for top-left clearance', t => {
-    GraphUtilsRewireAPI.__Rewire__('BRP', Math.sqrt(2));
+    GraphUtilsRewireAPI.__Rewire__('CLEARANCE', Math.sqrt(2));
     const cornerPoint = new Point(0, 0);
     const prevPoint = new Point(0, -1);
     const nextPoint = new Point(-1, 0);
@@ -19,12 +19,12 @@ test('getClearancePoint()', tester => {
     t.true(isRoughly(clearancePoint.x, expected.x));
     t.true(isRoughly(clearancePoint.y, expected.y));
 
-    GraphUtilsRewireAPI.__ResetDependency__('BRP');
+    GraphUtilsRewireAPI.__ResetDependency__('CLEARANCE');
     t.end();
   });
 
   tester.test('works for top-right clearance', t => {
-    GraphUtilsRewireAPI.__Rewire__('BRP', Math.sqrt(2));
+    GraphUtilsRewireAPI.__Rewire__('CLEARANCE', Math.sqrt(2));
     const cornerPoint = new Point(0, 0);
     const prevPoint = new Point(0, -1);
     const nextPoint = new Point(1, 0);
@@ -34,12 +34,12 @@ test('getClearancePoint()', tester => {
     t.true(isRoughly(clearancePoint.x, expected.x));
     t.true(isRoughly(clearancePoint.y, expected.y));
 
-    GraphUtilsRewireAPI.__ResetDependency__('BRP');
+    GraphUtilsRewireAPI.__ResetDependency__('CLEARANCE');
     t.end();
   });
 
   tester.test('works for bottom-left clearance', t => {
-    GraphUtilsRewireAPI.__Rewire__('BRP', Math.sqrt(2));
+    GraphUtilsRewireAPI.__Rewire__('CLEARANCE', Math.sqrt(2));
     const cornerPoint = new Point(0, 0);
     const prevPoint = new Point(0, 1);
     const nextPoint = new Point(1, 0);
@@ -49,12 +49,12 @@ test('getClearancePoint()', tester => {
     t.true(isRoughly(clearancePoint.x, expected.x));
     t.true(isRoughly(clearancePoint.y, expected.y));
 
-    GraphUtilsRewireAPI.__ResetDependency__('BRP');
+    GraphUtilsRewireAPI.__ResetDependency__('CLEARANCE');
     t.end();
   });
 
   tester.test('works for bottom-right clearance', t => {
-    GraphUtilsRewireAPI.__Rewire__('BRP', Math.sqrt(2));
+    GraphUtilsRewireAPI.__Rewire__('CLEARANCE', Math.sqrt(2));
     const cornerPoint = new Point(0, 0);
     const prevPoint = new Point(0, 1);
     const nextPoint = new Point(-1, 0);
@@ -64,7 +64,7 @@ test('getClearancePoint()', tester => {
     t.true(isRoughly(clearancePoint.x, expected.x));
     t.true(isRoughly(clearancePoint.y, expected.y));
 
-    GraphUtilsRewireAPI.__ResetDependency__('BRP');
+    GraphUtilsRewireAPI.__ResetDependency__('CLEARANCE');
     t.end();
   });
 });
