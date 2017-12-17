@@ -40,6 +40,8 @@ let triangulationSprite;
 // The sprite for the polypoint graph
 let polypointSprite;
 
+let keyPressOn = true;
+
 // The current state of the keys being pressed
 export const currKeyPresses = { x: null, y: null };
 let keyPressesVis; // PIXI Graphics for drawing the key press visualizations
@@ -194,6 +196,7 @@ function updateKeyPressesDrawing(keyIndex, newAlpha) {
  * @param {(string|undefined)} directions.y - either 'DOWN', 'UP', or undefined
  */
 export function drawKeyPresses(directions) {
+  if (!keyPressOn) return;
   if (directions.x !== currKeyPresses.x) {
     // Find new alpha values for left/right keys
     const leftAlpha = directions.x === 'LEFT' ? KEY_ON_ALPHA : KEY_OFF_ALPHA;
@@ -306,6 +309,17 @@ export function drawEnemyPolypointPath(polypointPath) {
 }
 
 
+export function toggleKeyPressVis(setTo) {
+  if (setTo !== undefined) keyPressOn = setTo;
+  else keyPressOn = !keyPressOn;
+  if (!keyPressOn) {
+    keyPressesVis.removeChildren();
+  } else {
+    drawBlankKeyPresses();
+  }
+}
+
+
 /**
  * Erases all sprites in pathSprites, tempNTSprites, and permNTSprites. Reassigns pathSprites and
  *   tempNTSprites to empty list. Runtime: O(N^2)
@@ -316,6 +330,8 @@ export function clearSprites() {
   if (enemyCellPathGraphics) enemyCellPathGraphics.removeChildren();
   if (allyPolypointPathGraphics) allyPolypointPathGraphics.clear();
   if (enemyPolypointPathGraphics) enemyPolypointPathGraphics.clear();
+
+  toggleKeyPressVis(false);
 
   // Get a list of all sprites
   const backgroundSprites = []
