@@ -26,7 +26,8 @@ import { assertGridInBounds } from '../utils/asserts';
 
 let allyCellPathGraphics = null; // PIXI Graphics for drawing the bot's current planned path
 let enemyCellPathGraphics = null; // PIXI Graphics for drawing the predicted enemy path
-let polypointPathGraphics = null; // PIXI Graphics for drawing the polypoint path
+let allyPolypointPathGraphics = null; // PIXI Graphics for drawing the bot's polypoint path
+let enemyPolypointPathGraphics = null; // PIXI Graphics for drawing the enemy polypoint path
 // A grid of NT-sprites, which are subject to change. If there isn't a NT-object at the given cell,
 //   then store null. This object is size tagpro_map_length * CPTL x tagpro_map_width * CPTL
 let tempNTSprites = [];
@@ -267,13 +268,11 @@ export function drawEnemyCellPath(cellPath) {
 /**
  * @param {PolypointState[]} polypointPath - a list of states that define the path
  */
-export function drawPolypointPath(polypointPath) {
-  if (!isVisualMode()) return;
-  tagpro.renderer.layers.background.removeChild(polypointPathGraphics);
-  polypointPathGraphics = new PIXI.Graphics();
+export function drawPolypointPath(polypointPathGraphics, polypointPath, polypointPathColor) {
+  polypointPathGraphics.clear();
   polypointPathGraphics.lineStyle(
     TRIANGULATION_THICKNESS + 1,
-    TRIANGULATION_EDGE_COLOR,
+    polypointPathColor,
     1,
   );
   let prevPoint;
@@ -285,7 +284,25 @@ export function drawPolypointPath(polypointPath) {
     }
     prevPoint = p;
   });
-  tagpro.renderer.layers.background.addChild(polypointPathGraphics);
+}
+
+
+export function drawAllyPolypointPath(polypointPath) {
+  if (!isVisualMode()) return;
+  if (!allyPolypointPathGraphics) {
+    allyPolypointPathGraphics = new PIXI.Graphics();
+    tagpro.renderer.layers.background.addChild(allyPolypointPathGraphics);
+  }
+  drawPolypointPath(allyPolypointPathGraphics, polypointPath, ALLY_PATH_COLOR);
+}
+
+export function drawEnemyPolypointPath(polypointPath) {
+  if (!isVisualMode()) return;
+  if (!enemyPolypointPathGraphics) {
+    enemyPolypointPathGraphics = new PIXI.Graphics();
+    tagpro.renderer.layers.background.addChild(enemyPolypointPathGraphics);
+  }
+  drawPolypointPath(enemyPolypointPathGraphics, polypointPath, ENEMY_PATH_COLOR);
 }
 
 
@@ -297,10 +314,11 @@ export function clearSprites() {
   if (keyPressesVis) keyPressesVis.removeChildren();
   if (allyCellPathGraphics) allyCellPathGraphics.removeChildren();
   if (enemyCellPathGraphics) enemyCellPathGraphics.removeChildren();
+  if (allyPolypointPathGraphics) allyPolypointPathGraphics.clear();
+  if (enemyPolypointPathGraphics) enemyPolypointPathGraphics.clear();
 
   // Get a list of all sprites
   const backgroundSprites = [permNTSprite]
-    .concat(polypointPathGraphics)
     // Flatten the tempNTSprites grid, and remove null values. O(N^2), because tempNTSprites is NxN
     .concat(_.reject(_.flatten(tempNTSprites), _.isNull));
   _.forEach(backgroundSprites, s => tagpro.renderer.layers.background.removeChild(s));
