@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { assert } from '../utils/asserts';
-import { findUpperAndLowerPoints, threePointsInLine, detD, detH } from './graphUtils';
+import { findUpperAndLowerPoints, threePointsInLine, detD, detH } from '../utils/graphUtils';
 
 /**
  * Represents an x, y pixel location on the tagpro map. Used as vertices to define polygons.
@@ -714,6 +714,16 @@ export class TGraph extends Graph {
     this.fixedAdj[p2] = _.reject(this.fixedAdj[p2], p => p.equal(p1));
   }
 
+  /**
+   * @param {{p1: Point, p2: Point}[]} unfixEdges - a list of edges to unmark as fixed in the
+   *   DTGraph
+   * @param {{p1: Point, p2: Point}[]} constrainingEdges - a list of edges to mark as fixed in the
+   *   DTGraph
+   * @param {Point[]} removeVertices - a list of vertices to remove from the DTGraph (and
+   *   retriangulate around them after each removal)
+   * @param {Point[]} addVertices - a list of vertices to add to the DTGraph (and
+   *   retriangulate around them after each addition)
+   */
   dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices) {
     _.forEach(unfixEdges, e => { this.unfixEdge(e); });
     _.forEach(removeVertices, v => { this.delaunayRemoveVertex(v); });

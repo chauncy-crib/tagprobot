@@ -185,6 +185,10 @@ export function initMapTraversabilityCells(map) {
   );
 }
 
+/**
+ * Given the tagpro map and a tile location which has changed state, update the unmergedGraph,
+ *   mergedGraph, polypointGraph, and redraw the navmesh
+ */
 export function updateAndRedrawNavmesh(map, xt, yt) {
   updateUnmergedGraph(getUnmergedGraph(), map, xt, yt);
   const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
