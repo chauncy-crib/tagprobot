@@ -1,4 +1,5 @@
 import { PPCL, BRP, LOOKAHEAD, RED_ENDZONE, BLUE_ENDZONE } from './constants';
+import { isCenterFlag } from './helpers/constants';
 import { getMapTraversabilityInCells } from './helpers/map';
 import { findTile, findEnemyFC } from './helpers/finders';
 import { myTeamHasFlag, enemyTeamHasFlag } from './helpers/gameState';
@@ -14,11 +15,14 @@ import { getDTGraph } from './navmesh/triangulation';
 
 /**
  * The logic/flowchart to get where our goal is.
+ * Center Flag:
  *   If I have the flag, go to my endzone.
  *   If an enemy in view has the flag, chase him.
  *   If the enemy team has the flag but I can't see them, go to their endzone.
  *   If we have the flag, go to our endzone.
  *   Else, go to the flag station.
+ * Two Flag:
+ *   If I have the flag, go to my base
  * @returns {{xp: number, yp: number}} the position, in pixels, of the bot's goal, which is
  *   determined by the current state of the game
  */
@@ -26,27 +30,34 @@ function getGoalPos() {
   const me = getMe();
   let goal = {};
 
-  // If the bot has the flag, go to the endzone
-  if (me.flag) {
-    goal = amRed() ? RED_ENDZONE : BLUE_ENDZONE;
-    console.log('I have the flag. Seeking endzone!');
-  } else {
-    const enemyFC = findEnemyFC();
-    const enemyShortestPath = [];
-    if (enemyFC) { // If an enemy player in view has the flag, chase
-      chaseEnemyFC(me, goal, enemyFC, enemyShortestPath);
-      console.log('I see an enemy with the flag. Chasing!');
-    } else if (enemyTeamHasFlag()) {
-      goal = amBlue() ? RED_ENDZONE : BLUE_ENDZONE;
-      console.log('Enemy has the flag. Headed towards the Enemy Endzone.');
-    } else if (myTeamHasFlag()) {
+  if (isCenterFlag()) {
+    if (me.flag) { // If the bot has the flag, go to the endzone
       goal = amRed() ? RED_ENDZONE : BLUE_ENDZONE;
-      console.log('We have the flag. Headed towards our Endzone.');
+      console.log('I have the flag. Seeking endzone!');
     } else {
-      goal = findTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
-      console.log("I don't know what to do. Going to central flag station!");
+      const enemyFC = findEnemyFC();
+      const enemyShortestPath = [];
+      if (enemyFC) { // If an enemy player in view has the flag, chase
+        chaseEnemyFC(me, goal, enemyFC, enemyShortestPath);
+        console.log('I see an enemy with the flag. Chasing!');
+      } else if (enemyTeamHasFlag()) {
+        goal = amBlue() ? RED_ENDZONE : BLUE_ENDZONE;
+        console.log('Enemy has the flag. Headed towards the Enemy Endzone.');
+      } else if (myTeamHasFlag()) {
+        goal = amRed() ? RED_ENDZONE : BLUE_ENDZONE;
+        console.log('We have the flag. Headed towards our Endzone.');
+      } else {
+        goal = findTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
+        console.log("I don't know what to do. Going to central flag station!");
+      }
+      drawEnemyCellPath(enemyShortestPath);
     }
-    drawEnemyCellPath(enemyShortestPath);
+  } else { // In two flag game
+    if (me.flag) {
+      goal = amRed() ? findTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
+        findTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
+      console.log('I have the flag. Seeking endzone!');
+    }
   }
   return goal;
 }

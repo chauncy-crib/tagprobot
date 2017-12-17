@@ -1,5 +1,9 @@
 import { PPCL, BRP } from '../constants';
 import { init2dArray } from './map';
+import { findTile } from './finders';
+
+
+let currGameIsCenterFlag;
 
 
 /**
@@ -35,4 +39,12 @@ export function getNTKernel() { // eslint-disable-line import/prefer-default-exp
     }
   }
   return kernel;
+}
+
+export function setupIsCenterFlag() {
+  currGameIsCenterFlag = findTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']) !== undefined;
+}
+
+export function isCenterFlag() {
+  return currGameIsCenterFlag;
 }
