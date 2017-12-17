@@ -42,7 +42,7 @@ export function getNTKernel() { // eslint-disable-line import/prefer-default-exp
 }
 
 export function setupIsCenterFlag() {
-  currGameIsCenterFlag = findTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']) !== undefined;
+  currGameIsCenterFlag = findTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']) !== null;
 }
 
 export function isCenterFlag() {
