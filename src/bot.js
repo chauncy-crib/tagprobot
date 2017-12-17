@@ -1,4 +1,3 @@
-import { assert } from './utils/asserts';
 import { PPCL, BRP, PPTL } from './constants';
 import { getMapTraversabilityInCells } from './helpers/map';
 import { getMe } from './helpers/player';
@@ -40,9 +39,7 @@ function getAccelValues() {
   drawPolypointPath(polypointShortestPath);
 
   const target = { xp: me.x + BRP, yp: me.y + BRP };
-  if (polypointShortestPath) {
-    const { length } = polypointShortestPath;
-    assert(length > 1, `Shortest path was length ${length}`);
+  if (polypointShortestPath.length > 1) {
     target.xp = polypointShortestPath[1].point.x;
     target.yp = polypointShortestPath[1].point.y;
   } else {
