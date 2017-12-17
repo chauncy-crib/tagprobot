@@ -29,36 +29,50 @@ import { getDTGraph } from './navmesh/triangulation';
 function getGoalPos() {
   const me = getMe();
   let goal = {};
+  const enemyShortestPath = [];
 
-  if (isCenterFlag()) {
-    if (me.flag) { // If the bot has the flag, go to the endzone
+  if (isCenterFlag()) { // in center flag game
+    if (me.flag) { // if the bot has the flag, go to the endzone
       goal = amRed() ? RED_ENDZONE : BLUE_ENDZONE;
-      console.log('I have the flag. Seeking endzone!');
+      console.info('I have the flag. Seeking endzone!');
     } else {
       const enemyFC = findEnemyFC();
-      const enemyShortestPath = [];
-      if (enemyFC) { // If an enemy player in view has the flag, chase
+      if (enemyFC) { // if an enemy player in view has the flag, chase
         chaseEnemyFC(me, goal, enemyFC, enemyShortestPath);
-        console.log('I see an enemy with the flag. Chasing!');
+        console.info('I see an enemy with the flag. Chasing!');
       } else if (enemyTeamHasFlag()) {
         goal = amBlue() ? RED_ENDZONE : BLUE_ENDZONE;
-        console.log('Enemy has the flag. Headed towards the Enemy Endzone.');
+        console.info('Enemy has the flag. Headed towards the Enemy Endzone.');
       } else if (myTeamHasFlag()) {
         goal = amRed() ? RED_ENDZONE : BLUE_ENDZONE;
-        console.log('We have the flag. Headed towards our Endzone.');
+        console.info('We have the flag. Headed towards our Endzone.');
       } else {
         goal = findTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
-        console.log("I don't know what to do. Going to central flag station!");
+        console.info("I don't know what to do. Going to central flag station!");
       }
-      drawEnemyCellPath(enemyShortestPath);
     }
-  } else { // In two flag game
+  } else { // in two flag game
     if (me.flag) {
       goal = amRed() ? findTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
         findTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
-      console.log('I have the flag. Seeking endzone!');
+      console.info('I have the flag. Seeking endzone!');
+    } else {
+      const enemyFC = findEnemyFC();
+      if (enemyFC) { // if an enemy player in view has the flag, chase
+        chaseEnemyFC(me, goal, enemyFC, enemyShortestPath);
+        console.info('I see an enemy with the flag. Chasing!');
+      } else if (enemyTeamHasFlag()) {
+        goal = amBlue() ? findTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
+          findTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
+        console.info('Enemy has the flag. Headed towards the enemy base.');
+      } else {
+        goal = amBlue() ? findTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
+          findTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
+        console.info("I don't know what to do. Going to enemy base!");
+      }
     }
   }
+  drawEnemyCellPath(enemyShortestPath);
   return goal;
 }
 
@@ -106,7 +120,7 @@ function getAccelValues() {
     target.xp = Math.floor((targetCell.xc + 0.5) * PPCL);
     target.yp = Math.floor((targetCell.yc + 0.5) * PPCL);
   } else {
-    console.log('Shortest path was null, using own location as target');
+    console.warn('Shortest path was null, using own location as target');
   }
 
   return desiredAccelerationMultiplier(
