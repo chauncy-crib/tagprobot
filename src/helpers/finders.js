@@ -1,24 +1,33 @@
 import _ from 'lodash';
 
-import { tileHasName } from '../tiles';
+import { tileHasName, tileIsOneOf } from '../tiles';
 import { isOnMyTeam } from './player';
 import { PPTL } from '../constants';
 import { assert } from '../utils/asserts';
 
+const locations = {};
 
 /**
- * Returns the position xp and yp (in pixels) of the first of the specified tile
- *   types to appear starting in the top left corner and moving in a page-reading
- *   fashion. Runtime: O(N^2)
- * @param {(number | number[])} tiles - either a number representing a tileType,
- *   or an array of such numbers
+ * @param {string} tileName
+ * @returns {{xt: number, yt: number}} a tile which is at the center of mass of all occurrences of
+ *   tileName in the tagpro map
  */
-export function findTile(tileNames) {
-  assert(tileNames, 'tileNames is undefined');
-  assert(tagpro.map, 'tagpro.map is undefined');
-
-  // Force an array if the input is just one tile
-  const tileNameArray = [].concat(tileNames);
+function centerOfMass(tileName) {
+  let xSum = 0;
+  let ySum = 0;
+  let count = 0;
+  for (let xt = 0, xl = tagpro.map.length; xt < xl; xt++) {
+    for (let yt = 0, yl = tagpro.map[0].length; yt < yl; yt++) {
+      if (tileHasName(tagpro.map[xt][yt], tileName)) {
+        xSum += xt;
+        ySum += yt;
+        count += 1;
+      }
+    }
+  }
+  if (count === 0) return null;
+  return { xt: Math.floor(xSum / count), yt: Math.floor(ySum / count) };
+}
 
   for (let xt = 0, xl = tagpro.map.length; xt < xl; xt++) {
     for (let yt = 0, yl = tagpro.map[0].length; yt < yl; yt++) {
