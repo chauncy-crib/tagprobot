@@ -9,10 +9,9 @@ import {
   generatePermanentNTSprites,
   areTempNTSpritesDrawn,
   setNTSpritesDrawn,
-  drawNavMesh,
 } from '../draw/drawings';
 import { invertBinary2dArray, convolve } from './convolve';
-import { getDTGraph, getMergedGraph, getUnmergedGraph } from '../navmesh/triangulation';
+import { getMergedGraph, getUnmergedGraph } from '../navmesh/triangulation';
 import { updateMergedGraph, updateUnmergedGraph } from '../navmesh/polygon';
 
 
@@ -189,11 +188,11 @@ export function initMapTraversabilityCells(map) {
  */
 export function updateAndRedrawNavmesh(map, xt, yt) {
   updateUnmergedGraph(getUnmergedGraph(), map, xt, yt);
-  const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
-    updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, xt, yt);
-  getDTGraph().dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
-  getDTGraph().calculatePolypointGraph();
-  drawNavMesh();
+  // const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
+  updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, xt, yt);
+  // getDTGraph().dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
+  // getDTGraph().calculatePolypointGraph();
+  // drawNavMesh();
 }
 
 /**
