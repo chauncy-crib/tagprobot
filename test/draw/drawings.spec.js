@@ -122,6 +122,8 @@ test('clearSprites', tester => {
       },
     };
     DrawRewireAPI.__Rewire__('keyPressesVis', { removeChildren: mockRemoveChildren });
+    DrawRewireAPI.__Rewire__('traversabilityOn', true);
+    DrawRewireAPI.__Rewire__('keyPressOn', true);
     DrawRewireAPI.__Rewire__('allyCellPathGraphics', { removeChildren: mockRemoveChildren });
     DrawRewireAPI.__Rewire__('enemyCellPathGraphics', { removeChildren: mockRemoveChildren });
     DrawRewireAPI.__Rewire__('allyPolypointPathGraphics', { clear: mockClear });
@@ -136,6 +138,8 @@ test('clearSprites', tester => {
     t.true(mockRemoveChild.calledWithExactly(5));
 
     DrawRewireAPI.__ResetDependency__('keyPressesVis');
+    DrawRewireAPI.__ResetDependency__('traversabilityOn');
+    DrawRewireAPI.__ResetDependency__('keyPressOn');
     DrawRewireAPI.__ResetDependency__('allyCellPathGraphics');
     DrawRewireAPI.__ResetDependency__('enemyCellPathGraphics');
     DrawRewireAPI.__ResetDependency__('allyPolypointPathGraphics');
@@ -276,6 +280,7 @@ test('updateNTSprites', tester => {
     DrawRewireAPI.__Rewire__('PPCL', 20);
     DrawRewireAPI.__Rewire__('getPixiSquare', mockGetPixiSquare);
     DrawRewireAPI.__Rewire__('tempNTSprites', mockTempNTSprites);
+    DrawRewireAPI.__Rewire__('traversabilityOn', true);
     updateNTSprites(0, 1, cellTraversabilities);
     updateNTSprites(0, 2, cellTraversabilities);
 
@@ -288,6 +293,7 @@ test('updateNTSprites', tester => {
     DrawRewireAPI.__ResetDependency__('PPCL');
     DrawRewireAPI.__ResetDependency__('getPixiSquare');
     DrawRewireAPI.__ResetDependency__('tempNTSprites');
+    DrawRewireAPI.__ResetDependency__('traversabilityOn');
     global.tagpro = undefined;
     t.end();
   });

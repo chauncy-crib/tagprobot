@@ -1,12 +1,12 @@
 import differenceInMilliseconds from 'date-fns/difference_in_milliseconds';
 import {
+  turnOnAllDrawings,
   clearSprites,
-  drawPermanentNTSprites,
-  drawBlankKeyPresses,
   drawKeyPresses,
   currKeyPresses,
   drawNavMesh,
   toggleKeyPressVis,
+  toggleTraversabilityVis,
 } from '../draw/drawings';
 
 
@@ -14,6 +14,7 @@ const KEY_CODES = {
   H: 72,
   K: 75,
   Q: 81,
+  R: 82,
   V: 86,
 };
 
@@ -103,7 +104,7 @@ function press(directions) {
     tagpro.sendKeyPress('up', directions.y !== 'UP');
   }
 
-  if (isVisualMode()) drawKeyPresses(directions); // only updates drawings that need to be updated
+  drawKeyPresses(directions); // only updates drawings that need to be updated
 
   // Update the global key presses state
   currKeyPresses.x = directions.x;
@@ -134,14 +135,17 @@ export function onKeyDown(event) {
       if (!visuals) {
         clearSprites();
       } else {
-        toggleKeyPressVis(true);
-        drawPermanentNTSprites();
+        turnOnAllDrawings();
         drawNavMesh();
       }
       break;
     }
     case KEY_CODES.K: {
       toggleKeyPressVis();
+      break;
+    }
+    case KEY_CODES.R: {
+      toggleTraversabilityVis();
       break;
     }
     default:
