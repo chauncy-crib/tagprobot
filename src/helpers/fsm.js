@@ -6,7 +6,6 @@ import { amBlue } from './player';
 import { getShortestCellPath } from './path';
 
 
-// eslint-disable-next-line import/prefer-default-export
 export function chaseEnemyFC(me, goal, enemyFC, enemyShortestPath) {
   const enemyGoal = amBlue() ? RED_ENDZONE : BLUE_ENDZONE;
   const enemyFinalTarget = {
@@ -18,7 +17,6 @@ export function chaseEnemyFC(me, goal, enemyFC, enemyShortestPath) {
   const { map } = tagpro;
   // Runtime: O(M*CPTL^2) with visualizations on, O(M + S*CPTL^2) with visualizations off
   const traversableCells = getMapTraversabilityInCells(map);
-
   _.forEach(getShortestCellPath(
     { xc: enemyFC.xc, yc: enemyFC.yc },
     { xc: enemyFinalTarget.xc, yc: enemyFinalTarget.yc },
