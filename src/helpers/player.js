@@ -1,6 +1,6 @@
-import { TEAMS, RED_ENDZONE, BLUE_ENDZONE } from '../constants';
+import { TEAMS } from '../constants';
 import { isCenterFlag } from './constants';
-import { findTile } from './finders';
+import { findCachedTile } from './finders';
 
 let me;
 
@@ -39,7 +39,11 @@ export function isAllyFlagTaken() {
 }
 
 export function getEnemyGoal() {
-  if (isCenterFlag()) return amBlue() ? RED_ENDZONE : BLUE_ENDZONE;
-  return amBlue() ? findTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
-    findTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
+  if (isCenterFlag()) {
+    return amBlue() ?
+      findCachedTile('RED_ENDZONE') :
+      findCachedTile('BLUE_ENDZONE');
+  }
+  return amBlue() ? findCachedTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
+    findCachedTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
 }
