@@ -3,12 +3,8 @@ import {
   projectedState,
   binarySearchAcceleration,
   desiredAccelerationMultiplier } from '../../src/helpers/physics';
+import { isRoughly } from '../../src/utils/utils';
 import { MAX_SPEED } from '../../src/constants';
-
-
-export function isRoughly(val, expected, threshold = 0.01) {
-  return Math.abs(val - expected) <= threshold;
-}
 
 
 test('projectedState', tester => {

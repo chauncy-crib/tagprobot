@@ -100,6 +100,5 @@ export function getClearancePoint(cornerPoint, prevPoint, nextPoint) {
   const normal = new Point(Math.cos(angle), Math.sin(angle));
 
   // Insert other point to path
-  // return cornerPoint.add(normal.times(Math.sqrt(2)));
   return cornerPoint.add(normal.times(BRP));
 }
