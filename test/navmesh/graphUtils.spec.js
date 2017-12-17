@@ -3,7 +3,7 @@ import { isRoughly } from '../../src/utils/general';
 import {
   getClearancePoint,
   __RewireAPI__ as GraphUtilsRewireAPI,
-} from '../../src/navmesh/graphUtils';
+} from '../../src/utils/graphUtils';
 import { Point } from '../../src/navmesh/graph';
 
 

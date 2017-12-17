@@ -8,6 +8,7 @@ import {
   updateUnmergedGraph,
   updateMergedGraph,
   __RewireAPI__ as PolygonRewireAPI } from '../../src/navmesh/polygon';
+import { __RewireAPI__ as PolygonUtilRewireAPI } from '../../src/utils/polygonUtils';
 import { Point, TGraph } from '../../src/navmesh/graph';
 import { __RewireAPI__ as TileRewireAPI } from '../../src/tiles';
 import { setupTiles, teardownTiles } from '../setupTiles';
@@ -16,8 +17,6 @@ import {
   getMergedGraph,
   getUnmergedGraph,
   __RewireAPI__ as TriangulationRewireAPI } from '../../src/navmesh/triangulation';
-
-/* eslint-disable no-multi-spaces array-bracket-spacing */
 
 
 /**
@@ -37,15 +36,16 @@ function setup() {
   mockGetTileProperty.returns(false);
   const mockTileHasName = sinon.stub().callsFake(fakeTileHasName);
   PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
-  PolygonRewireAPI.__Rewire__('tileHasName', mockTileHasName);
+  PolygonUtilRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  PolygonUtilRewireAPI.__Rewire__('tileHasName', mockTileHasName);
   TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
 }
 
 function teardown() {
   PolygonRewireAPI.__ResetDependency__('getTileProperty');
-  PolygonRewireAPI.__ResetDependency__('tileHasName');
+  PolygonUtilRewireAPI.__ResetDependency__('getTileProperty');
+  PolygonUtilRewireAPI.__ResetDependency__('tileHasName');
   TileRewireAPI.__ResetDependency__('tileHasName');
-  // PolygonRewireAPI.__ResetDependency__('tileIsOneOf');
 }
 
 
@@ -99,12 +99,12 @@ test('mapToEdgeTiles', tester => {
     setup();
     // This is an NT diamond in the middle of the map.
     const map = [
-      [1, 1,   1,   1,   1,   1],
-      [1, 1,   1.4, 1.3, 1,   1],
-      [1, 1.4, 0,   0,   1.3, 1],
-      [1, 1.1, 0,   0,   1.2, 1],
-      [1, 1,   1.1, 1.2, 1,   1],
-      [1, 1,   1,   1,   1,   1],
+      [1, 1, 1, 1, 1, 1],
+      [1, 1, 1.4, 1.3, 1, 1],
+      [1, 1.4, 0, 0, 1.3, 1],
+      [1, 1.1, 0, 0, 1.2, 1],
+      [1, 1, 1.1, 1.2, 1, 1],
+      [1, 1, 1, 1, 1, 1],
     ];
     const edges = mapToEdgeTiles(map);
 
@@ -189,12 +189,12 @@ test('unmergedGraphFromTagproMap', tester => {
     setup();
     // This is an NT diamond in the middle of the map.
     const map = [
-      [1, 1,   1,   1,   1,   1],
-      [1, 1,   1.4, 1.3, 1,   1],
-      [1, 1.4, 0,   0,   1.3, 1],
-      [1, 1.1, 0,   0,   1.2, 1],
-      [1, 1,   1.1, 1.2, 1,   1],
-      [1, 1,   1,   1,   1,   1],
+      [1, 1, 1, 1, 1, 1],
+      [1, 1, 1.4, 1.3, 1, 1],
+      [1, 1.4, 0, 0, 1.3, 1],
+      [1, 1.1, 0, 0, 1.2, 1],
+      [1, 1, 1.1, 1.2, 1, 1],
+      [1, 1, 1, 1, 1, 1],
     ];
     const graph = unmergedGraphFromTagproMap(map);
 
@@ -435,12 +435,12 @@ test('graphFromTagproMap', tester => {
     setup();
     // This is an NT diamond in the middle of the map.
     const map = [
-      [1, 1,   1,   1,   1,   1],
-      [1, 1,   1.4, 1.3, 1,   1],
-      [1, 1.4, 0,   0,   1.3, 1],
-      [1, 1.1, 0,   0,   1.2, 1],
-      [1, 1,   1.1, 1.2, 1,   1],
-      [1, 1,   1,   1,   1,   1],
+      [1, 1, 1, 1, 1, 1],
+      [1, 1, 1.4, 1.3, 1, 1],
+      [1, 1.4, 0, 0, 1.3, 1],
+      [1, 1.1, 0, 0, 1.2, 1],
+      [1, 1, 1.1, 1.2, 1, 1],
+      [1, 1, 1, 1, 1, 1],
     ];
     const unmergedGraph = unmergedGraphFromTagproMap(map);
     const graph = graphFromTagproMap(map, unmergedGraph);
@@ -487,10 +487,10 @@ test('graphFromTagproMap', tester => {
   tester.test('Does not draw polygons around diagonal walls surrounded by NT tiles', t => {
     setup();
     const map = [
-      [1,   1,   1,   1.4],
-      [1,   1,   1.4, 1.2],
-      [1,   1.4, 1.2, 0  ],
-      [1.4, 1.2, 0,   0  ],
+      [1, 1, 1, 1.4],
+      [1, 1, 1.4, 1.2],
+      [1, 1.4, 1.2, 0],
+      [1.4, 1.2, 0, 0],
     ];
     const unmergedGraph = unmergedGraphFromTagproMap(map);
     const graph = graphFromTagproMap(map, unmergedGraph);
@@ -510,15 +510,16 @@ test('updateUnmergedGraph', tester => {
   tester.test('splits apart line of bombs', t => {
     setupTiles();
     const map = [
-      [2, 2, 2,  2,  2,  2,  2,  2,  2, 2, 2],
+      [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
       [2, 2, 10, 10, 10, 10, 10, 10, 2, 2, 2],
-      [2, 2, 2,  2,  2,  2,  2,  2,  2, 2, 2],
+      [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
     ];
     const unmergedGraph = unmergedGraphFromTagproMap(map);
     t.is(unmergedGraph.numVertices(), 42);
     t.is(unmergedGraph.numEdges(), 42);
     map[1][5] = '10.1'; // inactive bomb
     updateUnmergedGraph(unmergedGraph, map, 1, 5);
+
     t.is(unmergedGraph.numVertices(), 42);
     t.is(unmergedGraph.numEdges(), 42);
     t.false(unmergedGraph.isConnected(
@@ -537,8 +538,10 @@ test('updateUnmergedGraph', tester => {
       new Point(1 * PPTL, 6 * PPTL),
       new Point(2 * PPTL, 6 * PPTL),
     ));
+
     map[1][5] = 10; // change it back to a bomb
     updateUnmergedGraph(unmergedGraph, map, 1, 5);
+
     t.is(unmergedGraph.numVertices(), 42);
     t.is(unmergedGraph.numEdges(), 42);
     t.true(unmergedGraph.isConnected(
@@ -557,6 +560,7 @@ test('updateUnmergedGraph', tester => {
       new Point(1 * PPTL, 6 * PPTL),
       new Point(2 * PPTL, 6 * PPTL),
     ));
+
     teardownTiles();
     t.end();
   });
@@ -567,9 +571,9 @@ test('updateMergedGraph', tester => {
   tester.test('splits apart line of bombs', t => {
     setupTiles();
     const map = [
-      [2, 2, 2,  2,  2,  2,  2,  2,  2, 2, 2],
+      [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
       [2, 2, 10, 10, 10, 10, 10, 10, 2, 2, 2],
-      [2, 2, 2,  2,  2,  2,  2,  2,  2, 2, 2],
+      [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
     ];
     const unmergedGraph = unmergedGraphFromTagproMap(map);
     const mergedGraph = graphFromTagproMap(map, unmergedGraph);
@@ -577,8 +581,6 @@ test('updateMergedGraph', tester => {
     map[1][5] = '10.1'; // inactive bomb
     updateUnmergedGraph(unmergedGraph, map, 1, 5);
 
-    // const O = updateMergedGraph(mergedGraph, unmergedGraph, map, 1, 5);
-    // console.log(O);
     const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
       updateMergedGraph(mergedGraph, unmergedGraph, map, 1, 5);
 
@@ -639,32 +641,21 @@ test('dynamicUpdate', tester => {
       [2, 2, 2, 2, 2],
     ];
     calculateNavMesh(map);
+
     t.is(mockDTGraph.numFixedEdges(), 8);
     t.is(mockDTGraph.numEdges(), 17);
     t.is(mockDTGraph.numTriangles(), 10);
+
     map[2][2] = '10.1';
     updateUnmergedGraph(getUnmergedGraph(), map, 2, 2);
     const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
       updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, 2, 2);
-    // mockDTGraph.triangles.forEach(tr => { console.log(tr); });
+    mockDTGraph.dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
+
     t.is(unfixEdges.length, 4);
     t.is(constrainingEdges.length, 0);
     t.is(removeVertices.length, 4);
     t.is(addVertices.length, 0);
-    mockDTGraph.dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
-    // TEST CASE FOR ONLY REMOVE FIRST VERTEX
-    // t.is(mockDTGraph.numTriangles(), 8);
-    // t.is(mockDTGraph.numVertices(), 7);
-    // t.is(mockDTGraph.numEdges(), 14);
-    // t.is(mockDTGraph.numFixedEdges(), 4);
-    // TEST CASE FOR ONLY REMOVE FIRST TWO VERTICES
-    // t.is(mockDTGraph.numTriangles(), 6);
-    // t.is(mockDTGraph.numVertices(), 6);
-    // t.is(mockDTGraph.numEdges(), 11);
-    // t.is(mockDTGraph.numFixedEdges(), 4);
-
-
-    // TEST CASE FOR THE WHOLE THING
     t.is(mockDTGraph.numTriangles(), 2);
     t.is(mockDTGraph.numVertices(), 4);
     t.is(mockDTGraph.numEdges(), 5);
