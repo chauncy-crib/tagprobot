@@ -1,5 +1,5 @@
 import test from 'tape';
-import { isRoughly } from '../helpers/physics.spec';
+import { isRoughly } from '../../src/utils/general';
 import {
   getClearancePoint,
   __RewireAPI__ as GraphUtilsRewireAPI,
