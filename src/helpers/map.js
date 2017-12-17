@@ -1,13 +1,13 @@
 import _ from 'lodash';
 import { CPTL, PPCL, NT_KERNEL } from '../constants';
 import { assert, assertGridInBounds } from '../utils/asserts';
-import { isVisualMode } from '../utils/interface';
 import { tileHasName, getTileProperty, tileHasProperty, tileIsOneOf } from '../tiles';
 import {
   updateNTSprites,
   generatePermanentNTSprites,
   areTempNTSpritesDrawn,
   setNTSpritesDrawn,
+  isTraversabilityOn,
 } from '../draw/drawings';
 import { invertBinary2dArray, convolve } from './convolve';
 
@@ -283,6 +283,6 @@ export function getMapTraversabilityInCells(map) {
     //   tiles. If visual mode is off, then the call to updateNTSprites does nothing.
     if (!areTempNTSpritesDrawn()) updateNTSprites(xy.xt, xy.yt, mapTraversabilityCells);
   }
-  if (isVisualMode()) setNTSpritesDrawn(true);
+  if (isTraversabilityOn()) setNTSpritesDrawn(true);
   return mapTraversabilityCellsWithBuf;
 }

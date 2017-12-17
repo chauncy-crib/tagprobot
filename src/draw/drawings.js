@@ -40,7 +40,8 @@ let triangulationSprite;
 // The sprite for the polypoint graph
 let polypointSprite;
 
-let keyPressOn = true;
+let keyPressOn = false;
+let traversabilityOn = false;
 
 // The current state of the keys being pressed
 export const currKeyPresses = { x: null, y: null };
@@ -309,7 +310,16 @@ export function drawEnemyPolypointPath(polypointPath) {
 }
 
 
+/**
+ * Adds the permNTSprite to the renderer. Runtime: O(1)
+ */
+export function drawPermanentNTSprites() {
+  tagpro.renderer.layers.background.addChild(permNTSprite);
+}
+
+
 export function toggleKeyPressVis(setTo) {
+  if (setTo === keyPressOn) return;
   if (setTo !== undefined) keyPressOn = setTo;
   else keyPressOn = !keyPressOn;
   if (!keyPressOn) {
@@ -319,6 +329,30 @@ export function toggleKeyPressVis(setTo) {
   }
 }
 
+
+export function toggleTraversabilityVis(setTo) {
+  if (setTo === traversabilityOn) return;
+  if (setTo !== undefined) traversabilityOn = setTo;
+  else traversabilityOn = !traversabilityOn;
+  if (!traversabilityOn) {
+    const backgroundSprites = []
+      .concat(permNTSprite || [])
+      // Flatten the tempNTSprites grid, and remove null values. O(N^2), b/c tempNTSprites is NxN
+      .concat(_.reject(_.flatten(tempNTSprites), _.isNull));
+    _.forEach(backgroundSprites, s => {
+      tagpro.renderer.layers.background.removeChild(s);
+    });
+    tempNTSprites = [];
+    tempNTSpritesDrawn = false;
+  } else {
+    drawPermanentNTSprites();
+  }
+}
+
+export function turnOnAllDrawings() {
+  toggleTraversabilityVis(true);
+  toggleKeyPressVis(true);
+}
 
 /**
  * Erases all sprites in pathSprites, tempNTSprites, and permNTSprites. Reassigns pathSprites and
@@ -332,27 +366,12 @@ export function clearSprites() {
   if (enemyPolypointPathGraphics) enemyPolypointPathGraphics.clear();
 
   toggleKeyPressVis(false);
+  toggleTraversabilityVis(false);
 
-  // Get a list of all sprites
-  const backgroundSprites = []
-    .concat(permNTSprite)
-    // Flatten the tempNTSprites grid, and remove null values. O(N^2), because tempNTSprites is NxN
-    .concat(_.reject(_.flatten(tempNTSprites), _.isNull));
-  _.forEach(backgroundSprites, s => tagpro.renderer.layers.background.removeChild(s));
   const foregroundSprites = []
     .concat(triangulationSprite || [])
     .concat(polypointSprite || []);
   _.forEach(foregroundSprites, s => tagpro.renderer.layers.foreground.removeChild(s));
-  tempNTSprites = [];
-  tempNTSpritesDrawn = false;
-}
-
-
-/**
- * Adds the permNTSprite to the renderer. Runtime: O(1)
- */
-export function drawPermanentNTSprites() {
-  tagpro.renderer.layers.background.addChild(permNTSprite);
 }
 
 
@@ -394,7 +413,7 @@ export function generatePermanentNTSprites(xt, yt, cellTraversabilities) {
  * @param {number[][]} cellTraversabilities - the cell-traversabilities of the tagpro map.
  */
 export function updateNTSprites(xt, yt, cellTraversabilities) {
-  if (!isVisualMode()) {
+  if (!traversabilityOn) {
     return;
   }
   if (_.isEmpty(tempNTSprites)) {
@@ -474,6 +493,10 @@ export function drawNavMesh() {
     false,
   );
   tagpro.renderer.layers.foreground.addChild(polypointSprite);
+}
+
+export function isTraversabilityOn() {
+  return traversabilityOn;
 }
 
 export function areTempNTSpritesDrawn() {

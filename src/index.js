@@ -11,9 +11,8 @@ import {
 } from './utils/interface';
 import { calculateNavMesh } from './navmesh/triangulation';
 import {
-  drawPermanentNTSprites,
+  turnOnAllDrawings,
   initUiUpdateProcess,
-  drawBlankKeyPresses,
   drawNavMesh,
 } from './draw/drawings';
 
@@ -65,9 +64,8 @@ function start() {
   initMapTraversabilityCells(tagpro.map);
   calculateNavMesh(tagpro.map);
 
-  drawPermanentNTSprites();
   initUiUpdateProcess();
-  drawBlankKeyPresses();
+  turnOnAllDrawings();
   drawNavMesh();
 
   // Run the bot
