@@ -9,7 +9,7 @@ import {
   generatePermanentNTSprites,
   areTempNTSpritesDrawn,
   setNTSpritesDrawn,
-  redrawNavMesh,
+  drawNavMesh,
 } from '../draw/drawings';
 import { invertBinary2dArray, convolve } from './convolve';
 import { getDTGraph, getMergedGraph, getUnmergedGraph } from '../navmesh/triangulation';
@@ -184,14 +184,12 @@ export function initMapTraversabilityCells(map) {
 }
 
 export function updateAndRedrawNavmesh(map, xt, yt) {
-  console.log('Before edges and vertices: ', getDTGraph().numEdges(), getDTGraph().numVertices());
   updateUnmergedGraph(getUnmergedGraph(), map, xt, yt);
   const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
     updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, xt, yt);
   getDTGraph().dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
-  console.log('After edges and vertices: ', getDTGraph().numEdges(), getDTGraph().numVertices());
   getDTGraph().calculatePolypointGraph();
-  redrawNavMesh(); // if we get here lol
+  drawNavMesh();
 }
 
 /**

@@ -388,6 +388,13 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
   }
 }
 
+/**
+ * @callback specialEdgeCheck
+ * @param {{p1: Point, p2: Point}} e - an edge object
+ * @returns {boolean} true if this edge should be colored differently from the rest of the graphs
+ *   edges
+ */
+
 
 /*
  * Draws edges and vertices of a graph class with a certain thickness and color. Runtime: O(E)
@@ -395,6 +402,9 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
  * @param {number} thickness - thickness of the lines in pixels
  * @param {number} color - a hex color
  * @param {number} alpha - an alpha value
+ * @param {boolean} drawVertices- true if this function should draw the graph's vertices
+ * @param {specialEdgeCheck} edgeCheck- a function to determine if this edge should be colored
+ *   differently. Defaults to light blue.
  */
 function getGraphGraphics(
   graph, thickness, edgeColor, vertexColor, alpha, drawVertices = true,
@@ -402,17 +412,18 @@ function getGraphGraphics(
 ) {
   const graphGraphics = new PIXI.Graphics();
 
+  // Keep track of the current lineStyle color
   let currEdgeColor = edgeColor;
   graphGraphics.lineStyle(thickness, edgeColor, alpha);
   _.forEach(graph.getEdges(), edge => {
+    // Check which color the edge we're about to draw should be
     const nextEdgeColor = edgeCheck(edge) ? specialEdgeColor : edgeColor;
     if (nextEdgeColor !== currEdgeColor) {
+      // Update the color of graphGraphics if needed
       graphGraphics.lineStyle(thickness, nextEdgeColor, edgeCheck(edge) ? 1 : alpha);
       currEdgeColor = nextEdgeColor;
     }
-    graphGraphics
-      .moveTo(edge.p1.x, edge.p1.y)
-      .lineTo(edge.p2.x, edge.p2.y);
+    graphGraphics.moveTo(edge.p1.x, edge.p1.y).lineTo(edge.p2.x, edge.p2.y);
   });
 
   if (drawVertices) {
@@ -425,10 +436,15 @@ function getGraphGraphics(
   return graphGraphics;
 }
 
-export function redrawNavMesh() {
+
+/*
+ * Draws the navigation mesh lines on the tagpro map. Runtime: O(E), O(1) if visualizations off
+ */
+export function drawNavMesh() {
   if (!isVisualMode()) return;
-  tagpro.renderer.layers.foreground.removeChild(polypointSprite);
-  tagpro.renderer.layers.foreground.removeChild(triangulationSprite);
+  if (triangulationSprite) tagpro.renderer.layers.foreground.removeChild(triangulationSprite);
+  if (polypointSprite) tagpro.renderer.layers.foreground.removeChild(polypointSprite);
+
   triangulationSprite = getGraphGraphics(
     getDTGraph(),
     NAV_MESH_THICKNESS,
@@ -438,7 +454,6 @@ export function redrawNavMesh() {
     true,
     e => getDTGraph().hasFixedEdge(e),
   );
-  tagpro.renderer.layers.foreground.addChild(triangulationSprite);
   polypointSprite = getGraphGraphics(
     getDTGraph().polypoints,
     TRIANGULATION_THICKNESS,
@@ -447,32 +462,7 @@ export function redrawNavMesh() {
     TRIANGULATION_ALPHA,
     false,
   );
-  tagpro.renderer.layers.foreground.addChild(polypointSprite);
-}
-
-/*
- * Draws the navigation mesh lines on the tagpro map. Runtime: O(E), O(1) if visualizations off
- */
-export function drawNavMesh() {
-  if (!isVisualMode()) return;
-  triangulationSprite = triangulationSprite || getGraphGraphics(
-    getDTGraph(),
-    NAV_MESH_THICKNESS,
-    NAV_MESH_EDGE_COLOR,
-    NAV_MESH_VERTEX_COLOR,
-    NAV_MESH_ALPHA,
-    true,
-    e => getDTGraph().hasFixedEdge(e),
-  );
   tagpro.renderer.layers.foreground.addChild(triangulationSprite);
-  polypointSprite = polypointSprite || getGraphGraphics(
-    getDTGraph().polypoints,
-    TRIANGULATION_THICKNESS,
-    TRIANGULATION_EDGE_COLOR,
-    null,
-    TRIANGULATION_ALPHA,
-    false,
-  );
   tagpro.renderer.layers.foreground.addChild(polypointSprite);
 }
 

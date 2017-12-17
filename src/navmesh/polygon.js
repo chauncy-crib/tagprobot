@@ -5,29 +5,6 @@ import { getTileProperty, tileIsOneOf, tileHasName, tileIsAngleWall } from '../t
 import { PPTL } from '../constants';
 import { assert } from '../utils/asserts';
 
-// export function isLeftEdgeT(map, p) {
-//   return gridInBounds(map, p.x, p.y) && (getTileProperty(map[p.x][p.y], 'traversable') ||
-//     tileIsOneOf(map[p.x][p.y], ['ANGLE_WALL_3', 'ANGLE_WALL_4']));
-// }
-
-
-// export function isRightEdgeT(map, p) {
-//   return gridInBounds(map, p.x, p.y) && (getTileProperty(map[p.x][p.y], 'traversable') ||
-//     tileIsOneOf(map[p.x][p.y], ['ANGLE_WALL_1', 'ANGLE_WALL_2']));
-// }
-
-
-// export function isTopEdgeT(map, p) {
-//   return gridInBounds(map, p.x, p.y) && (getTileProperty(map[p.x][p.y], 'traversable') ||
-//     tileIsOneOf(map[p.x][p.y], ['ANGLE_WALL_1', 'ANGLE_WALL_4']));
-// }
-
-
-// export function isBottomEdgeT(map, p) {
-//   return gridInBounds(map, p.x, p.y) && (getTileProperty(map[p.x][p.y], 'traversable') ||
-//     tileIsOneOf(map[p.x][p.y], ['ANGLE_WALL_2', 'ANGLE_WALL_3']));
-// }
-
 
 function edgesInALine(e1, e2) {
   return threePointsInLine(e1.p1, e1.p2, e2.p1) && threePointsInLine(e1.p1, e1.p2, e2.p2);
@@ -171,8 +148,6 @@ export function mapToEdgeTiles(map) {
     for (let yt = 0; yt < map[0].length; yt++) {
       // Angle walls have a traversability edge
       if (tileIsAngleWall(map[xt][yt])) {
-        // TODO: which of these is correct?
-        // res.push({ xt, yt });
         if (isAngleWallTraversable(map, xt, yt)) res.push({ xt, yt });
       } else if (
         // Onlyt store edges of traversable tiles
