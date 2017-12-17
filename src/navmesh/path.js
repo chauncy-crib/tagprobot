@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { runAstar, State } from '../helpers/path';
 import { assert } from '../../src/utils/asserts';
 import { Point, Polypoint, pointsOnSameSide } from './graph';
-import { getClearancePoint } from './graphUtils';
+import { getClearancePoint } from '../utils/graphUtils';
 
 
 export class PolypointState extends State {
