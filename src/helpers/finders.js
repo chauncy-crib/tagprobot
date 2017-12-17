@@ -29,7 +29,7 @@ export function findTile(tileNames) {
       }
     }
   }
-  return undefined;
+  return null;
 }
 
 
