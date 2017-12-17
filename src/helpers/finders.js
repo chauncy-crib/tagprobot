@@ -29,8 +29,7 @@ export function findTile(tileNames) {
       }
     }
   }
-
-  throw new Error(`Unable to find tile: ${tileNames}`);
+  return undefined;
 }
 
 
