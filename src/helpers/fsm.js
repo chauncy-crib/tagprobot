@@ -2,11 +2,11 @@ import _ from 'lodash';
 import { getDist } from '../utils/geometry';
 import { drawEnemyCellPath } from '../draw/drawings';
 import { isCenterFlag } from './constants';
-import { PPCL, RED_ENDZONE, BLUE_ENDZONE } from '../constants';
+import { PPCL } from '../constants';
 import { getMapTraversabilityInCells } from './map';
 import { amRed, amBlue, getEnemyGoal } from './player';
 import { getShortestCellPath } from './path';
-import { findTile, findEnemyFC } from './finders';
+import { findCachedTile, findEnemyFC } from './finders';
 import { myTeamHasFlag, enemyTeamHasFlag } from './gameState';
 
 
@@ -63,7 +63,7 @@ export function FSM(me) {
 
   if (isCenterFlag()) { // in center flag game
     if (me.flag) { // if the bot has the flag, go to the endzone
-      goal = amRed() ? RED_ENDZONE : BLUE_ENDZONE;
+      goal = amRed() ? findCachedTile('RED_ENDZONE') : findCachedTile('BLUE_ENDZONE');
       console.info('I have the flag. Seeking endzone!');
     } else {
       const enemyFC = findEnemyFC();
@@ -71,20 +71,20 @@ export function FSM(me) {
         chaseEnemyFC(me, goal, enemyFC, enemyShortestPath);
         console.info('I see an enemy with the flag. Chasing!');
       } else if (enemyTeamHasFlag()) {
-        goal = amBlue() ? RED_ENDZONE : BLUE_ENDZONE;
+        goal = amBlue() ? findCachedTile('RED_ENDZONE') : findCachedTile('BLUE_ENDZONE');
         console.info('Enemy has the flag. Headed towards the Enemy Endzone.');
       } else if (myTeamHasFlag()) {
-        goal = amRed() ? RED_ENDZONE : BLUE_ENDZONE;
+        goal = amRed() ? findCachedTile('RED_ENDZONE') : findCachedTile('BLUE_ENDZONE');
         console.info('We have the flag. Headed towards our Endzone.');
       } else {
-        goal = findTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
-        console.info("I don't know what to do. Going to central flag station!");
+        goal = findCachedTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
+        console.info('Nobody has the flag. Going to central flag station!');
       }
     }
   } else { // in two flag game
     if (me.flag) {
-      goal = amRed() ? findTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
-        findTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
+      goal = amRed() ? findCachedTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
+        findCachedTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
       console.info('I have the flag. Seeking endzone!');
     } else {
       const enemyFC = findEnemyFC();
@@ -92,8 +92,8 @@ export function FSM(me) {
         chaseEnemyFC(me, goal, enemyFC, enemyShortestPath);
         console.info('I see an enemy with the flag. Chasing!');
       } else {
-        goal = amBlue() ? findTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
-          findTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
+        goal = amBlue() ? findCachedTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
+          findCachedTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
         console.info("I don't know what to do. Going to enemy base!");
       }
     }

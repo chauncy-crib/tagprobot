@@ -29,13 +29,41 @@ function centerOfMass(tileName) {
   return { xt: Math.floor(xSum / count), yt: Math.floor(ySum / count) };
 }
 
+export function setupLocations() {
+  assert(tagpro.map, 'tagpro.map is undefined');
+  locations.BLUE_ENDZONE = centerOfMass('BLUE_ENDZONE');
+  locations.RED_ENDZONE = centerOfMass('RED_ENDZONE');
   for (let xt = 0, xl = tagpro.map.length; xt < xl; xt++) {
     for (let yt = 0, yl = tagpro.map[0].length; yt < yl; yt++) {
-      for (let i = 0; i < tileNameArray.length; i++) {
-        if (tileHasName(tagpro.map[xt][yt], tileNameArray[i])) {
-          return { xp: xt * PPTL, yp: yt * PPTL };
-        }
+      if (tileIsOneOf(tagpro.map[xt][yt], ['RED_FLAG', 'RED_FLAG_TAKEN'])) {
+        locations.RED_FLAG = { xt, yt };
+        locations.RED_FLAG_TAKEN = { xt, yt };
+      } else if (tileIsOneOf(tagpro.map[xt][yt], ['BLUE_FLAG', 'BLUE_FLAG_TAKEN'])) {
+        locations.BLUE_FLAG = { xt, yt };
+        locations.BLUE_FLAG_TAKEN = { xt, yt };
+      } else if (tileIsOneOf(tagpro.map[xt][yt], ['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN'])) {
+        locations.YELLOW_FLAG = { xt, yt };
+        locations.YELLOW_FLAG_TAKEN = { xt, yt };
       }
+    }
+  }
+}
+
+
+/**
+ * Returns the position xp and yp (in pixels) of one of the specified tile
+ *   types. Assumes that the potential location of the tile has been stored by calling
+ *   setupLocations(). Runtime: O(1)
+ * @param {(number | number[])} tiles - either a number representing a tileType,
+ *   or an array of such numbers
+ */
+export function findCachedTile(tileNames) {
+  const tileNameArray = [].concat(tileNames);
+  for (let i = 0; i < tileNameArray.length; i++) {
+    const name = tileNameArray[i];
+    if (_.has(locations, name)) {
+      const { xt, yt } = locations[name];
+      if (tileHasName(tagpro.map[xt][yt], name)) return { xp: xt * PPTL, yp: yt * PPTL };
     }
   }
   return null;
