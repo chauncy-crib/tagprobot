@@ -1,6 +1,5 @@
 import _ from 'lodash';
-
-// import { getDist } from '../utils/geometry';
+import { getDist } from '../utils/geometry';
 import { PPCL, RED_ENDZONE, BLUE_ENDZONE } from '../constants';
 import { getMapTraversabilityInCells } from './map';
 import { amBlue } from './player';
@@ -28,8 +27,8 @@ export function chaseEnemyFC(me, goal, enemyFC, enemyShortestPath) {
 
   // Set goal as the interception point
   const interceptionCell = _.find(enemyShortestPath, cell =>
-    Math.sqrt((((cell.yc * PPCL) - me.y) ** 2) + (((cell.xc * PPCL) - me.x) ** 2)) <
-      Math.sqrt((((cell.yc * PPCL) - enemyFC.y) ** 2) + (((cell.xc * PPCL) - enemyFC.x) ** 2)));
+    getDist(cell.xc * PPCL, cell.yc * PPCL, me.x, me.y) <
+      getDist(cell.xc * PPCL, cell.yc * PPCL, enemyFC.x, enemyFC.y));
   if (interceptionCell) {
     goal.xp = interceptionCell.xc * PPCL;
     goal.yp = interceptionCell.yc * PPCL;
