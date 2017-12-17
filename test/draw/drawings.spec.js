@@ -120,19 +120,22 @@ test('clearSprites', tester => {
       },
     };
     DrawRewireAPI.__Rewire__('permNTSprite', 1);
-    DrawRewireAPI.__Rewire__('polypointPathGraphics', 2);
-    DrawRewireAPI.__Rewire__('tempNTSprites', [[3, null], [null, 4]]);
+    DrawRewireAPI.__Rewire__('allyPolypointPathGraphics', 2);
+    DrawRewireAPI.__Rewire__('enemyPolypointPathGraphics', 3);
+    DrawRewireAPI.__Rewire__('tempNTSprites', [[4, null], [null, 5]]);
     clearSprites();
 
-    t.is(mockRemoveChild.callCount, 4);
+    t.is(mockRemoveChild.callCount, 5);
     t.true(mockRemoveChild.calledWithExactly(1));
     t.true(mockRemoveChild.calledWithExactly(2));
     t.true(mockRemoveChild.calledWithExactly(3));
     t.true(mockRemoveChild.calledWithExactly(4));
+    t.true(mockRemoveChild.calledWithExactly(5));
 
     DrawRewireAPI.__ResetDependency__('permNTSprite');
     DrawRewireAPI.__ResetDependency__('tempNTSprite');
-    DrawRewireAPI.__ResetDependency__('polypointPathGraphics');
+    DrawRewireAPI.__ResetDependency__('allyPolypointPathGraphics');
+    DrawRewireAPI.__ResetDependency__('enemyPolypointPathGraphics');
     global.tagpro = undefined;
     t.end();
   });
