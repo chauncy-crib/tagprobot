@@ -1,6 +1,5 @@
 import _ from 'lodash';
-
-import { Point, pointsOnSameSide } from './graph';
+import { Point, pointsOnSameSide } from '../navmesh/graph';
 import { assert } from '../utils/asserts';
 
 const CLEARANCE = 19;
