@@ -1,39 +1,32 @@
 import _ from 'lodash';
+import { pointsAlongPath } from '../utils/fsmUtils';
 import { getDist } from '../utils/geometry';
-import { drawEnemyCellPath } from '../draw/drawings';
+import { drawEnemyPolypointPath } from '../draw/drawings';
 import { isCenterFlag } from './constants';
-import { PPCL } from '../constants';
-import { getMapTraversabilityInCells } from './map';
 import { amRed, amBlue, getEnemyGoal } from './player';
-import { getShortestCellPath } from './path';
 import { findCachedTile, findEnemyFC } from './finders';
+import { BRP, PPTL } from '../constants';
+import { getShortestPolypointPath } from '../navmesh/path';
 import { myTeamHasFlag, enemyTeamHasFlag } from './gameState';
+import { getDTGraph } from '../navmesh/triangulation';
 
 
 export function chaseEnemyFC(me, goal, enemyFC, enemyShortestPath) {
-  const enemyGoal = getEnemyGoal();
-  const enemyFinalTarget = {
-    xc: Math.floor(enemyGoal.xp / PPCL),
-    yc: Math.floor(enemyGoal.yp / PPCL),
-  };
-  enemyFC.xc = Math.floor((enemyFC.x + (PPCL / 2)) / PPCL);
-  enemyFC.yc = Math.floor((enemyFC.y + (PPCL / 2)) / PPCL);
-  const { map } = tagpro;
   // Runtime: O(M*CPTL^2) with visualizations on, O(M + S*CPTL^2) with visualizations off
-  const traversableCells = getMapTraversabilityInCells(map);
-  _.forEach(getShortestCellPath(
-    { xc: enemyFC.xc, yc: enemyFC.yc },
-    { xc: enemyFinalTarget.xc, yc: enemyFinalTarget.yc },
-    traversableCells,
-  ), cell => enemyShortestPath.push(cell));
+  _.forEach(getShortestPolypointPath(
+    { xp: enemyFC.x + BRP, yp: enemyFC.y + BRP },
+    getEnemyGoal(),
+    getDTGraph(),
+  ), polypoint => enemyShortestPath.push(polypoint));
 
   // Set goal as the interception point
-  const interceptionCell = _.find(enemyShortestPath, cell =>
-    getDist(cell.xc * PPCL, cell.yc * PPCL, me.x, me.y) <
-      getDist(cell.xc * PPCL, cell.yc * PPCL, enemyFC.x, enemyFC.y));
-  if (interceptionCell) {
-    goal.xp = interceptionCell.xc * PPCL;
-    goal.yp = interceptionCell.yc * PPCL;
+  const interceptionPolypoint = _.find(pointsAlongPath(enemyShortestPath), polypoint =>
+    getDist(polypoint.x, polypoint.y, me.x + BRP, me.y + BRP) <
+      getDist(polypoint.x, polypoint.y, enemyFC.x + BRP, enemyFC.y + BRP));
+  if (interceptionPolypoint) {
+    // Subtract PPTL/2 because in getAccelValues in bot.js we add them back
+    goal.xp = interceptionPolypoint.x - (PPTL / 2);
+    goal.yp = interceptionPolypoint.y - (PPTL / 2);
   } else {
     goal.xp = enemyFC.x + enemyFC.vx;
     goal.yp = enemyFC.y + enemyFC.vy;
@@ -71,8 +64,8 @@ export function FSM(me) {
         chaseEnemyFC(me, goal, enemyFC, enemyShortestPath);
         console.info('I see an enemy with the flag. Chasing!');
       } else if (enemyTeamHasFlag()) {
-        goal = amBlue() ? findCachedTile('RED_ENDZONE') : findCachedTile('BLUE_ENDZONE');
-        console.info('Enemy has the flag. Headed towards the Enemy Endzone.');
+        goal = findCachedTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
+        console.info('Enemy has the flag. Headed towards the central flag station');
       } else if (myTeamHasFlag()) {
         goal = amRed() ? findCachedTile('RED_ENDZONE') : findCachedTile('BLUE_ENDZONE');
         console.info('We have the flag. Headed towards our Endzone.');
@@ -98,6 +91,6 @@ export function FSM(me) {
       }
     }
   }
-  drawEnemyCellPath(enemyShortestPath);
+  drawEnemyPolypointPath(enemyShortestPath);
   return goal;
 }

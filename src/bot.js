@@ -3,7 +3,7 @@ import { getMapTraversabilityInCells } from './helpers/map';
 import { getMe } from './helpers/player';
 import { FSM } from './helpers/fsm';
 import { isAutonomousMode, isVisualMode, move, dequeueChatMessages } from './utils/interface';
-import { drawPolypointPath } from './draw/drawings';
+import { drawAllyPolypointPath } from './draw/drawings';
 import { desiredAccelerationMultiplier } from './helpers/physics';
 import { getShortestPolypointPath } from './navmesh/path';
 import { getDTGraph } from './navmesh/triangulation';
@@ -36,7 +36,7 @@ function getAccelValues() {
     getDTGraph(),
   );
 
-  drawPolypointPath(polypointShortestPath);
+  drawAllyPolypointPath(polypointShortestPath);
 
   const target = { xp: me.x + BRP, yp: me.y + BRP };
   if (polypointShortestPath.length > 1) {

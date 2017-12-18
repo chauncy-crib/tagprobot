@@ -180,10 +180,10 @@ export function funnelPolypoints(path) {
  * @returns {PolypointState[]} a list of states, starting from the startState to the targetState
  */
 export function getShortestPolypointPath(me, target, tGraph) {
-  assert(_.has(me, 'xp'));
-  assert(_.has(me, 'yp'));
-  assert(_.has(target, 'xp'));
-  assert(_.has(target, 'yp'));
+  assert(_.has(me, 'xp'), 'me does not have xp');
+  assert(_.has(me, 'yp'), 'me does not have yp');
+  assert(_.has(target, 'xp'), 'target does not have xp');
+  assert(_.has(target, 'yp'), 'target does not have yp');
 
   const startTriangle = tGraph.findContainingTriangles(new Point(me.xp, me.yp))[0];
   const endTriangle = tGraph.findContainingTriangles(new Point(target.xp, target.yp))[0];
