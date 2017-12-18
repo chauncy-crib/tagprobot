@@ -4,17 +4,20 @@ import {
   clearSprites,
   drawKeyPresses,
   currKeyPresses,
-  drawNavMesh,
   toggleKeyPressVis,
   toggleTraversabilityVis,
+  toggleTriangulationVis,
+  togglePolypointVis,
 } from '../draw/drawings';
 
 
 const KEY_CODES = {
   H: 72,
   K: 75,
+  P: 80,
   Q: 81,
   R: 82,
+  T: 84,
   V: 86,
 };
 
@@ -136,7 +139,6 @@ export function onKeyDown(event) {
         clearSprites();
       } else {
         turnOnAllDrawings();
-        drawNavMesh();
       }
       break;
     }
@@ -146,6 +148,14 @@ export function onKeyDown(event) {
     }
     case KEY_CODES.R: {
       toggleTraversabilityVis();
+      break;
+    }
+    case KEY_CODES.T: {
+      toggleTriangulationVis();
+      break;
+    }
+    case KEY_CODES.P: {
+      togglePolypointVis();
       break;
     }
     default:

@@ -13,7 +13,6 @@ import { calculateNavMesh } from './navmesh/triangulation';
 import {
   turnOnAllDrawings,
   initUiUpdateProcess,
-  drawNavMesh,
 } from './draw/drawings';
 
 // Handle keypress and related events for manual/auto toggle
@@ -66,7 +65,6 @@ function start() {
 
   initUiUpdateProcess();
   turnOnAllDrawings();
-  drawNavMesh();
 
   // Run the bot
   loop();

@@ -42,6 +42,8 @@ let polypointSprite;
 
 let keyPressOn = false;
 let traversabilityOn = false;
+let trianglesOn = false;
+let polypointsOn = false;
 
 // The current state of the keys being pressed
 export const currKeyPresses = { x: null, y: null };
@@ -474,8 +476,14 @@ function getGraphGraphics(graph, thickness, edgeColor, vertexColor, alpha, drawV
 /*
  * Draws the navigation mesh lines on the tagpro map. Runtime: O(E), O(1) if visualizations off
  */
+<<<<<<< HEAD
 export function drawNavMesh() {
   if (!isVisualMode()) return;
+=======
+export function drawTriangulation() {
+  if (triangulationSprite) tagpro.renderer.layers.foreground.removeChild(triangulationSprite);
+
+>>>>>>> 770bfd8... 290: implement toggling for triangles and polypoints
   triangulationSprite = triangulationSprite || getGraphGraphics(
     getDTGraph(),
     NAV_MESH_THICKNESS,
@@ -484,6 +492,15 @@ export function drawNavMesh() {
     NAV_MESH_ALPHA,
   );
   tagpro.renderer.layers.foreground.addChild(triangulationSprite);
+<<<<<<< HEAD
+=======
+}
+
+
+export function drawPolypoints() {
+  if (polypointSprite) tagpro.renderer.layers.foreground.removeChild(polypointSprite);
+
+>>>>>>> 770bfd8... 290: implement toggling for triangles and polypoints
   polypointSprite = polypointSprite || getGraphGraphics(
     getDTGraph().polypoints,
     TRIANGULATION_THICKNESS,
@@ -493,6 +510,52 @@ export function drawNavMesh() {
     false,
   );
   tagpro.renderer.layers.foreground.addChild(polypointSprite);
+}
+
+export function toggleTriangulationVis(setTo) {
+  if (setTo === trianglesOn) return;
+  if (setTo !== undefined) trianglesOn = setTo;
+  else trianglesOn = !trianglesOn;
+  if (!trianglesOn) {
+    tagpro.renderer.layers.foreground.removeChild(triangulationSprite);
+  } else {
+    drawTriangulation();
+  }
+}
+
+export function togglePolypointVis(setTo) {
+  if (setTo === polypointsOn) return;
+  if (setTo !== undefined) polypointsOn = setTo;
+  else polypointsOn = !polypointsOn;
+  if (!polypointsOn) {
+    tagpro.renderer.layers.foreground.removeChild(polypointSprite);
+  } else {
+    drawPolypoints();
+  }
+}
+
+/**
+ * Erases all sprites in pathSprites, tempNTSprites, and permNTSprites. Reassigns pathSprites and
+ *   tempNTSprites to empty list. Runtime: O(N^2)
+ */
+export function clearSprites() {
+  // TODO(davidabrahams): what is the difference between removeChildren and clear?
+  if (allyCellPathGraphics) allyCellPathGraphics.removeChildren();
+  if (enemyCellPathGraphics) enemyCellPathGraphics.removeChildren();
+  if (allyPolypointPathGraphics) allyPolypointPathGraphics.clear();
+  if (enemyPolypointPathGraphics) enemyPolypointPathGraphics.clear();
+
+  toggleKeyPressVis(false);
+  toggleTraversabilityVis(false);
+  toggleTriangulationVis(false);
+  togglePolypointVis(false);
+}
+
+export function turnOnAllDrawings() {
+  toggleTraversabilityVis(true);
+  toggleKeyPressVis(true);
+  toggleTriangulationVis(true);
+  togglePolypointVis(true);
 }
 
 export function isTraversabilityOn() {
