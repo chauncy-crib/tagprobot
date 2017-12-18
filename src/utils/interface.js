@@ -8,16 +8,18 @@ import {
   toggleTraversabilityVis,
   toggleTriangulationVis,
   togglePolypointVis,
+  togglePathVis,
 } from '../draw/drawings';
 
 
 const KEY_CODES = {
   H: 72,
   K: 75,
+  L: 76,
   P: 80,
   Q: 81,
   R: 82,
-  T: 84,
+  N: 78,
   V: 86,
 };
 
@@ -77,10 +79,10 @@ export function chatHelpMenu() {
     '--- H: print this help menu',
     '--- Q: toggle autonomous mode',
     '--- V: Draw all/Clear all',
-    '--- T: toggle triangles',
+    '--- N: toggle triangles',
+    '--- L: toggle paths',
     '--- P: toggle triangle dual-graph',
     '--- R: toggle traversability',
-    '--- A: toggle paths',
     '--- K: toggle keypresses',
     '---',
   ];
@@ -150,12 +152,16 @@ export function onKeyDown(event) {
       toggleTraversabilityVis();
       break;
     }
-    case KEY_CODES.T: {
+    case KEY_CODES.N: {
       toggleTriangulationVis();
       break;
     }
     case KEY_CODES.P: {
       togglePolypointVis();
+      break;
+    }
+    case KEY_CODES.L: {
+      togglePathVis();
       break;
     }
     default:

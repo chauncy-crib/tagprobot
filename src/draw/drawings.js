@@ -2,7 +2,6 @@ import _ from 'lodash';
 import {
   PPCL,
   CPTL,
-  PATH_ALPHA,
   ALLY_PATH_COLOR,
   ENEMY_PATH_COLOR,
   NT_ALPHA,
@@ -19,13 +18,10 @@ import {
   TRIANGULATION_THICKNESS,
 } from '../constants';
 import { getDTGraph } from '../navmesh/triangulation';
-import { isVisualMode } from '../utils/interface';
 import { assertGridInBounds } from '../utils/asserts';
 import { init2dArray } from '../utils/mapUtils';
 
 
-let allyCellPathGraphics = null; // PIXI Graphics for drawing the bot's current planned path
-let enemyCellPathGraphics = null; // PIXI Graphics for drawing the predicted enemy path
 let allyPolypointPathGraphics = null; // PIXI Graphics for drawing the bot's polypoint path
 let enemyPolypointPathGraphics = null; // PIXI Graphics for drawing the enemy polypoint path
 // A grid of NT-sprites, which are subject to change. If there isn't a NT-object at the given cell,
@@ -44,6 +40,7 @@ let keyPressOn = false;
 let traversabilityOn = false;
 let trianglesOn = false;
 let polypointsOn = false;
+let pathsOn = false;
 
 // The current state of the keys being pressed
 export const currKeyPresses = { x: null, y: null };
@@ -223,55 +220,6 @@ export function drawKeyPresses(directions) {
 
 
 /**
- * Erases cellPathGraphics from the renderer. Creates a new path sprite for each cell in
- *   path. Adds each new sprite to pathSprites, and to the renderer. Runtime: O(A)
- * @param {PIXI.Graphics} cellPathGraphics - the PIXI Graphics object to update
- * @param {GameState[]} cellPath - an array of GameStates, likely returned by getShortestPath()
- * @param cellPathColor - the color to make the rendered path
- */
-function drawCellPath(cellPathGraphics, cellPath, cellPathColor) {
-  cellPathGraphics.removeChildren();
-  _.forEach(cellPath, cell => {
-    cellPathGraphics.addChild(getPixiSquare(
-      cell.xc * PPCL,
-      cell.yc * PPCL,
-      PPCL,
-      PATH_ALPHA,
-      cellPathColor,
-    ));
-  });
-}
-
-
-/**
- * Helper function to call drawCellPath() while modifying the correct global Graphics object.
- * @param {GameState[]} cellPath - an array of GameStates, likely returned by getShortestPath()
- */
-export function drawAllyCellPath(cellPath) {
-  if (!isVisualMode()) return;
-  if (!allyCellPathGraphics) {
-    allyCellPathGraphics = new PIXI.Graphics();
-    tagpro.renderer.layers.background.addChild(allyCellPathGraphics);
-  }
-  drawCellPath(allyCellPathGraphics, cellPath, ALLY_PATH_COLOR);
-}
-
-
-/**
- * Helper function to call drawCellPath() while modifying the correct global Graphics object.
- * @param {GameState[]} cellPath - an array of GameStates, likely returned by getShortestPath()
- */
-export function drawEnemyCellPath(cellPath) {
-  if (!isVisualMode()) return;
-  if (!enemyCellPathGraphics) {
-    enemyCellPathGraphics = new PIXI.Graphics();
-    tagpro.renderer.layers.background.addChild(enemyCellPathGraphics);
-  }
-  drawCellPath(enemyCellPathGraphics, cellPath, ENEMY_PATH_COLOR);
-}
-
-
-/**
  * @param {PolypointState[]} polypointPath - a list of states that define the path
  */
 export function drawPolypointPath(polypointPathGraphics, polypointPath, polypointPathColor) {
@@ -294,7 +242,7 @@ export function drawPolypointPath(polypointPathGraphics, polypointPath, polypoin
 
 
 export function drawAllyPolypointPath(polypointPath) {
-  if (!isVisualMode()) return;
+  if (!pathsOn) return;
   if (!allyPolypointPathGraphics) {
     allyPolypointPathGraphics = new PIXI.Graphics();
     tagpro.renderer.layers.background.addChild(allyPolypointPathGraphics);
@@ -303,7 +251,7 @@ export function drawAllyPolypointPath(polypointPath) {
 }
 
 export function drawEnemyPolypointPath(polypointPath) {
-  if (!isVisualMode()) return;
+  if (!pathsOn) return;
   if (!enemyPolypointPathGraphics) {
     enemyPolypointPathGraphics = new PIXI.Graphics();
     tagpro.renderer.layers.background.addChild(enemyPolypointPathGraphics);
@@ -522,21 +470,27 @@ export function togglePolypointVis(setTo) {
   }
 }
 
+export function togglePathVis(setTo) {
+  if (setTo === pathsOn) return;
+  if (setTo !== undefined) pathsOn = setTo;
+  else pathsOn = !pathsOn;
+  if (!pathsOn) {
+    allyPolypointPathGraphics.clear();
+    enemyPolypointPathGraphics.clear();
+  }
+}
+
 /**
  * Erases all sprites in pathSprites, tempNTSprites, and permNTSprites. Reassigns pathSprites and
  *   tempNTSprites to empty list. Runtime: O(N^2)
  */
 export function clearSprites() {
   // TODO(davidabrahams): what is the difference between removeChildren and clear?
-  if (allyCellPathGraphics) allyCellPathGraphics.removeChildren();
-  if (enemyCellPathGraphics) enemyCellPathGraphics.removeChildren();
-  if (allyPolypointPathGraphics) allyPolypointPathGraphics.clear();
-  if (enemyPolypointPathGraphics) enemyPolypointPathGraphics.clear();
-
   toggleKeyPressVis(false);
   toggleTraversabilityVis(false);
   toggleTriangulationVis(false);
   togglePolypointVis(false);
+  togglePathVis(false);
 }
 
 export function turnOnAllDrawings() {
@@ -544,6 +498,7 @@ export function turnOnAllDrawings() {
   toggleKeyPressVis(true);
   toggleTriangulationVis(true);
   togglePolypointVis(true);
+  togglePathVis(true);
 }
 
 export function isTraversabilityOn() {
