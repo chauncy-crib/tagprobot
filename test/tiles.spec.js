@@ -39,8 +39,8 @@ test('computeTileInfo: stores info in tileInfo', t => {
 
   computeTileInfo();
 
-  // 40 tiles were stored
-  t.is(_.keys(mockTileInfo).length, 40);
+  // 49 tiles were stored
+  t.is(_.keys(mockTileInfo).length, 49);
   // that all values in tileInfo have an id
   _.forEach(_.values(mockTileInfo), value => {
     t.true(has(value, 'id'));
