@@ -64,8 +64,8 @@ export function FSM(me) {
         chaseEnemyFC(me, goal, enemyFC, enemyShortestPath);
         console.info('I see an enemy with the flag. Chasing!');
       } else if (enemyTeamHasFlag()) {
-        goal = amBlue() ? findCachedTile('RED_ENDZONE') : findCachedTile('BLUE_ENDZONE');
-        console.info('Enemy has the flag. Headed towards the Enemy Endzone.');
+        goal = findCachedTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
+        console.info('Enemy has the flag. Headed towards the central flag station');
       } else if (myTeamHasFlag()) {
         goal = amRed() ? findCachedTile('RED_ENDZONE') : findCachedTile('BLUE_ENDZONE');
         console.info('We have the flag. Headed towards our Endzone.');
