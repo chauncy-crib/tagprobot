@@ -5,10 +5,10 @@ import { Point, Graph } from '../../src/navmesh/graph';
 import {
   drawAllyCellPath,
   clearSprites,
+  toggleTriangulationVis,
   drawPermanentNTSprites,
   generatePermanentNTSprites,
   updateNTSprites,
-  drawNavMesh,
   __RewireAPI__ as DrawRewireAPI,
 } from '../../src/draw/drawings';
 
@@ -302,23 +302,26 @@ test('updateNTSprites', tester => {
 });
 
 
-test('drawNavMesh()', tester => {
-  tester.test('does nothing if visual mode is off', t => {
-    const mockIsVisualMode = sinon.stub().returns(false);
-    const mockDrawGraph = sinon.spy();
-    const mockGetDTGraph = sinon.stub().returns(null);
-    DrawRewireAPI.__Rewire__('isVisualMode', mockIsVisualMode);
-    DrawRewireAPI.__Rewire__('drawGraph', mockDrawGraph);
-    DrawRewireAPI.__Rewire__('getDTGraph', mockGetDTGraph);
+test('toggleTriangulationVis()', tester => {
+  tester.test('removed from the renderer when called with false', t => {
+    const mockRemoveChild = sinon.stub();
+    global.tagpro = {
+      renderer: {
+        layers: {
+          foreground: { removeChild: mockRemoveChild },
+        },
+      },
+    };
+    DrawRewireAPI.__Rewire__('triangulationSprite', 'sprite');
+    DrawRewireAPI.__Rewire__('trianglesOn', true);
 
-    drawNavMesh();
+    toggleTriangulationVis(false);
 
-    t.is(mockIsVisualMode.callCount, 1);
-    t.is(mockDrawGraph.callCount, 0);
+    t.is(mockRemoveChild.callCount, 1);
+    t.true(mockRemoveChild.calledWith('sprite'));
 
-    DrawRewireAPI.__ResetDependency__('isVisualMode');
-    DrawRewireAPI.__ResetDependency__('drawGraph');
-    DrawRewireAPI.__ResetDependency__('getDTGraph');
+    DrawRewireAPI.__ResetDependency__('triangulationSprite');
+    DrawRewireAPI.__ResetDependency__('trianglesOn');
     t.end();
   });
 
@@ -337,6 +340,7 @@ test('drawNavMesh()', tester => {
     DrawRewireAPI.__Rewire__('NAV_MESH_THICKNESS', 'thick');
     DrawRewireAPI.__Rewire__('NAV_MESH_EDGE_COLOR', 'brown');
     DrawRewireAPI.__Rewire__('NAV_MESH_VERTEX_COLOR', 'morebrown');
+    DrawRewireAPI.__Rewire__('trianglesOn', false);
     global.tagpro = {
       renderer: {
         layers: {
@@ -344,7 +348,7 @@ test('drawNavMesh()', tester => {
         },
       },
     };
-    drawNavMesh();
+    toggleTriangulationVis(true);
 
     t.true(mockGetGraphGraphics.calledWith(mockGraph, 'thick', 'brown', 'morebrown'));
 
@@ -353,6 +357,7 @@ test('drawNavMesh()', tester => {
     DrawRewireAPI.__ResetDependency__('NAV_MESH_THICKNESS');
     DrawRewireAPI.__ResetDependency__('NAV_MESH_EDGE_COLOR');
     DrawRewireAPI.__ResetDependency__('NAV_MESH_VERTEX_COLOR');
+    DrawRewireAPI.__ResetDependency__('trianglesOn');
     global.tagpro = undefined;
     t.end();
   });
