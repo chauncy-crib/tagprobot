@@ -27,7 +27,6 @@ export const DIAGONAL = true;
 export const NT_KERNEL = getNTKernel();
 
 // Drawing constants
-export const PATH_ALPHA = 0.25;
 export const ALLY_PATH_COLOR = 0x00ff00; // Green
 export const ENEMY_PATH_COLOR = 0x993333; // Dark red
 export const NT_ALPHA = 0.4;
