@@ -218,22 +218,7 @@ export function initMapTraversabilityCells(map) {
   );
 }
 
-<<<<<<< HEAD
-=======
-// /**
-//  * Given the tagpro map and a tile location which has changed state, update the unmergedGraph,
-//  *   mergedGraph, polypointGraph, and redraw the navmesh
-//  */
-// export function updateAndRedrawNavmesh(map, xt, yt) {
-//   updateUnmergedGraph(getUnmergedGraph(), map, xt, yt);
-//   const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
-//   updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, xt, yt);
-//   getDTGraph().dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
-//   getDTGraph().calculatePolypointGraph();
-//   drawNavMesh();
-// }
 
->>>>>>> fc539b3... 290: comment out updateAndRedrawNavmesh
 /**
  * Returns a 2D array of traversable (1) and blocked (0) cells. Size of return grid is map.length *
  *   CPTL. The 2D array is an array of the columns in the game. empty_tiles[0] is the left-most
@@ -293,11 +278,6 @@ export function getMapTraversabilityInCells(map) {
       // If the NT sprites are already on the screen, update the sprites for this tile, because
       //   the tile has changed state
       if (areTempNTSpritesDrawn()) updateNTSprites(xy.xt, xy.yt, mapTraversabilityCells);
-<<<<<<< HEAD
-=======
-
-      // updateAndRedrawNavmesh(map, xy.xt, xy.yt);
->>>>>>> fc539b3... 290: comment out updateAndRedrawNavmesh
     }
     // If the NT sprites are not already on the screen, then update the sprites for all tiles. This
     //   ensures that when visual mode is turned on, new sprites are generated for all temp-NT
