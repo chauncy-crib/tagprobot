@@ -299,31 +299,6 @@ export function toggleTraversabilityVis(setTo) {
   }
 }
 
-export function turnOnAllDrawings() {
-  toggleTraversabilityVis(true);
-  toggleKeyPressVis(true);
-}
-
-/**
- * Erases all sprites in pathSprites, tempNTSprites, and permNTSprites. Reassigns pathSprites and
- *   tempNTSprites to empty list. Runtime: O(N^2)
- */
-export function clearSprites() {
-  if (keyPressesVis) keyPressesVis.removeChildren();
-  if (allyCellPathGraphics) allyCellPathGraphics.removeChildren();
-  if (enemyCellPathGraphics) enemyCellPathGraphics.removeChildren();
-  if (allyPolypointPathGraphics) allyPolypointPathGraphics.clear();
-  if (enemyPolypointPathGraphics) enemyPolypointPathGraphics.clear();
-
-  toggleKeyPressVis(false);
-  toggleTraversabilityVis(false);
-
-  const foregroundSprites = []
-    .concat(triangulationSprite || [])
-    .concat(polypointSprite || []);
-  _.forEach(foregroundSprites, s => tagpro.renderer.layers.foreground.removeChild(s));
-}
-
 
 /**
  * Iterates over the cells in a single tile in the tagpro map, indexed in the tagpro map at
@@ -489,13 +464,13 @@ export function togglePathVis(setTo) {
  *   tempNTSprites to empty list. Runtime: O(N^2)
  */
 export function clearSprites() {
-  // TODO(davidabrahams): what is the difference between removeChildren and clear?
   toggleKeyPressVis(false);
   toggleTraversabilityVis(false);
   toggleTriangulationVis(false);
   togglePolypointVis(false);
   togglePathVis(false);
 }
+
 
 export function turnOnAllDrawings() {
   toggleTraversabilityVis(true);

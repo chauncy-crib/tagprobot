@@ -3,7 +3,6 @@ import sinon from 'sinon';
 
 import { Point, Graph } from '../../src/navmesh/graph';
 import {
-  drawAllyCellPath,
   clearSprites,
   toggleTriangulationVis,
   drawPermanentNTSprites,
@@ -14,99 +13,6 @@ import {
 
 
 /* eslint-disable class-methods-use-this */
-
-
-test('drawAllyCellPath', tester => {
-  tester.test('checks isVisualMode', t => {
-    const mockIsVisualMode = sinon.stub().returns(false);
-    DrawRewireAPI.__Rewire__('isVisualMode', mockIsVisualMode);
-
-    drawAllyCellPath();
-    t.is(mockIsVisualMode.callCount, 1);
-
-    DrawRewireAPI.__ResetDependency__('isVisualMode');
-    t.end();
-  });
-
-  tester.test('calls removeChildren once', t => {
-    const mockRemoveChildren = sinon.spy();
-    global.PIXI = { Graphics: class { removeChildren() { mockRemoveChildren(); } } };
-    const mockIsVisualMode = sinon.stub().returns(true);
-    DrawRewireAPI.__Rewire__('isVisualMode', mockIsVisualMode);
-    const mockAllyCellPathGraphics = new PIXI.Graphics();
-    DrawRewireAPI.__Rewire__('allyCellPathGraphics', mockAllyCellPathGraphics);
-
-    drawAllyCellPath();
-    t.is(mockRemoveChildren.callCount, 1);
-
-    global.PIXI = undefined;
-    DrawRewireAPI.__ResetDependency__('isVisualMode');
-    DrawRewireAPI.__ResetDependency__('allyCellPathGraphics');
-    t.end();
-  });
-
-  tester.test('calls addChild and getPixiSquare for each cell in cellPath', t => {
-    const mockAddChild = sinon.spy();
-    global.PIXI = { Graphics: class { addChild() { mockAddChild(); } removeChildren() {} } };
-    const mockIsVisualMode = sinon.stub().returns(true);
-    DrawRewireAPI.__Rewire__('isVisualMode', mockIsVisualMode);
-    const mockAllyCellPathGraphics = new PIXI.Graphics();
-    DrawRewireAPI.__Rewire__('allyCellPathGraphics', mockAllyCellPathGraphics);
-    const mockGetPixiSquare = sinon.stub();
-    DrawRewireAPI.__Rewire__('getPixiSquare', mockGetPixiSquare);
-    DrawRewireAPI.__Rewire__('PPCL', 1);
-
-    drawAllyCellPath([{ xc: 0, yc: 1 }, { xc: 2, yc: 3 }]);
-    t.is(mockAddChild.callCount, 2);
-    t.is(mockGetPixiSquare.callCount, 2);
-    t.true(mockGetPixiSquare.calledWith(0, 1));
-    t.true(mockGetPixiSquare.calledWith(2, 3));
-
-    global.PIXI = undefined;
-    DrawRewireAPI.__ResetDependency__('isVisualMode');
-    DrawRewireAPI.__ResetDependency__('allyCellPathGraphics');
-    DrawRewireAPI.__ResetDependency__('getPixiSquare');
-    DrawRewireAPI.__ResetDependency__('PPCL');
-    t.end();
-  });
-
-  tester.test('only adds graphics to background once', t => {
-    const mockAddChild = sinon.spy();
-    global.tagpro = {
-      renderer: {
-        layers: {
-          background: { addChild: mockAddChild },
-        },
-      },
-    };
-    const mockAllyCellPathGraphics = null;
-    DrawRewireAPI.__Rewire__('allyCellPathGraphics', mockAllyCellPathGraphics);
-    const mockIsVisualMode = sinon.stub().returns(true);
-    DrawRewireAPI.__Rewire__('isVisualMode', mockIsVisualMode);
-    const mockGetPixiSquare = sinon.spy();
-    DrawRewireAPI.__Rewire__('getPixiSquare', mockGetPixiSquare);
-    const mockDrawCellPath = sinon.spy();
-    DrawRewireAPI.__Rewire__('drawCellPath', mockDrawCellPath);
-    const mockRemoveChildren = sinon.spy();
-    global.PIXI = { Graphics: class { removeChildren() { mockRemoveChildren(); } } };
-
-    drawAllyCellPath();
-    drawAllyCellPath();
-    drawAllyCellPath();
-    t.is(mockAddChild.callCount, 1); // run only the first time drawAllyCellPath() is called
-
-    DrawRewireAPI.__ResetDependency__('isVisualMode');
-    DrawRewireAPI.__ResetDependency__('allyCellPathGraphics');
-    DrawRewireAPI.__ResetDependency__('getPixiSquare');
-    DrawRewireAPI.__ResetDependency__('drawCellPath');
-    global.tagpro = undefined;
-    global.PIXI = undefined;
-    t.end();
-  });
-
-  tester.end();
-});
-
 
 test('clearSprites', tester => {
   tester.test('removes permNTSprites, pathSprites, and tempNTSprites from UI', t => {
@@ -124,24 +30,27 @@ test('clearSprites', tester => {
     DrawRewireAPI.__Rewire__('keyPressesVis', { removeChildren: mockRemoveChildren });
     DrawRewireAPI.__Rewire__('traversabilityOn', true);
     DrawRewireAPI.__Rewire__('keyPressOn', true);
-    DrawRewireAPI.__Rewire__('allyCellPathGraphics', { removeChildren: mockRemoveChildren });
-    DrawRewireAPI.__Rewire__('enemyCellPathGraphics', { removeChildren: mockRemoveChildren });
+    DrawRewireAPI.__Rewire__('trianglesOn', true);
+    DrawRewireAPI.__Rewire__('polypointsOn', true);
+    DrawRewireAPI.__Rewire__('pathsOn', true);
     DrawRewireAPI.__Rewire__('allyPolypointPathGraphics', { clear: mockClear });
     DrawRewireAPI.__Rewire__('enemyPolypointPathGraphics', { clear: mockClear });
     DrawRewireAPI.__Rewire__('tempNTSprites', [[4, null], [null, 5]]);
     clearSprites();
 
-    t.is(mockRemoveChildren.callCount, 3);
+    t.is(mockRemoveChildren.callCount, 1);
     t.is(mockClear.callCount, 2);
-    t.is(mockRemoveChild.callCount, 3);
+    t.is(mockRemoveChild.callCount, 4);
+    t.is(mockRemoveChild.callCount, 4);
     t.true(mockRemoveChild.calledWithExactly(4));
     t.true(mockRemoveChild.calledWithExactly(5));
 
     DrawRewireAPI.__ResetDependency__('keyPressesVis');
     DrawRewireAPI.__ResetDependency__('traversabilityOn');
     DrawRewireAPI.__ResetDependency__('keyPressOn');
-    DrawRewireAPI.__ResetDependency__('allyCellPathGraphics');
-    DrawRewireAPI.__ResetDependency__('enemyCellPathGraphics');
+    DrawRewireAPI.__ResetDependency__('trianglesOn');
+    DrawRewireAPI.__ResetDependency__('polypointsOn');
+    DrawRewireAPI.__ResetDependency__('pathsOn');
     DrawRewireAPI.__ResetDependency__('allyPolypointPathGraphics');
     DrawRewireAPI.__ResetDependency__('enemyPolypointPathGraphics');
     DrawRewireAPI.__ResetDependency__('tempNTSprites');
