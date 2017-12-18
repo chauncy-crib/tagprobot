@@ -111,6 +111,8 @@ test('drawAllyCellPath', tester => {
 test('clearSprites', tester => {
   tester.test('removes permNTSprites, pathSprites, and tempNTSprites from UI', t => {
     const mockRemoveChild = sinon.spy();
+    const mockRemoveChildren = sinon.spy();
+    const mockClear = sinon.spy();
     global.tagpro = {
       renderer: {
         layers: {
@@ -119,23 +121,26 @@ test('clearSprites', tester => {
         },
       },
     };
-    DrawRewireAPI.__Rewire__('permNTSprite', 1);
-    DrawRewireAPI.__Rewire__('allyPolypointPathGraphics', 2);
-    DrawRewireAPI.__Rewire__('enemyPolypointPathGraphics', 3);
+    DrawRewireAPI.__Rewire__('keyPressesVis', { removeChildren: mockRemoveChildren });
+    DrawRewireAPI.__Rewire__('allyCellPathGraphics', { removeChildren: mockRemoveChildren });
+    DrawRewireAPI.__Rewire__('enemyCellPathGraphics', { removeChildren: mockRemoveChildren });
+    DrawRewireAPI.__Rewire__('allyPolypointPathGraphics', { clear: mockClear });
+    DrawRewireAPI.__Rewire__('enemyPolypointPathGraphics', { clear: mockClear });
     DrawRewireAPI.__Rewire__('tempNTSprites', [[4, null], [null, 5]]);
     clearSprites();
 
-    t.is(mockRemoveChild.callCount, 5);
-    t.true(mockRemoveChild.calledWithExactly(1));
-    t.true(mockRemoveChild.calledWithExactly(2));
-    t.true(mockRemoveChild.calledWithExactly(3));
+    t.is(mockRemoveChildren.callCount, 3);
+    t.is(mockClear.callCount, 2);
+    t.is(mockRemoveChild.callCount, 2);
     t.true(mockRemoveChild.calledWithExactly(4));
     t.true(mockRemoveChild.calledWithExactly(5));
 
-    DrawRewireAPI.__ResetDependency__('permNTSprite');
-    DrawRewireAPI.__ResetDependency__('tempNTSprite');
+    DrawRewireAPI.__ResetDependency__('keyPressesVis');
+    DrawRewireAPI.__ResetDependency__('allyCellPathGraphics');
+    DrawRewireAPI.__ResetDependency__('enemyCellPathGraphics');
     DrawRewireAPI.__ResetDependency__('allyPolypointPathGraphics');
     DrawRewireAPI.__ResetDependency__('enemyPolypointPathGraphics');
+    DrawRewireAPI.__ResetDependency__('tempNTSprites');
     global.tagpro = undefined;
     t.end();
   });
