@@ -193,6 +193,8 @@ export function getShortestPolypointPath(me, target, tGraph) {
   const targetState = new PolypointState(endTriangle.getCenter());
   const path = runAstar(startState, targetState, tGraph.polypoints);
 
+  if (_.isNull(path)) return null; // if there was no path, return null
+
   // Place the starting and final locations on the path, and remove the polypoint in the triangle we
   //   are currently in
   const initialPositionState = new PolypointState(new Polypoint(me.xp, me.yp, startTriangle));
