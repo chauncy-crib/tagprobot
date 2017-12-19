@@ -197,12 +197,8 @@ export class Graph {
 
   copy() {
     const g = new Graph();
-    _.forEach(this.getVertices(), v => {
-      g.addVertex(v);
-    });
-    _.forEach(this.getEdges(), e => {
-      g.addEdge(e.p1, e.p2);
-    });
+    _.forEach(this.getVertices(), v => g.addVertex(v));
+    _.forEach(this.getEdges(), e => g.addEdge(e.p1, e.p2));
     return g;
   }
 
