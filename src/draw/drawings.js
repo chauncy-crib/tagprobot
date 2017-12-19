@@ -374,7 +374,7 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
 
 
 /*
- * Draws edges and vertices of a graph class with a certain thickness and color. Runtime: O(E)
+ * Draws edges and vertices of a graph class with a specified thickness and color. Runtime: O(E)
  * @param {Graph} graph - graph to draw
  * @param {number} thickness - thickness of the lines in pixels
  * @param {number} color - a hex color
