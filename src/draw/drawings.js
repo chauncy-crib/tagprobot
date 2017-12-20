@@ -389,10 +389,9 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
 }
 
 /**
- * @callback specialEdgeCheck
+ * @callback edgeStyleFunc
  * @param {{p1: Point, p2: Point}} e - an edge object
- * @returns {boolean} true if this edge should be colored differently from the rest of the graphs
- *   edges
+ * @returns {{color: number, alpha: number}} a hex color and alpha that the edge should be colored
  */
 
 
@@ -400,34 +399,40 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
  * Draws edges and vertices of a graph class with a specified thickness and color. Runtime: O(E)
  * @param {Graph} graph - graph to draw
  * @param {number} thickness - thickness of the lines in pixels
- * @param {number} color - a hex color
- * @param {number} alpha - an alpha value
- * @param {boolean} drawVertices- true if this function should draw the graph's vertices
- * @param {specialEdgeCheck} edgeCheck- a function to determine if this edge should be colored
- *   differently. Defaults to light blue.
+ * @param {number} vertexColor - a hex color
+ * @param {number} vertexAlpha - an alpha from 0.0-1.0
+ * @param {edgeStyleFunc} edgeStyle - a function that returns the color each edge should be.
+ * @param {boolean} drawVertices - true if this function should draw the graph's vertices
  */
 function getGraphGraphics(
-  graph, thickness, edgeColor, vertexColor, alpha, drawVertices = true,
-  edgeCheck = () => false, specialEdgeColor = 0x42aaf4,
+  graph,
+  thickness,
+  vertexColor,
+  vertexAlpha,
+  edgeColor,
+  drawVertices = true,
 ) {
   const graphGraphics = new PIXI.Graphics();
 
   // Keep track of the current lineStyle color
-  let currEdgeColor = edgeColor;
-  graphGraphics.lineStyle(thickness, edgeColor, alpha);
+  let currEdgeColor = null;
+  let currAlpha = null;
+  graphGraphics.lineStyle(thickness, edgeColor, currAlpha);
   _.forEach(graph.getEdges(), edge => {
     // Check which color the edge we're about to draw should be
-    const nextEdgeColor = edgeCheck(edge) ? specialEdgeColor : edgeColor;
-    if (nextEdgeColor !== currEdgeColor) {
+    const nextEdgeColor = edgeColor(edge).color;
+    const nextAlpha = edgeColor(edge).alpha;
+    if (nextEdgeColor !== currEdgeColor || nextAlpha !== currAlpha) {
       // Update the color of graphGraphics if needed
-      graphGraphics.lineStyle(thickness, nextEdgeColor, edgeCheck(edge) ? 1 : alpha);
+      graphGraphics.lineStyle(thickness, nextEdgeColor, nextAlpha);
       currEdgeColor = nextEdgeColor;
+      currAlpha = nextAlpha;
     }
     graphGraphics.moveTo(edge.p1.x, edge.p1.y).lineTo(edge.p2.x, edge.p2.y);
   });
 
   if (drawVertices) {
-    graphGraphics.lineStyle(thickness, vertexColor, alpha);
+    graphGraphics.lineStyle(thickness, vertexColor, vertexAlpha);
     _.forEach(graph.getVertices(), vertex => {
       graphGraphics.drawCircle(vertex.x, vertex.y, thickness);
     });
@@ -448,18 +453,21 @@ export function drawNavMesh() {
   triangulationSprite = getGraphGraphics(
     getDTGraph(),
     NAV_MESH_THICKNESS,
-    NAV_MESH_EDGE_COLOR,
     NAV_MESH_VERTEX_COLOR,
     NAV_MESH_ALPHA,
+    e => (
+      getDTGraph().hasFixedEdge(e) ?
+        { color: 0x42aaf4, alpha: 1 } :
+        { color: NAV_MESH_EDGE_COLOR, alpha: NAV_MESH_ALPHA }
+    ),
     true,
-    e => getDTGraph().hasFixedEdge(e),
   );
   polypointSprite = getGraphGraphics(
     getDTGraph().polypoints,
     TRIANGULATION_THICKNESS,
-    TRIANGULATION_EDGE_COLOR,
     null,
     TRIANGULATION_ALPHA,
+    () => ({ color: TRIANGULATION_EDGE_COLOR, alpha: TRIANGULATION_ALPHA }),
     false,
   );
   tagpro.renderer.layers.foreground.addChild(triangulationSprite);
