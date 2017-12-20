@@ -11,7 +11,6 @@ const BRP = 19;
  *   regions that share the edge
  */
 export function findUpperAndLowerPoints(intersectingTriangles, e) {
-  // console.log(intersectingTriangles, e);
   let triangles = intersectingTriangles;
   // Keep track of the points in order in the regions above and below the edge
   const upperPoints = [e.p1];
@@ -75,6 +74,17 @@ export function threePointsInLine(p1, p2, p3) {
   }
   // Use line slopes to calculate if all three points are in a line
   return y1 * x2 === y2 * x1;
+}
+
+
+/**
+ * @param {{p1: Point, p2: Point}} e1
+ * @param {{p1: Point, p2: Point}} e2
+ * @returns {boolean} true if the edges would lay on top of eachother if they were both extended
+ *   infinitely in both directions
+ */
+export function edgesInALine(e1, e2) {
+  return threePointsInLine(e1.p1, e1.p2, e2.p1) && threePointsInLine(e1.p1, e1.p2, e2.p2);
 }
 
 

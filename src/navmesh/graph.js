@@ -1,6 +1,12 @@
 import _ from 'lodash';
 import { assert } from '../utils/asserts';
-import { findUpperAndLowerPoints, threePointsInLine, detD, detH } from '../utils/graphUtils';
+import {
+  findUpperAndLowerPoints,
+  threePointsInLine,
+  edgesInALine,
+  detD,
+  detH,
+} from '../utils/graphUtils';
 
 /**
  * Represents an x, y pixel location on the tagpro map. Used as vertices to define polygons.
@@ -232,7 +238,7 @@ export class Graph {
    */
   getVertices() {
     // Return a copy of the vertices list
-    return this.vertices.slice();
+    return _.clone(this.vertices);
   }
 
   /**
@@ -240,6 +246,17 @@ export class Graph {
    */
   numVertices() {
     return this.getVertices().length;
+  }
+
+  /**
+   * @param {Graph} graph
+   * @param {{x: number, y: number}} e
+   * @returns {{x: number, y: number}[]} all edges from the graph which are in-line with the input
+   *   edge. (Ie, they have identical slopes, and x and y intercepts).
+   */
+  edgesInLineWith(e) {
+    const inlineEdges = _.filter(this.getEdges(), edge => edgesInALine(e, edge));
+    return inlineEdges;
   }
 
   getEdges() {
@@ -632,10 +649,6 @@ export class TGraph extends Graph {
     this.triangulateRegion(lowerPoints);
   }
 
-  hasFixedEdge(e) {
-    return _.some(this.fixedAdj[e.p1], n => n.equal(e.p2));
-  }
-
   getFixedEdges() {
     const edges = [];
     _.forEach(this.vertices, p1 => {
@@ -721,10 +734,10 @@ export class TGraph extends Graph {
    *   retriangulate around them after each addition)
    */
   dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices) {
-    _.forEach(unfixEdges, e => { this.unfixEdge(e); });
-    _.forEach(removeVertices, v => { this.delaunayRemoveVertex(v); });
-    _.forEach(addVertices, v => { this.addTriangulationVertex(v); });
-    _.forEach(constrainingEdges, e => { this.addConstraintEdge(e); });
+    _.forEach(unfixEdges, e => this.unfixEdge(e));
+    _.forEach(removeVertices, v => this.delaunayRemoveVertex(v));
+    _.forEach(addVertices, v => this.addTriangulationVertex(v));
+    _.forEach(constrainingEdges, e => this.addConstraintEdge(e));
   }
 }
 
