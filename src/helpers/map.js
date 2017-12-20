@@ -9,10 +9,13 @@ import {
   areTempNTSpritesDrawn,
   setNTSpritesDrawn,
   isTraversabilityOn,
+  resetTriangulationAndPolypointDrawing,
+  drawTriangulation,
+  drawPolypoints,
 } from '../draw/drawings';
 import { invertBinary2dArray, convolve } from './convolve';
-// import { getMergedGraph, getUnmergedGraph } from '../navmesh/triangulation';
-// import { updateMergedGraph, updateUnmergedGraph } from '../navmesh/polygon';
+import { getMergedGraph, getUnmergedGraph, getDTGraph } from '../navmesh/triangulation';
+import { updateMergedGraph, updateUnmergedGraph } from '../navmesh/polygon';
 
 
 // A 2D array of size tagpro.map.length*CPTL by tagpro.map[0].length*CPTL. Value
@@ -182,18 +185,20 @@ export function initMapTraversabilityCells(map) {
   );
 }
 
-// /**
-//  * Given the tagpro map and a tile location which has changed state, update the unmergedGraph,
-//  *   mergedGraph, polypointGraph, and redraw the navmesh
-//  */
-// export function updateAndRedrawNavmesh(map, xt, yt) {
-//   updateUnmergedGraph(getUnmergedGraph(), map, xt, yt);
-//   const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
-//   updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, xt, yt);
-//   getDTGraph().dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
-//   getDTGraph().calculatePolypointGraph();
-//   drawNavMesh();
-// }
+/**
+ * Given the tagpro map and a tile location which has changed state, update the unmergedGraph,
+ *   mergedGraph, polypointGraph, and redraw the navmesh
+ */
+export function updateAndRedrawNavmesh(map, xt, yt) {
+  updateUnmergedGraph(getUnmergedGraph(), map, xt, yt);
+  const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
+  updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, xt, yt);
+  getDTGraph().dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
+  getDTGraph().calculatePolypointGraph();
+  resetTriangulationAndPolypointDrawing();
+  drawTriangulation();
+  drawPolypoints();
+}
 
 /**
  * Returns a 2D array of traversable (1) and blocked (0) cells. Size of return grid is map.length *
@@ -255,7 +260,7 @@ export function getMapTraversabilityInCells(map) {
       //   the tile has changed state
       if (areTempNTSpritesDrawn()) updateNTSprites(xy.xt, xy.yt, mapTraversabilityCells);
 
-      // updateAndRedrawNavmesh(map, xy.xt, xy.yt);
+      updateAndRedrawNavmesh(map, xy.xt, xy.yt);
     }
 
     // If the NT sprites are not already on the screen, then update the sprites for all tiles. This
