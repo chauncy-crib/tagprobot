@@ -268,10 +268,9 @@ export function drawPermanentNTSprites() {
 }
 
 
-export function toggleKeyPressVis(setTo) {
+export function toggleKeyPressVis(setTo = !keyPressOn) {
   if (setTo === keyPressOn) return;
-  if (setTo !== undefined) keyPressOn = setTo;
-  else keyPressOn = !keyPressOn;
+  keyPressOn = setTo;
   if (!keyPressOn) {
     keyPressesVis.removeChildren();
   } else {
@@ -280,10 +279,9 @@ export function toggleKeyPressVis(setTo) {
 }
 
 
-export function toggleTraversabilityVis(setTo) {
+export function toggleTraversabilityVis(setTo = !traversabilityOn) {
   if (setTo === traversabilityOn) return;
-  if (setTo !== undefined) traversabilityOn = setTo;
-  else traversabilityOn = !traversabilityOn;
+  traversabilityOn = setTo;
   if (!traversabilityOn) {
     const backgroundSprites = []
       .concat(permNTSprite || [])
@@ -432,10 +430,9 @@ export function resetTriangulationAndPolypointDrawing() {
   polypointSprite = null;
 }
 
-export function toggleTriangulationVis(setTo) {
+export function toggleTriangulationVis(setTo = !trianglesOn) {
   if (setTo === trianglesOn) return;
-  if (setTo !== undefined) trianglesOn = setTo;
-  else trianglesOn = !trianglesOn;
+  trianglesOn = setTo;
   if (!trianglesOn) {
     tagpro.renderer.layers.foreground.removeChild(triangulationSprite);
   } else {
@@ -443,10 +440,9 @@ export function toggleTriangulationVis(setTo) {
   }
 }
 
-export function togglePolypointVis(setTo) {
+export function togglePolypointVis(setTo = !polypointsOn) {
   if (setTo === polypointsOn) return;
-  if (setTo !== undefined) polypointsOn = setTo;
-  else polypointsOn = !polypointsOn;
+  polypointsOn = setTo;
   if (!polypointsOn) {
     tagpro.renderer.layers.foreground.removeChild(polypointSprite);
   } else {
@@ -454,10 +450,9 @@ export function togglePolypointVis(setTo) {
   }
 }
 
-export function togglePathVis(setTo) {
+export function togglePathVis(setTo = !pathsOn) {
   if (setTo === pathsOn) return;
-  if (setTo !== undefined) pathsOn = setTo;
-  else pathsOn = !pathsOn;
+  pathsOn = setTo;
   if (!pathsOn) {
     allyPolypointPathGraphics.clear();
     enemyPolypointPathGraphics.clear();
