@@ -247,7 +247,7 @@ test('toggleTriangulationVis()', tester => {
     DrawRewireAPI.__Rewire__('getGraphGraphics', mockGetGraphGraphics);
     DrawRewireAPI.__Rewire__('getDTGraph', mockGetDTGraph);
     DrawRewireAPI.__Rewire__('NAV_MESH_THICKNESS', 'thick');
-    DrawRewireAPI.__Rewire__('NAV_MESH_EDGE_COLOR', 'brown');
+    DrawRewireAPI.__Rewire__('NAV_MESH_ALPHA', 'transparent');
     DrawRewireAPI.__Rewire__('NAV_MESH_VERTEX_COLOR', 'morebrown');
     DrawRewireAPI.__Rewire__('trianglesOn', false);
     global.tagpro = {
@@ -259,12 +259,12 @@ test('toggleTriangulationVis()', tester => {
     };
     toggleTriangulationVis(true);
 
-    t.true(mockGetGraphGraphics.calledWith(mockGraph, 'thick', 'brown', 'morebrown'));
+    t.true(mockGetGraphGraphics.calledWith(mockGraph, 'thick', 'morebrown', 'transparent'));
 
-    DrawRewireAPI.__ResetDependency__('drawGraph');
+    DrawRewireAPI.__ResetDependency__('getGraphGraphics');
     DrawRewireAPI.__ResetDependency__('getDTGraph');
     DrawRewireAPI.__ResetDependency__('NAV_MESH_THICKNESS');
-    DrawRewireAPI.__ResetDependency__('NAV_MESH_EDGE_COLOR');
+    DrawRewireAPI.__ResetDependency__('NAV_MESH_ALPHA');
     DrawRewireAPI.__ResetDependency__('NAV_MESH_VERTEX_COLOR');
     DrawRewireAPI.__ResetDependency__('trianglesOn');
     global.tagpro = undefined;
