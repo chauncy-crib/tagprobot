@@ -7,7 +7,8 @@ import {
   graphFromTagproMap,
   updateUnmergedGraph,
   updateMergedGraph,
-  __RewireAPI__ as PolygonRewireAPI } from '../../src/navmesh/polygon';
+  __RewireAPI__ as PolygonRewireAPI,
+} from '../../src/navmesh/polygon';
 import { __RewireAPI__ as PolygonUtilRewireAPI } from '../../src/utils/polygonUtils';
 import { Point, TGraph } from '../../src/navmesh/graph';
 import { __RewireAPI__ as TileRewireAPI } from '../../src/tiles';
@@ -16,7 +17,8 @@ import {
   calculateNavMesh,
   getMergedGraph,
   getUnmergedGraph,
-  __RewireAPI__ as TriangulationRewireAPI } from '../../src/navmesh/triangulation';
+  __RewireAPI__ as TriangulationRewireAPI,
+} from '../../src/navmesh/triangulation';
 
 
 /**

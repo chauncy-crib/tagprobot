@@ -11,8 +11,10 @@ import {
   KEY_ON_ALPHA,
   KEY_OFF_ALPHA,
   NAV_MESH_EDGE_COLOR,
+  NAV_MESH_FIXED_EDGE_COLOR,
   NAV_MESH_VERTEX_COLOR,
   NAV_MESH_ALPHA,
+  NAV_MESH_FIXED_EDGE_ALPHA,
   NAV_MESH_THICKNESS,
   TRIANGULATION_EDGE_COLOR,
   TRIANGULATION_ALPHA,
@@ -401,7 +403,7 @@ export function updateNTSprites(xt, yt, cellTraversabilities) {
  * @param {number} thickness - thickness of the lines in pixels
  * @param {number} vertexColor - a hex color
  * @param {number} vertexAlpha - an alpha from 0.0-1.0
- * @param {edgeStyleFunc} edgeStyle - a function that returns the color each edge should be.
+ * @param {edgeStyleFunc} getEdgeStyle - a function that returns the color and alpha for each edge.
  * @param {boolean} drawVertices - true if this function should draw the graph's vertices
  */
 function getGraphGraphics(
@@ -409,7 +411,7 @@ function getGraphGraphics(
   thickness,
   vertexColor,
   vertexAlpha,
-  edgeColor,
+  getEdgeStyle,
   drawVertices = true,
 ) {
   const graphGraphics = new PIXI.Graphics();
@@ -417,11 +419,11 @@ function getGraphGraphics(
   // Keep track of the current lineStyle color
   let currEdgeColor = null;
   let currAlpha = null;
-  graphGraphics.lineStyle(thickness, edgeColor, currAlpha);
+  graphGraphics.lineStyle(thickness, currEdgeColor, currAlpha);
   _.forEach(graph.getEdges(), edge => {
     // Check which color the edge we're about to draw should be
-    const nextEdgeColor = edgeColor(edge).color;
-    const nextAlpha = edgeColor(edge).alpha;
+    const nextEdgeColor = getEdgeStyle(edge).color;
+    const nextAlpha = getEdgeStyle(edge).alpha;
     if (nextEdgeColor !== currEdgeColor || nextAlpha !== currAlpha) {
       // Update the color of graphGraphics if needed
       graphGraphics.lineStyle(thickness, nextEdgeColor, nextAlpha);
@@ -456,8 +458,8 @@ export function drawNavMesh() {
     NAV_MESH_VERTEX_COLOR,
     NAV_MESH_ALPHA,
     e => (
-      getDTGraph().hasFixedEdge(e) ?
-        { color: 0x42aaf4, alpha: 1 } :
+      getDTGraph().isEdgeFixed(e) ?
+        { color: NAV_MESH_FIXED_EDGE_COLOR, alpha: NAV_MESH_FIXED_EDGE_ALPHA } :
         { color: NAV_MESH_EDGE_COLOR, alpha: NAV_MESH_ALPHA }
     ),
     true,
