@@ -400,8 +400,7 @@ function getGraphGraphics(graph, thickness, edgeColor, vertexColor, alpha, drawV
  * Draws the navigation mesh lines on the tagpro map. Runtime: O(E), O(1) if visualizations off
  */
 export function drawTriangulation() {
-  if (triangulationSprite) tagpro.renderer.layers.foreground.removeChild(triangulationSprite);
-
+  if (!trianglesOn) return;
   triangulationSprite = triangulationSprite || getGraphGraphics(
     getDTGraph(),
     NAV_MESH_THICKNESS,
@@ -414,8 +413,7 @@ export function drawTriangulation() {
 
 
 export function drawPolypoints() {
-  if (polypointSprite) tagpro.renderer.layers.foreground.removeChild(polypointSprite);
-
+  if (!polypointsOn) return;
   polypointSprite = polypointSprite || getGraphGraphics(
     getDTGraph().polypoints,
     TRIANGULATION_THICKNESS,
@@ -425,6 +423,13 @@ export function drawPolypoints() {
     false,
   );
   tagpro.renderer.layers.foreground.addChild(polypointSprite);
+}
+
+export function resetTriangulationAndPolypointDrawing() {
+  tagpro.renderer.layers.foreground.removeChild(polypointSprite);
+  tagpro.renderer.layers.foreground.removeChild(triangulationSprite);
+  triangulationSprite = null;
+  polypointSprite = null;
 }
 
 export function toggleTriangulationVis(setTo) {
