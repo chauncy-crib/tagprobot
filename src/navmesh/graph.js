@@ -232,7 +232,7 @@ export class Graph {
    */
   getVertices() {
     // Return a copy of the vertices list
-    return this.vertices.slice();
+    return _.clone(this.vertices);
   }
 
   /**
@@ -721,10 +721,10 @@ export class TGraph extends Graph {
    *   retriangulate around them after each addition)
    */
   dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices) {
-    _.forEach(unfixEdges, e => { this.unfixEdge(e); });
-    _.forEach(removeVertices, v => { this.delaunayRemoveVertex(v); });
-    _.forEach(addVertices, v => { this.addTriangulationVertex(v); });
-    _.forEach(constrainingEdges, e => { this.addConstraintEdge(e); });
+    _.forEach(unfixEdges, e => this.unfixEdge(e));
+    _.forEach(removeVertices, v => this.delaunayRemoveVertex(v));
+    _.forEach(addVertices, v => this.addTriangulationVertex(v));
+    _.forEach(constrainingEdges, e => this.addConstraintEdge(e));
   }
 }
 

@@ -409,7 +409,7 @@ function getGraphGraphics(
   thickness,
   vertexColor,
   vertexAlpha,
-  edgeColor,
+  edgeStyle,
   drawVertices = true,
 ) {
   const graphGraphics = new PIXI.Graphics();
@@ -417,11 +417,11 @@ function getGraphGraphics(
   // Keep track of the current lineStyle color
   let currEdgeColor = null;
   let currAlpha = null;
-  graphGraphics.lineStyle(thickness, edgeColor, currAlpha);
+  graphGraphics.lineStyle(thickness, currEdgeColor, currAlpha);
   _.forEach(graph.getEdges(), edge => {
     // Check which color the edge we're about to draw should be
-    const nextEdgeColor = edgeColor(edge).color;
-    const nextAlpha = edgeColor(edge).alpha;
+    const nextEdgeColor = edgeStyle(edge).color;
+    const nextAlpha = edgeStyle(edge).alpha;
     if (nextEdgeColor !== currEdgeColor || nextAlpha !== currAlpha) {
       // Update the color of graphGraphics if needed
       graphGraphics.lineStyle(thickness, nextEdgeColor, nextAlpha);

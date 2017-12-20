@@ -173,6 +173,13 @@ export function unmergedGraphFromTagproMap(map) {
 }
 
 
+/**
+ * Collapses a vertex in a graph, by check if it has exactly two neighbors, and that it and its two
+ *   neighbors are all in line with eachother. If they are, then the vertex is removed, and the
+ *   neighbors are connected to eachother.
+ * @param {Graph} mergedGraph - a graph object where we want to collapse vertices
+ * @param {Point} vertex - a vertex we want to collapse, if possible.
+ */
 export function squashVertex(mergedGraph, vertex) {
   const neighbors = mergedGraph.neighbors(vertex);
   if (neighbors.length === 2 && threePointsInLine(vertex, neighbors[0], neighbors[1])) {
@@ -184,23 +191,17 @@ export function squashVertex(mergedGraph, vertex) {
 
 
 /**
- * Given the tagpro map, return a Graph object containing edges along the edge of traversability.
+ * Given an unmerged graph, return a Graph object containing edges along the edge of traversability.
  *   Straight lines will be represented by a single edge (the edges are arbitrarily long). This is
  *   computed using the unmergedGraphFromTagproMap function above, and then merging edges that touch
  *   eachother and have the same slope.
- * @param {{number|string}[][]} map - the tagpro map
+ * @param {Graph} unmergedGraph - an unmerged graph, generated using the unmergedGraphFromTagproMap
+ *   function
  * @returns {Graph}
  */
 export function graphFromTagproMap(map, unmergedGraph) {
-  // const unmergedGraph = unmergedGraphFromTagproMap(map);
   const G = unmergedGraph.copy();
-  _.forEach(G.getVertices(), v => {
-    squashVertex(G, v);
-  });
-  // Remove all vertices that no longer have a neighbor
-  _.forEach(G.getVertices(), v => {
-    if (G.neighbors(v).length === 0) G.removeVertex(v);
-  });
+  _.forEach(G.getVertices(), v => squashVertex(G, v));
   return G;
 }
 
@@ -256,6 +257,12 @@ function updateMergedEdge(mergedGraph, unmergedGraph, bigE, smallE) {
   }
 }
 
+/**
+ * @param {Graph} graph
+ * @param {{x: number, y: number}} e
+ * @returns {{x: number, y: number}[]} all edges from the graph which are in-line with the input
+ *   edge. (Ie, they have identical slopes, and x and y intercepts).
+ */
 export function edgesInLineWith(graph, e) {
   const inlineEdges = _.filter(graph.getEdges(), edge => edgesInALine(e, edge));
   return inlineEdges;
@@ -268,14 +275,22 @@ export function edgesInLineWith(graph, e) {
  * @param {{number|string}[][]} map - the tagpro map
  * @param {number} xt - x, in tiles
  * @param {number} yt - y, in tiles
+ * @returns { unfixEdges, constrainingEdges, removeVertices, addVertices } the edges that were
+ *   removed from the merged graph, added to the merged graph, the vertices that were removed from
+ *   the merged graph, and added to the merged graph
  */
 export function updateMergedGraph(mergedGraph, unmergedGraph, map, xt, yt) {
+  // Keep track of the vertices and edges that were in the merged graph before this function was
+  //   called
+  const beforeVertices = mergedGraph.getVertices();
+  const beforeEdges = mergedGraph.getEdges();
   const xp = xt * PPTL;
   const yp = yt * PPTL;
   const topLeft = new Point(xp, yp);
   const topRight = new Point(xp + PPTL, yp);
   const bottomLeft = new Point(xp, yp + PPTL);
   const bottomRight = new Point(xp + PPTL, yp + PPTL);
+  // Check all 6 possible edges that can lay across/around this tile in the unmerged graph
   const edges = [
     { p1: topLeft, p2: topRight },
     { p1: topLeft, p2: bottomLeft },
@@ -284,8 +299,9 @@ export function updateMergedGraph(mergedGraph, unmergedGraph, map, xt, yt) {
     { p1: topLeft, p2: bottomRight },
     { p1: bottomLeft, p2: topRight },
   ];
-  const beforeVertices = mergedGraph.getVertices();
-  const beforeEdges = mergedGraph.getEdges();
+  // For each of the 6 edges, either merge together the edges that lay in line with it (ie, this
+  //   edge connects two edges separated by one tile) or break them apart (if an edge lays across an
+  //   edge in the unmerged graph which doesn't exist)
   _.forEach(edges, smallE => {
     const inlineEdges = edgesInLineWith(mergedGraph, smallE);
     _.forEach(inlineEdges, bigE => {
@@ -295,9 +311,12 @@ export function updateMergedGraph(mergedGraph, unmergedGraph, map, xt, yt) {
       mergedGraph.addEdgeAndVertices(smallE.p1, smallE.p2);
     }
   });
+  // Check if any diagonal edges intersect the corners of this tile that need to now be split in
+  //   half
   const surroundingPoints = [topLeft, topRight, bottomRight, bottomLeft];
   for (let i = 0; i < surroundingPoints.length; i += 1) {
     const point = surroundingPoints[i];
+    // Create the diagonal intersecting this corner
     const dummyDiag = {
       p1: new Point(point.x - 1, point.y + ((i % 2) ? -1 : 1)),
       p2: new Point(point.x + 1, point.y + ((i % 2) ? 1 : -1)),
@@ -307,8 +326,10 @@ export function updateMergedGraph(mergedGraph, unmergedGraph, map, xt, yt) {
       // Split apart the diagonal edge if it contains the point
       updateMergedEdge(mergedGraph, unmergedGraph, diagEdge, { p1: point, p2: point });
     });
-    if (mergedGraph.neighbors(point).length === 0) mergedGraph.removeVertex(point);
-    if (mergedGraph.hasVertex(point)) squashVertex(mergedGraph, point);
+    if (mergedGraph.hasVertex(point)) {
+      if (mergedGraph.neighbors(point).length === 0) mergedGraph.removeVertex(point);
+      else squashVertex(mergedGraph, point);
+    }
   }
   const edgeEqual = (e1, e2) => (e1.p1.equal(e2.p1) && e1.p2.equal(e2.p2)) ||
            (e1.p1.equal(e2.p2) && e1.p2.equal(e2.p1));

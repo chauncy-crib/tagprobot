@@ -11,7 +11,6 @@ const BRP = 19;
  *   regions that share the edge
  */
 export function findUpperAndLowerPoints(intersectingTriangles, e) {
-  // console.log(intersectingTriangles, e);
   let triangles = intersectingTriangles;
   // Keep track of the points in order in the regions above and below the edge
   const upperPoints = [e.p1];
