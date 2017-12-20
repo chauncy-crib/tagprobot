@@ -1,6 +1,12 @@
 import _ from 'lodash';
 import { assert } from '../utils/asserts';
-import { findUpperAndLowerPoints, threePointsInLine, detD, detH } from '../utils/graphUtils';
+import {
+  findUpperAndLowerPoints,
+  threePointsInLine,
+  areEdgesCollinear,
+  detD,
+  detH,
+} from '../utils/graphUtils';
 
 /**
  * Represents an x, y pixel location on the tagpro map. Used as vertices to define polygons.
@@ -232,7 +238,7 @@ export class Graph {
    */
   getVertices() {
     // Return a copy of the vertices list
-    return this.vertices.slice();
+    return _.clone(this.vertices);
   }
 
   /**
@@ -240,6 +246,16 @@ export class Graph {
    */
   numVertices() {
     return this.getVertices().length;
+  }
+
+  /**
+   * @param {Graph} graph
+   * @param {{x: number, y: number}} e
+   * @returns {{x: number, y: number}[]} all edges from the graph which are in-line with the input
+   *   edge. (Ie, they have identical slopes, and x and y intercepts).
+   */
+  edgesInLineWith(e) {
+    return _.filter(this.getEdges(), edge => areEdgesCollinear(e, edge));
   }
 
   getEdges() {
@@ -632,17 +648,13 @@ export class TGraph extends Graph {
     this.triangulateRegion(lowerPoints);
   }
 
-  hasFixedEdge(e) {
-    return _.some(this.fixedAdj[e.p1], n => n.equal(e.p2));
-  }
-
   getFixedEdges() {
     const edges = [];
     _.forEach(this.vertices, p1 => {
       _.forEach(this.fixedAdj[p1], p2 => {
         const edgeExists = _.some(edges, e => (
-          (e.p1.equal(p1) && e.p2.equal(p2)) ||
-          (e.p1.equal(p2) && e.p2.equal(p1))
+          (e.p1.equals(p1) && e.p2.equals(p2)) ||
+          (e.p1.equals(p2) && e.p2.equals(p1))
         ));
         if (!edgeExists) {
           edges.push({ p1, p2 });
@@ -679,7 +691,7 @@ export class TGraph extends Graph {
         const v3 = neighbors[(i + 2) % L];
         if (detD(v1, v2, v3) >= 0 && detD(v1, v3, p) >= 0) {
           // Neighbors not in this triple
-          const otherNbrs = _.reject(neighbors, n => n.equal(v1) || n.equal(v2) || n.equal(v3));
+          const otherNbrs = _.reject(neighbors, n => n.equals(v1) || n.equals(v2) || n.equals(v3));
           // Ear is delaunay if none of the other neighbors fall inside the circumcircle
           const delaunayValid = !_.some(otherNbrs, n => detH(v1, v2, v3, n) > 0);
           if (delaunayValid) ear = [v1, v2, v3];
@@ -706,8 +718,8 @@ export class TGraph extends Graph {
   unfixEdge(e) {
     assert(this.isConnected(e.p1, e.p2), `Edge ${JSON.stringify(e)} not in graph`);
     const { p1, p2 } = e;
-    this.fixedAdj[p1] = _.reject(this.fixedAdj[p1], p => p.equal(p2));
-    this.fixedAdj[p2] = _.reject(this.fixedAdj[p2], p => p.equal(p1));
+    this.fixedAdj[p1] = _.reject(this.fixedAdj[p1], p => p.equals(p2));
+    this.fixedAdj[p2] = _.reject(this.fixedAdj[p2], p => p.equals(p1));
   }
 
   /**
@@ -721,10 +733,10 @@ export class TGraph extends Graph {
    *   retriangulate around them after each addition)
    */
   dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices) {
-    _.forEach(unfixEdges, e => { this.unfixEdge(e); });
-    _.forEach(removeVertices, v => { this.delaunayRemoveVertex(v); });
-    _.forEach(addVertices, v => { this.addTriangulationVertex(v); });
-    _.forEach(constrainingEdges, e => { this.addConstraintEdge(e); });
+    _.forEach(unfixEdges, e => this.unfixEdge(e));
+    _.forEach(removeVertices, v => this.delaunayRemoveVertex(v));
+    _.forEach(addVertices, v => this.addTriangulationVertex(v));
+    _.forEach(constrainingEdges, e => this.addConstraintEdge(e));
   }
 }
 
