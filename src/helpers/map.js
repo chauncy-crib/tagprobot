@@ -4,6 +4,8 @@ import { assert, assertGridInBounds } from '../utils/asserts';
 import { isVisualMode } from '../utils/interface';
 import { init2dArray, fillGridWithSubgrid } from '../utils/mapUtils';
 import { tileHasName, getTileProperty, tileHasProperty, tileIsOneOf } from '../tiles';
+// TODO(davidabrahams): remove these eslint disables once we actually do dynammic updates
+/* eslint-disable no-unused-vars */
 import {
   updateNTSprites,
   generatePermanentNTSprites,
@@ -14,6 +16,7 @@ import {
 import { invertBinary2dArray, convolve } from './convolve';
 import { getDTGraph, getMergedGraph, getUnmergedGraph } from '../navmesh/triangulation';
 import { updateMergedGraph, updateUnmergedGraph } from '../navmesh/polygon';
+/* eslint-enable no-unused-vars */
 
 
 // A 2D array of size tagpro.map.length*CPTL by tagpro.map[0].length*CPTL. Value
@@ -187,13 +190,16 @@ export function initMapTraversabilityCells(map) {
  * Given the tagpro map and a tile location which has changed state, update the unmergedGraph,
  *   mergedGraph, polypointGraph, and redraw the navmesh
  */
-export function updateAndRedrawNavmesh(map, xt, yt) {
-  updateUnmergedGraph(getUnmergedGraph(), map, xt, yt);
-  const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
-    updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, xt, yt);
-  getDTGraph().dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
-  getDTGraph().calculatePolypointGraph();
-  drawNavMesh();
+export function updateAndRedrawNavmesh(map, xt, yt) { // eslint-disable-line no-unused-vars
+  // TODO(davidabrahams): uncomment all of this and remove the eslint-disable once we actually do
+  //   dynamic updates. Right now we don't, because redrawing the entire navmesh and recalculating
+  //   all the polypoints is too slow.
+  // updateUnmergedGraph(getUnmergedGraph(), map, xt, yt);
+  // const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
+  //   updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, xt, yt);
+  // getDTGraph().dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
+  // getDTGraph().calculatePolypointGraph();
+  // drawNavMesh();
 }
 
 /**
