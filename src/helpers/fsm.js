@@ -5,7 +5,7 @@ import { drawEnemyPolypointPath } from '../draw/drawings';
 import { isCenterFlag } from './constants';
 import { amRed, amBlue, getEnemyGoal } from './player';
 import { findCachedTile, findEnemyFC } from './finders';
-import { BRP, PPTL } from '../constants';
+import { BRP } from '../constants';
 import { getShortestPolypointPath } from '../navmesh/path';
 import { myTeamHasFlag, enemyTeamHasFlag } from './gameState';
 import { getDTGraph } from '../navmesh/triangulation';
@@ -30,8 +30,8 @@ export function chaseEnemyFC(me, goal, enemyFC, enemyShortestPath) {
   });
   if (interceptionPolypoint) {
     // Subtract PPTL/2 because in getAccelValues in bot.js we add them back
-    goal.xp = interceptionPolypoint.x - (PPTL / 2);
-    goal.yp = interceptionPolypoint.y - (PPTL / 2);
+    goal.xp = interceptionPolypoint.x;
+    goal.yp = interceptionPolypoint.y;
   } else {
     goal.xp = enemyFC.x + enemyFC.vx;
     goal.yp = enemyFC.y + enemyFC.vy;
