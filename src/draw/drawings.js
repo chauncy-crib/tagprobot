@@ -311,7 +311,6 @@ export function drawEnemyPolypointPath(polypointPath) {
  *   tempNTSprites to empty list. Runtime: O(N^2)
  */
 export function clearSprites() {
-  // TODO(davidabrahams): what is the difference between removeChildren and clear?
   if (keyPressesVis) keyPressesVis.removeChildren();
   if (allyCellPathGraphics) allyCellPathGraphics.removeChildren();
   if (enemyCellPathGraphics) enemyCellPathGraphics.removeChildren();
@@ -319,7 +318,8 @@ export function clearSprites() {
   if (enemyPolypointPathGraphics) enemyPolypointPathGraphics.clear();
 
   // Get a list of all sprites
-  const backgroundSprites = permNTSprite ? [permNTSprite] : []
+  const backgroundSprites = []
+    .concat(permNTSprite)
     // Flatten the tempNTSprites grid, and remove null values. O(N^2), because tempNTSprites is NxN
     .concat(_.reject(_.flatten(tempNTSprites), _.isNull));
   _.forEach(backgroundSprites, s => tagpro.renderer.layers.background.removeChild(s));
