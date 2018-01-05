@@ -51,7 +51,7 @@ export function setupLocations() {
 
 
 /**
- * Returns the position xp and yp (in pixels) of one of the specified tile
+ * Returns the position xp and yp (in pixels) of the center of one of the specified tile
  *   types. Assumes that the potential location of the tile has been stored by calling
  *   setupLocations(). Runtime: O(1)
  * @param {(number | number[])} tiles - either a number representing a tileType,
@@ -63,7 +63,9 @@ export function findCachedTile(tileNames) {
     const name = tileNameArray[i];
     if (_.has(locations, name)) {
       const { xt, yt } = locations[name];
-      if (tileHasName(tagpro.map[xt][yt], name)) return { xp: xt * PPTL, yp: yt * PPTL };
+      if (tileHasName(tagpro.map[xt][yt], name)) {
+        return { xp: (xt * PPTL) + (PPTL / 2), yp: (yt * PPTL) + (PPTL / 2) };
+      }
     }
   }
   return null;

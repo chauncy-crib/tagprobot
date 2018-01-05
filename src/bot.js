@@ -1,4 +1,4 @@
-import { PPCL, BRP, PPTL } from './constants';
+import { PPCL, BRP } from './constants';
 import { getMapTraversabilityInCells } from './helpers/map';
 import { getMe } from './helpers/player';
 import { FSM } from './helpers/fsm';
@@ -18,12 +18,12 @@ function getAccelValues() {
   const me = getMe();
 
   const goal = FSM(me);
-  me.xc = Math.floor((me.x + (PPCL / 2)) / PPCL);
-  me.yc = Math.floor((me.y + (PPCL / 2)) / PPCL);
+  me.xc = Math.floor((me.x + BRP) / PPCL);
+  me.yc = Math.floor((me.y + BRP) / PPCL);
 
   const finalTarget = {
-    xp: goal.xp + (PPTL / 2),
-    yp: goal.yp + (PPTL / 2),
+    xp: goal.xp,
+    yp: goal.yp,
     xc: Math.floor(goal.xp / PPCL),
     yc: Math.floor(goal.yp / PPCL),
   };
