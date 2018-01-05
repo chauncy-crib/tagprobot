@@ -131,7 +131,7 @@ test('clearSprites', tester => {
 
     t.is(mockRemoveChildren.callCount, 3);
     t.is(mockClear.callCount, 2);
-    t.is(mockRemoveChild.callCount, 2);
+    t.is(mockRemoveChild.callCount, 3);
     t.true(mockRemoveChild.calledWithExactly(4));
     t.true(mockRemoveChild.calledWithExactly(5));
 
