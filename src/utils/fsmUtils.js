@@ -2,7 +2,15 @@ import _ from 'lodash';
 import { getDist } from '../utils/geometry';
 
 
-export function pointsAlongPath(path, granularity = 40) {
+/**
+ * @param {{point: {x: number, y: number}}[]} path - a list of objects with a point key.
+ * @param {number} granularity - the euclidian distance the points along the path should be
+ *   separated by.
+ * @returns {{x: number, y: number}[]} a list of points along the path. These points result from
+ *   connecting each point in the input path, then placing points along each line, separated by
+ *   granularity
+ */
+export function getPointsAlongPath(path, granularity = 40) {
   const res = [];
   for (let i = 0; i < path.length - 1; i += 1) {
     const currPoint = path[i].point;

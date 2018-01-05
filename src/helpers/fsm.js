@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { pointsAlongPath } from '../utils/fsmUtils';
+import { getPointsAlongPath } from '../utils/fsmUtils';
 import { getDist } from '../utils/geometry';
 import { drawEnemyPolypointPath } from '../draw/drawings';
 import { isCenterFlag } from './constants';
@@ -13,16 +13,21 @@ import { getDTGraph } from '../navmesh/triangulation';
 
 export function chaseEnemyFC(me, goal, enemyFC, enemyShortestPath) {
   // Runtime: O(M*CPTL^2) with visualizations on, O(M + S*CPTL^2) with visualizations off
-  _.forEach(getShortestPolypointPath(
-    { xp: enemyFC.x + BRP, yp: enemyFC.y + BRP },
-    getEnemyGoal(),
-    getDTGraph(),
-  ), polypoint => enemyShortestPath.push(polypoint));
+  _.forEach(
+    getShortestPolypointPath(
+      { xp: enemyFC.x + BRP, yp: enemyFC.y + BRP },
+      getEnemyGoal(),
+      getDTGraph(),
+    ),
+    polypoint => enemyShortestPath.push(polypoint),
+  );
 
   // Set goal as the interception point
-  const interceptionPolypoint = _.find(pointsAlongPath(enemyShortestPath), polypoint =>
-    getDist(polypoint.x, polypoint.y, me.x + BRP, me.y + BRP) <
-      getDist(polypoint.x, polypoint.y, enemyFC.x + BRP, enemyFC.y + BRP));
+  const interceptionPolypoint = _.find(getPointsAlongPath(enemyShortestPath), polypoint => {
+    const myDist = getDist(polypoint.x, polypoint.y, me.x + BRP, me.y + BRP);
+    const enemyDist = getDist(polypoint.x, polypoint.y, enemyFC.x + BRP, enemyFC.y + BRP);
+    return myDist < enemyDist;
+  });
   if (interceptionPolypoint) {
     // Subtract PPTL/2 because in getAccelValues in bot.js we add them back
     goal.xp = interceptionPolypoint.x - (PPTL / 2);
