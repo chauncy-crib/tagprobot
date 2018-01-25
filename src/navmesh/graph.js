@@ -36,7 +36,7 @@ export class Point {
     this.y = y;
   }
 
-  equal(other) {
+  equals(other) {
     return this.x === other.x && this.y === other.y;
   }
 
@@ -213,25 +213,25 @@ export class Graph {
   }
 
   removeEdge(p1, p2) {
-    this.adj[p1] = _.reject(this.adj[p1], p => p.equal(p2));
-    this.adj[p2] = _.reject(this.adj[p2], p => p.equal(p1));
+    this.adj[p1] = _.reject(this.adj[p1], p => p.equals(p2));
+    this.adj[p2] = _.reject(this.adj[p2], p => p.equals(p1));
   }
 
   removeVertex(vertex) {
     // clear all edges attached to the vertex
     _.forEach(this.adj[vertex], a => {
-      this.adj[a] = _.reject(this.adj[a], v => vertex.equal(v));
+      this.adj[a] = _.reject(this.adj[a], v => vertex.equals(v));
     });
     // remove the vertex
     delete this.adj[vertex];
-    this.vertices = _.reject(this.vertices, v => vertex.equal(v));
+    this.vertices = _.reject(this.vertices, v => vertex.equals(v));
   }
 
   isConnected(p1, p2) {
     if (!this.hasVertex(p1) || !this.hasVertex(p2)) return false;
     const N = this.neighbors(p1);
     // Return true if any of p1's neighbors are equal to p2
-    return _.some(N, n => n.equal(p2));
+    return _.some(N, n => n.equals(p2));
   }
 
   /**
@@ -270,8 +270,8 @@ export class Graph {
     _.forEach(this.vertices, p1 => {
       _.forEach(this.adj[p1], p2 => {
         const edgeExists = _.some(edges, e => (
-          (e.p1.equal(p1) && e.p2.equal(p2)) ||
-          (e.p1.equal(p2) && e.p2.equal(p1))
+          (e.p1.equals(p1) && e.p2.equals(p2)) ||
+          (e.p1.equals(p2) && e.p2.equals(p1))
         ));
         if (!edgeExists) {
           edges.push({ p1, p2 });
@@ -297,7 +297,7 @@ export class Polypoint extends Point {
 export class Triangle {
   constructor(p1, p2, p3) {
     assert(
-      !(p1.equal(p2) || p1.equal(p3) || p3.equal(p2)),
+      !(p1.equals(p2) || p1.equals(p3) || p3.equals(p2)),
       'Tried to make triangle with two of the same points',
     );
     assert(
@@ -340,19 +340,19 @@ export class Triangle {
   categorizePoints(other) {
     const shared = _.intersectionBy(this.getPoints(), other.getPoints(), p => p.toString());
     const allPoints = this.getPoints().concat(other.getPoints());
-    const unique = _.reject(allPoints, p => _.some(shared, s => s.equal(p)));
+    const unique = _.reject(allPoints, p => _.some(shared, s => s.equals(p)));
     return { shared, unique };
   }
 
-  equal(other) {
+  equals(other) {
     const points1 = [this.p1, this.p2, this.p3];
     const points2 = [other.p1, other.p2, other.p3];
-    // Return if p1 in points1 has some p2 in points2 where p2.equal(p1)
-    return _.every(points1, p1 => _.some(points2, p2 => p2.equal(p1)));
+    // Return if p1 in points1 has some p2 in points2 where p2.equals(p1)
+    return _.every(points1, p1 => _.some(points2, p2 => p2.equals(p1)));
   }
 
   hasPoint(p) {
-    return p.equal(this.p1) || p.equal(this.p2) || p.equal(this.p3);
+    return p.equals(this.p1) || p.equals(this.p2) || p.equals(this.p3);
   }
 }
 
@@ -443,7 +443,7 @@ export class TGraph extends Graph {
     const r = new Triangle(p1, p2, p3);
     let res = null;
     this.triangles.forEach(t => {
-      if (r.equal(t)) res = t;
+      if (r.equals(t)) res = t;
     });
     return res;
   }
@@ -454,12 +454,12 @@ export class TGraph extends Graph {
   removeVertexAndTriangles(p) {
     this.triangles.forEach(t => {
       // remove all triangles connected to the point
-      if (t.p1.equal(p) || t.p2.equal(p) || t.p3.equal(p)) {
+      if (t.p1.equals(p) || t.p2.equals(p) || t.p3.equals(p)) {
         this.removeTriangleByReference(t);
         // add back the edges we just removed
-        if (t.p1.equal(p)) this.addEdge(t.p2, t.p3);
-        if (t.p2.equal(p)) this.addEdge(t.p1, t.p3);
-        if (t.p3.equal(p)) this.addEdge(t.p1, t.p2);
+        if (t.p1.equals(p)) this.addEdge(t.p2, t.p3);
+        if (t.p2.equals(p)) this.addEdge(t.p1, t.p3);
+        if (t.p3.equals(p)) this.addEdge(t.p1, t.p2);
       }
     });
     this.removeVertex(p);
@@ -494,7 +494,7 @@ export class TGraph extends Graph {
     assert(this.isConnected(e.p1, e.p2), `${JSON.stringify(e)} is not a connected edge`);
     const fixedNeighbors = this.fixedAdj[e.p1];
     // Return true if any of p1's fixedNeighbors are equal to p2
-    return _.some(fixedNeighbors, n => n.equal(e.p2));
+    return _.some(fixedNeighbors, n => n.equals(e.p2));
   }
 
   /**
@@ -515,7 +515,7 @@ export class TGraph extends Graph {
     const sharedPoints = _.intersectionBy(n1, n2, point => point.toString());
     const oppositePoint = _.filter(sharedPoints, point => (
       // Point forms a triangle with the edge and is not the inserted point
-      this.findTriangle(point, e.p1, e.p2) && !point.equal(p)
+      this.findTriangle(point, e.p1, e.p2) && !point.equals(p)
     ));
     assert(
       oppositePoint.length <= 1,

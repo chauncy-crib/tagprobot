@@ -26,7 +26,7 @@ export class PolypointState extends State {
   }
 
   equals(state) {
-    return this.point.equal(state.point);
+    return this.point.equals(state.point);
   }
 
   /**
@@ -77,10 +77,10 @@ function getPortals(path) {
     } else {
       // Consecutive portals are connected by one same point, figure out which point to add to which
       //   list by checking which list ends in one of the portal points
-      const p1IsRepeat = _.last(leftPoints).equal(p1) || _.last(rightPoints).equal(p1);
+      const p1IsRepeat = _.last(leftPoints).equals(p1) || _.last(rightPoints).equals(p1);
       const repeatPoint = p1IsRepeat ? p1 : p2;
       const otherPoint = p1IsRepeat ? p2 : p1;
-      if (_.last(leftPoints).equal(repeatPoint)) {
+      if (_.last(leftPoints).equals(repeatPoint)) {
         leftPoints.push(repeatPoint);
         rightPoints.push(otherPoint);
       } else {
@@ -130,7 +130,7 @@ export function funnelPolypoints(path) {
     // Look for funnel updates for the left and the right side
     for (let curr = 0; curr < 2; curr++) {
       const other = 1 - curr; // the other index
-      if (!funnelPoints[curr].equal(portalPoints[curr]) && portalIndex > funnelIndices[curr]) {
+      if (!funnelPoints[curr].equals(portalPoints[curr]) && portalIndex > funnelIndices[curr]) {
         // New point is different
         if (pointsOnSameSide(portalPoints[curr], funnelPoints[other], edges[curr])) {
           // New point narrows the funnel
@@ -141,11 +141,11 @@ export function funnelPolypoints(path) {
             // New point crosses over other side
             // Find previous funnel index
             let prevI = funnelIndices[other];
-            while (allPortalPoints[other][prevI].equal(funnelPoints[other])) {
+            while (allPortalPoints[other][prevI].equals(funnelPoints[other])) {
               prevI -= 1;
             }
             // Find next funnel index
-            while (allPortalPoints[other][funnelIndices[other]].equal(funnelPoints[other])) {
+            while (allPortalPoints[other][funnelIndices[other]].equals(funnelPoints[other])) {
               funnelIndices[other] += 1;
             }
 

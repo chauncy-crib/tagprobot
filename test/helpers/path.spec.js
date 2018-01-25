@@ -88,7 +88,7 @@ test('test getShortestCellPath returns shortest path without diagonals', t => {
     { xc: 0, yc: 2 },
     inputMap,
   );
-  t.equal(shortestPath.length, 15);
+  t.equals(shortestPath.length, 15);
   PathRewireAPI.__ResetDependency__('DIAGONAL');
 
   t.end();
@@ -109,7 +109,7 @@ test('getShortestCellPath()', tester => {
       { xc: 0, yc: 2 },
       inputMap,
     );
-    t.equal(shortestDiagonalPath.length, 11);
+    t.equals(shortestDiagonalPath.length, 11);
     PathRewireAPI.__ResetDependency__('DIAGONAL');
 
     t.end();
