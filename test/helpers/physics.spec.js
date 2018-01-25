@@ -10,8 +10,8 @@ import { MAX_SPEED } from '../../src/constants';
 test('projectedState', tester => {
   tester.test('applies drag properly', t => {
     const nextState = projectedState(0, 0, 8, -4, {}, 0.5);
-    t.equal(nextState.vxp, 6);
-    t.equal(nextState.vyp, -3);
+    t.equals(nextState.vxp, 6);
+    t.equals(nextState.vyp, -3);
 
     t.end();
   });
@@ -78,7 +78,7 @@ test('binarySearchAcceleration', tester => {
     // Relative distances are the same
     const smallAcc1 = binarySearchAcceleration(0, 0, 75, 3);
     const smallAcc2 = binarySearchAcceleration(-75, 0, 0, 3);
-    t.equal(smallAcc1, smallAcc2);
+    t.equals(smallAcc1, smallAcc2);
     t.true(smallAcc1 < 0.5);
     t.true(smallAcc1 > 0);
 

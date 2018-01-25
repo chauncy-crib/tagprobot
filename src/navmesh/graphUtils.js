@@ -27,16 +27,16 @@ export function findUpperAndLowerPoints(intersectingTriangles, e) {
     // Add points to upperPoints and lowerPoints
     if (upperPoints.length === 1) {
       // This is the first triangle, add one point to upper polygon and the other to lower
-      const newPoints = _.reject(nextT.getPoints(), p => p.equal(lastUpperPoint));
+      const newPoints = _.reject(nextT.getPoints(), p => p.equals(lastUpperPoint));
       upperPoints.push(newPoints[0]);
       lowerPoints.push(newPoints[1]);
     } else {
       // Get the third point that's not in either pseudo-polygon
       const newPoint = _.find(nextT.getPoints(), p => (
-        !p.equal(lastUpperPoint) && !p.equal(lastLowerPoint)
+        !p.equals(lastUpperPoint) && !p.equals(lastLowerPoint)
       ));
 
-      if (newPoint.equal(e.p2)) {
+      if (newPoint.equals(e.p2)) {
         // This is the last point, add it to both regions
         upperPoints.push(newPoint);
         lowerPoints.push(newPoint);
