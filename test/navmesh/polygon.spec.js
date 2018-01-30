@@ -642,7 +642,7 @@ test('dynamicUpdate', tester => {
       [2, 2, 2, 2, 2],
       [2, 2, 2, 2, 2],
     ];
-    calculateNavMesh(map);
+    calculateNavMesh(map, true);
 
     t.is(mockDTGraph.numFixedEdges(), 8);
     t.is(mockDTGraph.numEdges(), 17);
