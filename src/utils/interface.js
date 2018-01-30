@@ -1,15 +1,12 @@
 import differenceInMilliseconds from 'date-fns/difference_in_milliseconds';
+import { clearSprites, turnOnAllDrawings } from '../draw/draw';
 import {
-  turnOnAllDrawings,
-  clearSprites,
-  drawKeyPresses,
-  currKeyPresses,
-  toggleKeyPressVis,
   toggleTraversabilityVis,
   toggleTriangulationVis,
   togglePolypointVis,
   togglePathVis,
-} from '../draw/drawings';
+} from '../draw/triangulation';
+import { drawKeyPresses, currKeyPresses, toggleKeyPressVis } from '../draw/keys';
 
 
 const KEY_CODES = {

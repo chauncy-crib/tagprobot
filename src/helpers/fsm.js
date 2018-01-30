@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { getPointsAlongPath } from '../utils/fsmUtils';
 import { getDist } from '../utils/geometry';
-import { drawEnemyPolypointPath } from '../draw/drawings';
+import { drawEnemyPolypointPath } from '../draw/triangulation';
 import { isCenterFlag } from './constants';
 import { amRed, amBlue, getEnemyGoal } from './player';
 import { findCachedTile, findEnemyFC } from './finders';

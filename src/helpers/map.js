@@ -4,15 +4,17 @@ import { assert, assertGridInBounds } from '../utils/asserts';
 import { init2dArray, fillGridWithSubgrid } from '../utils/mapUtils';
 import { tileHasName, getTileProperty, tileHasProperty, tileIsOneOf } from '../tiles';
 import {
-  updateNTSprites,
+  resetTriangulationAndPolypointDrawing,
+  drawTriangulation,
+  drawPolypoints,
+} from '../draw/triangulation';
+import {
   generatePermanentNTSprites,
   areTempNTSpritesDrawn,
   setNTSpritesDrawn,
   isTraversabilityOn,
-  resetTriangulationAndPolypointDrawing,
-  drawTriangulation,
-  drawPolypoints,
-} from '../draw/drawings';
+  updateNTSprites,
+} from '../draw/traversability';
 import { invertBinary2dArray, convolve } from './convolve';
 import { getDTGraph, getMergedGraph, getUnmergedGraph } from '../navmesh/triangulation';
 import { updateMergedGraph, updateUnmergedGraph } from '../navmesh/polygon';

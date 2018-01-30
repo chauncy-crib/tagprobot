@@ -4,11 +4,11 @@
   "description": "A bot to play TagPro",
   "scripts": {
     "start": "webpack --watch",
-    "lint": "eslint 'src/**/*.js' 'test/**/*.js'",
-    "lint:fix": "eslint 'src/**/*.js' 'test/**/*.js' --fix",
-    "test": "babel-tape-runner \"test/**/*.js\" | tap-difflet --pessimistic",
-    "test:o": "babel-tape-runner \"test/**/*.js\" | tap-difflet",
-    "test:raw": "babel-tape-runner \"test/**/*.js\"",
+    "lint": "eslint 'src/**/*.js'",
+    "lint:fix": "eslint 'src/**/*.js' --fix",
+    "test": "babel-tape-runner \"src/**/test/*.js\" | tap-difflet --pessimistic",
+    "test:o": "babel-tape-runner \"src/**/test/*.js\" | tap-difflet",
+    "test:raw": "babel-tape-runner \"src/**/test/*.js\"",
     "build": "webpack --watch",
     "build:once": "webpack"
   },

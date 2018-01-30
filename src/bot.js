@@ -4,7 +4,7 @@ import { getMapTraversabilityInCells } from './helpers/map';
 import { getMe } from './helpers/player';
 import { FSM } from './helpers/fsm';
 import { isAutonomousMode, isVisualMode, move, dequeueChatMessages } from './utils/interface';
-import { drawAllyPolypointPath } from './draw/drawings';
+import { drawAllyPolypointPath } from './draw/triangulation';
 import { desiredAccelerationMultiplier } from './helpers/physics';
 import { getShortestPolypointPath } from './navmesh/path';
 import { getDTGraph } from './navmesh/triangulation';
