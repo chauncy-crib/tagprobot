@@ -11,9 +11,20 @@ const DTGraph = new TGraph();
 
 /**
  * @param {Graph} mapGraph - a graph with vertices and edges surrounding the traversable area
+ * @param {Point} dummyPoint1 - a dummy point to start the triangulation with. Dummy points 1-3
+ *   should surround all other vertices that will get added. This function will assertion error if
+ *   they don't
+ * @param {boolean} removeDummy - true if the dummy points should be removed from the triangulation
+ *   after it is complete.
  * @returns {Graph} graph of the triangulation of all the vertices
  */
-export function delaunayTriangulation(mapGraph, dummyPoint1, dummyPoint2, dummyPoint3) {
+export function delaunayTriangulation(
+  mapGraph,
+  dummyPoint1,
+  dummyPoint2,
+  dummyPoint3,
+  removeDummy = false,
+) {
   const numVertices = DTGraph.getVertices().length;
   assert(numVertices === 0, `DTGraph had ${numVertices} vertices.`);
   const vertices = mapGraph.getVertices();
@@ -38,9 +49,11 @@ export function delaunayTriangulation(mapGraph, dummyPoint1, dummyPoint2, dummyP
     DTGraph.addConstraintEdge(e);
   });
 
-  _.forEach([dummyPoint1, dummyPoint2, dummyPoint3], dummyPoint => {
-    DTGraph.removeVertexAndTriangles(dummyPoint);
-  });
+  if (removeDummy) {
+    _.forEach([dummyPoint1, dummyPoint2, dummyPoint3], dummyPoint => {
+      DTGraph.removeVertexAndTriangles(dummyPoint);
+    });
+  }
   DTGraph.calculatePolypointGraph();
 }
 
@@ -56,9 +69,11 @@ export function getUnmergedGraph() {
 
 /**
  * @param {num} map - array of all vertices
+ * @param {boolean} removeDummy - true if the dummy points should be removed from the triangulation
+ *   after it is complete.
  * @returns {Graph} graph of the triangulation of all the vertices
  */
-export function calculateNavMesh(map) {
+export function calculateNavMesh(map, removeDummy = false) {
   unmergedGraph = unmergedGraphFromTagproMap(map);
   mergedGraph = graphFromTagproMap(map, unmergedGraph);
   delaunayTriangulation(
@@ -66,6 +81,7 @@ export function calculateNavMesh(map) {
     new Point(-9999, -100),
     new Point(9999, -100),
     new Point(0, 9999),
+    removeDummy,
   );
 }
 
