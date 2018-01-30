@@ -61,7 +61,7 @@ function start() {
   chatHelpMenu();
 
   initMapTraversabilityCells(tagpro.map);
-  calculateNavMesh(tagpro.map);
+  calculateNavMesh(tagpro.map, false);
 
   initUiUpdateProcess();
   turnOnAllDrawings();
