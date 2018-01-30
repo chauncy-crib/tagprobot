@@ -5,7 +5,6 @@ import { getTileProperty, tileIsOneOf, tileIsAngleWall } from '../tiles';
 import { PPTL } from '../constants';
 import { assert } from '../utils/asserts';
 import {
-  isAngleWallTraversable,
   wallOnLeft,
   wallOnRight,
   wallOnTop,
@@ -43,7 +42,7 @@ export function mapToEdgeTiles(map) {
     for (let yt = 0; yt < map[0].length; yt++) {
       // Angle walls have a traversability edge
       if (tileIsAngleWall(map[xt][yt])) {
-        if (isAngleWallTraversable(map, xt, yt)) res.push({ xt, yt });
+        res.push({ xt, yt });
       } else if (
         // Only store edges of traversable tiles
         getTileProperty(map[xt][yt], 'traversable') && (
@@ -214,11 +213,7 @@ export function graphFromTagproMap(map, unmergedGraph) {
  */
 export function updateUnmergedGraph(unmergedGraph, map, xt, yt) {
   if (tileIsAngleWall(map[xt][yt])) {
-    if (isAngleWallTraversable(map, xt, yt)) {
-      updateUnmergedEdgesAroundAngleWall(map, unmergedGraph, xt, yt);
-    } else {
-      updateUnmergedEdgesAroundCompletelyNTTile(map, unmergedGraph, xt, yt);
-    }
+    updateUnmergedEdgesAroundAngleWall(map, unmergedGraph, xt, yt);
   } else if (getTileProperty(map[xt][yt], 'traversable')) {
     updateUnmergedEdgesAroundTraversableTile(map, unmergedGraph, xt, yt);
   } else {

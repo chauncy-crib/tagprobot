@@ -486,24 +486,6 @@ test('graphFromTagproMap', tester => {
     t.end();
   });
 
-  tester.test('Does not draw polygons around diagonal walls surrounded by NT tiles', t => {
-    setup();
-    const map = [
-      [1, 1, 1, 1.4],
-      [1, 1, 1.4, 1.2],
-      [1, 1.4, 1.2, 0],
-      [1.4, 1.2, 0, 0],
-    ];
-    const unmergedGraph = unmergedGraphFromTagproMap(map);
-    const graph = graphFromTagproMap(map, unmergedGraph);
-
-    t.is(graph.getVertices().length, 3);
-    t.is(graph.getEdges().length, 3);
-
-    teardown();
-    t.end();
-  });
-
   tester.end();
 });
 
