@@ -13,7 +13,7 @@ import { calculateNavMesh } from './navmesh/triangulation';
 import {
   turnOnAllDrawings,
   initUiUpdateProcess,
-} from './draw/drawings';
+} from './draw/draw';
 
 // Handle keypress and related events for manual/auto toggle
 window.onkeydown = onKeyDown;
