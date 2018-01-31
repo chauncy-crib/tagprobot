@@ -1,12 +1,12 @@
-import differenceInMilliseconds from 'date-fns/difference_in_milliseconds';
+import { chat, chatHelpMenu } from './chat';
 import { clearSprites, turnOnAllDrawings } from '../draw/draw';
+import { drawKeyPresses, currKeyPresses, toggleKeyPressVis } from '../draw/keys';
 import {
   toggleTraversabilityVis,
   toggleTriangulationVis,
   togglePolypointVis,
   togglePathVis,
 } from '../draw/triangulation';
-import { drawKeyPresses, currKeyPresses, toggleKeyPressVis } from '../draw/keys';
 
 
 const KEY_CODES = {
@@ -21,43 +21,6 @@ const KEY_CODES = {
 };
 
 
-// FIFO queue for delaying chat messages
-const messageQueue = [];
-
-/**
- * Enqueues the message in the message queue to be chatted when appropriate.
- * @param {string} message - the message to chat
- */
-export function chat(message) {
-  messageQueue.push(message);
-}
-
-
-// TagPro keeps you from sending a chat message faster than every
-// 500ms. This delay accounts for that plus a 100ms buffer.
-const chatDelay = 500 + 100;
-
-// Keep track of the time the last message was sent
-let lastMessageTime = 0;
-
-/**
- * Checks if we've waited long enough since the last message was chatted, and
- * if so chats the first thing in the queue if it exists.
- */
-export function dequeueChatMessages() {
-  const now = new Date();
-  const timeDiff = differenceInMilliseconds(now, lastMessageTime);
-
-  if (messageQueue.length && timeDiff > chatDelay) {
-    tagpro.socket.emit('chat', {
-      message: messageQueue.shift(), // Dequeue the first message
-      toAll: 0,
-    });
-    lastMessageTime = now;
-  }
-}
-
-
 let autonomous = true;
 export function isAutonomousMode() {
   return autonomous;
@@ -67,25 +30,6 @@ export function isAutonomousMode() {
 let visuals = true;
 export function isVisualMode() {
   return visuals;
-}
-
-
-export function chatHelpMenu() {
-  const menu = [
-    '--- Help Menu',
-    '--- H: print this help menu',
-    '--- Q: toggle autonomous mode',
-    '--- V: Draw all/Clear all',
-    '--- N: toggle triangles',
-    '--- L: toggle paths',
-    '--- P: toggle triangle dual-graph',
-    '--- R: toggle traversability',
-    '--- K: toggle keypresses',
-    '---',
-  ];
-  menu.forEach(item => {
-    chat(item);
-  });
 }
 
 
@@ -181,19 +125,4 @@ export function move(accelValues) {
     directions.y = accelValues.accY > 0 ? 'DOWN' : 'UP';
   }
   press(directions);
-}
-
-
-/**
- * Overriding this function to get a more accurate velocity of players. Velocity is saved in
- *   player.vx and vy. The refresh rate on our access to server size physics is only 4 Hz. We can
- *   check our client-side velocity at a much higher refresh rate (60 Hz), so we use this and store
- *   it in the me object. Units are in pixels/second. 1 meter = 2.5 tiles = 100 pixels.
- */
-export function setupVelocity() {
-  Box2D.Dynamics.b2Body.prototype.GetLinearVelocity = function accurateVelocity() {
-    tagpro.players[this.player.id].vx = this.m_linearVelocity.x * 100;
-    tagpro.players[this.player.id].vy = this.m_linearVelocity.y * 100;
-    return this.m_linearVelocity;
-  };
 }

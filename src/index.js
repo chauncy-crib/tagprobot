@@ -4,11 +4,8 @@ import { setupIsCenterFlag } from './helpers/constants';
 import { setupMe } from './helpers/player';
 import { setupLocations } from './helpers/finders';
 import { initMapTraversabilityCells, initInternalMap } from './helpers/map';
-import {
-  onKeyDown,
-  setupVelocity,
-  chatHelpMenu,
-} from './utils/interface';
+import { onKeyDown } from './interface/keys';
+import { chatHelpMenu } from './interface/chat';
 import { calculateNavMesh } from './navmesh/triangulation';
 import {
   turnOnAllDrawings,
@@ -20,21 +17,17 @@ window.onkeydown = onKeyDown;
 
 
 /**
- * This function will execute the provided function after tagpro.playerId has been assigned.
- * @param {function} fn - the function to execute after tagpro.playerId has been set
+ * Overriding this function to get a more accurate velocity of players. Velocity is saved in
+ *   player.vx and vy. The refresh rate on our access to server size physics is only 4 Hz. We can
+ *   check our client-side velocity at a much higher refresh rate (60 Hz), so we use this and store
+ *   it in the me object. Units are in pixels/second. 1 meter = 2.5 tiles = 100 pixels.
  */
-function waitForId(fn) {
-  // Don't execute the function until tagpro.playerId has been assigned.
-  if (!tagpro || !tagpro.playerId) {
-    setTimeout(() => {
-      waitForId(fn);
-    }, 100);
-    return;
-  }
-  // Only run the script if we are not spectating.
-  if (!tagpro.spectator) {
-    fn();
-  }
+function setupVelocity() {
+  Box2D.Dynamics.b2Body.prototype.GetLinearVelocity = function accurateVelocity() {
+    tagpro.players[this.player.id].vx = this.m_linearVelocity.x * 100;
+    tagpro.players[this.player.id].vy = this.m_linearVelocity.y * 100;
+    return this.m_linearVelocity;
+  };
 }
 
 
@@ -69,6 +62,25 @@ function start() {
 
   // Run the bot
   loop();
+}
+
+
+/**
+ * This function will execute the provided function after tagpro.playerId has been assigned.
+ * @param {function} fn - the function to execute after tagpro.playerId has been set
+ */
+function waitForId(fn) {
+  // Don't execute the function until tagpro.playerId has been assigned.
+  if (!tagpro || !tagpro.playerId) {
+    setTimeout(() => {
+      waitForId(fn);
+    }, 100);
+    return;
+  }
+  // Only run the script if we are not spectating.
+  if (!tagpro.spectator) {
+    fn();
+  }
 }
 
 
