@@ -187,18 +187,25 @@ export function initMapTraversabilityCells(map) {
 
 /**
  * Given the tagpro map and a tile location which has changed state, update the unmergedGraph,
- *   mergedGraph, polypointGraph, and redraw the navmesh
+ *   mergedGraph, and polypointGraph
  */
-export function updateAndRedrawNavmesh(map, xt, yt) {
+function updateNavMesh(map, xt, yt) {
   updateUnmergedGraph(getUnmergedGraph(), map, xt, yt);
   const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
     updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, xt, yt);
   getDTGraph().dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
   getDTGraph().calculatePolypointGraph();
+}
+
+/**
+ * Redraw the triangulation and polypoints
+ */
+function redrawNavMesh() {
   resetTriangulationAndPolypointDrawing();
   drawTriangulation();
   drawPolypoints();
 }
+
 
 /**
  * Returns a 2D array of traversable (1) and blocked (0) cells. Size of return grid is map.length *
@@ -213,12 +220,14 @@ export function getMapTraversabilityInCells(map) {
     tilesToUpdate.length === tilesToUpdateValues.length,
     'the number of tiles to update and the number of values stored for them are not equal',
   );
+  let tileChanged = false;
   for (let i = 0; i < tilesToUpdate.length; i++) {
     const xy = tilesToUpdate[i];
     const tileId = map[xy.xt][xy.yt];
     const tileTraversability = getTileProperty(tileId, 'traversable');
     // if the traversability of the tile in this location has changed since the last state
     if (tileTraversability !== getTileProperty(tilesToUpdateValues[i], 'traversable')) {
+      tileChanged = true;
       tilesToUpdateValues[i] = tileId;
       // O(CTPL^2)
       fillGridWithSubgrid(
@@ -260,7 +269,7 @@ export function getMapTraversabilityInCells(map) {
       //   the tile has changed state
       if (areTempNTSpritesDrawn()) updateNTSprites(xy.xt, xy.yt, mapTraversabilityCells);
 
-      updateAndRedrawNavmesh(map, xy.xt, xy.yt);
+      updateNavMesh(map, xy.xt, xy.yt);
     }
 
     // If the NT sprites are not already on the screen, then update the sprites for all tiles. This
@@ -269,5 +278,6 @@ export function getMapTraversabilityInCells(map) {
     if (!areTempNTSpritesDrawn()) updateNTSprites(xy.xt, xy.yt, mapTraversabilityCells);
   }
   if (isTraversabilityOn()) setNTSpritesDrawn(true);
+  if (tileChanged) redrawNavMesh();
   return mapTraversabilityCellsWithBuf;
 }
