@@ -1,17 +1,21 @@
 import test from 'tape';
-import { Polypoint, Point, Triangle } from '../../src/navmesh/graph';
+
 import {
-  PolypointState,
   funnelPolypoints,
-  __RewireAPI__ as PathRewireAPI,
-} from '../../src/navmesh/path';
+  getClearancePoint,
+  __RewireAPI__ as FunnelRewireAPI,
+} from '../funnel';
+import { Polypoint, Point, Triangle } from '../../navmesh/graph';
+import { PolypointState } from '../astar';
+import { isRoughly } from '../../utils/general';
 
 
 const mockGetClearancePoint = cornerPoint => cornerPoint;
 
+
 test('funnelPolypoints()', tester => {
   tester.test('stretches around a corner to the top', t => {
-    PathRewireAPI.__Rewire__('getClearancePoint', mockGetClearancePoint);
+    FunnelRewireAPI.__Rewire__('getClearancePoint', mockGetClearancePoint);
     const FP = [
       new Point(35, 75),
       new Point(107, 57),
@@ -42,12 +46,13 @@ test('funnelPolypoints()', tester => {
     const funnelledPoints = funnelPolypoints(path).map(state => state.point);
     t.same(funnelledPoints, [path[0].point, FP[3], FP[7], path[10].point]);
 
-    PathRewireAPI.__ResetDependency__('getClearancePoint');
+    FunnelRewireAPI.__ResetDependency__('getClearancePoint');
     t.end();
   });
 
+
   tester.test('stretches around a corner to the bottom', t => {
-    PathRewireAPI.__Rewire__('getClearancePoint', mockGetClearancePoint);
+    FunnelRewireAPI.__Rewire__('getClearancePoint', mockGetClearancePoint);
     const FP = [
       new Point(35, 75),
       new Point(107, 57),
@@ -78,12 +83,13 @@ test('funnelPolypoints()', tester => {
     const funnelledPoints = funnelPolypoints(path).map(state => state.point);
     t.same(funnelledPoints, [path[0].point, FP[3], FP[8], FP[10], path[10].point]);
 
-    PathRewireAPI.__ResetDependency__('getClearancePoint');
+    FunnelRewireAPI.__ResetDependency__('getClearancePoint');
     t.end();
   });
 
+
   tester.test('stretches properly around command center spawn point', t => {
-    PathRewireAPI.__Rewire__('getClearancePoint', mockGetClearancePoint);
+    FunnelRewireAPI.__Rewire__('getClearancePoint', mockGetClearancePoint);
     const triangles = [
       new Triangle(new Point(760, 560), new Point(840, 600), new Point(800, 480)),
       new Triangle(new Point(800, 480), new Point(960, 640), new Point(840, 600)),
@@ -112,9 +118,10 @@ test('funnelPolypoints()', tester => {
     const funnelledPoints = funnelPolypoints(path).map(state => state.point);
     t.same(funnelledPoints, [path[0].point, triangles[1].p3, triangles[3].p3, path[9].point]);
 
-    PathRewireAPI.__ResetDependency__('getClearancePoint');
+    FunnelRewireAPI.__ResetDependency__('getClearancePoint');
     t.end();
   });
+
 
   tester.test('funnels properly with only two states in path', t => {
     const triangles = [
@@ -129,6 +136,72 @@ test('funnelPolypoints()', tester => {
     const funnelledPoints = funnelPolypoints(path).map(state => state.point);
     t.same(funnelledPoints, [path[0].point, path[1].point]);
 
+    t.end();
+  });
+});
+
+
+test('getClearancePoint()', tester => {
+  tester.test('works for top-left clearance', t => {
+    FunnelRewireAPI.__Rewire__('CLEARANCE', Math.sqrt(2));
+    const cornerPoint = new Point(0, 0);
+    const prevPoint = new Point(0, -1);
+    const nextPoint = new Point(-1, 0);
+
+    const clearancePoint = getClearancePoint(cornerPoint, prevPoint, nextPoint);
+    const expected = new Point(1, 1);
+    t.true(isRoughly(clearancePoint.x, expected.x));
+    t.true(isRoughly(clearancePoint.y, expected.y));
+
+    FunnelRewireAPI.__ResetDependency__('CLEARANCE');
+    t.end();
+  });
+
+
+  tester.test('works for top-right clearance', t => {
+    FunnelRewireAPI.__Rewire__('CLEARANCE', Math.sqrt(2));
+    const cornerPoint = new Point(0, 0);
+    const prevPoint = new Point(0, -1);
+    const nextPoint = new Point(1, 0);
+
+    const clearancePoint = getClearancePoint(cornerPoint, prevPoint, nextPoint);
+    const expected = new Point(-1, 1);
+    t.true(isRoughly(clearancePoint.x, expected.x));
+    t.true(isRoughly(clearancePoint.y, expected.y));
+
+    FunnelRewireAPI.__ResetDependency__('CLEARANCE');
+    t.end();
+  });
+
+
+  tester.test('works for bottom-left clearance', t => {
+    FunnelRewireAPI.__Rewire__('CLEARANCE', Math.sqrt(2));
+    const cornerPoint = new Point(0, 0);
+    const prevPoint = new Point(0, 1);
+    const nextPoint = new Point(1, 0);
+
+    const clearancePoint = getClearancePoint(cornerPoint, prevPoint, nextPoint);
+    const expected = new Point(-1, -1);
+    t.true(isRoughly(clearancePoint.x, expected.x));
+    t.true(isRoughly(clearancePoint.y, expected.y));
+
+    FunnelRewireAPI.__ResetDependency__('CLEARANCE');
+    t.end();
+  });
+
+
+  tester.test('works for bottom-right clearance', t => {
+    FunnelRewireAPI.__Rewire__('CLEARANCE', Math.sqrt(2));
+    const cornerPoint = new Point(0, 0);
+    const prevPoint = new Point(0, 1);
+    const nextPoint = new Point(-1, 0);
+
+    const clearancePoint = getClearancePoint(cornerPoint, prevPoint, nextPoint);
+    const expected = new Point(1, -1);
+    t.true(isRoughly(clearancePoint.x, expected.x));
+    t.true(isRoughly(clearancePoint.y, expected.y));
+
+    FunnelRewireAPI.__ResetDependency__('CLEARANCE');
     t.end();
   });
 });

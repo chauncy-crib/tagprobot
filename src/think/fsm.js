@@ -10,7 +10,7 @@ import { amRed,
 } from '../look/gameState';
 import { findCachedTile, findEnemyFC } from '../look/locations';
 import { BRP } from '../constants';
-import { getShortestPolypointPath } from '../navmesh/path';
+import { getShortestPolypointPath } from '../plan/astar';
 import { getDTGraph } from '../navmesh/triangulation';
 
 

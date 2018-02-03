@@ -1,8 +1,8 @@
 import _ from 'lodash';
-import { Point, pointsOnSameSide } from '../navmesh/graph';
-import { assert } from '../utils/asserts';
 
-const CLEARANCE = 19;
+import { assert } from '../utils/asserts';
+import { pointsOnSameSide } from '../navmesh/graph';
+
 
 /**
  * @param {Triangle[]} intersectingTriangles - array of triangles that intersect the edge
@@ -83,37 +83,6 @@ export function threePointsInLine(p1, p2, p3) {
  */
 export function areEdgesCollinear(e1, e2) {
   return threePointsInLine(e1.p1, e1.p2, e2.p1) && threePointsInLine(e1.p1, e1.p2, e2.p2);
-}
-
-
-/**
- * @param {Point} cornerPoint - the point on the corner that needs clearance
- * @param {Point} prevPoint - the previous point on the corner
- * @param {Point} nextPoint - the next point on the corner
- * @returns {Point} a point that is CLEARANCE away from the cornerPoint in the corner's normal
- *   direction
- */
-export function getClearancePoint(cornerPoint, prevPoint, nextPoint) {
-  const nextAngle = Math.atan2(
-    nextPoint.y - cornerPoint.y,
-    nextPoint.x - cornerPoint.x,
-  );
-  const prevAngle = Math.atan2(
-    prevPoint.y - cornerPoint.y,
-    prevPoint.x - cornerPoint.x,
-  );
-
-  // Minimum distance between angles
-  let distance = nextAngle - prevAngle;
-  if (Math.abs(distance) > Math.PI) distance -= Math.PI * (distance > 0 ? 2 : -2);
-
-  // Calculate perpendicular to average angle
-  const angle = prevAngle + (distance / 2) + (Math.PI);
-
-  const normal = new Point(Math.cos(angle), Math.sin(angle));
-
-  // Insert other point to path
-  return cornerPoint.add(normal.times(CLEARANCE));
 }
 
 

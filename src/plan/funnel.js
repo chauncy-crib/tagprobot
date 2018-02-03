@@ -1,50 +1,11 @@
-/**
- * Our A-star implementation is based on the pseudocode from this website:
- * http://www.growingwiththeweb.com/2012/06/a-pathfinding-algorithm.html
- */
 import _ from 'lodash';
-import { runAstar, State } from '../helpers/path';
+
 import { assert } from '../../src/utils/asserts';
-import { Point, Polypoint, pointsOnSameSide } from './graph';
-import { getClearancePoint } from '../utils/graphUtils';
+import { Point, pointsOnSameSide } from '../navmesh/graph';
+import { PolypointState } from './astar';
 
 
-export class PolypointState extends State {
-  constructor(point) {
-    super(null, null);
-    this.point = point;
-    this.key = point.toString();
-  }
-
-  /**
-   * @param {PolypointState} targetState - the PolypointState object we are calculating the
-   *   heuristic distance to
-   * @returns {number} the heuristic distance from this state to the targetState
-   */
-  heuristic(targetState) {
-    return this.point.distance(targetState.point);
-  }
-
-  equals(state) {
-    return this.point.equals(state.point);
-  }
-
-  /**
-   * @param {Graph} polypoints
-   * @returns {PolypointState[]} an array of neighboring PolypointStates, with g values initialized
-   *   to current node's g value + 1
-   */
-  neighbors(polypoints) {
-    // Create states from neighbors
-    const neighbors = _.map(polypoints.neighbors(this.point), n => new PolypointState(n));
-    // Assign g values of neighbors
-    _.forEach(neighbors, n => {
-      n.g = this.g + n.point.distance(this.point);
-      n.parent = this;
-    });
-    return neighbors;
-  }
-}
+const CLEARANCE = 19;
 
 
 /**
@@ -96,6 +57,37 @@ function getPortals(path) {
   leftPoints.push(lastState.point);
 
   return [leftPoints, rightPoints];
+}
+
+
+/**
+ * @param {Point} cornerPoint - the point on the corner that needs clearance
+ * @param {Point} prevPoint - the previous point on the corner
+ * @param {Point} nextPoint - the next point on the corner
+ * @returns {Point} a point that is CLEARANCE away from the cornerPoint in the corner's normal
+ *   direction
+ */
+export function getClearancePoint(cornerPoint, prevPoint, nextPoint) {
+  const nextAngle = Math.atan2(
+    nextPoint.y - cornerPoint.y,
+    nextPoint.x - cornerPoint.x,
+  );
+  const prevAngle = Math.atan2(
+    prevPoint.y - cornerPoint.y,
+    prevPoint.x - cornerPoint.x,
+  );
+
+  // Minimum distance between angles
+  let distance = nextAngle - prevAngle;
+  if (Math.abs(distance) > Math.PI) distance -= Math.PI * (distance > 0 ? 2 : -2);
+
+  // Calculate perpendicular to average angle
+  const angle = prevAngle + (distance / 2) + (Math.PI);
+
+  const normal = new Point(Math.cos(angle), Math.sin(angle));
+
+  // Insert other point to path
+  return cornerPoint.add(normal.times(CLEARANCE));
 }
 
 
@@ -170,36 +162,4 @@ export function funnelPolypoints(path) {
   // Add the target point
   funnelledPath.push(_.last(path));
   return funnelledPath;
-}
-
-
-/**
- * @param {Object} me - object with bot's position in pixels, xp and yp
- * @param {Object} target - object with target's position in pixels, xp and yp
- * @param {TGraph} tGraph - the triangulation graph to run Astar through
- * @returns {PolypointState[]} a list of states, starting from the startState to the targetState
- */
-export function getShortestPolypointPath(me, target, tGraph) {
-  assert(_.has(me, 'xp'), 'me does not have xp');
-  assert(_.has(me, 'yp'), 'me does not have yp');
-  assert(_.has(target, 'xp'), 'target does not have xp');
-  assert(_.has(target, 'yp'), 'target does not have yp');
-
-  const startTriangle = tGraph.findContainingTriangles(new Point(me.xp, me.yp))[0];
-  const endTriangle = tGraph.findContainingTriangles(new Point(target.xp, target.yp))[0];
-  assert(startTriangle, 'Could not find triangle for starting point');
-  assert(endTriangle, 'Could not find triangle for ending point');
-  const startState = new PolypointState(startTriangle.getCenter());
-  const targetState = new PolypointState(endTriangle.getCenter());
-  const path = runAstar(startState, targetState, tGraph.polypoints);
-
-  if (_.isNull(path)) return null; // if there was no path, return null
-
-  // Place the starting and final locations on the path, and remove the polypoint in the triangle we
-  //   are currently in
-  const initialPositionState = new PolypointState(new Polypoint(me.xp, me.yp, startTriangle));
-  const targetPositionState = new PolypointState(new Polypoint(target.xp, target.yp, endTriangle));
-  const fullPath = [initialPositionState].concat(_.slice(path, 1, -1)).concat(targetPositionState);
-
-  return funnelPolypoints(fullPath);
 }
