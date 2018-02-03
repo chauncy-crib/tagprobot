@@ -1,10 +1,9 @@
-/**
- * Our A-star implementation is based on the pseudocode from this website:
- * http://www.growingwiththeweb.com/2012/06/a-pathfinding-algorithm.html
- */
 import _ from 'lodash';
 import FibonacciHeap from '@tyriar/fibonacci-heap';
+
 import { assert } from '../../src/utils/asserts';
+import { Point, Polypoint } from '../navmesh/graph';
+import { funnelPolypoints } from './funnel';
 
 
 export class State {
@@ -32,6 +31,44 @@ export class State {
     assert(false, 'Method not implemented');
   }
   /* eslint-enable class-methods-use-this */
+}
+
+
+export class PolypointState extends State {
+  constructor(point) {
+    super(null, null);
+    this.point = point;
+    this.key = point.toString();
+  }
+
+  /**
+   * @param {PolypointState} targetState - the PolypointState object we are calculating the
+   *   heuristic distance to
+   * @returns {number} the heuristic distance from this state to the targetState
+   */
+  heuristic(targetState) {
+    return this.point.distance(targetState.point);
+  }
+
+  equals(state) {
+    return this.point.equals(state.point);
+  }
+
+  /**
+   * @param {Graph} polypoints
+   * @returns {PolypointState[]} an array of neighboring PolypointStates, with g values initialized
+   *   to current node's g value + 1
+   */
+  neighbors(polypoints) {
+    // Create states from neighbors
+    const neighbors = _.map(polypoints.neighbors(this.point), n => new PolypointState(n));
+    // Assign g values of neighbors
+    _.forEach(neighbors, n => {
+      n.g = this.g + n.point.distance(this.point);
+      n.parent = this;
+    });
+    return neighbors;
+  }
 }
 
 
@@ -105,4 +142,36 @@ export function runAstar(startState, targetState, neighborParam) {
     });
   }
   return null;
+}
+
+
+/**
+ * @param {Object} me - object with bot's position in pixels, xp and yp
+ * @param {Object} target - object with target's position in pixels, xp and yp
+ * @param {TGraph} tGraph - the triangulation graph to run Astar through
+ * @returns {PolypointState[]} a list of states, starting from the startState to the targetState
+ */
+export function getShortestPolypointPath(me, target, tGraph) {
+  assert(_.has(me, 'xp'), 'me does not have xp');
+  assert(_.has(me, 'yp'), 'me does not have yp');
+  assert(_.has(target, 'xp'), 'target does not have xp');
+  assert(_.has(target, 'yp'), 'target does not have yp');
+
+  const startTriangle = tGraph.findContainingTriangles(new Point(me.xp, me.yp))[0];
+  const endTriangle = tGraph.findContainingTriangles(new Point(target.xp, target.yp))[0];
+  assert(startTriangle, 'Could not find triangle for starting point');
+  assert(endTriangle, 'Could not find triangle for ending point');
+  const startState = new PolypointState(startTriangle.getCenter());
+  const targetState = new PolypointState(endTriangle.getCenter());
+  const path = runAstar(startState, targetState, tGraph.polypoints);
+
+  if (_.isNull(path)) return null; // if there was no path, return null
+
+  // Place the starting and final locations on the path, and remove the polypoint in the triangle we
+  //   are currently in
+  const initialPositionState = new PolypointState(new Polypoint(me.xp, me.yp, startTriangle));
+  const targetPositionState = new PolypointState(new Polypoint(target.xp, target.yp, endTriangle));
+  const fullPath = [initialPositionState].concat(_.slice(path, 1, -1)).concat(targetPositionState);
+
+  return funnelPolypoints(fullPath);
 }

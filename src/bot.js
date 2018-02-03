@@ -7,7 +7,7 @@ import { isAutonomousMode, isVisualMode, move } from './interface/keys';
 import { dequeueChatMessages } from './interface/chat';
 import { drawAllyPolypointPath } from './draw/triangulation';
 import { desiredAccelerationMultiplier } from './helpers/physics';
-import { getShortestPolypointPath } from './navmesh/path';
+import { getShortestPolypointPath } from './plan/astar';
 import { getDTGraph } from './navmesh/triangulation';
 
 
