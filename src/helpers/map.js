@@ -31,6 +31,7 @@ let numNTOWithinBufCells = [];
 // A list of x, y pairs, which are the locations in the map that might change
 const tilesToUpdate = [];
 const tilesToUpdateValues = []; // the values stored in those locations
+const internalMap = [];
 
 
 /**
@@ -136,6 +137,13 @@ export function updateNumNTO(numNTO, xMin, yMin, xMax, yMax, tileTraversability)
 }
 
 
+export function initInternalMap(map) {
+  assert(_.isEmpty(internalMap), 'internalMap not empty when initializing');
+  // Modify in place rather than declare with a let
+  for (let i = 0; i < map.length; i++) internalMap.push(_.clone(map[i]));
+}
+
+
 /**
  * Initializes mapTraversabilityCells to a grid of size map.length * CPTL with the correct values.
  *   Store all non-permanent locations in tilesToUpdate, and their corresponding values in
@@ -189,7 +197,7 @@ export function initMapTraversabilityCells(map) {
  * Given the tagpro map and a tile location which has changed state, update the unmergedGraph,
  *   mergedGraph, and polypointGraph
  */
-function updateNavMesh(map, xt, yt) {
+export function updateNavMesh(map, xt, yt) {
   updateUnmergedGraph(getUnmergedGraph(), map, xt, yt);
   const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
     updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, xt, yt);
@@ -225,6 +233,7 @@ export function getMapTraversabilityInCells(map) {
     const xy = tilesToUpdate[i];
     const tileId = map[xy.xt][xy.yt];
     const tileTraversability = getTileProperty(tileId, 'traversable');
+    internalMap[xy.xt][xy.yt] = map[xy.xt][xy.yt];
     // if the traversability of the tile in this location has changed since the last state
     if (tileTraversability !== getTileProperty(tilesToUpdateValues[i], 'traversable')) {
       tileChanged = true;
@@ -269,7 +278,7 @@ export function getMapTraversabilityInCells(map) {
       //   the tile has changed state
       if (areTempNTSpritesDrawn()) updateNTSprites(xy.xt, xy.yt, mapTraversabilityCells);
 
-      updateNavMesh(map, xy.xt, xy.yt);
+      updateNavMesh(internalMap, xy.xt, xy.yt);
     }
 
     // If the NT sprites are not already on the screen, then update the sprites for all tiles. This

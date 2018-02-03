@@ -538,6 +538,11 @@ test('getMapTraversabilityInCells', tester => {
       [1, 0, 1],
       [1, 1, 1],
     ]);
+    MapRewireAPI.__Rewire__('internalMap', [
+      [tempT, permT,  tempT],
+      [tempT, tempNT, permT],
+      [permT, permT,  tempT],
+    ]);
     MapRewireAPI.__Rewire__('numNTOWithinBufCells', [
       [1, 1, 1],
       [1, 1, 1],
@@ -604,6 +609,7 @@ test('getMapTraversabilityInCells', tester => {
     MapRewireAPI.__ResetDependency__('areTempNTSpritesDrawn');
     MapRewireAPI.__ResetDependency__('updateNavMesh');
     MapRewireAPI.__ResetDependency__('redrawNavMesh');
+    MapRewireAPI.__ResetDependency__('internalMap');
     t.end();
   });
 
