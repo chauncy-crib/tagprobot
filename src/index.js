@@ -1,8 +1,7 @@
 import botLoop from './bot';
-import { computeTileInfo } from './tiles';
-import { setupIsCenterFlag } from './helpers/constants';
-import { setupMe } from './helpers/player';
-import { setupLocations } from './helpers/finders';
+import { computeTileInfo } from './look/tileInfo';
+import { setupMe, setupIsCenterFlag } from './look/gameState';
+import { setupLocations } from './look/locations';
 import { setupTilesToUpdate, initInternalMap } from './helpers/map';
 import { onKeyDown } from './interface/keys';
 import { chatHelpMenu } from './interface/chat';

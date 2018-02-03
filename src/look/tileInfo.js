@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import { assert } from './utils/asserts';
-import { amBlue, amRed } from './helpers/player';
+import { assert } from '../utils/asserts';
+import { amBlue, amRed } from './gameState';
 
 
 const tileInfo = {}; // map from name to properties

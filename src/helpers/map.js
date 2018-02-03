@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { assert } from '../utils/asserts';
-import { getTileProperty } from '../tiles';
+import { getTileProperty } from '../look/tileInfo';
 import {
   resetTriangulationAndPolypointDrawing,
   drawTriangulation,

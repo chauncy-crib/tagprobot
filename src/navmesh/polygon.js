@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { Graph, Point } from './graph';
 import { threePointsInLine, areEdgesCollinear } from '../utils/graphUtils';
-import { getTileProperty, tileIsOneOf, tileIsAngleWall } from '../tiles';
+import { getTileProperty, tileIsOneOf, tileIsAngleWall } from '../look/tileInfo';
 import { PPTL } from '../constants';
 import { assert } from '../utils/asserts';
 import {
@@ -10,7 +10,7 @@ import {
   wallOnRight,
   wallOnTop,
   wallOnBottom,
-} from '../utils/polygonUtils';
+} from '../look/gameState';
 
 
 /**

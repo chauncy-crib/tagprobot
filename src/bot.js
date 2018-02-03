@@ -1,7 +1,7 @@
 import { assert } from './utils/asserts';
 import { BRP } from './constants';
 import { updateAndRedrawEntireNavmesh } from './helpers/map';
-import { getMe } from './helpers/player';
+import { getMe } from './look/gameState';
 import { FSM } from './helpers/fsm';
 import { isAutonomousMode, isVisualMode, move } from './interface/keys';
 import { dequeueChatMessages } from './interface/chat';

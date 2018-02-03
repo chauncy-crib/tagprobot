@@ -2,12 +2,16 @@ import _ from 'lodash';
 import { getPointsAlongPath } from '../utils/fsmUtils';
 import { getDist } from '../utils/geometry';
 import { drawEnemyPolypointPath } from '../draw/triangulation';
-import { isCenterFlag } from './constants';
-import { amRed, amBlue, getEnemyGoal } from './player';
-import { findCachedTile, findEnemyFC } from './finders';
+import { amRed,
+  amBlue,
+  getEnemyGoal,
+  isCenterFlag,
+  myTeamHasFlag,
+  enemyTeamHasFlag,
+} from '../look/gameState';
+import { findCachedTile, findEnemyFC } from '../look/locations';
 import { BRP } from '../constants';
 import { getShortestPolypointPath } from '../navmesh/path';
-import { myTeamHasFlag, enemyTeamHasFlag } from './gameState';
 import { getDTGraph } from '../navmesh/triangulation';
 
 
