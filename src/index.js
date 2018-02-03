@@ -3,7 +3,7 @@ import { computeTileInfo } from './tiles';
 import { setupIsCenterFlag } from './helpers/constants';
 import { setupMe } from './helpers/player';
 import { setupLocations } from './helpers/finders';
-import { initMapTraversabilityCells } from './helpers/map';
+import { initMapTraversabilityCells, initInternalMap } from './helpers/map';
 import {
   onKeyDown,
   setupVelocity,
@@ -61,6 +61,7 @@ function start() {
   chatHelpMenu();
 
   initMapTraversabilityCells(tagpro.map);
+  initInternalMap(tagpro.map);
   calculateNavMesh(tagpro.map, false);
 
   initUiUpdateProcess();
