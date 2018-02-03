@@ -51,14 +51,34 @@ export function wallOnBottom(map, xt, yt) {
 
 
 /**
- * Given a cell location, return if the cell above/below/left/right of it is traversable
+ * Given a cell location, return if the cell above/below/left/right of it is perm-NT
  */
-export function traversableInDirection(map, x, y, direction) {
+function permNTInDirection(map, x, y, direction) {
   switch (direction) {
-    case 'UP': return y !== 0 && getTileProperty(map[x][y - 1], 'traversable');
-    case 'DOWN': return y !== map[0].length - 1 && getTileProperty(map[x][y + 1], 'traversable');
-    case 'LEFT': return x !== 0 && getTileProperty(map[x - 1][y], 'traversable');
-    case 'RIGHT': return x !== map.length - 1 && getTileProperty(map[x + 1][y], 'traversable');
+    case 'UP': return (
+      y === 0 || (
+        !getTileProperty(map[x][y - 1], 'traversable') &&
+        getTileProperty(map[x][y - 1], 'permanent')
+      )
+    );
+    case 'DOWN': return (
+      y === map[0].length - 1 || (
+        !getTileProperty(map[x][y + 1], 'traversable') &&
+        getTileProperty(map[x][y + 1], 'permanent')
+      )
+    );
+    case 'LEFT': return (
+      x === 0 || (
+        !getTileProperty(map[x - 1][y], 'traversable') &&
+        getTileProperty(map[x - 1][y], 'permanent')
+      )
+    );
+    case 'RIGHT': return (
+      x === map.length - 1 || (
+        !getTileProperty(map[x + 1][y], 'traversable') &&
+        getTileProperty(map[x + 1][y], 'permanent')
+      )
+    );
     default:
       assert(false, `${direction} not in UP, DOWN, LEFT, RIGHT`);
       return null;
@@ -73,16 +93,16 @@ export function traversableInDirection(map, x, y, direction) {
 export function isAngleWallTraversable(map, x, y) {
   const id = map[x][y];
   if (tileHasName(id, 'ANGLE_WALL_1')) {
-    return traversableInDirection(map, x, y, 'UP') || traversableInDirection(map, x, y, 'RIGHT');
+    return !permNTInDirection(map, x, y, 'UP') || !permNTInDirection(map, x, y, 'RIGHT');
   }
   if (tileHasName(id, 'ANGLE_WALL_2')) {
-    return traversableInDirection(map, x, y, 'DOWN') || traversableInDirection(map, x, y, 'RIGHT');
+    return !permNTInDirection(map, x, y, 'DOWN') || !permNTInDirection(map, x, y, 'RIGHT');
   }
   if (tileHasName(id, 'ANGLE_WALL_3')) {
-    return traversableInDirection(map, x, y, 'DOWN') || traversableInDirection(map, x, y, 'LEFT');
+    return !permNTInDirection(map, x, y, 'DOWN') || !permNTInDirection(map, x, y, 'LEFT');
   }
   if (tileHasName(id, 'ANGLE_WALL_4')) {
-    return traversableInDirection(map, x, y, 'UP') || traversableInDirection(map, x, y, 'LEFT');
+    return !permNTInDirection(map, x, y, 'UP') || !permNTInDirection(map, x, y, 'LEFT');
   }
   assert(false, `Tile at ${x}, ${y} was not an angle wall`);
   return null;

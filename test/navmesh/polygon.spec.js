@@ -497,8 +497,8 @@ test('graphFromTagproMap', tester => {
     const unmergedGraph = unmergedGraphFromTagproMap(map);
     const graph = graphFromTagproMap(map, unmergedGraph);
 
-    t.is(graph.getVertices().length, 3);
-    t.is(graph.getEdges().length, 3);
+    t.is(graph.getVertices().length, 10);
+    t.is(graph.getEdges().length, 12);
 
     teardown();
     t.end();
