@@ -3,7 +3,7 @@ import { computeTileInfo } from './tiles';
 import { setupIsCenterFlag } from './helpers/constants';
 import { setupMe } from './helpers/player';
 import { setupLocations } from './helpers/finders';
-import { initMapTraversabilityCells, initInternalMap } from './helpers/map';
+import { setupTilesToUpdate, initInternalMap } from './helpers/map';
 import { onKeyDown } from './interface/keys';
 import { chatHelpMenu } from './interface/chat';
 import { calculateNavMesh } from './navmesh/triangulation';
@@ -53,8 +53,8 @@ function start() {
   setupIsCenterFlag();
   chatHelpMenu();
 
-  initMapTraversabilityCells(tagpro.map);
   initInternalMap(tagpro.map);
+  setupTilesToUpdate(tagpro.map);
   calculateNavMesh(tagpro.map, false);
 
   initUiUpdateProcess();

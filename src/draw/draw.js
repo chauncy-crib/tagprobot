@@ -1,5 +1,4 @@
 import { centerKeyPressesVis, toggleKeyPressVis } from './keys';
-import { toggleTraversabilityVis } from './traversability';
 import { toggleTriangulationVis, togglePolypointVis, togglePathVis } from './triangulation';
 
 
@@ -59,7 +58,6 @@ export function initUiUpdateProcess() {
  */
 export function clearSprites() {
   toggleKeyPressVis(false);
-  toggleTraversabilityVis(false);
   toggleTriangulationVis(false);
   togglePolypointVis(false);
   togglePathVis(false);
@@ -67,7 +65,6 @@ export function clearSprites() {
 
 
 export function turnOnAllDrawings() {
-  toggleTraversabilityVis(true);
   toggleKeyPressVis(true);
   toggleTriangulationVis(true);
   togglePolypointVis(true);
