@@ -2,7 +2,7 @@ import { assert } from './utils/asserts';
 import { BRP } from './constants';
 import { updateAndRedrawEntireNavmesh } from './helpers/map';
 import { getMe } from './look/gameState';
-import { FSM } from './helpers/fsm';
+import { FSM } from './think/fsm';
 import { isAutonomousMode, isVisualMode, move } from './interface/keys';
 import { dequeueChatMessages } from './interface/chat';
 import { drawAllyPolypointPath } from './draw/triangulation';
