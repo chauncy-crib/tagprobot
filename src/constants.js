@@ -1,4 +1,3 @@
-import { getNTKernel } from './helpers/constants';
 import { assert } from '../src/utils/asserts';
 
 
@@ -14,17 +13,11 @@ export const PPTL = 40;
 export const CPTL = 2;
 assert(PPTL % CPTL === 0, 'CPTL does not divide evenly into PPTL');
 
-// Pixels per cell length
-export const PPCL = PPTL / CPTL;
-
 // Size of the Tagpro ball
 export const BRP = 19; // ball radius, in pixels
 
 // use diagonals in A* calculation
 export const DIAGONAL = true;
-
-// Nontraversable kernel, which applies a buffer around NTOs on the map
-export const NT_KERNEL = getNTKernel();
 
 // Drawing constants
 export const ALLY_PATH_COLOR = 0x00ff00; // Green

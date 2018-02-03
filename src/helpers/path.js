@@ -4,8 +4,7 @@
  */
 import _ from 'lodash';
 import FibonacciHeap from '@tyriar/fibonacci-heap';
-import { assert, assertGridInBounds } from '../../src/utils/asserts';
-import { DIAGONAL } from '../constants';
+import { assert } from '../../src/utils/asserts';
 
 
 export class State {
@@ -35,76 +34,6 @@ export class State {
   /* eslint-enable class-methods-use-this */
 }
 
-export class PathState extends State {
-  constructor(xc, yc) {
-    super();
-    this.xc = xc;
-    this.yc = yc;
-    this.key = `${xc},${yc}`;
-  }
-
-  /**
-   * @param {GameState} targetState - the GameState object we are calculating the heuristic distance
-   *   to
-   * @returns {number} the heuristic distance from this state to the targetState
-   */
-  heuristic(targetState) {
-    const xDiff = Math.abs(this.xc - targetState.xc);
-    const yDiff = Math.abs(this.yc - targetState.yc);
-    if (DIAGONAL) {
-      const diagDist = Math.sqrt(2) * Math.min(xDiff, yDiff);
-      const linDist = Math.abs(xDiff - yDiff);
-      return diagDist + linDist;
-    }
-    return xDiff + yDiff;
-  }
-
-  equals(state) {
-    return this.xc === state.xc && this.yc === state.yc;
-  }
-
-  /**
-   * @param {number[][]} traversabilityCells - 2d grid of cell traversabilities, 1 for traversable,
-   *   0 for NT
-   * @returns {GameState[]} an array of neighboring GameStates, with g values initialized to current
-   *   node's g value + 1
-   */
-  neighbors(traversabilityCells) {
-    // Vertical and horizontal neighbors
-    let potentialNeighbors = [
-      new PathState(this.xc - 1, this.yc),
-      new PathState(this.xc + 1, this.yc),
-      new PathState(this.xc, this.yc - 1),
-      new PathState(this.xc, this.yc + 1),
-    ];
-    // Diagonal neighbors
-    if (DIAGONAL) {
-      potentialNeighbors = potentialNeighbors.concat([
-        new PathState(this.xc - 1, this.yc - 1),
-        new PathState(this.xc - 1, this.yc + 1),
-        new PathState(this.xc + 1, this.yc - 1),
-        new PathState(this.xc + 1, this.yc + 1),
-      ]);
-    }
-    // Assign g values of neighbors
-    _.forEach(potentialNeighbors, n => {
-      n.g = this.g + 1;
-      n.parent = this;
-    });
-    // Filter out out of bounds and NT neighbors
-    return _.filter(potentialNeighbors, n => {
-      if (
-        n.xc < 0
-        || n.yc < 0
-        || n.xc >= traversabilityCells.length
-        || n.yc >= traversabilityCells[0].length
-      ) {
-        return false;
-      }
-      return traversabilityCells[n.xc][n.yc];
-    });
-  }
-}
 
 /**
  * @param {State} finalState - the final target State object. Will use to construct the path
@@ -177,29 +106,3 @@ export function runAstar(startState, targetState, neighborParam) {
   }
   return null;
 }
-
-
-/**
- * Takes in current location and target location (eg, the location of the flag) and the map
- *   represented as a grid of 1 and 0, where 1s are traversable and 0s are not. Uses A* to calculate
- *   the best path
- * @param {Object} me - object with bot's position in cells, xc and yc
- * @param {Object} target - object with target's position in cells, xc and yc
- * @param {number} traversabilityCells - 2D array of cells. Traversable cells are 1s, others are 0.
- * @returns {PathState[]} a list of states, starting from the startState to the targetState
- */
-export function getShortestCellPath(me, target, traversabilityCells) {
-  assert(_.has(me, 'xc'));
-  assert(_.has(me, 'yc'));
-  assert(_.has(target, 'xc'));
-  assert(_.has(target, 'yc'));
-
-  assertGridInBounds(traversabilityCells, me.xc, me.yc);
-  assertGridInBounds(traversabilityCells, target.xc, target.yc);
-
-  const startState = new PathState(me.xc, me.yc);
-  const targetState = new PathState(target.xc, target.yc);
-
-  return runAstar(startState, targetState, traversabilityCells);
-}
-

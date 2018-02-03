@@ -8,8 +8,6 @@ test('clearSprites', tester => {
   tester.test('toggles all drawings', t => {
     const mockToggleKeyPressVis = sinon.spy();
     DrawRewireAPI.__Rewire__('toggleKeyPressVis', mockToggleKeyPressVis);
-    const mockToggleTraversabilityVis = sinon.spy();
-    DrawRewireAPI.__Rewire__('toggleTraversabilityVis', mockToggleTraversabilityVis);
     const mockToggleTriangulationVis = sinon.spy();
     DrawRewireAPI.__Rewire__('toggleTriangulationVis', mockToggleTriangulationVis);
     const mockTogglePolypointVis = sinon.spy();
@@ -19,13 +17,11 @@ test('clearSprites', tester => {
 
     clearSprites();
     t.is(mockToggleKeyPressVis.callCount, 1);
-    t.is(mockToggleTraversabilityVis.callCount, 1);
     t.is(mockToggleTriangulationVis.callCount, 1);
     t.is(mockTogglePolypointVis.callCount, 1);
     t.is(mockTogglePathVis.callCount, 1);
 
     DrawRewireAPI.__ResetDependency__('toggleKeyPressVis');
-    DrawRewireAPI.__ResetDependency__('toggleTraversabilityVis');
     DrawRewireAPI.__ResetDependency__('toggleTriangulationVis');
     DrawRewireAPI.__ResetDependency__('togglePolypointVis');
     DrawRewireAPI.__ResetDependency__('togglePathVis');

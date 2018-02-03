@@ -1,6 +1,6 @@
 import { assert } from './utils/asserts';
-import { PPCL, BRP } from './constants';
-import { getMapTraversabilityInCells } from './helpers/map';
+import { BRP } from './constants';
+import { updateAndRedrawEntireNavmesh } from './helpers/map';
 import { getMe } from './helpers/player';
 import { FSM } from './helpers/fsm';
 import { isAutonomousMode, isVisualMode, move } from './interface/keys';
@@ -20,17 +20,13 @@ function getAccelValues() {
   const me = getMe();
 
   const goal = FSM(me);
-  me.xc = Math.floor((me.x + BRP) / PPCL);
-  me.yc = Math.floor((me.y + BRP) / PPCL);
 
   const finalTarget = {
     xp: goal.xp,
     yp: goal.yp,
-    xc: Math.floor(goal.xp / PPCL),
-    yc: Math.floor(goal.yp / PPCL),
   };
-  // Runtime: O(M*CPTL^2) with visualizations on, O(M + S*CPTL^2) with visualizations off
-  getMapTraversabilityInCells(map);
+
+  updateAndRedrawEntireNavmesh(map);
 
   const polypointShortestPath = getShortestPolypointPath(
     { xp: me.x + BRP, yp: me.y + BRP },
