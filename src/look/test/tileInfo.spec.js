@@ -10,7 +10,7 @@ import {
   tileHasProperty,
   tileIsOneOf,
   __RewireAPI__ as TileRewireAPI,
-} from '../src/tiles';
+} from '../tileInfo';
 
 // functions for setupTiles and teardownTiles tests begin here
 

@@ -1,11 +1,13 @@
 import _ from 'lodash';
 
-import { tileHasName, tileIsOneOf } from '../tiles';
-import { isOnMyTeam } from './player';
+import { tileHasName, tileIsOneOf } from '../look/tileInfo';
+import { isOnMyTeam } from './gameState';
 import { PPTL } from '../constants';
 import { assert } from '../utils/asserts';
 
+
 const locations = {};
+
 
 /**
  * @param {string} tileName
@@ -29,6 +31,11 @@ function centerOfMass(tileName) {
   return { xt: Math.floor(xSum / count), yt: Math.floor(ySum / count) };
 }
 
+
+/**
+ * Parses each tile of the TagPro map. If it discovers a flag, add its location to the locations
+ *   object. Also defines the endzone positions for red and blue teams.
+ */
 export function setupLocations() {
   assert(tagpro.map, 'tagpro.map is undefined');
   locations.BLUE_ENDZONE = centerOfMass('BLUE_ENDZONE');
