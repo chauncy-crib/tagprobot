@@ -55,6 +55,8 @@ export function computeTileInfo() {
       YELLOW_FLAG_TAKEN: { id: '16.1', traversable: true, permanent: false },
       RED_ENDZONE: { id: 17, traversable: true, permanent: true },
       BLUE_ENDZONE: { id: 18, traversable: true, permanent: true },
+      GRAVITY_WELL: { id: 22, traversable: false, permanent: true },
+      YELLOW_TEAM_TILE: { id: 23, traversable: true, permanent: true },
       RED_BALL: { id: 'redball', traversable: true, permanent: false },
       BLUE_BALL: { id: 'blueball', traversable: true, permanent: false },
     },
