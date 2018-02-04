@@ -351,6 +351,10 @@ export class Triangle {
     return p.equals(this.p1) || p.equals(this.p2) || p.equals(this.p3);
   }
 
+  hasEdge(e) {
+    return this.hasPoint(e.p1) && this.hasPoint(e.p2);
+  }
+
   toString() {
     return JSON.stringify({ p1: this.p1, p2: this.p2, p3: this.p3 });
   }
@@ -366,25 +370,13 @@ export class TGraph extends Graph {
     super();
     this.triangles = new Set();
     this.fixedAdj = {};
-    this.polypoints = null;
+    this.polypoints = new Graph();
   }
 
   numTriangles() {
     return this.triangles.size;
   }
 
-  calculatePolypointGraph() {
-    this.polypoints = new Graph();
-    this.triangles.forEach(triangle => {
-      const triangleCenter = triangle.getCenter();
-      this.polypoints.addVertex(triangleCenter);
-      _.forEach(this.getAdjacentTriangles(triangle), t => {
-        const adjCenter = t.getCenter();
-        this.polypoints.addVertex(adjCenter);
-        this.polypoints.addEdge(triangleCenter, adjCenter);
-      });
-    });
-  }
 
   getAdjacentTriangles(t) {
     const res = [];
@@ -394,6 +386,7 @@ export class TGraph extends Graph {
     if (op3) res.push(this.findTriangle(t.p1, t.p2, op3));
     if (op2) res.push(this.findTriangle(t.p1, t.p3, op2));
     if (op1) res.push(this.findTriangle(t.p2, t.p3, op1));
+    assert(!_.some(res, _.isNull), 'One triangle was null');
     return res;
   }
 
@@ -434,6 +427,11 @@ export class TGraph extends Graph {
     this.addEdgeAndVertices(t.p1, t.p2);
     this.addEdgeAndVertices(t.p1, t.p3);
     this.addEdgeAndVertices(t.p2, t.p3);
+    this.polypoints.addVertex(t.getCenter());
+    _.forEach(this.getAdjacentTriangles(t), adjT => {
+      const adjCenter = adjT.getCenter();
+      this.polypoints.addEdge(t.getCenter(), adjCenter);
+    });
   }
 
   /**
@@ -475,6 +473,9 @@ export class TGraph extends Graph {
   }
 
   removeTriangleByReference(t) {
+    if (this.polypoints.hasVertex(t.getCenter())) {
+      this.polypoints.removeVertex(t.getCenter());
+    }
     this.triangles.delete(t);
     this.removeEdge(t.p1, t.p2);
     this.removeEdge(t.p1, t.p3);
@@ -500,6 +501,14 @@ export class TGraph extends Graph {
     const fixedNeighbors = this.fixedAdj[e.p1];
     // Return true if any of p1's fixedNeighbors are equal to p2
     return _.some(fixedNeighbors, n => n.equals(e.p2));
+  }
+
+  /**
+   * @param {{p1: Point, p2: Point}} e - an edge
+   * @returns {Triangle[]} all triangles which have one edge equal to e
+   */
+  findTrianglesWithEdge(e) {
+    return _.filter(Array.from(this.triangles), t => t.hasEdge(e));
   }
 
   /**
@@ -624,6 +633,13 @@ export class TGraph extends Graph {
    * @param {{p1: Point, p2: Point}} e - the edge to add
    */
   addConstraintEdge(e) {
+    const trianglesAcross = this.findTrianglesWithEdge(e);
+    if (trianglesAcross.length === 2) {
+      this.polypoints.removeEdge(
+        trianglesAcross[0].getCenter(),
+        trianglesAcross[1].getCenter(),
+      );
+    }
     // If edge already exists, just make it fixed since everything is already triangulated
     if (this.isConnected(e.p1, e.p2)) {
       this.addFixedEdge(e);

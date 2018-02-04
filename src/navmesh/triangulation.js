@@ -54,7 +54,6 @@ export function delaunayTriangulation(
       DTGraph.removeVertexAndTriangles(dummyPoint);
     });
   }
-  DTGraph.calculatePolypointGraph();
 }
 
 

@@ -202,7 +202,6 @@ export function updateNavMesh(map, xt, yt) {
   const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
     updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, xt, yt);
   getDTGraph().dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
-  getDTGraph().calculatePolypointGraph();
 }
 
 /**
