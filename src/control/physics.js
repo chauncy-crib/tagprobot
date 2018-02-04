@@ -1,4 +1,11 @@
-import { ACCEL, MAX_SPEED, DAMPING_FACTOR } from '../constants';
+import { BRP, ACCEL, MAX_SPEED, DAMPING_FACTOR } from '../constants';
+import { assert } from '../utils/asserts';
+import { getMe } from '../look/gameState';
+import { FSM } from '../think/fsm';
+import { updateAndRedrawEntireNavmesh } from '../helpers/map';
+import { getShortestPolypointPath } from '../plan/astar';
+import { getDTGraph } from '../navmesh/triangulation';
+import { drawAllyPolypointPath } from '../draw/triangulation';
 
 
 /**
@@ -35,7 +42,7 @@ function boundValue(value, lowerBound, upperBound) {
 
 /**
  * Given the current state of the bot, return the next position and velocity assuming you hold a
- * key for a timestep
+ *   key for a timestep
  * @param {number} xp - x position, pixels
  * @param {number} yp - y position, pixels
  * @param {number} vxp - x-velocity, pixels/second
@@ -108,6 +115,7 @@ export function binarySearchAcceleration(pos, vel, target, time, threshold = 0.0
   return (hi + lo) / 2;
 }
 
+
 /**
  * @param {number} xp - starting x position
  * @param {number} yp - starting y position
@@ -158,3 +166,48 @@ export function desiredAccelerationMultiplier(xp, yp, vxp, vyp, destXp, destYp) 
   return res;
 }
 
+
+/**
+ * @returns {{accX: number, accY: number}} The desired acceleration multipliers the bot should
+ *   achieve with arrow key presses. Positive directions are down and right.
+ */
+export function getAccelValues() {
+  const { map } = tagpro;
+  const me = getMe();
+
+  const goal = FSM(me);
+
+  const finalTarget = {
+    xp: goal.xp,
+    yp: goal.yp,
+  };
+
+  updateAndRedrawEntireNavmesh(map);
+
+  const polypointShortestPath = getShortestPolypointPath(
+    { xp: me.x + BRP, yp: me.y + BRP },
+    finalTarget,
+    getDTGraph(),
+  );
+
+  drawAllyPolypointPath(polypointShortestPath);
+
+  const target = { xp: me.x + BRP, yp: me.y + BRP };
+  if (polypointShortestPath) {
+    const { length } = polypointShortestPath;
+    assert(length > 1, `Shortest path was length ${length}`);
+    target.xp = polypointShortestPath[1].point.x;
+    target.yp = polypointShortestPath[1].point.y;
+  } else {
+    console.warn('Shortest path was null, using own location as target');
+  }
+
+  return desiredAccelerationMultiplier(
+    me.x + BRP, // the x center of our ball, in pixels
+    me.y + BRP, // the y center of our ball, in pixels
+    me.vx, // our v velocity
+    me.vy, // our y velocity
+    target.xp, // the x we are seeking toward (pixels)
+    target.yp, // the y we are seeking toward (pixels)
+  );
+}
