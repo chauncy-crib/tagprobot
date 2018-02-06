@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import FibonacciHeap from '@tyriar/fibonacci-heap';
 
-import { assert } from '../../src/utils/asserts';
+import { assert } from '../global/utils';
 import { Point } from '../interpret/point';
 import { Polypoint } from '../interpret/polypoint';
 import { funnelPolypoints } from './funnel';

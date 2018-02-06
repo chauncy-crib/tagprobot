@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { BRP } from '../constants';
+import { BRP } from '../global/constants';
 import { drawEnemyPolypointPath } from '../draw/triangulation';
 import { amRed,
   amBlue,

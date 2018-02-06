@@ -1,6 +1,6 @@
-import { BRP } from '../constants';
+import { BRP } from '../global/constants';
+import { assert } from '../global/utils';
 import { ACCEL, MAX_SPEED, DAMPING_FACTOR } from './constants';
-import { assert } from '../utils/asserts';
 import { getMe } from '../look/gameState';
 import { FSM } from '../think/fsm';
 import { getDTGraph, updateAndRedrawEntireNavmesh } from '../interpret/graphToTriangulation';

@@ -1,6 +1,6 @@
 import test from 'tape';
 
-import { isRoughly } from '../../utils/general';
+import { isRoughly } from '../../global/utils';
 import { MAX_SPEED } from '../constants';
 import {
   projectedState,

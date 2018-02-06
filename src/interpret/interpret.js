@@ -1,4 +1,4 @@
-import { assert } from '../utils/asserts';
+import { assert } from '../global/utils';
 
 
 export function determinant(matrix) {
