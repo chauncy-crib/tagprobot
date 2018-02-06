@@ -1,5 +1,6 @@
 import _ from 'lodash';
-import { getDist } from '../utils/geometry';
+
+import { BRP } from '../constants';
 import { drawEnemyPolypointPath } from '../draw/triangulation';
 import { amRed,
   amBlue,
@@ -9,8 +10,8 @@ import { amRed,
   enemyTeamHasFlag,
 } from '../look/gameState';
 import { findCachedTile, findEnemyFC } from '../look/locations';
-import { BRP } from '../constants';
 import { getShortestPolypointPath } from '../plan/astar';
+import { Point } from '../interpret/point';
 import { getDTGraph } from '../interpret/graphToTriangulation';
 
 
@@ -27,12 +28,7 @@ function getPointsAlongPath(path, granularity = 40) {
   for (let i = 0; i < path.length - 1; i += 1) {
     const currPoint = path[i].point;
     const nextPoint = path[i + 1].point;
-    const edgeLength = getDist(
-      currPoint.x,
-      currPoint.y,
-      nextPoint.x,
-      nextPoint.y,
-    );
+    const edgeLength = currPoint.distance(nextPoint);
     const increments = Math.floor(edgeLength / granularity);
     const xIncr = (nextPoint.x - currPoint.x) / increments;
     const yIncr = (nextPoint.y - currPoint.y) / increments;
@@ -60,8 +56,9 @@ export function chaseEnemyFC(me, goal, enemyFC, enemyShortestPath) {
 
   // Set goal as the interception point
   const interceptionPolypoint = _.find(getPointsAlongPath(enemyShortestPath), polypoint => {
-    const myDist = getDist(polypoint.x, polypoint.y, me.x + BRP, me.y + BRP);
-    const enemyDist = getDist(polypoint.x, polypoint.y, enemyFC.x + BRP, enemyFC.y + BRP);
+    const pp = new Point(polypoint.x, polypoint.y);
+    const myDist = pp.distance(new Point(me.x + BRP, me.y + BRP));
+    const enemyDist = pp.distance(new Point(enemyFC.x + BRP, enemyFC.y + BRP));
     return myDist < enemyDist;
   });
   if (interceptionPolypoint) {
