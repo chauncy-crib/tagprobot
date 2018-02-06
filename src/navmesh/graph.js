@@ -558,7 +558,7 @@ export class TGraph extends Graph {
    * Adds the point to the triangulation. Ensures the triangulation is delaunay-legal after
    *   insertion
    */
-  addTriangulationVertex(p) {
+  delaunayAddVertex(p) {
     assert(!this.hasVertex(p));
     const containingTriangles = this.findContainingTriangles(p);
     assert(
@@ -632,7 +632,7 @@ export class TGraph extends Graph {
    *   region
    * @param {{p1: Point, p2: Point}} e - the edge to add
    */
-  addConstraintEdge(e) {
+  delaunayAddConstraintEdge(e) {
     const trianglesAcross = this.findTrianglesWithEdge(e);
     if (trianglesAcross.length === 2) {
       this.polypoints.removeEdge(
@@ -751,8 +751,8 @@ export class TGraph extends Graph {
   dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices) {
     _.forEach(unfixEdges, e => this.unfixEdge(e));
     _.forEach(removeVertices, v => this.delaunayRemoveVertex(v));
-    _.forEach(addVertices, v => this.addTriangulationVertex(v));
-    _.forEach(constrainingEdges, e => this.addConstraintEdge(e));
+    _.forEach(addVertices, v => this.delaunayAddVertex(v));
+    _.forEach(constrainingEdges, e => this.delaunayAddConstraintEdge(e));
   }
 }
 

@@ -41,12 +41,12 @@ export function delaunayTriangulation(
     );
   });
   _.forEach(shuffledVertices, vertex => {
-    DTGraph.addTriangulationVertex(vertex);
+    DTGraph.delaunayAddVertex(vertex);
   });
 
   const shuffledEdges = _.shuffle(mapGraph.getEdges());
   _.forEach(shuffledEdges, e => {
-    DTGraph.addConstraintEdge(e);
+    DTGraph.delaunayAddConstraintEdge(e);
   });
 
   if (removeDummy) {
