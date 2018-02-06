@@ -5,7 +5,9 @@ import {
   getClearancePoint,
   __RewireAPI__ as FunnelRewireAPI,
 } from '../funnel';
-import { Polypoint, Point, Triangle } from '../../navmesh/graph';
+import { Point } from '../../interpret/point';
+import { Polypoint } from '../../interpret/polypoint';
+import { Triangle } from '../../interpret/triangle';
 import { PolypointState } from '../astar';
 import { isRoughly } from '../../utils/general';
 

@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import { computeTileInfo, __RewireAPI__ as TileRewireAPI } from '../src/tiles';
+import { computeTileInfo, __RewireAPI__ as TileRewireAPI } from '../../look/tileInfo';
 
 export function setupTiles() {
   TileRewireAPI.__Rewire__('amBlue', sinon.stub().returns(true));

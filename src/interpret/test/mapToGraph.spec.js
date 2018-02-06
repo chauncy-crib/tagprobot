@@ -1,54 +1,16 @@
 import test from 'tape';
-import sinon from 'sinon';
-import { PPTL } from '../../src/constants';
+
+import { PPTL } from '../../constants';
+import { setup, teardown } from './test.spec';
+import { setupTiles, teardownTiles } from './setupTiles.spec';
+import { Point } from '../point';
 import {
   mapToEdgeTiles,
-  unmergedGraphFromTagproMap,
   graphFromTagproMap,
+  unmergedGraphFromTagproMap,
   updateUnmergedGraph,
   updateMergedGraph,
-  __RewireAPI__ as PolygonRewireAPI,
-} from '../../src/navmesh/polygon';
-import { __RewireAPI__ as PolygonUtilRewireAPI } from '../../src/utils/polygonUtils';
-import { Point, TGraph } from '../../src/navmesh/graph';
-import { __RewireAPI__ as TileRewireAPI } from '../../src/tiles';
-import { setupTiles, teardownTiles } from '../setupTiles';
-import {
-  calculateNavMesh,
-  getMergedGraph,
-  getUnmergedGraph,
-  __RewireAPI__ as TriangulationRewireAPI,
-} from '../../src/navmesh/triangulation';
-
-
-/**
- * A fake for the purpose of rewiring tileHasName to handle angle walls in unit-tests correctly.
- */
-function fakeTileHasName(id, name) {
-  if (id === 1.1 && name === 'ANGLE_WALL_1') return true;
-  if (id === 1.2 && name === 'ANGLE_WALL_2') return true;
-  if (id === 1.3 && name === 'ANGLE_WALL_3') return true;
-  if (id === 1.4 && name === 'ANGLE_WALL_4') return true;
-  return false;
-}
-
-function setup() {
-  const mockGetTileProperty = sinon.stub();
-  mockGetTileProperty.withArgs(1, 'traversable').returns(true);
-  mockGetTileProperty.returns(false);
-  const mockTileHasName = sinon.stub().callsFake(fakeTileHasName);
-  PolygonRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
-  PolygonUtilRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
-  PolygonUtilRewireAPI.__Rewire__('tileHasName', mockTileHasName);
-  TileRewireAPI.__Rewire__('tileHasName', mockTileHasName);
-}
-
-function teardown() {
-  PolygonRewireAPI.__ResetDependency__('getTileProperty');
-  PolygonUtilRewireAPI.__ResetDependency__('getTileProperty');
-  PolygonUtilRewireAPI.__ResetDependency__('tileHasName');
-  TileRewireAPI.__ResetDependency__('tileHasName');
-}
+} from '../mapToGraph';
 
 
 test('mapToEdgeTiles', tester => {
@@ -96,6 +58,7 @@ test('mapToEdgeTiles', tester => {
     teardown();
     t.end();
   });
+
 
   tester.test('correct number of tiles with diagonals', t => {
     setup();
@@ -146,6 +109,7 @@ test('mapToEdgeTiles', tester => {
     t.end();
   });
 
+
   tester.test('diagonal edge of map edge case', t => {
     setup();
     // Here, there is a diagonal "point" at the top of the map
@@ -167,6 +131,7 @@ test('mapToEdgeTiles', tester => {
 
   tester.end();
 });
+
 
 test('unmergedGraphFromTagproMap', tester => {
   tester.test('draws edges around the outside and inside of a hollow square', t => {
@@ -624,44 +589,6 @@ test('updateMergedGraph', tester => {
     t.is(constrainingEdges.length, 4);
     t.is(removeVertices.length, 1);
     t.is(addVertices.length, 1);
-
-    teardownTiles();
-    t.end();
-  });
-});
-
-test('dynamicUpdate', tester => {
-  tester.test('single NT tile', t => {
-    setupTiles();
-    const mockDTGraph = new TGraph();
-    TriangulationRewireAPI.__Rewire__('DTGraph', mockDTGraph);
-    const map = [
-      [2, 2, 2, 2, 2],
-      [2, 2, 2, 2, 2],
-      [2, 2, 10, 2, 2],
-      [2, 2, 2, 2, 2],
-      [2, 2, 2, 2, 2],
-    ];
-    calculateNavMesh(map, true);
-
-    t.is(mockDTGraph.numFixedEdges(), 8);
-    t.is(mockDTGraph.numEdges(), 17);
-    t.is(mockDTGraph.numTriangles(), 10);
-
-    map[2][2] = '10.1';
-    updateUnmergedGraph(getUnmergedGraph(), map, 2, 2);
-    const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
-      updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, 2, 2);
-    mockDTGraph.dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
-
-    t.is(unfixEdges.length, 4);
-    t.is(constrainingEdges.length, 0);
-    t.is(removeVertices.length, 4);
-    t.is(addVertices.length, 0);
-    t.is(mockDTGraph.numTriangles(), 2);
-    t.is(mockDTGraph.numVertices(), 4);
-    t.is(mockDTGraph.numEdges(), 5);
-    t.is(mockDTGraph.numFixedEdges(), 4);
 
     teardownTiles();
     t.end();

@@ -2,7 +2,8 @@ import test from 'tape';
 import sinon from 'sinon';
 
 import { toggleTriangulationVis, __RewireAPI__ as TriangulationRewireAPI } from '../triangulation';
-import { Point, Graph } from '../../navmesh/graph';
+import { Point } from '../../interpret/point';
+import { Graph } from '../../interpret/graph';
 
 
 test('toggleTriangulationVis()', tester => {

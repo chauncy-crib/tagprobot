@@ -2,10 +2,13 @@ import botLoop from './bot';
 import { computeTileInfo } from './look/tileInfo';
 import { setupMe, setupIsCenterFlag } from './look/gameState';
 import { setupLocations } from './look/locations';
-import { setupTilesToUpdate, initInternalMap } from './helpers/map';
+import {
+  initInternalMap,
+  setupTilesToUpdate,
+  calculateNavMesh,
+} from './interpret/graphToTriangulation';
 import { onKeyDown } from './interface/keys';
 import { chatHelpMenu } from './interface/chat';
-import { calculateNavMesh } from './navmesh/triangulation';
 import {
   turnOnAllDrawings,
   initUiUpdateProcess,

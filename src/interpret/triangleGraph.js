@@ -1,364 +1,11 @@
 import _ from 'lodash';
+
 import { assert } from '../utils/asserts';
-import {
-  findUpperAndLowerPoints,
-  threePointsInLine,
-  areEdgesCollinear,
-  detD,
-  detH,
-} from '../utils/graphUtils';
-
-/**
- * Represents an x, y pixel location on the tagpro map. Used as vertices to define polygons.
- */
-export class Point {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
-  }
-
-  equals(other) {
-    return this.x === other.x && this.y === other.y;
-  }
-
-  subtract(other) {
-    const x = this.x - other.x;
-    const y = this.y - other.y;
-    return new Point(x, y);
-  }
-
-  add(other) {
-    const x = this.x + other.x;
-    const y = this.y + other.y;
-    return new Point(x, y);
-  }
-
-  times(scalar) {
-    const x = this.x * scalar;
-    const y = this.y * scalar;
-    return new Point(x, y);
-  }
-
-  distance(other) {
-    return Math.sqrt(this.distanceSquared(other));
-  }
-
-  distanceSquared(other) {
-    const vector = this.subtract(other);
-    return (vector.x ** 2) + (vector.y ** 2);
-  }
-
-  dot(other) {
-    return (this.x * other.x) + (this.y * other.y);
-  }
-
-  toString() {
-    return `x: ${this.x}, y: ${this.y}`;
-  }
-}
-
-/**
- * @param {Point} p1
- * @param {Point} p2
- * @param {{p1: Point, p2: Point}} e - an edge
- * @returns {boolean} if the two points are on the same side of the edge
- */
-export function pointsOnSameSide(p1, p2, e) {
-  return detD(e.p1, e.p2, p1) * detD(e.p1, e.p2, p2) > 0;
-}
-
-/**
- * @param {Triangle} t
- * @param {{p1: Point, p2: Point}} e - an edge
- * @returns {boolean} if the triangle intersects or touches the edge
- */
-export function isTriangleIntersectingEdge(t, e) {
-  const e1 = e.p1;
-  const e2 = e.p2;
-  const t1 = t.p1;
-  const t2 = t.p2;
-  const t3 = t.p3;
-
-  // False if t1, t2, and t3 are all on same side of e
-  if (pointsOnSameSide(t1, t2, e) && pointsOnSameSide(t2, t3, e)) return false;
-
-  // False if e1 and e2 are both on other side of t1-t2 as t3
-  const t12 = { p1: t1, p2: t2 }; // edge between t1 and t2
-  if (!pointsOnSameSide(e1, t3, t12) && !pointsOnSameSide(e2, t3, t12)) return false;
-
-  // False if e1 and e2 are both on other side of t2-t3 as t1
-  const t23 = { p1: t2, p2: t3 }; // edge between t2 and t3
-  if (!pointsOnSameSide(e1, t1, t23) && !pointsOnSameSide(e2, t1, t23)) return false;
-
-  // False if e1 and e2 are both on other side of t3-t1 as t2
-  const t31 = { p1: t3, p2: t1 }; // edge between t3 and t1
-  if (!pointsOnSameSide(e1, t2, t31) && !pointsOnSameSide(e2, t2, t31)) return false;
-
-  return true;
-}
-
-
-/**
- * Adapted from: https://stackoverflow.com/questions/6989100/sort-points-in-clockwise-order
- * @param {Point[]} points
- * @param {Point} inputCenter - an optional input point to sort points around
- * @returns {Point[]} the points sorted in counter clockwise order around the center-of-mass of
- *   these points, or the specified input center, starting at 12 o'clock
- */
-export function sortCounterClockwise(points, inputCenter) {
-  const center = inputCenter || {
-    x: _.sumBy(points, 'x') / points.length,
-    y: _.sumBy(points, 'y') / points.length,
-  };
-  return points.sort((a, b) => {
-    if (a.x - center.x >= 0 && b.x - center.x < 0) return true;
-    if (a.x - center.x < 0 && b.x - center.x >= 0) return false;
-    if (a.x - center.x === 0 && b.x - center.x === 0) {
-      if (a.y - center.y >= 0 || b.y - center.y >= 0) return a.y > b.y;
-      return b.y > a.y;
-    }
-
-    // Compute the cross product of vectors (center -> a) x (center -> b)
-    const det = ((a.x - center.x) * (b.y - center.y)) - ((b.x - center.x) * (a.y - center.y));
-    if (det < 0) return true;
-    if (det > 0) return false;
-
-    // Points a and b are on the same line from the center
-    // Check which point is closer to the center
-    const d1 = ((a.x - center.x) * (a.x - center.x)) + ((a.y - center.y) * (a.y - center.y));
-    const d2 = ((b.x - center.x) * (b.x - center.x)) + ((b.y - center.y) * (b.y - center.y));
-    return d1 > d2;
-  });
-}
-
-
-/**
- * Checks if edge e is delaunay-legal with respect to the inserted point
- * @param {Point} insertedPoint - the point being added to the triangulation
- * @param {{p1: Point, p2: Point}} e - the edge we are checking for legality
- * @param {Point} oppositePoint - The third point of the adjacent triangle to e.p1, e.p2,
- *   insertedPoint
- * @returns {boolean} true if the opposite point is not inside the circle which touches e.p1, e.p2,
- *   insertedPoint
- */
-export function isLegal(insertedPoint, e, oppositePoint) {
-  const [A, B, C] = sortCounterClockwise([insertedPoint, e.p1, e.p2]);
-  const E = oppositePoint;
-  return detH(A, B, C, E) <= 0;
-}
-
-
-/**
- * Represents the polygons as a graph, with vertices and edges surrounding the polygons.
- */
-export class Graph {
-  constructor() {
-    this.adj = {}; // map from point object to list of adjacent points
-    this.vertices = [];
-  }
-
-  addEdge(p1, p2) {
-    assert(_.has(this.adj, p1), `${p1} not initialized in the graph with addVertex()`);
-    assert(_.has(this.adj, p2), `${p2} not initialized in the graph with addVertex()`);
-    if (this.isConnected(p1, p2)) {
-      return;
-    }
-    this.adj[p1].push(p2);
-    this.adj[p2].push(p1);
-  }
-
-  addEdgeAndVertices(p1, p2) {
-    this.addVertex(p1);
-    this.addVertex(p2);
-    this.addEdge(p1, p2);
-  }
-
-  removeEdgeAndVertices(p1, p2) {
-    this.removeEdge(p1, p2);
-    if (this.neighbors(p1).length === 0) this.removeVertex(p1);
-    if (this.neighbors(p2).length === 0) this.removeVertex(p2);
-  }
-
-  removeEdge(p1, p2) {
-    this.adj[p1] = _.reject(this.adj[p1], p => p.equals(p2));
-    this.adj[p2] = _.reject(this.adj[p2], p => p.equals(p1));
-  }
-
-  removeVertex(vertex) {
-    // clear all edges attached to the vertex
-    _.forEach(this.adj[vertex], a => {
-      this.adj[a] = _.reject(this.adj[a], v => vertex.equals(v));
-    });
-    // remove the vertex
-    delete this.adj[vertex];
-    this.vertices = _.reject(this.vertices, v => vertex.equals(v));
-  }
-
-  isConnected(p1, p2) {
-    if (!this.hasVertex(p1) || !this.hasVertex(p2)) return false;
-    const N = this.neighbors(p1);
-    // Return true if any of p1's neighbors are equal to p2
-    return _.some(N, n => n.equals(p2));
-  }
-
-  copy() {
-    const g = new Graph();
-    _.forEach(this.getVertices(), v => g.addVertex(v));
-    _.forEach(this.getEdges(), e => g.addEdge(e.p1, e.p2));
-    return g;
-  }
-
-  /**
-   * @returns {Point[]} the neighbors of the point
-   */
-  neighbors(p) {
-    assert(this.hasVertex(p), `Cannot find neighbors of vertex not in graph: ${p}`);
-    return this.adj[p];
-  }
-
-  hasVertex(p) {
-    return _.has(this.adj, p);
-  }
-
-  /**
-   * Adds a point to the graph
-   * @returns {boolean} if the point was successfully added
-   */
-  addVertex(point) {
-    assert(!_.isNil(point), 'Point was undefined');
-    // Only add vertex if it doesn't already exist in the graph
-    if (_.has(this.adj, point)) return false;
-    this.adj[point] = [];
-    this.vertices.push(point);
-    return true;
-  }
-
-  /**
-   * @returns {Point[]} all vertices in the graph
-   */
-  getVertices() {
-    // Return a copy of the vertices list
-    return _.clone(this.vertices);
-  }
-
-  /**
-   * @returns {number} the number of vertices in the graph
-   */
-  numVertices() {
-    return this.getVertices().length;
-  }
-
-  /**
-   * @param {Graph} graph
-   * @param {{x: number, y: number}} e
-   * @returns {{x: number, y: number}[]} all edges from the graph which are in-line with the input
-   *   edge. (Ie, they have identical slopes, and x and y intercepts).
-   */
-  edgesInLineWith(e) {
-    return _.filter(this.getEdges(), edge => areEdgesCollinear(e, edge));
-  }
-
-  getEdges() {
-    const edges = [];
-    _.forEach(this.vertices, p1 => {
-      _.forEach(this.adj[p1], p2 => {
-        const edgeExists = _.some(edges, e => (
-          (e.p1.equals(p1) && e.p2.equals(p2)) ||
-          (e.p1.equals(p2) && e.p2.equals(p1))
-        ));
-        if (!edgeExists) {
-          edges.push({ p1, p2 });
-        }
-      });
-    });
-    return edges;
-  }
-
-  /**
-   * @returns {number} the number of edges in the graph
-   */
-  numEdges() {
-    return this.getEdges().length;
-  }
-}
-
-
-/**
- * Same as a Point, but keeps a reference to its containing triangle for funneling.
- */
-export class Polypoint extends Point {
-  constructor(x, y, triangle) {
-    super(x, y);
-    this.t = triangle;
-  }
-}
-
-
-export class Triangle {
-  constructor(p1, p2, p3, checkEmpty = true) {
-    assert(
-      !(checkEmpty && threePointsInLine(p1, p2, p3)),
-      'Tried to make a triangle with no area',
-    );
-    this.p1 = p1;
-    this.p2 = p2;
-    this.p3 = p3;
-  }
-
-  /**
-   * @returns {Polypoint} the center point of the triangle
-   */
-  getCenter() {
-    return new Polypoint(
-      Math.round((this.p1.x + this.p2.x + this.p3.x) / 3),
-      Math.round((this.p1.y + this.p2.y + this.p3.y) / 3),
-      this,
-    );
-  }
-
-  getEdgeCenters() {
-    return [
-      new Point((this.p1.x + this.p2.x) / 2, (this.p1.y + this.p2.y) / 2),
-      new Point((this.p2.x + this.p3.x) / 2, (this.p2.y + this.p3.y) / 2),
-      new Point((this.p1.x + this.p3.x) / 2, (this.p1.y + this.p3.y) / 2),
-    ];
-  }
-
-  getPoints() {
-    return [this.p1, this.p2, this.p3];
-  }
-
-  /**
-   * @param {Triangle} other
-   * @returns {{shared: Point[], unique: Point[]}} shared contains all points which appear in both
-   *   triangles, unique has all points contained in exactly one of the triangles
-   */
-  categorizePoints(other) {
-    const shared = _.intersectionBy(this.getPoints(), other.getPoints(), p => p.toString());
-    const allPoints = this.getPoints().concat(other.getPoints());
-    const unique = _.reject(allPoints, p => _.some(shared, s => s.equals(p)));
-    return { shared, unique };
-  }
-
-  equals(other) {
-    const points1 = [this.p1, this.p2, this.p3];
-    const points2 = [other.p1, other.p2, other.p3];
-    // Return if p1 in points1 has some p2 in points2 where p2.equals(p1)
-    return _.every(points1, p1 => _.some(points2, p2 => p2.equals(p1)));
-  }
-
-  hasPoint(p) {
-    return p.equals(this.p1) || p.equals(this.p2) || p.equals(this.p3);
-  }
-
-  hasEdge(e) {
-    return this.hasPoint(e.p1) && this.hasPoint(e.p2);
-  }
-
-  toString() {
-    return JSON.stringify({ p1: this.p1, p2: this.p2, p3: this.p3 });
-  }
-}
+import { detD, detH } from './interpret';
+import { sortCounterClockwise } from './point';
+import { Triangle, isTriangleIntersectingEdge, findUpperAndLowerPoints } from './triangle';
+import { Graph } from './graph';
+import { isLegal } from './graphToTriangulation';
 
 
 /*
@@ -372,6 +19,7 @@ export class TGraph extends Graph {
     this.fixedAdj = {};
     this.polypoints = new Graph();
   }
+
 
   numTriangles() {
     return this.triangles.size;
@@ -389,6 +37,7 @@ export class TGraph extends Graph {
     assert(!_.some(res, _.isNull), 'One triangle was null');
     return res;
   }
+
 
   /**
    * @param {Point} p
@@ -422,6 +71,7 @@ export class TGraph extends Graph {
     return containingTriangles;
   }
 
+
   addTriangle(t) {
     this.triangles.add(t);
     this.addEdgeAndVertices(t.p1, t.p2);
@@ -433,6 +83,7 @@ export class TGraph extends Graph {
       this.polypoints.addEdge(t.getCenter(), adjCenter);
     });
   }
+
 
   /**
    * @param {Point} p1
@@ -449,6 +100,7 @@ export class TGraph extends Graph {
     });
     return res;
   }
+
 
   /**
    * Remove all triangles and the associated edges connected to a point
@@ -467,10 +119,12 @@ export class TGraph extends Graph {
     this.removeVertex(p);
   }
 
+
   removeTriangleByPoints(p1, p2, p3) {
     const r = this.findTriangle(p1, p2, p3);
     if (r) this.removeTriangleByReference(r);
   }
+
 
   removeTriangleByReference(t) {
     if (this.polypoints.hasVertex(t.getCenter())) {
@@ -482,12 +136,14 @@ export class TGraph extends Graph {
     this.removeEdge(t.p2, t.p3);
   }
 
+
   /**
    * Overrides the super class function to initialize point in the fixedAdj
    */
   addVertex(point) {
     if (super.addVertex(point)) this.fixedAdj[point] = [];
   }
+
 
   addFixedEdge(e) {
     assert(this.hasVertex(e.p1) && this.hasVertex(e.p2));
@@ -496,12 +152,14 @@ export class TGraph extends Graph {
     this.fixedAdj[e.p2].push(e.p1);
   }
 
+
   isEdgeFixed(e) {
     assert(this.isConnected(e.p1, e.p2), `${JSON.stringify(e)} is not a connected edge`);
     const fixedNeighbors = this.fixedAdj[e.p1];
     // Return true if any of p1's fixedNeighbors are equal to p2
     return _.some(fixedNeighbors, n => n.equals(e.p2));
   }
+
 
   /**
    * @param {{p1: Point, p2: Point}} e - an edge
@@ -539,6 +197,7 @@ export class TGraph extends Graph {
     return _.isEmpty(oppositePoint) ? null : oppositePoint[0];
   }
 
+
   /**
    * If the edge e is not delaunay-legal, flip it, and recursively legalize the resulting triangles
    */
@@ -553,6 +212,7 @@ export class TGraph extends Graph {
       this.legalizeEdge(insertedPoint, { p1: e.p2, p2: oppositePoint });
     }
   }
+
 
   /**
    * Adds the point to the triangulation. Ensures the triangulation is delaunay-legal after
@@ -594,6 +254,7 @@ export class TGraph extends Graph {
       this.legalizeEdge(p, { p1: cp.shared[1], p2: cp.unique[1] });
     }
   }
+
 
   /**
    * Recursively triangulates an un-triangulated region of points
@@ -664,6 +325,7 @@ export class TGraph extends Graph {
     this.triangulateRegion(lowerPoints);
   }
 
+
   getFixedEdges() {
     const edges = [];
     _.forEach(this.vertices, p1 => {
@@ -680,9 +342,11 @@ export class TGraph extends Graph {
     return edges;
   }
 
+
   numFixedEdges() {
     return this.getFixedEdges().length;
   }
+
 
   /**
    * @param {Point} p the point to remove from the triangulation graph and validly triangulate
@@ -731,6 +395,7 @@ export class TGraph extends Graph {
     this.removeVertex(p);
   }
 
+
   unfixEdge(e) {
     assert(this.isConnected(e.p1, e.p2), `Edge ${JSON.stringify(e)} not in graph`);
     const { p1, p2 } = e;
@@ -755,4 +420,3 @@ export class TGraph extends Graph {
     _.forEach(constrainingEdges, e => this.delaunayAddConstraintEdge(e));
   }
 }
-
