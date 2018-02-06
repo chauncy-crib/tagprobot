@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import { Graph, Point } from './graph';
-import { threePointsInLine, areEdgesCollinear } from '../utils/graphUtils';
+import { Graph } from './graph';
+import { Point, threePointsInLine, areEdgesCollinear } from './point';
 import { getTileProperty, tileIsOneOf, tileIsAngleWall } from '../look/tileInfo';
 import { PPTL } from '../constants';
 import { assert } from '../utils/asserts';

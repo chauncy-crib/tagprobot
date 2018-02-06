@@ -1,10 +1,12 @@
 import test from 'tape';
+
+import { Point } from '../point';
+import { TGraph } from '../triangleGraph';
 import {
   delaunayTriangulation,
   getDTGraph,
   __RewireAPI__ as TriangulationRewireAPI,
-} from '../../src/navmesh/triangulation';
-import { Point, TGraph } from '../../src/navmesh/graph';
+} from '../graphToTriangulation';
 
 
 test('delaunayTriangulation()', tester => {

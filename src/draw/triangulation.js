@@ -12,7 +12,7 @@ import {
   TRIANGULATION_ALPHA,
   TRIANGULATION_THICKNESS,
 } from '../constants';
-import { getDTGraph } from '../navmesh/triangulation';
+import { getDTGraph } from '../interpret/graphToTriangulation';
 
 
 let allyPolypointPathGraphics = null; // PIXI Graphics for drawing the bot's polypoint path
@@ -192,4 +192,14 @@ export function togglePathVis(setTo = !pathsOn) {
     allyPolypointPathGraphics.clear();
     enemyPolypointPathGraphics.clear();
   }
+}
+
+
+/**
+ * Redraw the triangulation and polypoints
+ */
+export function redrawNavMesh() {
+  resetTriangulationAndPolypointDrawing();
+  drawTriangulation();
+  drawPolypoints();
 }

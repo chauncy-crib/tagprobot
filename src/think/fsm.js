@@ -11,7 +11,7 @@ import { amRed,
 import { findCachedTile, findEnemyFC } from '../look/locations';
 import { BRP } from '../constants';
 import { getShortestPolypointPath } from '../plan/astar';
-import { getDTGraph } from '../navmesh/triangulation';
+import { getDTGraph } from '../interpret/graphToTriangulation';
 
 
 /**

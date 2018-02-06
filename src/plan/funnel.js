@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { assert } from '../../src/utils/asserts';
-import { Point, pointsOnSameSide } from '../navmesh/graph';
+import { Point, pointsOnSameSide } from '../interpret/point';
 import { PolypointState } from './astar';
 
 

@@ -2,9 +2,8 @@ import { BRP, ACCEL, MAX_SPEED, DAMPING_FACTOR } from '../constants';
 import { assert } from '../utils/asserts';
 import { getMe } from '../look/gameState';
 import { FSM } from '../think/fsm';
-import { updateAndRedrawEntireNavmesh } from '../helpers/map';
+import { getDTGraph, updateAndRedrawEntireNavmesh } from '../interpret/graphToTriangulation';
 import { getShortestPolypointPath } from '../plan/astar';
-import { getDTGraph } from '../navmesh/triangulation';
 import { drawAllyPolypointPath } from '../draw/triangulation';
 
 
