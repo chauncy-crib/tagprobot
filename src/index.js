@@ -1,4 +1,3 @@
-import botLoop from './bot';
 import { computeTileInfo } from './look/tileInfo';
 import { setupMe, setupIsCenterFlag } from './look/gameState';
 import { setupLocations } from './look/locations';
@@ -7,12 +6,11 @@ import {
   setupTilesToUpdate,
   calculateNavMesh,
 } from './interpret/graphToTriangulation';
-import { onKeyDown } from './interface/keys';
-import { chatHelpMenu } from './interface/chat';
-import {
-  turnOnAllDrawings,
-  initUiUpdateProcess,
-} from './draw/draw';
+import { getAccelValues } from './control/physics';
+import { onKeyDown, isAutonomousMode, isVisualMode, move } from './interface/keys';
+import { chatHelpMenu, dequeueChatMessages } from './interface/chat';
+import { turnOnAllDrawings, initUiUpdateProcess } from './draw/draw';
+
 
 // Handle keypress and related events for manual/auto toggle
 window.onkeydown = onKeyDown;
@@ -30,6 +28,19 @@ function setupVelocity() {
     tagpro.players[this.player.id].vy = this.m_linearVelocity.y * 100;
     return this.m_linearVelocity;
   };
+}
+
+
+/**
+ * The base loop for defining the bot's behavior.
+ */
+function botLoop() {
+  dequeueChatMessages();
+  if (isAutonomousMode()) {
+    move(getAccelValues());
+  } else if (isVisualMode()) {
+    getAccelValues();
+  }
 }
 
 
