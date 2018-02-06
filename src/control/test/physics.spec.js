@@ -1,11 +1,12 @@
 import test from 'tape';
 
+import { isRoughly } from '../../utils/general';
+import { MAX_SPEED } from '../constants';
 import {
   projectedState,
   binarySearchAcceleration,
-  desiredAccelerationMultiplier } from '../physics';
-import { isRoughly } from '../../utils/general';
-import { MAX_SPEED } from '../../constants';
+  desiredAccelerationMultiplier,
+} from '../physics';
 
 
 test('projectedState', tester => {

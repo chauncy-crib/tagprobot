@@ -1,5 +1,5 @@
 import { getPixiSquare } from './draw';
-import { KEY_COLOR, KEY_ON_ALPHA, KEY_OFF_ALPHA } from '../constants';
+import { KEY_COLOR, KEY_ON_ALPHA, KEY_OFF_ALPHA } from './constants';
 
 
 let keyPressOn = false;

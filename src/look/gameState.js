@@ -1,7 +1,7 @@
-import { TEAMS } from '../constants';
+import { assert } from '../utils/asserts';
+import { TEAMS } from './constants';
 import { findCachedTile } from './locations';
 import { getTileProperty, tileIsOneOf, tileHasName } from '../look/tileInfo';
-import { assert } from '../utils/asserts';
 
 
 let me;

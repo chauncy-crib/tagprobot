@@ -11,7 +11,7 @@ import {
   TRIANGULATION_EDGE_COLOR,
   TRIANGULATION_ALPHA,
   TRIANGULATION_THICKNESS,
-} from '../constants';
+} from './constants';
 import { getDTGraph } from '../interpret/graphToTriangulation';
 
 
