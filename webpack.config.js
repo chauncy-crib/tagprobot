@@ -4,7 +4,7 @@ var APP_DIR = path.resolve(__dirname, 'src/');
 
 module.exports = function(env) {
   exports = {
-    entry: APP_DIR + '/index.js',
+    entry: APP_DIR + '/start.js',
     output: {
       filename: 'bundle.js',
       path: path.resolve(__dirname, 'public')
