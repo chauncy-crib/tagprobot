@@ -35,7 +35,7 @@
     "import/prefer-default-export": "off",
   },
   // these are globals made available through either the tagpro API or by
-  // requiring them in src/index.js
+  // requiring them in src/start.js
   "globals": {
     "tagpro": false,
     "Box2D": false,
