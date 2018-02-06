@@ -1,4 +1,5 @@
-import { PPTL } from '../constants';
+import { PPTL } from '../global/constants';
+
 
 // Tagpro physics
 const maxSpeedMPS = 2.5; // meters per second

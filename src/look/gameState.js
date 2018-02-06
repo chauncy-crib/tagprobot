@@ -1,4 +1,4 @@
-import { assert } from '../utils/asserts';
+import { assert } from '../global/utils';
 import { TEAMS } from './constants';
 import { findCachedTile } from './locations';
 import { getTileProperty, tileIsOneOf, tileHasName } from '../look/tileInfo';

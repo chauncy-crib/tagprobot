@@ -14,6 +14,7 @@ export function assert(condition, errorMessage = 'Assertion failed') {
   }
 }
 
+
 export function assertGridInBounds(grid, x, y) {
   const width = grid.length;
   const height = grid[0].length;
@@ -27,4 +28,9 @@ export function assertGridInBounds(grid, x, y) {
     y < height,
     `Grid out of bounds error: y>= height of input grid. y=${y}, height=${height}`,
   );
+}
+
+
+export function isRoughly(val, expected, threshold = 0.01) {
+  return Math.abs(val - expected) <= threshold;
 }

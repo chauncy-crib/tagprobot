@@ -1,15 +1,15 @@
 import test from 'tape';
 
+import { isRoughly } from '../../global/utils';
+import { Point } from '../../interpret/point';
+import { Polypoint } from '../../interpret/polypoint';
+import { Triangle } from '../../interpret/triangle';
+import { PolypointState } from '../astar';
 import {
   funnelPolypoints,
   getClearancePoint,
   __RewireAPI__ as FunnelRewireAPI,
 } from '../funnel';
-import { Point } from '../../interpret/point';
-import { Polypoint } from '../../interpret/polypoint';
-import { Triangle } from '../../interpret/triangle';
-import { PolypointState } from '../astar';
-import { isRoughly } from '../../utils/general';
 
 
 const mockGetClearancePoint = cornerPoint => cornerPoint;

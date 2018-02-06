@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { assert } from '../utils/asserts';
+import { assert } from '../global/utils';
 import { amBlue, amRed } from './gameState';
 
 

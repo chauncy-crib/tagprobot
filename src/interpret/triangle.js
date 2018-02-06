@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { assert } from '../utils/asserts';
+import { assert } from '../global/utils';
 import { Point, threePointsInLine, pointsOnSameSide } from './point';
 import { Polypoint } from './polypoint';
 

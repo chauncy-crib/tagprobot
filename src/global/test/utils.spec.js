@@ -1,5 +1,6 @@
 import test from 'tape';
-import { assert, assertGridInBounds } from '../../src/utils/asserts';
+
+import { assert, assertGridInBounds } from '../utils';
 
 
 test('assert: does not throw errors with condition=true', t => {

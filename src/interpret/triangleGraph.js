@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { assert } from '../utils/asserts';
+import { assert } from '../global/utils';
 import { detD, detH } from './interpret';
 import { sortCounterClockwise } from './point';
 import { Triangle, isTriangleIntersectingEdge, findUpperAndLowerPoints } from './triangle';

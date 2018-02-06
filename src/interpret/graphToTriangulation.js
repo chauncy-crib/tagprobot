@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { assert } from '../utils/asserts';
+import { assert } from '../global/utils';
 import { detH } from './interpret';
 import { Point, sortCounterClockwise } from './point';
 import { Triangle } from './triangle';

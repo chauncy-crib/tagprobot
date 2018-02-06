@@ -1,6 +1,6 @@
 import test from 'tape';
 
-import { PPTL } from '../../constants';
+import { PPTL } from '../../global/constants';
 import { setup, teardown } from './test.spec';
 import { setupTiles, teardownTiles } from './setupTiles.spec';
 import { Point } from '../point';

@@ -1,9 +1,9 @@
 import _ from 'lodash';
 
-import { tileHasName, tileIsOneOf } from '../look/tileInfo';
+import { PPTL } from '../global/constants';
+import { assert } from '../global/utils';
+import { tileHasName, tileIsOneOf } from './tileInfo';
 import { isOnMyTeam } from './gameState';
-import { PPTL } from '../constants';
-import { assert } from '../utils/asserts';
 
 
 const locations = {};
