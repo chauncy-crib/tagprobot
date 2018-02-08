@@ -1,9 +1,9 @@
 import { computeTileInfo } from './look/tileInfo';
-import { setupMe, setupIsCenterFlag } from './look/gameState';
-import { setupLocations } from './look/locations';
+import { initMe, initIsCenterFlag } from './look/gameState';
+import { initLocations } from './look/locations';
 import {
   initInternalMap,
-  setupTilesToUpdate,
+  initTilesToUpdate,
   calculateNavMesh,
 } from './interpret/graphToTriangulation';
 import { getAccelValues } from './control/physics';
@@ -22,7 +22,7 @@ window.onkeydown = onKeyDown;
  *   check our client-side velocity at a much higher refresh rate (60 Hz), so we use this and store
  *   it in the me object. Units are in pixels/second. 1 meter = 2.5 tiles = 100 pixels.
  */
-function setupVelocity() {
+function setupClientVelocity() {
   Box2D.Dynamics.b2Body.prototype.GetLinearVelocity = function accurateVelocity() {
     tagpro.players[this.player.id].vx = this.m_linearVelocity.x * 100;
     tagpro.players[this.player.id].vy = this.m_linearVelocity.y * 100;
@@ -59,15 +59,15 @@ function loop() {
  */
 function start() {
   // Setup
-  setupMe();
-  setupVelocity();
+  initMe();
+  setupClientVelocity();
   computeTileInfo();
-  setupLocations();
-  setupIsCenterFlag();
+  initLocations();
+  initIsCenterFlag();
   chatHelpMenu();
 
   initInternalMap(tagpro.map);
-  setupTilesToUpdate(tagpro.map);
+  initTilesToUpdate(tagpro.map);
   calculateNavMesh(tagpro.map, false);
 
   initUiUpdateProcess();

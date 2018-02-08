@@ -118,7 +118,7 @@ export function getDTGraph() {
  *   tilesToUpdateValues
  * @param {number} map - 2D array representing the Tagpro map
  */
-export function setupTilesToUpdate(map) {
+export function initTilesToUpdate(map) {
   const xtl = map.length;
   const ytl = map[0].length;
   for (let xt = 0; xt < xtl; xt++) {

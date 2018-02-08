@@ -9,7 +9,7 @@ let currGameIsCenterFlag;
 
 
 // Sets up the "me" player for this helper file.
-export function setupMe() {
+export function initMe() {
   me = tagpro.players[tagpro.playerId];
 }
 
@@ -34,7 +34,7 @@ export function isOnMyTeam(player) {
 }
 
 
-export function setupIsCenterFlag() {
+export function initIsCenterFlag() {
   currGameIsCenterFlag = findCachedTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']) !== null;
 }
 
