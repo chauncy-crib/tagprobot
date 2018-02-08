@@ -40,10 +40,10 @@ export function getPixiSquare(xp, yp, size, alpha, color) {
 /**
  * The tagpro object has a function that is called every time the user interface needs to be
  *   updated (this function is defined at tagpro.ui.update). We have made additions to the UI that
- *   now need to be updated along with the rest of the builtin TagPro UI. This initUiUpdateProcess
+ *   now need to be updated along with the rest of the builtin TagPro UI. This initUiUpdateFunction
  *   function appends our own custom commands to the tagpro builtin UI update commands.
  */
-export function initUiUpdateProcess() {
+export function initUiUpdateFunction() {
   const updateUi = tagpro.ui.update;
   tagpro.ui.update = () => {
     updateUi();
@@ -52,10 +52,6 @@ export function initUiUpdateProcess() {
 }
 
 
-/**
- * Erases all sprites in pathSprites, tempNTSprites, and permNTSprites. Reassigns pathSprites and
- *   tempNTSprites to empty list. Runtime: O(N^2)
- */
 export function clearSprites() {
   toggleKeyPressVis(false);
   toggleTriangulationVis(false);

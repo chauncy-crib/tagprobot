@@ -1,3 +1,4 @@
+import { assert } from '../global/utils';
 import { getPixiSquare } from './draw';
 import { KEY_COLOR, KEY_ON_ALPHA, KEY_OFF_ALPHA } from './constants';
 
@@ -90,7 +91,7 @@ function updateKeyPressesDrawing(keyIndex, newAlpha) {
       yp = -keySize - keyGap;
       break;
     default:
-      throw new Error(`Given key index does not exist: ${keyIndex}`);
+      assert(false, `Given key index does not exist: ${keyIndex}`);
   }
   keyPressesVis.removeChildAt(keyIndex);
   keyPressesVis.addChildAt(
@@ -133,9 +134,6 @@ export function drawKeyPresses(directions) {
 export function toggleKeyPressVis(setTo = !keyPressOn) {
   if (setTo === keyPressOn) return;
   keyPressOn = setTo;
-  if (!keyPressOn) {
-    keyPressesVis.removeChildren();
-  } else {
-    drawBlankKeyPresses();
-  }
+  if (!keyPressOn) keyPressesVis.removeChildren();
+  else drawBlankKeyPresses();
 }
