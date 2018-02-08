@@ -36,7 +36,7 @@ function centerOfMass(tileName) {
  * Parses each tile of the TagPro map. If it discovers a flag, add its location to the locations
  *   object. Also defines the endzone positions for red and blue teams.
  */
-export function setupLocations() {
+export function initLocations() {
   assert(tagpro.map, 'tagpro.map is undefined');
   locations.BLUE_ENDZONE = centerOfMass('BLUE_ENDZONE');
   locations.RED_ENDZONE = centerOfMass('RED_ENDZONE');
@@ -60,7 +60,7 @@ export function setupLocations() {
 /**
  * Returns the position xp and yp (in pixels) of the center of one of the specified tile
  *   types. Assumes that the potential location of the tile has been stored by calling
- *   setupLocations(). Runtime: O(1)
+ *   initLocations(). Runtime: O(1)
  * @param {(number | number[])} tiles - either a number representing a tileType,
  *   or an array of such numbers
  */
