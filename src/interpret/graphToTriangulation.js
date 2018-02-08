@@ -137,7 +137,7 @@ export function initTilesToUpdate(map) {
  * Given the tagpro map and a tile location which has changed state, update the unmergedGraph,
  *   mergedGraph, and polypointGraph
  */
-export function updateNavMesh(map, xt, yt) {
+function updateNavMeshAtLocation(map, xt, yt) {
   updateUnmergedGraph(getUnmergedGraph(), map, xt, yt);
   const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
     updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, xt, yt);
@@ -165,7 +165,7 @@ export function updateAndRedrawEntireNavmesh(map) {
     if (tileTraversability !== getTileProperty(tilesToUpdateValues[i], 'traversable')) {
       tileChanged = true;
       tilesToUpdateValues[i] = tileId;
-      updateNavMesh(internalMap, xy.xt, xy.yt);
+      updateNavMeshAtLocation(internalMap, xy.xt, xy.yt);
     }
   }
   if (tileChanged) redrawNavMesh();

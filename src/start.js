@@ -9,7 +9,7 @@ import {
 import { getAccelValues } from './control/physics';
 import { onKeyDown, isAutonomousMode, isVisualMode, move } from './interface/keys';
 import { chatHelpMenu, dequeueChatMessages } from './interface/chat';
-import { turnOnAllDrawings, initUiUpdateProcess } from './draw/draw';
+import { turnOnAllDrawings, initUiUpdateFunction } from './draw/draw';
 
 
 // Handle keypress and related events for manual/auto toggle
@@ -53,9 +53,9 @@ function start() {
 
   initInternalMap(tagpro.map);
   initTilesToUpdate(tagpro.map);
-  calculateNavMesh(tagpro.map, false);
+  calculateNavMesh(tagpro.map);
 
-  initUiUpdateProcess();
+  initUiUpdateFunction();
   turnOnAllDrawings();
 
   // Run the bot
