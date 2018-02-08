@@ -8,7 +8,6 @@ let me;
 let currGameIsCenterFlag;
 
 
-// Sets up the "me" player for this helper file.
 export function initMe() {
   me = tagpro.players[tagpro.playerId];
 }

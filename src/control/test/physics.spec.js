@@ -5,7 +5,7 @@ import { MAX_SPEED } from '../constants';
 import {
   projectedState,
   binarySearchAcceleration,
-  desiredAccelerationMultiplier,
+  getDesiredAccelerationMultipliers,
 } from '../physics';
 
 
@@ -119,15 +119,15 @@ test('binarySearchAcceleration', tester => {
 });
 
 
-test('desiredAccelerationMultiplier', tester => {
+test('getDesiredAccelerationMultipliers', tester => {
   tester.test('returns reasonable values when target is 45 degrees off an axis', t => {
-    const downRight = desiredAccelerationMultiplier(0, 0, 0, 0, 100, 100);
+    const downRight = getDesiredAccelerationMultipliers(0, 0, 0, 0, 100, 100);
     t.true(isRoughly(downRight.accX, 1));
     t.true(isRoughly(downRight.accY, 1));
-    const downLeft = desiredAccelerationMultiplier(0, 0, 0, 0, -100, 100);
+    const downLeft = getDesiredAccelerationMultipliers(0, 0, 0, 0, -100, 100);
     t.true(isRoughly(downLeft.accX, -1));
     t.true(isRoughly(downLeft.accY, 1));
-    const upLeft = desiredAccelerationMultiplier(0, 0, 0, 0, -100, -100);
+    const upLeft = getDesiredAccelerationMultipliers(0, 0, 0, 0, -100, -100);
     t.true(isRoughly(upLeft.accX, -1));
     t.true(isRoughly(upLeft.accY, -1));
 
@@ -135,8 +135,8 @@ test('desiredAccelerationMultiplier', tester => {
   });
 
   tester.test('returns reasonable values when target is further down than right', t => {
-    const holdDown = desiredAccelerationMultiplier(0, 0, 0, 0, 100, 300);
-    const holdDownMore = desiredAccelerationMultiplier(0, 0, 0, 0, 100, 600);
+    const holdDown = getDesiredAccelerationMultipliers(0, 0, 0, 0, 100, 300);
+    const holdDownMore = getDesiredAccelerationMultipliers(0, 0, 0, 0, 100, 600);
     t.is(holdDown.accY, 1);
     t.is(holdDownMore.accY, 1);
     t.true(holdDown.accX > 0 && holdDown.accX < 0.5);
@@ -146,9 +146,9 @@ test('desiredAccelerationMultiplier', tester => {
   });
 
   tester.test('returns reasonable values with initial velocities', t => {
-    const initialDownVelocity = desiredAccelerationMultiplier(0, 0, 0, 50, 300, 300);
-    const initialLeftDownVelocity = desiredAccelerationMultiplier(0, 0, -200, 50, 300, 300);
-    const initialUpVelocity = desiredAccelerationMultiplier(0, 0, 0, -200, 300, 600);
+    const initialDownVelocity = getDesiredAccelerationMultipliers(0, 0, 0, 50, 300, 300);
+    const initialLeftDownVelocity = getDesiredAccelerationMultipliers(0, 0, -200, 50, 300, 300);
+    const initialUpVelocity = getDesiredAccelerationMultipliers(0, 0, 0, -200, 300, 600);
     t.true(initialDownVelocity.accY > 0.5 && initialDownVelocity.accY < 1);
     t.is(initialDownVelocity.accX, 1);
     t.true(initialLeftDownVelocity.accY < 0.5 && initialLeftDownVelocity.accY > 0);
@@ -161,16 +161,16 @@ test('desiredAccelerationMultiplier', tester => {
 
   tester.test('returns reasonable values with target in multiple directions', t => {
     t.is(
-      desiredAccelerationMultiplier(0, 0, 0, -200, 300, 600).accX,
-      -desiredAccelerationMultiplier(0, 0, 0, -200, -300, 600).accX,
+      getDesiredAccelerationMultipliers(0, 0, 0, -200, 300, 600).accX,
+      -getDesiredAccelerationMultipliers(0, 0, 0, -200, -300, 600).accX,
     );
     t.is(
-      desiredAccelerationMultiplier(200, 100, 50, 25, -10, -60).accX,
-      -desiredAccelerationMultiplier(-220, -220, -50, -25, -10, -60).accX,
+      getDesiredAccelerationMultipliers(200, 100, 50, 25, -10, -60).accX,
+      -getDesiredAccelerationMultipliers(-220, -220, -50, -25, -10, -60).accX,
     );
     t.is(
-      desiredAccelerationMultiplier(200, 100, 50, 25, -10, -60).accY,
-      -desiredAccelerationMultiplier(-220, -220, -50, -25, -10, -60).accY,
+      getDesiredAccelerationMultipliers(200, 100, 50, 25, -10, -60).accY,
+      -getDesiredAccelerationMultipliers(-220, -220, -50, -25, -10, -60).accY,
     );
 
     t.end();

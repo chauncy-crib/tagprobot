@@ -34,9 +34,7 @@ function nextVelocity(v, a, t) {
 
 
 function boundValue(value, lowerBound, upperBound) {
-  if (value < lowerBound) return lowerBound;
-  if (value > upperBound) return upperBound;
-  return value;
+  return Math.max(lowerBound, Math.min(upperBound, value));
 }
 
 
@@ -84,14 +82,14 @@ export function projectedState(xp, yp, vxp, vyp, keypress, timeStep, acceleratio
 /**
  * @param {number} pos - starting position in one coordinate
  * @param {number} vel - starting velocity in one direction
- * @param {number} target - target position, in one coordinate
+ * @param {number} targetPosition - target position, in one coordinate
  * @param {number} time - the number of seconds it should take to reach target
  * @param {number} threshold - the largest possible absolute difference between the return value and
  *   the true correct acceleration (default to 0.01)
  * @returns {number} how often (from -1.0-1.0) we should hold the arrow key in the direction of the
  *   target (negative numbers mean we should brake)
  */
-export function binarySearchAcceleration(pos, vel, target, time, threshold = 0.01) {
+export function binarySearchAcceleration(pos, vel, targetPosition, time, threshold = 0.01) {
   let lo = -1.0;
   let hi = 1.0;
   const step = 0.01;
@@ -106,9 +104,9 @@ export function binarySearchAcceleration(pos, vel, target, time, threshold = 0.0
       speed = nextState.vxp;
       t += step;
     }
-    if (position > target) { // overshot the target
+    if (position > targetPosition) { // overshot the target position
       hi = mid;
-    } else { // undershot the target
+    } else { // undershot the target position
       lo = mid;
     }
   }
@@ -126,7 +124,7 @@ export function binarySearchAcceleration(pos, vel, target, time, threshold = 0.0
  * @returns {{accX: number, accY: number}} The desired acceleration multipliers to reach the
  *   destination. The positive directions are down and right.
  */
-export function desiredAccelerationMultiplier(xp, yp, vxp, vyp, destXp, destYp) {
+export function getDesiredAccelerationMultipliers(xp, yp, vxp, vyp, destXp, destYp) {
   const flipX = xp > destXp;
   const flipY = yp > destYp;
   const step = 0.01; // simulation timestep
@@ -202,7 +200,7 @@ export function getAccelValues() {
     console.warn('Shortest path was null, using own location as target');
   }
 
-  return desiredAccelerationMultiplier(
+  return getDesiredAccelerationMultipliers(
     me.x + BRP, // the x center of our ball, in pixels
     me.y + BRP, // the y center of our ball, in pixels
     me.vx, // our v velocity
