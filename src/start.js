@@ -1,11 +1,7 @@
+import { setupClientVelocity, initLocations } from './look/setup';
 import { computeTileInfo } from './look/tileInfo';
 import { initMe, initIsCenterFlag } from './look/gameState';
-import { setupClientVelocity, initLocations } from './look/setup';
-import {
-  initInternalMap,
-  initTilesToUpdate,
-  calculateNavMesh,
-} from './interpret/graphToTriangulation';
+import { initInternalMap, initTilesToUpdate, initNavMesh } from './interpret/setup';
 import { getAccelValues } from './control/physics';
 import { onKeyDown, isAutonomousMode, isVisualMode, move } from './interface/keys';
 import { chatHelpMenu, dequeueChatMessages } from './interface/chat';
@@ -53,7 +49,7 @@ function start() {
 
   initInternalMap(tagpro.map);
   initTilesToUpdate(tagpro.map);
-  calculateNavMesh(tagpro.map);
+  initNavMesh(tagpro.map);
 
   initUiUpdateFunction();
   turnOnAllDrawings();

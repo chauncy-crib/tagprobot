@@ -12,7 +12,7 @@ import {
   TRIANGULATION_ALPHA,
   TRIANGULATION_THICKNESS,
 } from './constants';
-import { getDTGraph } from '../interpret/graphToTriangulation';
+import { dtGraph } from '../interpret/setup';
 
 
 let allyPolypointPathGraphics = null; // PIXI Graphics for drawing the bot's polypoint path
@@ -129,12 +129,12 @@ function getGraphGraphics(
 export function drawTriangulation() {
   if (!trianglesOn) return;
   triangulationSprite = triangulationSprite || getGraphGraphics(
-    getDTGraph(),
+    dtGraph,
     NAV_MESH_THICKNESS,
     NAV_MESH_VERTEX_COLOR,
     NAV_MESH_ALPHA,
     e => (
-      getDTGraph().isEdgeFixed(e) ?
+      dtGraph.isEdgeFixed(e) ?
         { color: NAV_MESH_FIXED_EDGE_COLOR, alpha: NAV_MESH_FIXED_EDGE_ALPHA } :
         { color: NAV_MESH_EDGE_COLOR, alpha: NAV_MESH_ALPHA }
     ),
@@ -147,7 +147,7 @@ export function drawTriangulation() {
 export function drawPolypoints() {
   if (!polypointsOn) return;
   polypointSprite = polypointSprite || getGraphGraphics(
-    getDTGraph().polypoints,
+    dtGraph.polypoints,
     TRIANGULATION_THICKNESS,
     null,
     TRIANGULATION_ALPHA,

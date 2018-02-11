@@ -1,15 +1,15 @@
 import test from 'tape';
 
+import {
+  getUnmergedGraph,
+  getMergedGraph,
+  initNavMesh,
+  __RewireAPI__ as SetupRewireAPI,
+} from '../setup';
 import { Point } from '../point';
 import { Triangle } from '../triangle';
 import { TGraph } from '../triangleGraph';
 import { updateUnmergedGraph, updateMergedGraph } from '../mapToGraph';
-import {
-  getUnmergedGraph,
-  getMergedGraph,
-  calculateNavMesh,
-  __RewireAPI__ as GraphToTriangulationRewireAPI,
-} from '../graphToTriangulation';
 import { setupTiles, teardownTiles } from './setupTiles.spec';
 
 
@@ -114,7 +114,7 @@ test('dynamicUpdate', tester => {
   tester.test('single NT tile', t => {
     setupTiles();
     const mockDTGraph = new TGraph();
-    GraphToTriangulationRewireAPI.__Rewire__('DTGraph', mockDTGraph);
+    SetupRewireAPI.__Rewire__('dtGraph', mockDTGraph);
     const map = [
       [2, 2, 2, 2, 2],
       [2, 2, 2, 2, 2],
@@ -122,7 +122,7 @@ test('dynamicUpdate', tester => {
       [2, 2, 2, 2, 2],
       [2, 2, 2, 2, 2],
     ];
-    calculateNavMesh(map, true);
+    initNavMesh(map, true);
 
     t.is(mockDTGraph.numFixedEdges(), 8);
     t.is(mockDTGraph.numEdges(), 17);
@@ -143,6 +143,7 @@ test('dynamicUpdate', tester => {
     t.is(mockDTGraph.numEdges(), 5);
     t.is(mockDTGraph.numFixedEdges(), 4);
 
+    SetupRewireAPI.__ResetDependency__('dtGraph');
     teardownTiles();
     t.end();
   });
