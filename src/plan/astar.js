@@ -4,73 +4,8 @@ import FibonacciHeap from '@tyriar/fibonacci-heap';
 import { assert } from '../global/utils';
 import { Point } from '../interpret/point';
 import { Polypoint } from '../interpret/polypoint';
+import { PolypointState } from './class/PolypointState';
 import { funnelPolypoints } from './funnel';
-
-
-export class State {
-  /* eslint-disable class-methods-use-this */
-  constructor() {
-    assert(new.target !== State, 'State object cannot be initialized directly');
-
-    this.g = undefined; // the cost to the current state
-    // The estimated total cost from the start state to the target state,
-    // Passing through this state.
-    this.f = undefined;
-    // The GameState we came from
-    this.parent = undefined;
-  }
-
-  heuristic() {
-    assert(false, 'Method not implemented');
-  }
-
-  equals() {
-    assert(false, 'Method not implemented');
-  }
-
-  neighbors() {
-    assert(false, 'Method not implemented');
-  }
-  /* eslint-enable class-methods-use-this */
-}
-
-
-export class PolypointState extends State {
-  constructor(point) {
-    super(null, null);
-    this.point = point;
-    this.key = point.toString();
-  }
-
-  /**
-   * @param {PolypointState} targetState - the PolypointState object we are calculating the
-   *   heuristic distance to
-   * @returns {number} the heuristic distance from this state to the targetState
-   */
-  heuristic(targetState) {
-    return this.point.distance(targetState.point);
-  }
-
-  equals(state) {
-    return this.point.equals(state.point);
-  }
-
-  /**
-   * @param {Graph} polypoints
-   * @returns {PolypointState[]} an array of neighboring PolypointStates, with g values initialized
-   *   to current node's g value + 1
-   */
-  neighbors(polypoints) {
-    // Create states from neighbors
-    const neighbors = _.map(polypoints.neighbors(this.point), n => new PolypointState(n));
-    // Assign g values of neighbors
-    _.forEach(neighbors, n => {
-      n.g = this.g + n.point.distance(this.point);
-      n.parent = this;
-    });
-    return neighbors;
-  }
-}
 
 
 /**
@@ -89,6 +24,7 @@ function constructPath(finalState) {
   path.reverse();
   return path;
 }
+
 
 /**
  * @param {State} startState
