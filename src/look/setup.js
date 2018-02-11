@@ -3,7 +3,7 @@ import { centerOfMass } from './locations';
 import { tileIsOneOf } from './tileInfo';
 
 
-const locations = {};
+export const locations = {};
 
 
 /**
@@ -43,9 +43,4 @@ export function initLocations() {
       }
     }
   }
-}
-
-
-export function getLocations() {
-  return locations;
 }

@@ -38,9 +38,8 @@ test('toggleTriangulationVis()', tester => {
     mockGraph.addEdgeAndVertices(middle, down);
     mockGraph.addEdgeAndVertices(down, left);
     const mockGetGraphGraphics = sinon.spy();
-    const mockGetDTGraph = sinon.stub().returns(mockGraph);
     TriangulationRewireAPI.__Rewire__('getGraphGraphics', mockGetGraphGraphics);
-    TriangulationRewireAPI.__Rewire__('getDTGraph', mockGetDTGraph);
+    TriangulationRewireAPI.__Rewire__('dtGraph', mockGraph);
     TriangulationRewireAPI.__Rewire__('NAV_MESH_THICKNESS', 'thick');
     TriangulationRewireAPI.__Rewire__('NAV_MESH_ALPHA', 'transparent');
     TriangulationRewireAPI.__Rewire__('NAV_MESH_VERTEX_COLOR', 'morebrown');
@@ -57,7 +56,7 @@ test('toggleTriangulationVis()', tester => {
     t.true(mockGetGraphGraphics.calledWith(mockGraph, 'thick', 'morebrown', 'transparent'));
 
     TriangulationRewireAPI.__ResetDependency__('getGraphGraphics');
-    TriangulationRewireAPI.__ResetDependency__('getDTGraph');
+    TriangulationRewireAPI.__ResetDependency__('dtGraph');
     TriangulationRewireAPI.__ResetDependency__('NAV_MESH_THICKNESS');
     TriangulationRewireAPI.__ResetDependency__('NAV_MESH_ALPHA');
     TriangulationRewireAPI.__ResetDependency__('NAV_MESH_VERTEX_COLOR');

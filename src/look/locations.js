@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { PPTL } from '../global/constants';
-import { getLocations } from './setup';
+import { locations } from './setup';
 import { tileHasName } from './tileInfo';
 import { isOnMyTeam } from './gameState';
 
@@ -37,7 +37,6 @@ export function centerOfMass(tileName) {
  *   or an array of such numbers
  */
 export function findCachedTile(tileNames) {
-  const locations = getLocations();
   const tileNameArray = [].concat(tileNames);
   for (let i = 0; i < tileNameArray.length; i++) {
     const name = tileNameArray[i];
