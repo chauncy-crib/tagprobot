@@ -12,7 +12,7 @@ import { amRed,
 import { findCachedTile, findEnemyFC } from '../look/locations';
 import { getShortestPolypointPath } from '../plan/astar';
 import { Point } from '../interpret/point';
-import { getDTGraph } from '../interpret/graphToTriangulation';
+import { dtGraph } from '../interpret/setup';
 
 
 /**
@@ -49,7 +49,7 @@ export function chaseEnemyFC(me, goal, enemyFC, enemyShortestPath) {
     getShortestPolypointPath(
       { xp: enemyFC.x + BRP, yp: enemyFC.y + BRP },
       getEnemyGoal(),
-      getDTGraph(),
+      dtGraph,
     ),
     polypoint => enemyShortestPath.push(polypoint),
   );

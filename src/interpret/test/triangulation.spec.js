@@ -1,18 +1,26 @@
 import test from 'tape';
 
+import { dtGraph, delaunayTriangulation, __RewireAPI__ as SetupRewireAPI } from '../setup';
 import { Point } from '../point';
-import { TGraph } from '../triangleGraph';
-import {
-  delaunayTriangulation,
-  getDTGraph,
-  __RewireAPI__ as TriangulationRewireAPI,
-} from '../graphToTriangulation';
+import { Graph } from '../graph';
+
+
+/**
+ * Used to reset DTGraph to a new TGraph at the beginning of each unit test, such that the unit
+ *   tests don't affect each other.
+ */
+function clearDTGraph() {
+  dtGraph.adj = {};
+  dtGraph.vertices = [];
+  dtGraph.triangles = new Set();
+  dtGraph.fixedAdj = {};
+  dtGraph.polypoints = new Graph();
+}
 
 
 test('delaunayTriangulation()', tester => {
   tester.test('creates legal horizontal line', t => {
-    const mockDTGraph = new TGraph();
-    TriangulationRewireAPI.__Rewire__('DTGraph', mockDTGraph);
+    clearDTGraph();
     // Horizontal line between p1 and p4
     const p1 = new Point(0, 8);
     const p2 = new Point(19, 0);
@@ -30,26 +38,23 @@ test('delaunayTriangulation()', tester => {
       new Point(0, -50),
       true,
     );
-    const DTGraph = getDTGraph();
-    t.true(DTGraph.isConnected(p1, p4));
-    t.true(DTGraph.isConnected(p1, p2));
-    t.true(DTGraph.isConnected(p1, p3));
-    t.true(DTGraph.isConnected(p2, p4));
-    t.true(DTGraph.isConnected(p3, p4));
-    t.false(DTGraph.isConnected(p2, p3));
-    t.is(DTGraph.getEdges().length, 5);
-    t.is(DTGraph.getVertices().length, 4);
-    t.is(DTGraph.triangles.size, 2);
-    t.is(DTGraph.polypoints.getVertices().length, 2);
-    t.is(DTGraph.polypoints.getEdges().length, 1);
-    TriangulationRewireAPI.__ResetDependency__('DTGraph');
+    t.true(dtGraph.isConnected(p1, p4));
+    t.true(dtGraph.isConnected(p1, p2));
+    t.true(dtGraph.isConnected(p1, p3));
+    t.true(dtGraph.isConnected(p2, p4));
+    t.true(dtGraph.isConnected(p3, p4));
+    t.false(dtGraph.isConnected(p2, p3));
+    t.is(dtGraph.getEdges().length, 5);
+    t.is(dtGraph.getVertices().length, 4);
+    t.is(dtGraph.triangles.size, 2);
+    t.is(dtGraph.polypoints.getVertices().length, 2);
+    t.is(dtGraph.polypoints.getEdges().length, 1);
 
     t.end();
   });
 
   tester.test('overwrites horizontal line when vertical line is constrained', t => {
-    const mockDTGraph = new TGraph();
-    TriangulationRewireAPI.__Rewire__('DTGraph', mockDTGraph);
+    clearDTGraph();
     const p1 = new Point(0, 8);
     const p2 = new Point(19, 0);
     const p3 = new Point(19, 16);
@@ -66,26 +71,24 @@ test('delaunayTriangulation()', tester => {
       new Point(0, -50),
       true,
     );
-    const DTGraph = getDTGraph();
-    t.false(DTGraph.isConnected(p1, p4));
-    t.true(DTGraph.isConnected(p1, p2));
-    t.true(DTGraph.isConnected(p1, p3));
-    t.true(DTGraph.isConnected(p2, p4));
-    t.true(DTGraph.isConnected(p3, p4));
-    t.true(DTGraph.isConnected(p2, p3));
-    t.is(DTGraph.getEdges().length, 5);
-    t.is(DTGraph.getVertices().length, 4);
-    t.is(DTGraph.triangles.size, 2);
-    t.is(DTGraph.polypoints.getVertices().length, 2);
-    t.is(DTGraph.polypoints.getEdges().length, 0);
-    TriangulationRewireAPI.__ResetDependency__('DTGraph');
+    t.false(dtGraph.isConnected(p1, p4));
+    t.true(dtGraph.isConnected(p1, p2));
+    t.true(dtGraph.isConnected(p1, p3));
+    t.true(dtGraph.isConnected(p2, p4));
+    t.true(dtGraph.isConnected(p3, p4));
+    t.true(dtGraph.isConnected(p2, p3));
+    t.is(dtGraph.getEdges().length, 5);
+    t.is(dtGraph.getVertices().length, 4);
+    t.is(dtGraph.triangles.size, 2);
+    t.is(dtGraph.polypoints.getVertices().length, 2);
+    t.is(dtGraph.polypoints.getEdges().length, 0);
+    SetupRewireAPI.__ResetDependency__('dtGraph');
 
     t.end();
   });
 
   tester.test('creates legal vertical line', t => {
-    const mockDTGraph = new TGraph();
-    TriangulationRewireAPI.__Rewire__('DTGraph', mockDTGraph);
+    clearDTGraph();
     // Vertical line between p2 and p3
     const p1 = new Point(0, 8);
     const p2 = new Point(13, 0);
@@ -103,26 +106,23 @@ test('delaunayTriangulation()', tester => {
       new Point(0, -50),
       true,
     );
-    const DTGraph = getDTGraph();
-    t.false(DTGraph.isConnected(p1, p4));
-    t.true(DTGraph.isConnected(p1, p2));
-    t.true(DTGraph.isConnected(p1, p3));
-    t.true(DTGraph.isConnected(p2, p4));
-    t.true(DTGraph.isConnected(p3, p4));
-    t.true(DTGraph.isConnected(p2, p3));
-    t.is(DTGraph.getEdges().length, 5);
-    t.is(DTGraph.getVertices().length, 4);
-    t.is(DTGraph.triangles.size, 2);
-    t.is(DTGraph.polypoints.getVertices().length, 2);
-    t.is(DTGraph.polypoints.getEdges().length, 1);
-    TriangulationRewireAPI.__ResetDependency__('DTGraph');
+    t.false(dtGraph.isConnected(p1, p4));
+    t.true(dtGraph.isConnected(p1, p2));
+    t.true(dtGraph.isConnected(p1, p3));
+    t.true(dtGraph.isConnected(p2, p4));
+    t.true(dtGraph.isConnected(p3, p4));
+    t.true(dtGraph.isConnected(p2, p3));
+    t.is(dtGraph.getEdges().length, 5);
+    t.is(dtGraph.getVertices().length, 4);
+    t.is(dtGraph.triangles.size, 2);
+    t.is(dtGraph.polypoints.getVertices().length, 2);
+    t.is(dtGraph.polypoints.getEdges().length, 1);
 
     t.end();
   });
 
   tester.test('overwrites vertical line when horizontal line is constrained', t => {
-    const mockDTGraph = new TGraph();
-    TriangulationRewireAPI.__Rewire__('DTGraph', mockDTGraph);
+    clearDTGraph();
     // Vertical line between p2 and p3
     const p1 = new Point(0, 8);
     const p2 = new Point(13, 0);
@@ -140,26 +140,23 @@ test('delaunayTriangulation()', tester => {
       new Point(0, -50),
       true,
     );
-    const DTGraph = getDTGraph();
-    t.true(DTGraph.isConnected(p1, p4));
-    t.true(DTGraph.isConnected(p1, p2));
-    t.true(DTGraph.isConnected(p1, p3));
-    t.true(DTGraph.isConnected(p2, p4));
-    t.true(DTGraph.isConnected(p3, p4));
-    t.false(DTGraph.isConnected(p2, p3));
-    t.is(DTGraph.getEdges().length, 5);
-    t.is(DTGraph.getVertices().length, 4);
-    t.is(DTGraph.triangles.size, 2);
-    t.is(DTGraph.polypoints.getVertices().length, 2);
-    t.is(DTGraph.polypoints.getEdges().length, 0);
-    TriangulationRewireAPI.__ResetDependency__('DTGraph');
+    t.true(dtGraph.isConnected(p1, p4));
+    t.true(dtGraph.isConnected(p1, p2));
+    t.true(dtGraph.isConnected(p1, p3));
+    t.true(dtGraph.isConnected(p2, p4));
+    t.true(dtGraph.isConnected(p3, p4));
+    t.false(dtGraph.isConnected(p2, p3));
+    t.is(dtGraph.getEdges().length, 5);
+    t.is(dtGraph.getVertices().length, 4);
+    t.is(dtGraph.triangles.size, 2);
+    t.is(dtGraph.polypoints.getVertices().length, 2);
+    t.is(dtGraph.polypoints.getEdges().length, 0);
 
     t.end();
   });
 
   tester.test('works when point is on existing line', t => {
-    const mockDTGraph = new TGraph();
-    TriangulationRewireAPI.__Rewire__('DTGraph', mockDTGraph);
+    clearDTGraph();
     const p1 = new Point(0, 0);
     const p2 = new Point(0, 10);
     const p3 = new Point(-3, 8);
@@ -176,17 +173,14 @@ test('delaunayTriangulation()', tester => {
       new Point(0, -40),
       true,
     );
-    const DTGraph = getDTGraph();
-    t.is(DTGraph.getVertices().length, 4);
-    t.is(DTGraph.triangles.size, 2);
-    TriangulationRewireAPI.__ResetDependency__('DTGraph');
+    t.is(dtGraph.getVertices().length, 4);
+    t.is(dtGraph.triangles.size, 2);
 
     t.end();
   });
 
   tester.test('creates correct polypoints and polyedges', t => {
-    const mockDTGraph = new TGraph();
-    TriangulationRewireAPI.__Rewire__('DTGraph', mockDTGraph);
+    clearDTGraph();
     const p1 = new Point(0, 0);
     const p2 = new Point(0, 12);
     const p3 = new Point(12, 0);
@@ -202,7 +196,7 @@ test('delaunayTriangulation()', tester => {
       new Point(13, -1),
       true,
     );
-    const pp = getDTGraph().polypoints;
+    const pp = dtGraph.polypoints;
 
     // there are two valid triangulations for a square of vertices
     // (can draw the diagonal line two ways)
@@ -214,7 +208,6 @@ test('delaunayTriangulation()', tester => {
     if (valid1) t.true(pp.isConnected(new Point(4, 8), new Point(8, 4)));
     if (valid2) t.true(pp.isConnected(new Point(4, 4), new Point(8, 8)));
 
-    TriangulationRewireAPI.__ResetDependency__('DTGraph');
     t.end();
   });
 
