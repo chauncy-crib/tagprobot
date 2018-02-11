@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import { assert } from '../global/utils';
 import { Point, pointsOnSameSide } from '../interpret/point';
-import { PolypointState } from './astar';
+import { PolypointState } from './class/PolypointState';
 
 
 const CLEARANCE = 19;
