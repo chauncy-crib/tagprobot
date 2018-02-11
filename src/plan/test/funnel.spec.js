@@ -4,7 +4,7 @@ import { isRoughly } from '../../global/utils';
 import { Point } from '../../interpret/point';
 import { Polypoint } from '../../interpret/polypoint';
 import { Triangle } from '../../interpret/triangle';
-import { PolypointState } from '../astar';
+import { PolypointState } from '../class/PolypointState';
 import {
   funnelPolypoints,
   getClearancePoint,
