@@ -6,9 +6,9 @@ import {
   initNavMesh,
   __RewireAPI__ as SetupRewireAPI,
 } from '../setup';
-import { Point } from '../point';
-import { Triangle } from '../triangle';
-import { TGraph } from '../triangleGraph';
+import { Point } from '../class/Point';
+import { Triangle } from '../class/Triangle';
+import { TGraph } from '../class/TriangleGraph';
 import { updateUnmergedGraph, updateMergedGraph } from '../mapToGraph';
 import { setupTiles, teardownTiles } from './setupTiles.spec';
 

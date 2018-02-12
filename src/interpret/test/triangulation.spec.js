@@ -1,8 +1,8 @@
 import test from 'tape';
 
 import { dtGraph, delaunayTriangulation, __RewireAPI__ as SetupRewireAPI } from '../setup';
-import { Point } from '../point';
-import { Graph } from '../graph';
+import { Point } from '../class/Point';
+import { Graph } from '../class/Graph';
 
 
 /**

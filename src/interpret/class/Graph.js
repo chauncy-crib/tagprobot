@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
-import { assert } from '../global/utils';
-import { areEdgesCollinear } from './point';
+import { assert } from '../../global/utils';
+import { areEdgesCollinear } from './Point';
 
 
 /**

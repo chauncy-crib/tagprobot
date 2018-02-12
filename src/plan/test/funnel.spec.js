@@ -1,9 +1,9 @@
 import test from 'tape';
 
 import { isRoughly } from '../../global/utils';
-import { Point } from '../../interpret/point';
-import { Polypoint } from '../../interpret/polypoint';
-import { Triangle } from '../../interpret/triangle';
+import { Point } from '../../interpret/class/Point';
+import { Polypoint } from '../../interpret/class/Polypoint';
+import { Triangle } from '../../interpret/class/Triangle';
 import { PolypointState } from '../class/PolypointState';
 import {
   funnelPolypoints,

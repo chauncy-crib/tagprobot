@@ -11,7 +11,7 @@ import { amRed,
 } from '../look/gameState';
 import { findCachedTile, findEnemyFC } from '../look/locations';
 import { getShortestPolypointPath } from '../plan/astar';
-import { Point } from '../interpret/point';
+import { Point } from '../interpret/class/Point';
 import { dtGraph } from '../interpret/setup';
 
 

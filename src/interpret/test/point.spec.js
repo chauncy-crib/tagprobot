@@ -1,6 +1,6 @@
 import test from 'tape';
 
-import { Point, sortCounterClockwise, pointsOnSameSide } from '../point';
+import { Point, sortCounterClockwise, pointsOnSameSide } from '../class/Point';
 
 
 test('sortCounterClockwise sorts points in counter-clockwise order', t => {
