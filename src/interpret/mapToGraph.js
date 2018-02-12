@@ -2,8 +2,8 @@ import _ from 'lodash';
 
 import { PPTL } from '../global/constants';
 import { assert } from '../global/utils';
-import { Graph } from './graph';
-import { Point, threePointsInLine, areEdgesCollinear } from './point';
+import { Graph } from './class/Graph';
+import { Point, threePointsInLine, areEdgesCollinear } from './class/Point';
 import { getTileProperty, tileIsOneOf, tileIsAngleWall } from '../look/tileInfo';
 import {
   isAngleWallTraversable,

@@ -1,8 +1,8 @@
 import _ from 'lodash';
 
-import { assert } from '../global/utils';
-import { Point, threePointsInLine, pointsOnSameSide } from './point';
-import { Polypoint } from './polypoint';
+import { assert } from '../../global/utils';
+import { Point, threePointsInLine, pointsOnSameSide } from './Point';
+import { Polypoint } from './Polypoint';
 
 
 export class Triangle {

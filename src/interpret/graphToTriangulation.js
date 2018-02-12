@@ -9,7 +9,7 @@ import {
   dtGraph,
 } from './setup';
 import { detH } from './interpret';
-import { sortCounterClockwise } from './point';
+import { sortCounterClockwise } from './class/Point';
 import {
   updateMergedGraph,
   updateUnmergedGraph,

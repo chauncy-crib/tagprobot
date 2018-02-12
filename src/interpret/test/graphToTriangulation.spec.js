@@ -1,6 +1,6 @@
 import test from 'tape';
 
-import { Point } from '../point';
+import { Point } from '../class/Point';
 import { isLegal } from '../graphToTriangulation';
 
 test('isLegal', tester => {
