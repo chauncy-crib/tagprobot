@@ -2,8 +2,8 @@ import _ from 'lodash';
 import FibonacciHeap from '@tyriar/fibonacci-heap';
 
 import { assert } from '../global/utils';
-import { Point } from '../interpret/point';
-import { Polypoint } from '../interpret/polypoint';
+import { Point } from '../interpret/class/Point';
+import { Polypoint } from '../interpret/class/Polypoint';
 import { PolypointState } from './class/PolypointState';
 import { funnelPolypoints } from './funnel';
 

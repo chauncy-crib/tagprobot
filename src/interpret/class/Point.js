@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { detD } from './interpret';
+import { detD } from '../interpret';
 
 /**
  * Represents an x, y pixel location on the tagpro map. Used as vertices to define polygons.

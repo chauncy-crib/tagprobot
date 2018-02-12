@@ -2,9 +2,9 @@ import _ from 'lodash';
 
 import { assert } from '../global/utils';
 import { getTileProperty } from '../look/tileInfo';
-import { Point } from './point';
-import { Triangle } from './triangle';
-import { TGraph } from './triangleGraph';
+import { Point } from './class/Point';
+import { Triangle } from './class/Triangle';
+import { TGraph } from './class/TriangleGraph';
 import { unmergedGraphFromTagproMap, graphFromTagproMap } from './mapToGraph';
 
 
