@@ -31,7 +31,7 @@ let pathsOn = false;
 /**
  * @param {PolypointState[]} polypointPath - a list of states that define the path
  */
-export function drawPolypointPath(polypointPathGraphics, polypointPath, polypointPathColor) {
+function drawPolypointPath(polypointPathGraphics, polypointPath, polypointPathColor) {
   polypointPathGraphics.clear();
   polypointPathGraphics.lineStyle(
     TRIANGULATION_THICKNESS + 1,
@@ -58,6 +58,7 @@ export function drawAllyPolypointPath(polypointPath) {
   }
   drawPolypointPath(allyPolypointPathGraphics, polypointPath, ALLY_PATH_COLOR);
 }
+
 
 export function drawEnemyPolypointPath(polypointPath) {
   if (!pathsOn) return;
@@ -95,7 +96,7 @@ function getGraphGraphics(
 ) {
   const graphGraphics = new PIXI.Graphics();
 
-  // Keep track of the current lineStyle color
+  // Keep track of the current lineStyle color and alpha
   let currEdgeColor = null;
   let currAlpha = null;
   graphGraphics.lineStyle(thickness, currEdgeColor, currAlpha);
@@ -126,7 +127,7 @@ function getGraphGraphics(
 /*
  * Draws the navigation mesh lines on the tagpro map. Runtime: O(E), O(1) if visualizations off
  */
-export function drawTriangulation() {
+function drawTriangulation() {
   if (!trianglesOn) return;
   triangulationSprite = triangulationSprite || getGraphGraphics(
     dtGraph,
@@ -144,7 +145,7 @@ export function drawTriangulation() {
 }
 
 
-export function drawPolypoints() {
+function drawPolypoints() {
   if (!polypointsOn) return;
   polypointSprite = polypointSprite || getGraphGraphics(
     dtGraph.polypoints,
@@ -158,12 +159,14 @@ export function drawPolypoints() {
   tagpro.renderer.layers.foreground.addChild(polypointSprite);
 }
 
-export function resetTriangulationAndPolypointDrawing() {
+
+function resetTriangulationAndPolypointDrawing() {
   tagpro.renderer.layers.foreground.removeChild(polypointSprite);
   tagpro.renderer.layers.foreground.removeChild(triangulationSprite);
   triangulationSprite = null;
   polypointSprite = null;
 }
+
 
 export function toggleTriangulationVis(setTo = !trianglesOn) {
   if (setTo === trianglesOn) return;
@@ -175,6 +178,7 @@ export function toggleTriangulationVis(setTo = !trianglesOn) {
   }
 }
 
+
 export function togglePolypointVis(setTo = !polypointsOn) {
   if (setTo === polypointsOn) return;
   polypointsOn = setTo;
@@ -184,6 +188,7 @@ export function togglePolypointVis(setTo = !polypointsOn) {
     drawPolypoints();
   }
 }
+
 
 export function togglePathVis(setTo = !pathsOn) {
   if (setTo === pathsOn) return;
