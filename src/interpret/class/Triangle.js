@@ -1,7 +1,8 @@
 import _ from 'lodash';
 
 import { assert } from '../../global/utils';
-import { Point, threePointsInLine, pointsOnSameSide } from './Point';
+import { threePointsInLine } from '../utils';
+import { Point } from './Point';
 import { Polypoint } from './Polypoint';
 
 
@@ -76,87 +77,4 @@ export class Triangle {
   toString() {
     return JSON.stringify({ p1: this.p1, p2: this.p2, p3: this.p3 });
   }
-}
-
-
-/**
- * @param {Triangle[]} intersectingTriangles - array of triangles that intersect the edge
- * @param {{p1: Point, p2: Point}} e - the edge
- * @returns {{upperPoints: Point[], lowerPoints: Point[]}} the ordered points of the upper and lower
- *   regions that share the edge
- */
-export function findUpperAndLowerPoints(intersectingTriangles, e) {
-  let triangles = intersectingTriangles;
-  // Keep track of the points in order in the regions above and below the edge
-  const upperPoints = [e.p1];
-  const lowerPoints = [e.p1];
-
-  while (!_.isEmpty(triangles)) {
-    const lastUpperPoint = _.last(upperPoints);
-    const lastLowerPoint = _.last(lowerPoints);
-
-    // Find next triangle
-    const nextT = _.find(triangles, t => (
-      t.hasPoint(lastUpperPoint) && t.hasPoint(lastLowerPoint)
-    ));
-
-    assert(!_.isNil(nextT), 'Could not find triangle containing both last upper and last lower');
-
-    // Add points to upperPoints and lowerPoints
-    if (upperPoints.length === 1) {
-      // This is the first triangle, add one point to upper polygon and the other to lower
-      const newPoints = _.reject(nextT.getPoints(), p => p.equals(lastUpperPoint));
-      upperPoints.push(newPoints[0]);
-      lowerPoints.push(newPoints[1]);
-    } else {
-      // Get the third point that's not in either pseudo-polygon
-      const newPoint = _.find(nextT.getPoints(), p => (
-        !p.equals(lastUpperPoint) && !p.equals(lastLowerPoint)
-      ));
-
-      if (newPoint.equals(e.p2)) {
-        // This is the last point, add it to both regions
-        upperPoints.push(newPoint);
-        lowerPoints.push(newPoint);
-      } else {
-        // Push point to either upper or lower region
-        if (pointsOnSameSide(newPoint, lastUpperPoint, e)) upperPoints.push(newPoint);
-        else lowerPoints.push(newPoint);
-      }
-    }
-
-    // Remove triangle and edges from graph and from triangles
-    triangles = _.reject(triangles, nextT);
-  }
-  return { upperPoints, lowerPoints };
-}
-
-/**
- * @param {Triangle} t
- * @param {{p1: Point, p2: Point}} e - an edge
- * @returns {boolean} if the triangle intersects or touches the edge
- */
-export function isTriangleIntersectingEdge(t, e) {
-  const e1 = e.p1;
-  const e2 = e.p2;
-  const t1 = t.p1;
-  const t2 = t.p2;
-  const t3 = t.p3;
-
-  // False if t1, t2, and t3 are all on same side of e
-  if (pointsOnSameSide(t1, t2, e) && pointsOnSameSide(t2, t3, e)) return false;
-
-  // False if e1 and e2 are both on other side of t1-t2 as t3
-  const t12 = { p1: t1, p2: t2 }; // edge between t1 and t2
-  if (!pointsOnSameSide(e1, t3, t12) && !pointsOnSameSide(e2, t3, t12)) return false;
-
-  // False if e1 and e2 are both on other side of t2-t3 as t1
-  const t23 = { p1: t2, p2: t3 }; // edge between t2 and t3
-  if (!pointsOnSameSide(e1, t1, t23) && !pointsOnSameSide(e2, t1, t23)) return false;
-
-  // False if e1 and e2 are both on other side of t3-t1 as t2
-  const t31 = { p1: t3, p2: t1 }; // edge between t3 and t1
-  if (!pointsOnSameSide(e1, t2, t31) && !pointsOnSameSide(e2, t2, t31)) return false;
-
-  return true;
 }

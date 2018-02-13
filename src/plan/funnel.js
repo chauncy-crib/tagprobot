@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
-import { assert } from '../global/utils';
-import { Point, pointsOnSameSide } from '../interpret/class/Point';
+import { assert, pointsOnSameSide } from '../global/utils';
+import { Point } from '../interpret/class/Point';
 import { PolypointState } from './class/PolypointState';
 
 

@@ -1,7 +1,8 @@
 import test from 'tape';
 
+import { isTriangleIntersectingEdge } from '../utils';
 import { Point } from '../class/Point';
-import { Triangle, isTriangleIntersectingEdge } from '../class/Triangle';
+import { Triangle } from '../class/Triangle';
 
 
 test('categorizePoints separates points into shared and unique', t => {
