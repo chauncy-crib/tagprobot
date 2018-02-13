@@ -1,6 +1,3 @@
-import { detD } from './determinant';
-
-
 /**
  * Throws a specified error message if a condition is not met. If no message
  * is specified, then a default error message is thrown.
@@ -39,17 +36,31 @@ export function isRoughly(val, expected, threshold = 0.01) {
 }
 
 
-/**
- * @param {Point} p1
- * @param {Point} p2
- * @param {{p1: Point, p2: Point}} e - an edge
- * @returns {boolean} if the two points are on the same side of the edge
- */
-export function pointsOnSameSide(p1, p2, e) {
-  return detD(e.p1, e.p2, p1) * detD(e.p1, e.p2, p2) > 0;
+export function boundValue(value, lowerBound, upperBound) {
+  return Math.max(lowerBound, Math.min(upperBound, value));
 }
 
 
-export function boundValue(value, lowerBound, upperBound) {
-  return Math.max(lowerBound, Math.min(upperBound, value));
+export function determinant(matrix) {
+  const N = matrix.length;
+  for (let i = 0; i < N; i += 1) {
+    assert(matrix[i].length === N, 'input matrix should be NxN');
+  }
+  let sum = 0;
+  // Recursive base-case, a single element
+  if (N === 1) return matrix[0][0];
+  for (let j = 0; j < N; j += 1) {
+    // Create a sub-matrix which do not contain elements in the 0th row or the jth column
+    const subMatrix = [];
+    for (let k = 1; k < N; k += 1) {
+      const row = [];
+      for (let l = 0; l < N; l += 1) {
+        if (l !== j) row.push(matrix[k][l]);
+      }
+      subMatrix.push(row);
+    }
+    // Alternate between +/- the determinant of the sub-matrix
+    sum += ((j % 2) ? -1 : 1) * matrix[0][j] * determinant(subMatrix);
+  }
+  return sum;
 }

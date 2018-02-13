@@ -1,6 +1,38 @@
 import _ from 'lodash';
 
-import { assert, pointsOnSameSide } from '../global/utils';
+import { assert, determinant } from '../global/utils';
+
+
+/**
+ * @param {Point} A
+ * @param {Point} B
+ * @param {Point} P
+ * @returns {number} a number which is positive iff P is on the left of the edge AB
+ */
+export function detD(A, B, P) {
+  return determinant([
+    [A.x, A.y, 1],
+    [B.x, B.y, 1],
+    [P.x, P.y, 1],
+  ]);
+}
+
+
+/**
+ * @param {Point} A
+ * @param {Point} B
+ * @param {Point} C
+ * @param {Point} E
+ * @returns {number} a number which is positive iff D is inside the circumcircle of points A, B, C
+ */
+export function detH(A, B, C, D) {
+  return determinant([
+    [A.x, A.y, (A.x ** 2) + (A.y ** 2), 1],
+    [B.x, B.y, (B.x ** 2) + (B.y ** 2), 1],
+    [C.x, C.y, (C.x ** 2) + (C.y ** 2), 1],
+    [D.x, D.y, (D.x ** 2) + (D.y ** 2), 1],
+  ]);
+}
 
 
 /**
@@ -63,6 +95,17 @@ export function sortCounterClockwise(points, inputCenter) {
  */
 export function areEdgesCollinear(e1, e2) {
   return threePointsInLine(e1.p1, e1.p2, e2.p1) && threePointsInLine(e1.p1, e1.p2, e2.p2);
+}
+
+
+/**
+ * @param {Point} p1
+ * @param {Point} p2
+ * @param {{p1: Point, p2: Point}} e - an edge
+ * @returns {boolean} if the two points are on the same side of the edge
+ */
+export function pointsOnSameSide(p1, p2, e) {
+  return detD(e.p1, e.p2, p1) * detD(e.p1, e.p2, p2) > 0;
 }
 
 

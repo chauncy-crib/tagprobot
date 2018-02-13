@@ -1,7 +1,6 @@
 import test from 'tape';
 
-import { assert, assertGridInBounds, pointsOnSameSide } from '../utils';
-import { Point } from '../../interpret/class/Point';
+import { assert, assertGridInBounds, determinant } from '../utils';
 
 
 test('assert: does not throw errors with condition=true', t => {
@@ -39,35 +38,46 @@ test('assertGridInBounds: throws errors when inputs are not in bounds', t => {
 });
 
 
-test('pointsOnSameSide()', tester => {
-  tester.test('returns true when points are on the left side of the edge', t => {
-    const edge = { p1: new Point(3, 0), p2: new Point(3, 1) };
-    const p1 = new Point(0, 0);
-    const p2 = new Point(0, 1);
+test('determinant returns correct value for a 3x3', t => {
+  t.is(determinant([
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+  ]), 0);
+  t.is(determinant([
+    [1, 3, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+  ]), 6);
+  t.is(determinant([
+    [1, 3, 3],
+    [4, 5, 6],
+    [7, 4, 9],
+  ]), -18);
 
-    t.true(pointsOnSameSide(p1, p2, edge));
+  t.end();
+});
 
-    t.end();
-  });
 
-  tester.test('returns true when points are on the right side of the edge', t => {
-    const edge = { p1: new Point(3, 0), p2: new Point(3, 1) };
-    const p1 = new Point(4, 0);
-    const p2 = new Point(4, 1);
+test('determinant returns correct value for a 4x4', t => {
+  t.is(determinant([
+    [1, 2, 3, 4],
+    [1, 2, 3, 4],
+    [1, 2, 3, 4],
+    [1, 2, 3, 4],
+  ]), 0);
+  t.is(determinant([
+    [1, -2, 3, 4],
+    [1, 5, 3, 7],
+    [1, 2, 3, 4],
+    [0, 2, 8, 4],
+  ]), 96);
+  t.is(determinant([
+    [1, -2, 5, 4],
+    [1, 5, 9, 7],
+    [1, 2, 3, 4],
+    [-1, 2, 8, 4],
+  ]), -84);
 
-    t.true(pointsOnSameSide(p1, p2, edge));
-
-    t.end();
-  });
-
-  tester.test('returns false when points are on opposite sides of the edge', t => {
-    const edge = { p1: new Point(3, 0), p2: new Point(3, 1) };
-    const p1 = new Point(0, 0);
-    const p2 = new Point(4, 1);
-
-    t.false(pointsOnSameSide(p1, p2, edge));
-
-    t.end();
-  });
-  tester.end();
+  t.end();
 });
