@@ -1,8 +1,9 @@
 import _ from 'lodash';
 
 import { assert } from '../../global/utils';
-import { detD, detH } from '../../global/determinant';
 import {
+  detD,
+  detH,
   sortCounterClockwise,
   isTriangleIntersectingEdge,
   findUpperAndLowerPoints,

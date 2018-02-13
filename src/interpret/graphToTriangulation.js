@@ -1,6 +1,6 @@
 import { assert } from '../global/utils';
-import { detH } from '../global/determinant';
 import { getTileProperty } from '../look/tileInfo';
+import { detH, sortCounterClockwise } from './utils';
 import {
   internalMap,
   tilesToUpdate,
@@ -9,7 +9,6 @@ import {
   getMergedGraph,
   dtGraph,
 } from './setup';
-import { sortCounterClockwise } from './utils';
 import {
   updateMergedGraph,
   updateUnmergedGraph,
