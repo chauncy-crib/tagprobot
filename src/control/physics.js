@@ -1,5 +1,5 @@
 import { BRP } from '../global/constants';
-import { assert } from '../global/utils';
+import { assert, boundValue } from '../global/utils';
 import { ACCEL, MAX_SPEED, DAMPING_FACTOR } from './constants';
 import { getMe } from '../look/gameState';
 import { FSM } from '../think/fsm';
@@ -31,11 +31,6 @@ function nextPosition(x, v, a, t) {
  */
 function nextVelocity(v, a, t) {
   return v + (a * t);
-}
-
-
-function boundValue(value, lowerBound, upperBound) {
-  return Math.max(lowerBound, Math.min(upperBound, value));
 }
 
 
