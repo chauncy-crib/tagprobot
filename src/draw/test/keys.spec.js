@@ -30,6 +30,4 @@ test('toggleKeyPressVis', tester => {
     KeysRewireAPI.__ResetDependency__('keyPressesVis');
     t.end();
   });
-
-  tester.end();
 });

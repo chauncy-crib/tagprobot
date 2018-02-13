@@ -75,7 +75,6 @@ test('pointsOnSameSide()', tester => {
 
     t.end();
   });
-  tester.end();
 });
 
 
@@ -151,6 +150,4 @@ test('isTriangleIntersectingEdge()', tester => {
 
     t.end();
   });
-
-  tester.end();
 });

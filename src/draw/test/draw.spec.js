@@ -27,6 +27,4 @@ test('clearSprites', tester => {
     DrawRewireAPI.__ResetDependency__('togglePathVis');
     t.end();
   });
-
-  tester.end();
 });
