@@ -8,7 +8,7 @@ import { chatHelpMenu, dequeueChatMessages } from './interface/chat';
 import { turnOnAllDrawings, initUiUpdateFunction } from './draw/draw';
 
 
-// Handle keypress and related events for manual/auto toggle
+// Run onKeyDown any time a key is pressed to parse user input
 window.onkeydown = onKeyDown;
 
 
