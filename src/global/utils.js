@@ -48,3 +48,8 @@ export function isRoughly(val, expected, threshold = 0.01) {
 export function pointsOnSameSide(p1, p2, e) {
   return detD(e.p1, e.p2, p1) * detD(e.p1, e.p2, p2) > 0;
 }
+
+
+export function boundValue(value, lowerBound, upperBound) {
+  return Math.max(lowerBound, Math.min(upperBound, value));
+}
