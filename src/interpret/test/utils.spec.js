@@ -1,21 +1,45 @@
 import test from 'tape';
 
-import { isTriangleIntersectingEdge } from '../utils';
+import { sortCounterClockwise, isTriangleIntersectingEdge } from '../utils';
 import { Point } from '../class/Point';
 import { Triangle } from '../class/Triangle';
 
 
-test('categorizePoints separates points into shared and unique', t => {
-  const p1 = new Point(0, 0);
-  const p2 = new Point(-3, 8);
-  const p3 = new Point(0, 10);
-  const p4 = new Point(40, 40);
-  const t1 = new Triangle(p1, p2, p3);
-  const t3 = new Triangle(p1, p3, p4);
-  const c = t1.categorizePoints(t3);
+test('sortCounterClockwise sorts points in counter-clockwise order', t => {
+  let points = [
+    new Point(-1, 1),
+    new Point(1, 1),
+    new Point(1, -1),
+    new Point(-1, -1),
+  ];
+  t.same(sortCounterClockwise(points), [
+    new Point(-1, 1),
+    new Point(-1, -1),
+    new Point(1, -1),
+    new Point(1, 1),
+  ]);
 
-  t.is(c.shared.length, 2);
-  t.is(c.unique.length, 2);
+  points = [
+    new Point(0, 1),
+    new Point(1, -1),
+    new Point(-1, -1),
+  ];
+  t.same(sortCounterClockwise(points), [
+    new Point(-1, -1),
+    new Point(1, -1),
+    new Point(0, 1),
+  ]);
+
+  points = [
+    new Point(0, 1),
+    new Point(2, 1),
+    new Point(1, 0),
+  ];
+  t.same(sortCounterClockwise(points), [
+    new Point(0, 1),
+    new Point(1, 0),
+    new Point(2, 1),
+  ]);
 
   t.end();
 });
