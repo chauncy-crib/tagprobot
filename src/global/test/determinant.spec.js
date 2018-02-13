@@ -1,6 +1,7 @@
 import test from 'tape';
 
-import { determinant } from '../../global/determinant';
+import { determinant } from '../determinant';
+
 
 test('determinant returns correct value for a 3x3', t => {
   t.is(determinant([

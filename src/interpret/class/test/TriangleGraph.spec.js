@@ -5,12 +5,12 @@ import {
   getMergedGraph,
   initNavMesh,
   __RewireAPI__ as SetupRewireAPI,
-} from '../setup';
-import { Point } from '../class/Point';
-import { Triangle } from '../class/Triangle';
-import { TGraph } from '../class/TriangleGraph';
-import { updateUnmergedGraph, updateMergedGraph } from '../mapToGraph';
-import { setupTiles, teardownTiles } from './setupTiles.spec';
+} from '../../setup';
+import { Point } from '../Point';
+import { Triangle } from '../Triangle';
+import { TGraph } from '../TriangleGraph';
+import { updateUnmergedGraph, updateMergedGraph } from '../../mapToGraph';
+import { setupTiles, teardownTiles } from '../../test/setupTiles.spec';
 
 
 test('findContainingTriangles finds containing triangles', t => {
