@@ -1,3 +1,6 @@
+import { detD } from './determinant';
+
+
 /**
  * Throws a specified error message if a condition is not met. If no message
  * is specified, then a default error message is thrown.
@@ -33,4 +36,15 @@ export function assertGridInBounds(grid, x, y) {
 
 export function isRoughly(val, expected, threshold = 0.01) {
   return Math.abs(val - expected) <= threshold;
+}
+
+
+/**
+ * @param {Point} p1
+ * @param {Point} p2
+ * @param {{p1: Point, p2: Point}} e - an edge
+ * @returns {boolean} if the two points are on the same side of the edge
+ */
+export function pointsOnSameSide(p1, p2, e) {
+  return detD(e.p1, e.p2, p1) * detD(e.p1, e.p2, p2) > 0;
 }

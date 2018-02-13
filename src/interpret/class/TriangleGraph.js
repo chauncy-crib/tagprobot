@@ -1,9 +1,13 @@
 import _ from 'lodash';
 
 import { assert } from '../../global/utils';
-import { detD, detH } from '../interpret';
-import { sortCounterClockwise } from './Point';
-import { Triangle, isTriangleIntersectingEdge, findUpperAndLowerPoints } from './Triangle';
+import { detD, detH } from '../../global/determinant';
+import {
+  sortCounterClockwise,
+  isTriangleIntersectingEdge,
+  findUpperAndLowerPoints,
+} from '../utils';
+import { Triangle } from './Triangle';
 import { Graph } from './Graph';
 import { isLegal } from '../graphToTriangulation';
 

@@ -1,4 +1,5 @@
 import { assert } from '../global/utils';
+import { detH } from '../global/determinant';
 import { getTileProperty } from '../look/tileInfo';
 import {
   internalMap,
@@ -8,8 +9,7 @@ import {
   getMergedGraph,
   dtGraph,
 } from './setup';
-import { detH } from './interpret';
-import { sortCounterClockwise } from './class/Point';
+import { sortCounterClockwise } from './utils';
 import {
   updateMergedGraph,
   updateUnmergedGraph,
