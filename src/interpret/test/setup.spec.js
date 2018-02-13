@@ -210,6 +210,4 @@ test('delaunayTriangulation()', tester => {
 
     t.end();
   });
-
-  tester.end();
 });

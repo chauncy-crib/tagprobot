@@ -128,8 +128,6 @@ test('mapToEdgeTiles', tester => {
     teardown();
     t.end();
   });
-
-  tester.end();
 });
 
 
@@ -258,7 +256,6 @@ test('unmergedGraphFromTagproMap', tester => {
     teardown();
     t.end();
   });
-  tester.end();
 });
 
 
@@ -468,8 +465,6 @@ test('graphFromTagproMap', tester => {
     teardown();
     t.end();
   });
-
-  tester.end();
 });
 
 

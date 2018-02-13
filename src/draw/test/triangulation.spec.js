@@ -64,6 +64,4 @@ test('toggleTriangulationVis()', tester => {
     global.tagpro = undefined;
     t.end();
   });
-
-  tester.end();
 });

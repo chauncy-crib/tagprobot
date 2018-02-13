@@ -20,7 +20,6 @@ test('chat()', tester => {
     ChatRewireAPI.__ResetDependency__('messageQueue');
     t.end();
   });
-  tester.end();
 });
 
 
@@ -87,5 +86,4 @@ test('dequeueChatMessages()', tester => {
     ChatRewireAPI.__ResetDependency__('lastMessageTime');
     t.end();
   });
-  tester.end();
 });

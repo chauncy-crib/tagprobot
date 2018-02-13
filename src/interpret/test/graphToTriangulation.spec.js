@@ -42,6 +42,4 @@ test('isLegal', tester => {
 
     t.end();
   });
-
-  tester.end();
 });

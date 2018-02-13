@@ -70,8 +70,6 @@ test('projectedState', tester => {
 
     t.end();
   });
-
-  tester.end();
 });
 
 
@@ -114,8 +112,6 @@ test('binarySearchAcceleration', tester => {
 
     t.end();
   });
-
-  tester.end();
 });
 
 
@@ -175,6 +171,4 @@ test('getDesiredAccelerationMultipliers', tester => {
 
     t.end();
   });
-
-  tester.end();
 });
