@@ -9,13 +9,7 @@ import { Graph } from '../../interpret/class/Graph';
 test('toggleTriangulationVis()', tester => {
   tester.test('removed from the renderer when called with false', t => {
     const mockRemoveChild = sinon.stub();
-    global.tagpro = {
-      renderer: {
-        layers: {
-          foreground: { removeChild: mockRemoveChild },
-        },
-      },
-    };
+    global.tagpro = { renderer: { layers: { foreground: { removeChild: mockRemoveChild } } } };
     TriangulationRewireAPI.__Rewire__('triangulationSprite', 'sprite');
     TriangulationRewireAPI.__Rewire__('trianglesOn', true);
 
@@ -24,6 +18,7 @@ test('toggleTriangulationVis()', tester => {
     t.is(mockRemoveChild.callCount, 1);
     t.true(mockRemoveChild.calledWith('sprite'));
 
+    global.tagpro = undefined;
     TriangulationRewireAPI.__ResetDependency__('triangulationSprite');
     TriangulationRewireAPI.__ResetDependency__('trianglesOn');
     t.end();
@@ -44,13 +39,7 @@ test('toggleTriangulationVis()', tester => {
     TriangulationRewireAPI.__Rewire__('NAV_MESH_ALPHA', 'transparent');
     TriangulationRewireAPI.__Rewire__('NAV_MESH_VERTEX_COLOR', 'morebrown');
     TriangulationRewireAPI.__Rewire__('trianglesOn', false);
-    global.tagpro = {
-      renderer: {
-        layers: {
-          foreground: { addChild: () => {} },
-        },
-      },
-    };
+    global.tagpro = { renderer: { layers: { foreground: { addChild: () => {} } } } };
     toggleTriangulationVis(true);
 
     t.true(mockGetGraphGraphics.calledWith(mockGraph, 'thick', 'morebrown', 'transparent'));

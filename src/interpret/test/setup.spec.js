@@ -6,8 +6,8 @@ import { Graph } from '../class/Graph';
 
 
 /**
- * Used to reset DTGraph to a new TGraph at the beginning of each unit test, such that the unit
- *   tests don't affect each other.
+ * Used to reset DTGraph to a new TriangleGraph at the beginning of each unit test, such that the
+ *   unit tests don't affect each other.
  */
 function clearDTGraph() {
   dtGraph.adj = {};

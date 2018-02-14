@@ -47,7 +47,6 @@ export function chatHelpMenu() {
     '--- N: toggle triangles',
     '--- L: toggle paths',
     '--- P: toggle triangle dual-graph',
-    '--- R: toggle traversability',
     '--- K: toggle keypresses',
     '---',
   ];

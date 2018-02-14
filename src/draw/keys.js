@@ -1,12 +1,11 @@
 import { assert } from '../global/utils';
-import { getPixiSquare } from './draw';
+import { currKeyPresses } from '../interface/keys';
 import { KEY_COLOR, KEY_ON_ALPHA, KEY_OFF_ALPHA } from './constants';
+import { getPixiSquare } from './draw';
 
 
 let keyPressOn = false;
 
-// The current state of the keys being pressed
-export const currKeyPresses = { x: null, y: null };
 let keyPressesVis; // PIXI Graphics for drawing the key press visualizations
 // Index of specific keys inside of the keyPressesVis children array
 const leftKeyIndex = 0;

@@ -4,7 +4,7 @@ import { assert } from '../global/utils';
 import { getTileProperty } from '../look/tileInfo';
 import { Point } from './class/Point';
 import { Triangle } from './class/Triangle';
-import { TGraph } from './class/TriangleGraph';
+import { TriangleGraph } from './class/TriangleGraph';
 import { unmergedGraphFromTagproMap, graphFromTagproMap } from './mapToGraph';
 
 
@@ -14,7 +14,7 @@ export const internalMap = [];
 export const tilesToUpdate = [];
 export const tilesToUpdateValues = []; // the values stored in those locations
 
-export const dtGraph = new TGraph();
+export const dtGraph = new TriangleGraph();
 let unmergedGraph;
 let mergedGraph;
 

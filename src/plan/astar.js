@@ -85,22 +85,22 @@ export function runAstar(startState, targetState, neighborParam) {
 /**
  * @param {Object} me - object with bot's position in pixels, xp and yp
  * @param {Object} target - object with target's position in pixels, xp and yp
- * @param {TGraph} tGraph - the triangulation graph to run Astar through
+ * @param {TriangleGraph} triangleGraph - the triangulation graph to run Astar through
  * @returns {PolypointState[]} a list of states, starting from the startState to the targetState
  */
-export function getShortestPolypointPath(me, target, tGraph) {
+export function getShortestPolypointPath(me, target, triangleGraph) {
   assert(_.has(me, 'xp'), 'me does not have xp');
   assert(_.has(me, 'yp'), 'me does not have yp');
   assert(_.has(target, 'xp'), 'target does not have xp');
   assert(_.has(target, 'yp'), 'target does not have yp');
 
-  const startTriangle = tGraph.findContainingTriangles(new Point(me.xp, me.yp))[0];
-  const endTriangle = tGraph.findContainingTriangles(new Point(target.xp, target.yp))[0];
+  const startTriangle = triangleGraph.findContainingTriangles(new Point(me.xp, me.yp))[0];
+  const endTriangle = triangleGraph.findContainingTriangles(new Point(target.xp, target.yp))[0];
   assert(startTriangle, 'Could not find triangle for starting point');
   assert(endTriangle, 'Could not find triangle for ending point');
   const startState = new PolypointState(startTriangle.getCenter());
   const targetState = new PolypointState(endTriangle.getCenter());
-  const path = runAstar(startState, targetState, tGraph.polypoints);
+  const path = runAstar(startState, targetState, triangleGraph.polypoints);
 
   if (_.isNull(path)) return null; // if there was no path, return null
 
