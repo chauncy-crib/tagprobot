@@ -7,12 +7,12 @@ import { Graph } from './class/Graph';
 import { Point } from './class/Point';
 import { getTileProperty, tileIsOneOf, tileIsAngleWall } from '../look/tileInfo';
 import {
-  isAngleWallTraversable,
   wallOnLeft,
   wallOnRight,
   wallOnTop,
   wallOnBottom,
-} from '../look/gameState';
+  isAngleWallTraversable,
+} from '../look/around';
 
 
 /**
