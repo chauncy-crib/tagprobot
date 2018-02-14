@@ -1,5 +1,3 @@
-// Pixels per tile length
-export const PPTL = 40;
+export const PPTL = 40; // pixels per tile length
 
-// Size of the Tagpro ball
-export const BRP = 19; // ball radius, in pixels
+export const BRP = 19; // size of the Tagpro ball radius, in pixels

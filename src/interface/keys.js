@@ -1,12 +1,14 @@
 import { chat, chatHelpMenu } from './chat';
 import { clearSprites, turnOnAllDrawings } from '../draw/draw';
-import { drawKeyPresses, currKeyPresses, toggleKeyPressVis } from '../draw/keys';
+import { drawKeyPresses, toggleKeyPressVis } from '../draw/keys';
 import {
-  toggleTraversabilityVis,
   toggleTriangulationVis,
   togglePolypointVis,
   togglePathVis,
 } from '../draw/triangulation';
+
+
+export const currKeyPresses = { x: null, y: null }; // the current state of the keys being pressed
 
 
 const KEY_CODES = {
@@ -87,10 +89,6 @@ export function onKeyDown(event) {
     }
     case KEY_CODES.K: {
       toggleKeyPressVis();
-      break;
-    }
-    case KEY_CODES.R: {
-      toggleTraversabilityVis();
       break;
     }
     case KEY_CODES.N: {

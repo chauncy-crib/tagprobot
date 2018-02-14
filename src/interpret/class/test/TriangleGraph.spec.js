@@ -8,13 +8,13 @@ import {
 } from '../../setup';
 import { Point } from '../Point';
 import { Triangle } from '../Triangle';
-import { TGraph } from '../TriangleGraph';
+import { TriangleGraph } from '../TriangleGraph';
 import { updateUnmergedGraph, updateMergedGraph } from '../../mapToGraph';
 import { setupTiles, teardownTiles } from '../../test/setupTiles.spec';
 
 
 test('findContainingTriangles finds containing triangles', t => {
-  const tGraph = new TGraph();
+  const tGraph = new TriangleGraph();
   const p1 = new Point(0, 0);
   const p2 = new Point(-3, 8);
   const p3 = new Point(0, 10);
@@ -38,7 +38,7 @@ test('findContainingTriangles finds containing triangles', t => {
 
 
 test('triangulateRegion does not create flat triangle when points are in a line', t => {
-  const tGraph = new TGraph();
+  const tGraph = new TriangleGraph();
   const p1 = new Point(1080, 640);
   const p2 = new Point(1200, 680);
   const p3 = new Point(1200, 720);
@@ -60,7 +60,7 @@ test('triangulateRegion does not create flat triangle when points are in a line'
 
 test('delaunayRemoveVertex', tester => {
   tester.test('removes vertex surrounded by 4 points, and validly retriangulates 4 points', t => {
-    const mockDTGraph = new TGraph();
+    const mockDTGraph = new TriangleGraph();
     const v0 = new Point(0, 0);
     const v1 = new Point(0, 10);
     const v2 = new Point(10, 10);
@@ -82,7 +82,7 @@ test('delaunayRemoveVertex', tester => {
   });
 
   tester.test('removes vertex surrounded by 5 points, and validly retriangulates 5 points', t => {
-    const mockDTGraph = new TGraph();
+    const mockDTGraph = new TriangleGraph();
     const v0 = new Point(0, 0);
     const v1 = new Point(0, 10);
     const v2 = new Point(10, 10);
@@ -113,7 +113,7 @@ test('delaunayRemoveVertex', tester => {
 test('dynamicUpdate', tester => {
   tester.test('single NT tile', t => {
     setupTiles();
-    const mockDTGraph = new TGraph();
+    const mockDTGraph = new TriangleGraph();
     SetupRewireAPI.__Rewire__('dtGraph', mockDTGraph);
     const map = [
       [2, 2, 2, 2, 2],

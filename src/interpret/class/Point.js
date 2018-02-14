@@ -1,5 +1,5 @@
 /**
- * Represents an x, y pixel location on the tagpro map. Used as vertices to define polygons.
+ * Represents an x, y location. Used as vertices to define polygons.
  */
 export class Point {
   constructor(x, y) {

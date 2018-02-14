@@ -17,7 +17,7 @@ import { isLegal } from '../graphToTriangulation';
  * Extend the Graph class to represent the delaunay triangles. Contains triangle objects in addition
  * to edges and vertices
  */
-export class TGraph extends Graph {
+export class TriangleGraph extends Graph {
   constructor() {
     super();
     this.triangles = new Set();
@@ -339,9 +339,7 @@ export class TGraph extends Graph {
           (e.p1.equals(p1) && e.p2.equals(p2)) ||
           (e.p1.equals(p2) && e.p2.equals(p1))
         ));
-        if (!edgeExists) {
-          edges.push({ p1, p2 });
-        }
+        if (!edgeExists) edges.push({ p1, p2 });
       });
     });
     return edges;
@@ -409,19 +407,19 @@ export class TGraph extends Graph {
   }
 
   /**
-   * @param {{p1: Point, p2: Point}[]} unfixEdges - a list of edges to unmark as fixed in the
-   *   DTGraph
-   * @param {{p1: Point, p2: Point}[]} constrainingEdges - a list of edges to mark as fixed in the
-   *   DTGraph
-   * @param {Point[]} removeVertices - a list of vertices to remove from the DTGraph (and
+   * @param {{p1: Point, p2: Point}[]} constrainedEdgesToRemove - a list of edges to unmark as fixed
+   *   in the DTGraph
+   * @param {{p1: Point, p2: Point}[]} constrainedEdgesToAdd - a list of edges to mark as fixed in
+   *   the DTGraph
+   * @param {Point[]} verticesToRemove - a list of vertices to remove from the DTGraph (and
    *   retriangulate around them after each removal)
-   * @param {Point[]} addVertices - a list of vertices to add to the DTGraph (and
+   * @param {Point[]} verticesToAdd - a list of vertices to add to the DTGraph (and
    *   retriangulate around them after each addition)
    */
-  dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices) {
-    _.forEach(unfixEdges, e => this.unfixEdge(e));
-    _.forEach(removeVertices, v => this.delaunayRemoveVertex(v));
-    _.forEach(addVertices, v => this.delaunayAddVertex(v));
-    _.forEach(constrainingEdges, e => this.delaunayAddConstraintEdge(e));
+  dynamicUpdate(constrainedEdgesToRemove, constrainedEdgesToAdd, verticesToRemove, verticesToAdd) {
+    _.forEach(constrainedEdgesToRemove, e => this.unfixEdge(e));
+    _.forEach(verticesToRemove, v => this.delaunayRemoveVertex(v));
+    _.forEach(verticesToAdd, v => this.delaunayAddVertex(v));
+    _.forEach(constrainedEdgesToAdd, e => this.delaunayAddConstraintEdge(e));
   }
 }
