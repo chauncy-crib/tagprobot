@@ -9,7 +9,7 @@ import { amRed,
   myTeamHasFlag,
   enemyTeamHasFlag,
 } from '../look/gameState';
-import { findCachedTile, findEnemyFC } from '../look/locations';
+import { findCachedTile, findEnemyFC } from '../look/tileLocations';
 import { getShortestPolypointPath } from '../plan/astar';
 import { Point } from '../interpret/class/Point';
 import { dtGraph } from '../interpret/setup';

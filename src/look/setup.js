@@ -1,9 +1,9 @@
 import { assert } from '../global/utils';
-import { centerOfMass } from './locations';
+import { centerOfMass } from './tileLocations';
 import { tileIsOneOf } from './tileInfo';
 
 
-export const locations = {};
+export const tileLocations = {};
 
 
 /**
@@ -22,24 +22,24 @@ export function setupClientVelocity() {
 
 
 /**
- * Parses each tile of the TagPro map. If it discovers a flag, add its location to the locations
+ * Parses each tile of the TagPro map. If it discovers a flag, add its location to the tileLocations
  *   object. Also defines the endzone positions for red and blue teams.
  */
 export function initLocations() {
   assert(tagpro.map, 'tagpro.map is undefined');
-  locations.BLUE_ENDZONE = centerOfMass('BLUE_ENDZONE');
-  locations.RED_ENDZONE = centerOfMass('RED_ENDZONE');
+  tileLocations.BLUE_ENDZONE = centerOfMass('BLUE_ENDZONE');
+  tileLocations.RED_ENDZONE = centerOfMass('RED_ENDZONE');
   for (let xt = 0, xl = tagpro.map.length; xt < xl; xt++) {
     for (let yt = 0, yl = tagpro.map[0].length; yt < yl; yt++) {
       if (tileIsOneOf(tagpro.map[xt][yt], ['RED_FLAG', 'RED_FLAG_TAKEN'])) {
-        locations.RED_FLAG = { xt, yt };
-        locations.RED_FLAG_TAKEN = { xt, yt };
+        tileLocations.RED_FLAG = { xt, yt };
+        tileLocations.RED_FLAG_TAKEN = { xt, yt };
       } else if (tileIsOneOf(tagpro.map[xt][yt], ['BLUE_FLAG', 'BLUE_FLAG_TAKEN'])) {
-        locations.BLUE_FLAG = { xt, yt };
-        locations.BLUE_FLAG_TAKEN = { xt, yt };
+        tileLocations.BLUE_FLAG = { xt, yt };
+        tileLocations.BLUE_FLAG_TAKEN = { xt, yt };
       } else if (tileIsOneOf(tagpro.map[xt][yt], ['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN'])) {
-        locations.YELLOW_FLAG = { xt, yt };
-        locations.YELLOW_FLAG_TAKEN = { xt, yt };
+        tileLocations.YELLOW_FLAG = { xt, yt };
+        tileLocations.YELLOW_FLAG_TAKEN = { xt, yt };
       }
     }
   }

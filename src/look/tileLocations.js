@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { PPTL } from '../global/constants';
-import { locations } from './setup';
+import { tileLocations } from './setup';
 import { tileHasName } from './tileInfo';
 import { isOnMyTeam } from './gameState';
 
@@ -40,8 +40,8 @@ export function findCachedTile(tileNames) {
   const tileNameArray = [].concat(tileNames);
   for (let i = 0; i < tileNameArray.length; i++) {
     const name = tileNameArray[i];
-    if (_.has(locations, name)) {
-      const { xt, yt } = locations[name];
+    if (_.has(tileLocations, name)) {
+      const { xt, yt } = tileLocations[name];
       if (tileHasName(tagpro.map[xt][yt], name)) {
         return { xp: (xt * PPTL) + (PPTL / 2), yp: (yt * PPTL) + (PPTL / 2) };
       }

@@ -1,5 +1,5 @@
 import { TEAMS } from './constants';
-import { findCachedTile } from './locations';
+import { findCachedTile } from './tileLocations';
 
 
 let me;
