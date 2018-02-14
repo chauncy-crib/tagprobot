@@ -2,7 +2,7 @@ import test from 'tape';
 import sinon from 'sinon';
 
 import { PPTL } from '../../global/constants';
-import { __RewireAPI__ as GameStateRewireAPI } from '../../look/gameState';
+import { __RewireAPI__ as AroundRewireAPI } from '../../look/around';
 import { __RewireAPI__ as TileInfoRewireAPI } from '../../look/tileInfo';
 import { setupTiles, teardownTiles } from './setupTiles.spec';
 import { Point } from '../class/Point';
@@ -34,16 +34,16 @@ function setup() {
   mockGetTileProperty.returns(false);
   const mockTileHasName = sinon.stub().callsFake(fakeTileHasName);
   MapToGraphRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
-  GameStateRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
-  GameStateRewireAPI.__Rewire__('tileHasName', mockTileHasName);
+  AroundRewireAPI.__Rewire__('getTileProperty', mockGetTileProperty);
+  AroundRewireAPI.__Rewire__('tileHasName', mockTileHasName);
   TileInfoRewireAPI.__Rewire__('tileHasName', mockTileHasName);
 }
 
 
 function teardown() {
   MapToGraphRewireAPI.__ResetDependency__('getTileProperty');
-  GameStateRewireAPI.__ResetDependency__('getTileProperty');
-  GameStateRewireAPI.__ResetDependency__('tileHasName');
+  AroundRewireAPI.__ResetDependency__('getTileProperty');
+  AroundRewireAPI.__ResetDependency__('tileHasName');
   TileInfoRewireAPI.__ResetDependency__('tileHasName');
 }
 
