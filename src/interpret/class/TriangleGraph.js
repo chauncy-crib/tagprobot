@@ -9,8 +9,12 @@ import {
   findUpperAndLowerPoints,
 } from '../utils';
 import { Triangle } from './Triangle';
+import { Point } from './Point';
 import { Graph } from './Graph';
 import { isLegal } from '../graphToTriangulation';
+
+
+const CLEARANCE = 27;
 
 
 /*
@@ -166,6 +170,42 @@ export class TriangleGraph extends Graph {
   }
 
 
+  getFixedNeighbors(p) {
+    return this.fixedAdj[p];
+  }
+
+
+  /**
+   * @param {Point} cornerPoint - the point on the corner that needs clearance
+   * @returns {Point} a point that is CLEARANCE away from the cornerPoint in the corner's normal
+   *   direction
+   */
+  getClearancePoint(cornerPoint) {
+    const neighbors = this.getFixedNeighbors(cornerPoint);
+    assert(neighbors.length === 2, 'Did not find exactly two neighbors of the corner');
+    const [prevPoint, nextPoint] = neighbors;
+
+    const nextAngle = Math.atan2(
+      nextPoint.y - cornerPoint.y,
+      nextPoint.x - cornerPoint.x,
+    );
+    const prevAngle = Math.atan2(
+      prevPoint.y - cornerPoint.y,
+      prevPoint.x - cornerPoint.x,
+    );
+
+    // Minimum distance between angles
+    let distance = nextAngle - prevAngle;
+    if (Math.abs(distance) > Math.PI) distance -= Math.PI * (distance > 0 ? 2 : -2);
+
+    // Calculate perpendicular to average angle
+    const angle = prevAngle + (distance / 2) + (Math.PI);
+
+    const normal = new Point(Math.cos(angle), Math.sin(angle));
+
+    // Return new point with clearance from the corner
+    return cornerPoint.add(normal.times(CLEARANCE));
+  }
   /**
    * @param {{p1: Point, p2: Point}} e - an edge
    * @returns {Triangle[]} all triangles which have one edge equal to e

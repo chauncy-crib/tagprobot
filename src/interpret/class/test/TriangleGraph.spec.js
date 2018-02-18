@@ -6,9 +6,10 @@ import {
   initNavMesh,
   __RewireAPI__ as SetupRewireAPI,
 } from '../../setup';
+import { isRoughly } from '../../../global/utils';
 import { Point } from '../Point';
 import { Triangle } from '../Triangle';
-import { TriangleGraph } from '../TriangleGraph';
+import { TriangleGraph, __RewireAPI__ as TriangleGraphRewireAPI } from '../TriangleGraph';
 import { updateUnmergedGraph, updateMergedGraph } from '../../mapToGraph';
 import { setupTiles, teardownTiles } from '../../test/setupTiles.spec';
 
@@ -145,6 +146,100 @@ test('dynamicUpdate', tester => {
 
     SetupRewireAPI.__ResetDependency__('dtGraph');
     teardownTiles();
+    t.end();
+  });
+});
+
+
+test('getClearancePoint()', tester => {
+  tester.test('works for top-left clearance', t => {
+    TriangleGraphRewireAPI.__Rewire__('CLEARANCE', Math.sqrt(2));
+    const cornerPoint = new Point(0, 0);
+    const prevPoint = new Point(0, -1);
+    const nextPoint = new Point(-1, 0);
+
+    const tGraph = new TriangleGraph();
+    tGraph.addVertex(cornerPoint);
+    tGraph.addVertex(prevPoint);
+    tGraph.addVertex(nextPoint);
+    tGraph.addFixedEdge({ p1: cornerPoint, p2: prevPoint });
+    tGraph.addFixedEdge({ p1: cornerPoint, p2: nextPoint });
+
+    const clearancePoint = tGraph.getClearancePoint(cornerPoint);
+    const expected = new Point(1, 1);
+    t.true(isRoughly(clearancePoint.x, expected.x));
+    t.true(isRoughly(clearancePoint.y, expected.y));
+
+    TriangleGraphRewireAPI.__ResetDependency__('CLEARANCE');
+    t.end();
+  });
+
+
+  tester.test('works for top-right clearance', t => {
+    TriangleGraphRewireAPI.__Rewire__('CLEARANCE', Math.sqrt(2));
+    const cornerPoint = new Point(0, 0);
+    const prevPoint = new Point(0, -1);
+    const nextPoint = new Point(1, 0);
+
+    const tGraph = new TriangleGraph();
+    tGraph.addVertex(cornerPoint);
+    tGraph.addVertex(prevPoint);
+    tGraph.addVertex(nextPoint);
+    tGraph.addFixedEdge({ p1: cornerPoint, p2: prevPoint });
+    tGraph.addFixedEdge({ p1: cornerPoint, p2: nextPoint });
+
+    const clearancePoint = tGraph.getClearancePoint(cornerPoint);
+    const expected = new Point(-1, 1);
+    t.true(isRoughly(clearancePoint.x, expected.x));
+    t.true(isRoughly(clearancePoint.y, expected.y));
+
+    TriangleGraphRewireAPI.__ResetDependency__('CLEARANCE');
+    t.end();
+  });
+
+
+  tester.test('works for bottom-left clearance', t => {
+    TriangleGraphRewireAPI.__Rewire__('CLEARANCE', Math.sqrt(2));
+    const cornerPoint = new Point(0, 0);
+    const prevPoint = new Point(0, 1);
+    const nextPoint = new Point(1, 0);
+
+    const tGraph = new TriangleGraph();
+    tGraph.addVertex(cornerPoint);
+    tGraph.addVertex(prevPoint);
+    tGraph.addVertex(nextPoint);
+    tGraph.addFixedEdge({ p1: cornerPoint, p2: prevPoint });
+    tGraph.addFixedEdge({ p1: cornerPoint, p2: nextPoint });
+
+    const clearancePoint = tGraph.getClearancePoint(cornerPoint);
+    const expected = new Point(-1, -1);
+    t.true(isRoughly(clearancePoint.x, expected.x));
+    t.true(isRoughly(clearancePoint.y, expected.y));
+
+    TriangleGraphRewireAPI.__ResetDependency__('CLEARANCE');
+    t.end();
+  });
+
+
+  tester.test('works for bottom-right clearance', t => {
+    TriangleGraphRewireAPI.__Rewire__('CLEARANCE', Math.sqrt(2));
+    const cornerPoint = new Point(0, 0);
+    const prevPoint = new Point(0, 1);
+    const nextPoint = new Point(-1, 0);
+
+    const tGraph = new TriangleGraph();
+    tGraph.addVertex(cornerPoint);
+    tGraph.addVertex(prevPoint);
+    tGraph.addVertex(nextPoint);
+    tGraph.addFixedEdge({ p1: cornerPoint, p2: prevPoint });
+    tGraph.addFixedEdge({ p1: cornerPoint, p2: nextPoint });
+
+    const clearancePoint = tGraph.getClearancePoint(cornerPoint);
+    const expected = new Point(1, -1);
+    t.true(isRoughly(clearancePoint.x, expected.x));
+    t.true(isRoughly(clearancePoint.y, expected.y));
+
+    TriangleGraphRewireAPI.__ResetDependency__('CLEARANCE');
     t.end();
   });
 });
