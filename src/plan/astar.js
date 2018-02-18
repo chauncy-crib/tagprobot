@@ -110,5 +110,5 @@ export function getShortestPolypointPath(me, target, triangleGraph) {
   const targetPositionState = new PolypointState(new Polypoint(target.xp, target.yp, endTriangle));
   const fullPath = [initialPositionState].concat(_.slice(path, 1, -1)).concat(targetPositionState);
 
-  return funnelPolypoints(fullPath);
+  return funnelPolypoints(fullPath, triangleGraph);
 }

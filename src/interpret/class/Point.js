@@ -53,4 +53,9 @@ export class Point {
   toString() {
     return `x: ${this.x}, y: ${this.y}`;
   }
+
+
+  copy() {
+    return new Point(this.x, this.y);
+  }
 }
