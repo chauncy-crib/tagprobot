@@ -2,6 +2,7 @@ import _ from 'lodash';
 
 import { assert } from '../../global/utils';
 import { slope, intercept, areEdgesEqual } from '../utils';
+import { Point } from './Point';
 
 
 /**
@@ -10,7 +11,6 @@ import { slope, intercept, areEdgesEqual } from '../utils';
 export class Graph {
   constructor() {
     this.adj = {}; // map from point object to list of adjacent points
-    this.vertices = [];
     this.collinearEdges = {}; // map from slope to intercept to list of edges
   }
 
@@ -24,7 +24,6 @@ export class Graph {
     // Only add vertex if it doesn't already exist in the graph
     if (this.hasVertex(point)) return false;
     this.adj[point] = [];
-    this.vertices.push(point);
     return true;
   }
 
@@ -55,6 +54,7 @@ export class Graph {
    *   no neighbors, it is removed.
    */
   removeEdgeAndVertices(p1, p2) {
+    if (!this.isConnected(p1, p2)) return;
     this.removeEdge(p1, p2);
     if (this.neighbors(p1).length === 0) this.removeVertex(p1);
     if (this.neighbors(p2).length === 0) this.removeVertex(p2);
@@ -65,15 +65,14 @@ export class Graph {
    * Removes the edge between two points, if they are connected.
    */
   removeEdge(p1, p2) {
-    if (this.isConnected(p1, p2)) {
-      const m = slope(p1, p2);
-      const b = intercept(p1, p2);
-      this.collinearEdges[m][b] = _.reject(
-        this.collinearEdges[m][b],
-        e => areEdgesEqual(e, { p1, p2 }),
-      );
-      if (_.isEmpty(this.collinearEdges[m][b])) delete this.collinearEdges[m][b];
-    }
+    if (!this.isConnected(p1, p2)) return;
+    const m = slope(p1, p2);
+    const b = intercept(p1, p2);
+    this.collinearEdges[m][b] = _.reject(
+      this.collinearEdges[m][b],
+      e => areEdgesEqual(e, { p1, p2 }),
+    );
+    if (_.isEmpty(this.collinearEdges[m][b])) delete this.collinearEdges[m][b];
     this.adj[p1] = _.reject(this.adj[p1], p => p.equals(p2));
     this.adj[p2] = _.reject(this.adj[p2], p => p.equals(p1));
   }
@@ -89,7 +88,6 @@ export class Graph {
     });
     // Remove the vertex
     delete this.adj[vertex];
-    this.vertices = _.reject(this.vertices, v => vertex.equals(v));
   }
 
 
@@ -127,8 +125,7 @@ export class Graph {
    * @returns {Point[]} all vertices in the graph
    */
   getVertices() {
-    // Return a copy of the vertices list
-    return _.cloneDeep(this.vertices);
+    return _.map(_.keys(this.adj), s => Point.fromString(s));
   }
 
 
@@ -136,7 +133,7 @@ export class Graph {
    * @returns {number} the number of vertices in the graph
    */
   numVertices() {
-    return this.vertices.length;
+    return _.size(this.adj);
   }
 
 
@@ -157,12 +154,9 @@ export class Graph {
 
   getEdges() {
     const edges = [];
-    _.forEach(this.vertices, p1 => {
+    _.forEach(this.getVertices(), p1 => {
       _.forEach(this.adj[p1], p2 => {
-        const edgeExists = _.some(edges, e => (
-          (e.p1.equals(p1) && e.p2.equals(p2)) ||
-          (e.p1.equals(p2) && e.p2.equals(p1))
-        ));
+        const edgeExists = _.some(edges, e => areEdgesEqual(e, { p1, p2 }));
         if (!edgeExists) edges.push({ p1, p2 });
       });
     });
