@@ -168,6 +168,6 @@ export class Graph {
    * @returns {number} the number of edges in the graph
    */
   numEdges() {
-    return this.getEdges().length;
+    return _.sumBy(_.values(this.adj), l => l.length) / 2;
   }
 }
