@@ -182,7 +182,10 @@ export class TriangleGraph extends Graph {
    */
   getClearancePoint(cornerPoint) {
     const neighbors = this.getFixedNeighbors(cornerPoint);
-    assert(neighbors.length === 2, 'Did not find exactly two neighbors of the corner');
+
+    // Don't get clearance if this is a concave corner with an odd number of neighbors
+    if (neighbors.length !== 2) return cornerPoint.copy();
+
     const [prevPoint, nextPoint] = neighbors;
 
     const nextAngle = Math.atan2(
