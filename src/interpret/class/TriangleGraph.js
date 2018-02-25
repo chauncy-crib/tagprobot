@@ -375,14 +375,16 @@ export class TriangleGraph extends Graph {
 
 
   getFixedEdges() {
+    const edgesSet = {};
     const edges = [];
     _.forEach(this.getVertices(), p1 => {
       _.forEach(this.fixedAdj[p1], p2 => {
-        const edgeExists = _.some(edges, e => (
-          (e.p1.equals(p1) && e.p2.equals(p2)) ||
-          (e.p1.equals(p2) && e.p2.equals(p1))
-        ));
-        if (!edgeExists) edges.push({ p1, p2 });
+        const e = new Edge(p1, p2);
+        const edgeExists = _.has(edgesSet, `p1: ${p1.toString()}, p2: ${p2.toString()}`);
+        if (!edgeExists) {
+          edges.push(e);
+          edgesSet[`p1: ${p2.toString()}, p2: ${p1.toString()}`] = true;
+        }
       });
     });
     return edges;
