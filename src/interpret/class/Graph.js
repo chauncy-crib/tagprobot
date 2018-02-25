@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { assert } from '../../global/utils';
-import { areEdgesCollinear } from '../utils';
+import { slope, intercept, areEdgesEqual } from '../utils';
 
 
 /**
@@ -11,17 +11,35 @@ export class Graph {
   constructor() {
     this.adj = {}; // map from point object to list of adjacent points
     this.vertices = [];
+    this.collinearEdges = {}; // map from slope to intercept to list of edges
+  }
+
+
+  /**
+   * Adds a point to the graph
+   * @returns {boolean} if the point was successfully added
+   */
+  addVertex(point) {
+    assert(!_.isNil(point), 'Point was undefined');
+    // Only add vertex if it doesn't already exist in the graph
+    if (this.hasVertex(point)) return false;
+    this.adj[point] = [];
+    this.vertices.push(point);
+    return true;
   }
 
 
   addEdge(p1, p2) {
     assert(_.has(this.adj, p1), `${p1} not initialized in the graph with addVertex()`);
     assert(_.has(this.adj, p2), `${p2} not initialized in the graph with addVertex()`);
-    if (this.isConnected(p1, p2)) {
-      return;
-    }
+    if (this.isConnected(p1, p2)) return;
     this.adj[p1].push(p2);
     this.adj[p2].push(p1);
+    const m = slope(p1, p2);
+    const b = intercept(p1, p2);
+    if (!_.has(this.collinearEdges, m)) this.collinearEdges[m] = {};
+    if (!_.has(this.collinearEdges[m], b)) this.collinearEdges[m][b] = [];
+    this.collinearEdges[m][b].push({ p1, p2 });
   }
 
 
@@ -33,9 +51,9 @@ export class Graph {
 
 
   /**
-  * Removes the edge between two points, if they are connected. If after removal, either point has
-  *   no neighbors, it is removed.
-  */
+   * Removes the edge between two points, if they are connected. If after removal, either point has
+   *   no neighbors, it is removed.
+   */
   removeEdgeAndVertices(p1, p2) {
     this.removeEdge(p1, p2);
     if (this.neighbors(p1).length === 0) this.removeVertex(p1);
@@ -43,7 +61,19 @@ export class Graph {
   }
 
 
+  /**
+   * Removes the edge between two points, if they are connected.
+   */
   removeEdge(p1, p2) {
+    if (this.isConnected(p1, p2)) {
+      const m = slope(p1, p2);
+      const b = intercept(p1, p2);
+      this.collinearEdges[m][b] = _.reject(
+        this.collinearEdges[m][b],
+        e => areEdgesEqual(e, { p1, p2 }),
+      );
+      if (_.isEmpty(this.collinearEdges[m][b])) delete this.collinearEdges[m][b];
+    }
     this.adj[p1] = _.reject(this.adj[p1], p => p.equals(p2));
     this.adj[p2] = _.reject(this.adj[p2], p => p.equals(p1));
   }
@@ -94,20 +124,6 @@ export class Graph {
 
 
   /**
-   * Adds a point to the graph
-   * @returns {boolean} if the point was successfully added
-   */
-  addVertex(point) {
-    assert(!_.isNil(point), 'Point was undefined');
-    // Only add vertex if it doesn't already exist in the graph
-    if (this.hasVertex(point)) return false;
-    this.adj[point] = [];
-    this.vertices.push(point);
-    return true;
-  }
-
-
-  /**
    * @returns {Point[]} all vertices in the graph
    */
   getVertices() {
@@ -120,7 +136,7 @@ export class Graph {
    * @returns {number} the number of vertices in the graph
    */
   numVertices() {
-    return this.getVertices().length;
+    return this.vertices.length;
   }
 
 
@@ -131,7 +147,11 @@ export class Graph {
    *   edge. (Ie, they have identical slopes, and x and y intercepts).
    */
   edgesInLineWith(e) {
-    return _.filter(this.getEdges(), edge => areEdgesCollinear(e, edge));
+    const m = slope(e.p1, e.p2);
+    const b = intercept(e.p1, e.p2);
+    if (!_.has(this.collinearEdges, m)) return [];
+    if (!_.has(this.collinearEdges[m], b)) return [];
+    return this.collinearEdges[m][b];
   }
 
 
