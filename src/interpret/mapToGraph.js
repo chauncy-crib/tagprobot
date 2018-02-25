@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import { PPTL } from '../global/constants';
 import { assert } from '../global/utils';
-import { threePointsInLine, areEdgesCollinear } from './utils';
+import { threePointsInLine, areEdgesCollinear, areEdgesEqual } from './utils';
 import { Graph } from './class/Graph';
 import { Point } from './class/Point';
 import { getTileProperty, tileIsOneOf, tileIsAngleWall } from '../look/tileInfo';
@@ -347,14 +347,15 @@ export function updateMergedGraph(mergedGraph, unmergedGraph, map, xt, yt) {
       else squashVertex(mergedGraph, point);
     }
   }
-  const edgeEqual = (e1, e2) => (e1.p1.equals(e2.p1) && e1.p2.equals(e2.p2)) ||
-           (e1.p1.equals(e2.p2) && e1.p2.equals(e2.p1));
   const afterVertices = mergedGraph.getVertices();
   const afterEdges = mergedGraph.getEdges();
   // Unfix all edges that existed before but do not anymore
-  const unfixEdges = _.reject(beforeEdges, b => _.some(afterEdges, a => edgeEqual(a, b)));
+  const unfixEdges = _.reject(beforeEdges, b => _.some(afterEdges, a => areEdgesEqual(a, b)));
   // Add constraining edges that didn't exist previously
-  const constrainingEdges = _.reject(afterEdges, a => _.some(beforeEdges, b => edgeEqual(a, b)));
+  const constrainingEdges = _.reject(
+    afterEdges,
+    a => _.some(beforeEdges, b => areEdgesEqual(a, b)),
+  );
   // Remove vertices that now are not in the merged graph
   const removeVertices = _.reject(beforeVertices, b => _.some(afterVertices, a => a.equals(b)));
   // Add vertices that were not previously in the merged graph
