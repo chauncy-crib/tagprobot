@@ -3,6 +3,17 @@ import { Graph } from '../class/Graph';
 import { Point } from '../class/Point';
 
 
+test('numEdges', t => {
+  const g = new Graph();
+  g.addEdgeAndVertices(new Point(0, 0), new Point(1, 0));
+  g.addEdgeAndVertices(new Point(0, 0), new Point(-1, 0));
+  g.addEdgeAndVertices(new Point(0, 0), new Point(0, -1));
+  g.addEdgeAndVertices(new Point(0, 0), new Point(0, 1));
+  t.is(g.numEdges(), 4);
+  t.end();
+});
+
+
 test('edgesInLineWith', t => {
   const g = new Graph();
   g.addEdgeAndVertices(new Point(2, 1), new Point(3, 2));
