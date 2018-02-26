@@ -1,6 +1,6 @@
 import test from 'tape';
-import { Graph } from '../class/Graph';
-import { Point } from '../class/Point';
+import { Graph } from '../Graph';
+import { Point } from '../Point';
 
 test('getEdges', tester => {
   tester.test('getEdges', t => {

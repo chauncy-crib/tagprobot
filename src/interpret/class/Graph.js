@@ -157,7 +157,7 @@ export class Graph {
     const edges = [];
     _.forEach(this.getVertices(), p1 => {
       _.forEach(this.adj[p1], p2 => {
-        // create new Point objects, because if the points are Polypoints, their toString method
+        // Create new Point objects, because if the points are Polypoints, their toString method
         // includes the containing triangle.
         const e = { p1: new Point(p1.x, p1.y), p2: new Point(p2.x, p2.y) };
         const edgeExists = _.has(edgesSet, JSON.stringify(e));
