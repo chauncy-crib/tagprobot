@@ -138,7 +138,6 @@ export class Graph {
 
 
   /**
-   * @param {Graph} graph
    * @param {{x: number, y: number}} e
    * @returns {{x: number, y: number}[]} all edges from the graph which are in-line with the input
    *   edge. (Ie, they have identical slopes, and x and y intercepts).
