@@ -141,9 +141,9 @@ export class TriangleGraph extends Graph {
       this.polypoints.removeVertex(t.getCenter());
     }
     this.triangles.delete(t);
-    this.removeEdge(t.p1, t.p2);
-    this.removeEdge(t.p1, t.p3);
-    this.removeEdge(t.p2, t.p3);
+    this.removeEdge(new Edge(t.p1, t.p2));
+    this.removeEdge(new Edge(t.p1, t.p3));
+    this.removeEdge(new Edge(t.p2, t.p3));
   }
 
 
@@ -345,10 +345,10 @@ export class TriangleGraph extends Graph {
   delaunayAddConstraintEdge(e) {
     const trianglesAcross = this.findTrianglesWithEdge(e);
     if (trianglesAcross.length === 2) {
-      this.polypoints.removeEdge(
+      this.polypoints.removeEdge(new Edge(
         trianglesAcross[0].getCenter(),
         trianglesAcross[1].getCenter(),
-      );
+      ));
     }
     // If edge already exists, just make it fixed since everything is already triangulated
     if (this.isConnected(e.p1, e.p2)) {
