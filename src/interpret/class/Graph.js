@@ -43,10 +43,10 @@ export class Graph {
   }
 
 
-  addEdgeAndVertices(p1, p2) {
-    this.addVertex(p1);
-    this.addVertex(p2);
-    this.addEdge(new Edge(p1, p2));
+  addEdgeAndVertices(edge) {
+    this.addVertex(edge.p1);
+    this.addVertex(edge.p2);
+    this.addEdge(new Edge(edge.p1, edge.p2));
   }
 
 
