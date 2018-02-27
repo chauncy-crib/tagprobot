@@ -1,8 +1,9 @@
 import _ from 'lodash';
 
 import { assert } from '../../global/utils';
-import { slope, intercept, areEdgesEqual } from '../utils';
+import { slope, intercept } from '../utils';
 import { Point } from './Point';
+import { Edge } from './Edge';
 
 
 /**
@@ -38,7 +39,7 @@ export class Graph {
     const b = intercept(p1, p2);
     if (!_.has(this.collinearEdges, m)) this.collinearEdges[m] = {};
     if (!_.has(this.collinearEdges[m], b)) this.collinearEdges[m][b] = [];
-    this.collinearEdges[m][b].push({ p1, p2 });
+    this.collinearEdges[m][b].push(new Edge(p1, p2));
   }
 
 
@@ -70,7 +71,7 @@ export class Graph {
     const b = intercept(p1, p2);
     this.collinearEdges[m][b] = _.reject(
       this.collinearEdges[m][b],
-      e => areEdgesEqual(e, { p1, p2 }),
+      e => e.equals(new Edge(p1, p2)),
     );
     if (_.isEmpty(this.collinearEdges[m][b])) delete this.collinearEdges[m][b];
     this.adj[p1] = _.reject(this.adj[p1], p => p.equals(p2));
