@@ -3,6 +3,7 @@ import sinon from 'sinon';
 
 import { toggleTriangulationVis, __RewireAPI__ as TriangulationRewireAPI } from '../triangulation';
 import { Point } from '../../interpret/class/Point';
+import { Edge } from '../../interpret/class/Edge';
 import { Graph } from '../../interpret/class/Graph';
 
 
@@ -29,9 +30,9 @@ test('toggleTriangulationVis()', tester => {
     const middle = new Point(1000, 1000);
     const left = new Point(900, 1000);
     const down = new Point(1000, 1100);
-    mockGraph.addEdgeAndVertices(middle, left);
-    mockGraph.addEdgeAndVertices(middle, down);
-    mockGraph.addEdgeAndVertices(down, left);
+    mockGraph.addEdgeAndVertices(new Edge(middle, left));
+    mockGraph.addEdgeAndVertices(new Edge(middle, down));
+    mockGraph.addEdgeAndVertices(new Edge(down, left));
     const mockGetGraphGraphics = sinon.spy();
     TriangulationRewireAPI.__Rewire__('getGraphGraphics', mockGetGraphGraphics);
     TriangulationRewireAPI.__Rewire__('dtGraph', mockGraph);

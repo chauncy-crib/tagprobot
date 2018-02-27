@@ -8,6 +8,7 @@ import {
 } from '../../setup';
 import { isRoughly } from '../../../global/utils';
 import { Point } from '../Point';
+import { Edge } from '../Edge';
 import { Triangle } from '../Triangle';
 import { TriangleGraph, __RewireAPI__ as TriangleGraphRewireAPI } from '../TriangleGraph';
 import { updateUnmergedGraph, updateMergedGraph } from '../../mapToGraph';
@@ -44,10 +45,10 @@ test('triangulateRegion does not create flat triangle when points are in a line'
   const p2 = new Point(1200, 680);
   const p3 = new Point(1200, 720);
   const p4 = new Point(1200, 760);
-  tGraph.addEdgeAndVertices(p1, p2);
-  tGraph.addEdgeAndVertices(p2, p3);
-  tGraph.addEdgeAndVertices(p3, p4);
-  tGraph.addEdgeAndVertices(p4, p1);
+  tGraph.addEdgeAndVertices(new Edge(p1, p2));
+  tGraph.addEdgeAndVertices(new Edge(p2, p3));
+  tGraph.addEdgeAndVertices(new Edge(p3, p4));
+  tGraph.addEdgeAndVertices(new Edge(p4, p1));
   tGraph.addFixedEdge({ p1, p2: p4 });
   t.doesNotThrow(() => tGraph.triangulateRegion([p1, p2, p3, p4]));
 

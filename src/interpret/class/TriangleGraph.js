@@ -84,9 +84,9 @@ export class TriangleGraph extends Graph {
 
   addTriangle(t) {
     this.triangles.add(t);
-    this.addEdgeAndVertices(t.p1, t.p2);
-    this.addEdgeAndVertices(t.p1, t.p3);
-    this.addEdgeAndVertices(t.p2, t.p3);
+    this.addEdgeAndVertices(new Edge(t.p1, t.p2));
+    this.addEdgeAndVertices(new Edge(t.p1, t.p3));
+    this.addEdgeAndVertices(new Edge(t.p2, t.p3));
     this.polypoints.addVertex(t.getCenter());
     _.forEach(this.getAdjacentTriangles(t), adjT => {
       const adjCenter = adjT.getCenter();
