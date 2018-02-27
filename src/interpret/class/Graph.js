@@ -159,11 +159,11 @@ export class Graph {
       _.forEach(this.adj[p1], p2 => {
         // Create new Point objects, because if the points are Polypoints, their toString method
         // includes the containing triangle.
-        const e = { p1: new Point(p1.x, p1.y), p2: new Point(p2.x, p2.y) };
+        const e = new Edge(new Point(p1.x, p1.y), new Point(p2.x, p2.y));
         const edgeExists = _.has(edgesSet, JSON.stringify(e));
         if (!edgeExists) {
-          edges.push({ p1, p2 });
-          edgesSet[JSON.stringify({ p1: new Point(p2.x, p2.y), p2: new Point(p1.x, p1.y) })] = true;
+          edges.push(e);
+          edgesSet[JSON.stringify(new Edge(new Point(p2.x, p2.y), new Point(p1.x, p1.y)))] = true;
         }
       });
     });
