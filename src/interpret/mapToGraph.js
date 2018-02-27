@@ -3,8 +3,9 @@ import _ from 'lodash';
 import { PPTL } from '../global/constants';
 import { assert } from '../global/utils';
 import { threePointsInLine, areEdgesCollinear, areEdgesEqual } from './utils';
-import { Graph } from './class/Graph';
 import { Point } from './class/Point';
+import { Edge } from './class/Edge';
+import { Graph } from './class/Graph';
 import { getTileProperty, tileIsOneOf, tileIsAngleWall } from '../look/tileInfo';
 import {
   wallOnLeft,
@@ -186,7 +187,7 @@ export function squashVertex(mergedGraph, vertex) {
   if (neighbors.length === 2 && threePointsInLine(vertex, neighbors[0], neighbors[1])) {
     mergedGraph.removeEdgeAndVertices(vertex, neighbors[0]);
     mergedGraph.removeEdgeAndVertices(vertex, neighbors[1]);
-    mergedGraph.addEdge(neighbors[0], neighbors[1]);
+    mergedGraph.addEdge(new Edge(neighbors[0], neighbors[1]));
   }
 }
 
