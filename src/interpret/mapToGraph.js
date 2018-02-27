@@ -74,9 +74,9 @@ function updateUnmergedEdgesAroundAngleWall(map, graph, xt, yt) {
 
   // Add the diagonal edge of the wall
   if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_3'])) {
-    graph.addEdgeAndVertices(topLeft, bottomRight);
+    graph.addEdgeAndVertices(new Edge(topLeft, bottomRight));
   } else if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_2', 'ANGLE_WALL_4'])) {
-    graph.addEdgeAndVertices(bottomLeft, topRight);
+    graph.addEdgeAndVertices(new Edge(bottomLeft, topRight));
   }
 
   // Check each of the four edges of the tile, and if there is a NT-wall touching a traversable side
@@ -84,22 +84,22 @@ function updateUnmergedEdgesAroundAngleWall(map, graph, xt, yt) {
 
   // Check the top edge
   if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_4'])) {
-    if (wallOnTop(map, xt, yt)) graph.addEdgeAndVertices(topLeft, topRight);
+    if (wallOnTop(map, xt, yt)) graph.addEdgeAndVertices(new Edge(topLeft, topRight));
     else graph.removeEdgeAndVertices(topLeft, topRight);
   }
   // Check the bottom edge
   if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_2', 'ANGLE_WALL_3'])) {
-    if (wallOnBottom(map, xt, yt)) graph.addEdgeAndVertices(bottomLeft, bottomRight);
+    if (wallOnBottom(map, xt, yt)) graph.addEdgeAndVertices(new Edge(bottomLeft, bottomRight));
     else graph.removeEdgeAndVertices(bottomLeft, bottomRight);
   }
   // Check the left edge
   if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_3', 'ANGLE_WALL_4'])) {
-    if (wallOnLeft(map, xt, yt)) graph.addEdgeAndVertices(bottomLeft, topLeft);
+    if (wallOnLeft(map, xt, yt)) graph.addEdgeAndVertices(new Edge(bottomLeft, topLeft));
     else graph.removeEdgeAndVertices(bottomLeft, topLeft);
   }
   // Check the right edge
   if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_2'])) {
-    if (wallOnRight(map, xt, yt)) graph.addEdgeAndVertices(bottomRight, topRight);
+    if (wallOnRight(map, xt, yt)) graph.addEdgeAndVertices(new Edge(bottomRight, topRight));
     else graph.removeEdgeAndVertices(bottomRight, topRight);
   }
 }
@@ -114,16 +114,16 @@ function updateUnmergedEdgesAroundTraversableTile(map, graph, xt, yt) {
   const bottomRight = new Point(xp + PPTL, yp + PPTL);
 
   // Use similar logic as the angle wall function to update edges in the unmerged graph
-  if (wallOnLeft(map, xt, yt)) graph.addEdgeAndVertices(topLeft, bottomLeft);
+  if (wallOnLeft(map, xt, yt)) graph.addEdgeAndVertices(new Edge(topLeft, bottomLeft));
   else graph.removeEdgeAndVertices(topLeft, bottomLeft);
 
-  if (wallOnRight(map, xt, yt)) graph.addEdgeAndVertices(topRight, bottomRight);
+  if (wallOnRight(map, xt, yt)) graph.addEdgeAndVertices(new Edge(topRight, bottomRight));
   else graph.removeEdgeAndVertices(topRight, bottomRight);
 
-  if (wallOnTop(map, xt, yt)) graph.addEdgeAndVertices(topLeft, topRight);
+  if (wallOnTop(map, xt, yt)) graph.addEdgeAndVertices(new Edge(topLeft, topRight));
   else graph.removeEdgeAndVertices(topLeft, topRight);
 
-  if (wallOnBottom(map, xt, yt)) graph.addEdgeAndVertices(bottomLeft, bottomRight);
+  if (wallOnBottom(map, xt, yt)) graph.addEdgeAndVertices(new Edge(bottomLeft, bottomRight));
   else graph.removeEdgeAndVertices(bottomLeft, bottomRight);
 }
 
@@ -141,16 +141,16 @@ function updateUnmergedEdgesAroundCompletelyNTTile(map, graph, xt, yt) {
   const bottomRight = new Point(xp + PPTL, yp + PPTL);
 
   // Use similar logic as the angle wall function to update edges in the unmerged graph
-  if (!wallOnLeft(map, xt, yt)) graph.addEdgeAndVertices(topLeft, bottomLeft);
+  if (!wallOnLeft(map, xt, yt)) graph.addEdgeAndVertices(new Edge(topLeft, bottomLeft));
   else graph.removeEdgeAndVertices(topLeft, bottomLeft);
 
-  if (!wallOnRight(map, xt, yt)) graph.addEdgeAndVertices(topRight, bottomRight);
+  if (!wallOnRight(map, xt, yt)) graph.addEdgeAndVertices(new Edge(topRight, bottomRight));
   else graph.removeEdgeAndVertices(topRight, bottomRight);
 
-  if (!wallOnTop(map, xt, yt)) graph.addEdgeAndVertices(topLeft, topRight);
+  if (!wallOnTop(map, xt, yt)) graph.addEdgeAndVertices(new Edge(topLeft, topRight));
   else graph.removeEdgeAndVertices(topLeft, topRight);
 
-  if (!wallOnBottom(map, xt, yt)) graph.addEdgeAndVertices(bottomLeft, bottomRight);
+  if (!wallOnBottom(map, xt, yt)) graph.addEdgeAndVertices(new Edge(bottomLeft, bottomRight));
   else graph.removeEdgeAndVertices(bottomLeft, bottomRight);
 }
 
@@ -276,10 +276,10 @@ function breakApartMergedEdge(mergedGraph, unmergedGraph, bigE, smallE) {
     const e1 = { p1: bigP1, p2: smallP1 };
     const e2 = { p1: smallP2, p2: bigP2 };
     if (!e1.p1.equals(e1.p2)) {
-      mergedGraph.addEdgeAndVertices(e1.p1, e1.p2);
+      mergedGraph.addEdgeAndVertices(new Edge(e1.p1, e1.p2));
     }
     if (!e2.p1.equals(e2.p2)) {
-      mergedGraph.addEdgeAndVertices(e2.p1, e2.p2);
+      mergedGraph.addEdgeAndVertices(new Edge(e2.p1, e2.p2));
     }
   }
 }
@@ -324,7 +324,7 @@ export function updateMergedGraph(mergedGraph, unmergedGraph, map, xt, yt) {
       breakApartMergedEdge(mergedGraph, unmergedGraph, bigE, smallE);
     });
     if (unmergedGraph.isConnected(smallE.p1, smallE.p2)) {
-      mergedGraph.addEdgeAndVertices(smallE.p1, smallE.p2);
+      mergedGraph.addEdgeAndVertices(new Edge(smallE.p1, smallE.p2));
     }
   });
   // Check if any diagonal edges intersect the corners of this tile that need to now be split in
