@@ -56,7 +56,7 @@ export class Graph {
    */
   removeEdgeAndVertices(p1, p2) {
     if (!this.isConnected(p1, p2)) return;
-    this.removeEdge(p1, p2);
+    this.removeEdge(new Edge(p1, p2));
     if (this.neighbors(p1).length === 0) this.removeVertex(p1);
     if (this.neighbors(p2).length === 0) this.removeVertex(p2);
   }
@@ -65,17 +65,17 @@ export class Graph {
   /**
    * Removes the edge between two points, if they are connected.
    */
-  removeEdge(p1, p2) {
-    if (!this.isConnected(p1, p2)) return;
-    const m = slope(p1, p2);
-    const b = intercept(p1, p2);
+  removeEdge(edge) {
+    if (!this.isConnected(edge.p1, edge.p2)) return;
+    const m = slope(edge.p1, edge.p2);
+    const b = intercept(edge.p1, edge.p2);
     this.collinearEdges[m][b] = _.reject(
       this.collinearEdges[m][b],
-      e => e.equals(new Edge(p1, p2)),
+      e => e.equals(new Edge(edge.p1, edge.p2)),
     );
     if (_.isEmpty(this.collinearEdges[m][b])) delete this.collinearEdges[m][b];
-    this.adj[p1] = _.reject(this.adj[p1], p => p.equals(p2));
-    this.adj[p2] = _.reject(this.adj[p2], p => p.equals(p1));
+    this.adj[edge.p1] = _.reject(this.adj[edge.p1], p => p.equals(edge.p2));
+    this.adj[edge.p2] = _.reject(this.adj[edge.p2], p => p.equals(edge.p1));
   }
 
 
@@ -85,7 +85,7 @@ export class Graph {
   removeVertex(vertex) {
     // Clear all edges attached to the vertex
     _.forEach(this.adj[vertex], a => {
-      this.removeEdge(vertex, a);
+      this.removeEdge(new Edge(vertex, a));
     });
     // Remove the vertex
     delete this.adj[vertex];
