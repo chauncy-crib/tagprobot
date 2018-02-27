@@ -308,12 +308,12 @@ export function updateMergedGraph(mergedGraph, unmergedGraph, map, xt, yt) {
   const bottomRight = new Point(xp + PPTL, yp + PPTL);
   // Check all 6 possible edges that can lay across/around this tile in the unmerged graph
   const edges = [
-    { p1: topLeft, p2: topRight },
-    { p1: topLeft, p2: bottomLeft },
-    { p1: bottomLeft, p2: bottomRight },
-    { p1: topRight, p2: bottomRight },
-    { p1: topLeft, p2: bottomRight },
-    { p1: bottomLeft, p2: topRight },
+    new Edge(topLeft, topRight),
+    new Edge(topLeft, bottomLeft),
+    new Edge(bottomLeft, bottomRight),
+    new Edge(topRight, bottomRight),
+    new Edge(topLeft, bottomRight),
+    new Edge(bottomLeft, topRight),
   ];
   // For each of the 6 edges, either merge together the edges that lay in line with it (ie, this
   //   edge connects two edges separated by one tile) or break them apart (if an edge lays across an
@@ -333,10 +333,10 @@ export function updateMergedGraph(mergedGraph, unmergedGraph, map, xt, yt) {
   for (let i = 0; i < surroundingPoints.length; i += 1) {
     const point = surroundingPoints[i];
     // Create the diagonal intersecting this corner
-    const dummyDiag = {
-      p1: new Point(point.x - 1, point.y + ((i % 2) ? -1 : 1)),
-      p2: new Point(point.x + 1, point.y + ((i % 2) ? 1 : -1)),
-    };
+    const dummyDiag = new Edge(
+      new Point(point.x - 1, point.y + ((i % 2) ? -1 : 1)),
+      new Point(point.x + 1, point.y + ((i % 2) ? 1 : -1)),
+    );
     const inlineDiagEdges = mergedGraph.edgesInLineWith(dummyDiag);
     _.forEach(inlineDiagEdges, diagEdge => {
       // Split apart the diagonal edge if it contains the point

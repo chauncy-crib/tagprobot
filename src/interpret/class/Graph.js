@@ -140,13 +140,13 @@ export class Graph {
 
   /**
    * @param {Graph} graph
-   * @param {{x: number, y: number}} e
-   * @returns {{x: number, y: number}[]} all edges from the graph which are in-line with the input
-   *   edge. (Ie, they have identical slopes, and x and y intercepts).
+   * @param {Edge} edge
+   * @returns {Edge[]} all edges from the graph which are in-line with the input edge. (Ie, they
+   *   have identical slopes, and x and y intercepts).
    */
-  edgesInLineWith(e) {
-    const m = slope(e.p1, e.p2);
-    const b = intercept(e.p1, e.p2);
+  edgesInLineWith(edge) {
+    const m = slope(edge.p1, edge.p2);
+    const b = intercept(edge.p1, edge.p2);
     if (!_.has(this.collinearEdges, m)) return [];
     if (!_.has(this.collinearEdges[m], b)) return [];
     return this.collinearEdges[m][b];
