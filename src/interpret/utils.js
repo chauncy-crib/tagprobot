@@ -193,35 +193,6 @@ export function isTriangleIntersectingEdge(t, e) {
 
 
 /**
- * @param {Point} p1
- * @param {Point} p2
- * @returns {number|null} the slope of the line between the two points, null if the points
- *   have the same x coordinate
- */
-export function slope(p1, p2) {
-  assert(!p1.equals(p2), 'Cannot calculate the slope between two equal points');
-  if (p1.x === p2.x) return null;
-  if (p1.y === p2.y) return 0; // return an unsigned 0
-  return (p1.y - p2.y) / (p1.x - p2.x);
-}
-
-
-/**
- * @param {Point} p1
- * @param {Point} p2
- * @returns {number} the y-intercept of the line connecting the two points, unless they share
- *   an x-coordinate. In this case, return their x-coordinate
- */
-export function intercept(p1, p2) {
-  const m = slope(p1, p2);
-  if (_.isNull(m)) return p1.x;
-  const b = p1.y - (m * p1.x);
-  if (b === 0) return 0; // return an unsigned 0
-  return b;
-}
-
-
-/**
  * @param {{p1: Point, p2: Point}} e1 - an edge object
  * @param {{p1: Point, p2: Point}} e2 - an edge object
  */
