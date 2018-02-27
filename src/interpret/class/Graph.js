@@ -1,7 +1,6 @@
 import _ from 'lodash';
 
 import { assert } from '../../global/utils';
-import { slope, intercept } from '../utils';
 import { Point } from './Point';
 import { Edge } from './Edge';
 
@@ -35,8 +34,8 @@ export class Graph {
     if (this.isConnected(edge.p1, edge.p2)) return;
     this.adj[edge.p1].push(edge.p2);
     this.adj[edge.p2].push(edge.p1);
-    const m = slope(edge.p1, edge.p2);
-    const b = intercept(edge.p1, edge.p2);
+    const m = edge.getSlope();
+    const b = edge.getIntercept();
     if (!_.has(this.collinearEdges, m)) this.collinearEdges[m] = {};
     if (!_.has(this.collinearEdges[m], b)) this.collinearEdges[m][b] = [];
     this.collinearEdges[m][b].push(new Edge(edge.p1, edge.p2));
@@ -67,8 +66,8 @@ export class Graph {
    */
   removeEdge(edge) {
     if (!this.isConnected(edge.p1, edge.p2)) return;
-    const m = slope(edge.p1, edge.p2);
-    const b = intercept(edge.p1, edge.p2);
+    const m = edge.getSlope();
+    const b = edge.getIntercept();
     this.collinearEdges[m][b] = _.reject(
       this.collinearEdges[m][b],
       e => e.equals(new Edge(edge.p1, edge.p2)),
@@ -145,8 +144,8 @@ export class Graph {
    *   have identical slopes, and x and y intercepts).
    */
   edgesInLineWith(edge) {
-    const m = slope(edge.p1, edge.p2);
-    const b = intercept(edge.p1, edge.p2);
+    const m = edge.getSlope();
+    const b = edge.getIntercept();
     if (!_.has(this.collinearEdges, m)) return [];
     if (!_.has(this.collinearEdges[m], b)) return [];
     return this.collinearEdges[m][b];
