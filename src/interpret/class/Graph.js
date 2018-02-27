@@ -29,24 +29,24 @@ export class Graph {
   }
 
 
-  addEdge(p1, p2) {
-    assert(_.has(this.adj, p1), `${p1} not initialized in the graph with addVertex()`);
-    assert(_.has(this.adj, p2), `${p2} not initialized in the graph with addVertex()`);
-    if (this.isConnected(p1, p2)) return;
-    this.adj[p1].push(p2);
-    this.adj[p2].push(p1);
-    const m = slope(p1, p2);
-    const b = intercept(p1, p2);
+  addEdge(edge) {
+    assert(_.has(this.adj, edge.p1), `${edge.p1} not initialized in the graph with addVertex()`);
+    assert(_.has(this.adj, edge.p2), `${edge.p2} not initialized in the graph with addVertex()`);
+    if (this.isConnected(edge.p1, edge.p2)) return;
+    this.adj[edge.p1].push(edge.p2);
+    this.adj[edge.p2].push(edge.p1);
+    const m = slope(edge.p1, edge.p2);
+    const b = intercept(edge.p1, edge.p2);
     if (!_.has(this.collinearEdges, m)) this.collinearEdges[m] = {};
     if (!_.has(this.collinearEdges[m], b)) this.collinearEdges[m][b] = [];
-    this.collinearEdges[m][b].push(new Edge(p1, p2));
+    this.collinearEdges[m][b].push(new Edge(edge.p1, edge.p2));
   }
 
 
   addEdgeAndVertices(p1, p2) {
     this.addVertex(p1);
     this.addVertex(p2);
-    this.addEdge(p1, p2);
+    this.addEdge(new Edge(p1, p2));
   }
 
 
@@ -103,7 +103,7 @@ export class Graph {
   copy() {
     const g = new Graph();
     _.forEach(this.getVertices(), v => g.addVertex(v));
-    _.forEach(this.getEdges(), e => g.addEdge(e.p1, e.p2));
+    _.forEach(this.getEdges(), e => g.addEdge(new Edge(e.p1, e.p2)));
     return g;
   }
 

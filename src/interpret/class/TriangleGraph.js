@@ -8,8 +8,9 @@ import {
   isTriangleIntersectingEdge,
   findUpperAndLowerPoints,
 } from '../utils';
-import { Triangle } from './Triangle';
 import { Point } from './Point';
+import { Edge } from './Edge';
+import { Triangle } from './Triangle';
 import { Graph } from './Graph';
 import { isLegal } from '../graphToTriangulation';
 
@@ -89,7 +90,7 @@ export class TriangleGraph extends Graph {
     this.polypoints.addVertex(t.getCenter());
     _.forEach(this.getAdjacentTriangles(t), adjT => {
       const adjCenter = adjT.getCenter();
-      this.polypoints.addEdge(t.getCenter(), adjCenter);
+      this.polypoints.addEdge(new Edge(t.getCenter(), adjCenter));
     });
   }
 
@@ -120,9 +121,9 @@ export class TriangleGraph extends Graph {
       if (t.p1.equals(p) || t.p2.equals(p) || t.p3.equals(p)) {
         this.removeTriangleByReference(t);
         // add back the edges we just removed
-        if (t.p1.equals(p)) this.addEdge(t.p2, t.p3);
-        if (t.p2.equals(p)) this.addEdge(t.p1, t.p3);
-        if (t.p3.equals(p)) this.addEdge(t.p1, t.p2);
+        if (t.p1.equals(p)) this.addEdge(new Edge(t.p2, t.p3));
+        if (t.p2.equals(p)) this.addEdge(new Edge(t.p1, t.p3));
+        if (t.p3.equals(p)) this.addEdge(new Edge(t.p1, t.p2));
       }
     });
     this.removeVertex(p);
@@ -156,7 +157,7 @@ export class TriangleGraph extends Graph {
 
   addFixedEdge(e) {
     assert(this.hasVertex(e.p1) && this.hasVertex(e.p2));
-    super.addEdge(e.p1, e.p2);
+    super.addEdge(new Edge(e.p1, e.p2));
     this.fixedAdj[e.p1].push(e.p2);
     this.fixedAdj[e.p2].push(e.p1);
   }
