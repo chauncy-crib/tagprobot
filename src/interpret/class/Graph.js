@@ -54,11 +54,11 @@ export class Graph {
    * Removes the edge between two points, if they are connected. If after removal, either point has
    *   no neighbors, it is removed.
    */
-  removeEdgeAndVertices(p1, p2) {
-    if (!this.isConnected(p1, p2)) return;
-    this.removeEdge(new Edge(p1, p2));
-    if (this.neighbors(p1).length === 0) this.removeVertex(p1);
-    if (this.neighbors(p2).length === 0) this.removeVertex(p2);
+  removeEdgeAndVertices(edge) {
+    if (!this.isConnected(edge.p1, edge.p2)) return;
+    this.removeEdge(new Edge(edge.p1, edge.p2));
+    if (this.neighbors(edge.p1).length === 0) this.removeVertex(edge.p1);
+    if (this.neighbors(edge.p2).length === 0) this.removeVertex(edge.p2);
   }
 
 
