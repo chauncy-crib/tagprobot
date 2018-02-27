@@ -85,22 +85,22 @@ function updateUnmergedEdgesAroundAngleWall(map, graph, xt, yt) {
   // Check the top edge
   if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_4'])) {
     if (wallOnTop(map, xt, yt)) graph.addEdgeAndVertices(new Edge(topLeft, topRight));
-    else graph.removeEdgeAndVertices(topLeft, topRight);
+    else graph.removeEdgeAndVertices(new Edge(topLeft, topRight));
   }
   // Check the bottom edge
   if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_2', 'ANGLE_WALL_3'])) {
     if (wallOnBottom(map, xt, yt)) graph.addEdgeAndVertices(new Edge(bottomLeft, bottomRight));
-    else graph.removeEdgeAndVertices(bottomLeft, bottomRight);
+    else graph.removeEdgeAndVertices(new Edge(bottomLeft, bottomRight));
   }
   // Check the left edge
   if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_3', 'ANGLE_WALL_4'])) {
     if (wallOnLeft(map, xt, yt)) graph.addEdgeAndVertices(new Edge(bottomLeft, topLeft));
-    else graph.removeEdgeAndVertices(bottomLeft, topLeft);
+    else graph.removeEdgeAndVertices(new Edge(bottomLeft, topLeft));
   }
   // Check the right edge
   if (tileIsOneOf(map[xt][yt], ['ANGLE_WALL_1', 'ANGLE_WALL_2'])) {
     if (wallOnRight(map, xt, yt)) graph.addEdgeAndVertices(new Edge(bottomRight, topRight));
-    else graph.removeEdgeAndVertices(bottomRight, topRight);
+    else graph.removeEdgeAndVertices(new Edge(bottomRight, topRight));
   }
 }
 
@@ -115,16 +115,16 @@ function updateUnmergedEdgesAroundTraversableTile(map, graph, xt, yt) {
 
   // Use similar logic as the angle wall function to update edges in the unmerged graph
   if (wallOnLeft(map, xt, yt)) graph.addEdgeAndVertices(new Edge(topLeft, bottomLeft));
-  else graph.removeEdgeAndVertices(topLeft, bottomLeft);
+  else graph.removeEdgeAndVertices(new Edge(topLeft, bottomLeft));
 
   if (wallOnRight(map, xt, yt)) graph.addEdgeAndVertices(new Edge(topRight, bottomRight));
-  else graph.removeEdgeAndVertices(topRight, bottomRight);
+  else graph.removeEdgeAndVertices(new Edge(topRight, bottomRight));
 
   if (wallOnTop(map, xt, yt)) graph.addEdgeAndVertices(new Edge(topLeft, topRight));
-  else graph.removeEdgeAndVertices(topLeft, topRight);
+  else graph.removeEdgeAndVertices(new Edge(topLeft, topRight));
 
   if (wallOnBottom(map, xt, yt)) graph.addEdgeAndVertices(new Edge(bottomLeft, bottomRight));
-  else graph.removeEdgeAndVertices(bottomLeft, bottomRight);
+  else graph.removeEdgeAndVertices(new Edge(bottomLeft, bottomRight));
 }
 
 function updateUnmergedEdgesAroundCompletelyNTTile(map, graph, xt, yt) {
@@ -142,16 +142,16 @@ function updateUnmergedEdgesAroundCompletelyNTTile(map, graph, xt, yt) {
 
   // Use similar logic as the angle wall function to update edges in the unmerged graph
   if (!wallOnLeft(map, xt, yt)) graph.addEdgeAndVertices(new Edge(topLeft, bottomLeft));
-  else graph.removeEdgeAndVertices(topLeft, bottomLeft);
+  else graph.removeEdgeAndVertices(new Edge(topLeft, bottomLeft));
 
   if (!wallOnRight(map, xt, yt)) graph.addEdgeAndVertices(new Edge(topRight, bottomRight));
-  else graph.removeEdgeAndVertices(topRight, bottomRight);
+  else graph.removeEdgeAndVertices(new Edge(topRight, bottomRight));
 
   if (!wallOnTop(map, xt, yt)) graph.addEdgeAndVertices(new Edge(topLeft, topRight));
-  else graph.removeEdgeAndVertices(topLeft, topRight);
+  else graph.removeEdgeAndVertices(new Edge(topLeft, topRight));
 
   if (!wallOnBottom(map, xt, yt)) graph.addEdgeAndVertices(new Edge(bottomLeft, bottomRight));
-  else graph.removeEdgeAndVertices(bottomLeft, bottomRight);
+  else graph.removeEdgeAndVertices(new Edge(bottomLeft, bottomRight));
 }
 
 /**
@@ -185,8 +185,8 @@ export function unmergedGraphFromTagproMap(map) {
 export function squashVertex(mergedGraph, vertex) {
   const neighbors = mergedGraph.neighbors(vertex);
   if (neighbors.length === 2 && threePointsInLine(vertex, neighbors[0], neighbors[1])) {
-    mergedGraph.removeEdgeAndVertices(vertex, neighbors[0]);
-    mergedGraph.removeEdgeAndVertices(vertex, neighbors[1]);
+    mergedGraph.removeEdgeAndVertices(new Edge(vertex, neighbors[0]));
+    mergedGraph.removeEdgeAndVertices(new Edge(vertex, neighbors[1]));
     mergedGraph.addEdge(new Edge(neighbors[0], neighbors[1]));
   }
 }
