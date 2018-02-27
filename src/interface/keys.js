@@ -1,4 +1,3 @@
-import { chat, chatHelpMenu } from './chat';
 import { clearSprites, turnOnAllDrawings } from '../draw/draw';
 import { drawKeyPresses, toggleKeyPressVis } from '../draw/keys';
 import {
@@ -35,6 +34,21 @@ export function isVisualMode() {
 }
 
 
+export function logHelpMenu() {
+  console.log(`
+    --- Help Menu
+    --- H: Print this Help menu
+    --- Q: Toggle autonomy
+    --- V: Toggle all Visuals
+    --- N: Toggle triaNgles
+    --- L: Toggle funneL paths
+    --- P: Toggle Polypoints
+    --- K: Toggle Keys
+    ---
+  `);
+}
+
+
 /**
  * Sends key events to move in a list of directions.
  * @param {{x: string, y: string}} directions - directions to move
@@ -64,7 +78,7 @@ export function onKeyDown(event) {
   switch (event.keyCode) {
     // Chat the help menu
     case KEY_CODES.H: {
-      chatHelpMenu();
+      logHelpMenu();
       break;
     }
     // If letter pressed is Q, toggle autonomous controls
@@ -72,14 +86,14 @@ export function onKeyDown(event) {
       autonomous = !autonomous;
       press({ x: null, y: null }); // Release all keys
       const autonomyMode = autonomous ? 'AUTONOMOUS' : 'MANUAL';
-      chat(`Autonomy mode updated: now ${autonomyMode}!`);
+      console.log(`Autonomy mode updated: now ${autonomyMode}!`);
       break;
     }
     // Toggle visuals
     case KEY_CODES.V: {
       visuals = !visuals;
-      const chatMsg = visuals ? 'ENABLED' : 'DISABLED';
-      chat(`Visual mode update: now ${chatMsg}!`);
+      const visualMode = visuals ? 'ENABLED' : 'DISABLED';
+      console.log(`Visual mode update: now ${visualMode}!`);
       if (!visuals) {
         clearSprites();
       } else {

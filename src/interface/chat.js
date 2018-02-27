@@ -36,21 +36,3 @@ export function dequeueChatMessages() {
     lastMessageTime = now;
   }
 }
-
-
-export function chatHelpMenu() {
-  const menu = [
-    '--- Help Menu',
-    '--- H: print this help menu',
-    '--- Q: toggle autonomous mode',
-    '--- V: Draw all/Clear all',
-    '--- N: toggle triangles',
-    '--- L: toggle paths',
-    '--- P: toggle triangle dual-graph',
-    '--- K: toggle keypresses',
-    '---',
-  ];
-  menu.forEach(item => {
-    chat(item);
-  });
-}
