@@ -58,7 +58,7 @@ export function updateAndRedrawEntireNavmesh(map) {
 /**
  * Checks if edge e is delaunay-legal with respect to the inserted point
  * @param {Point} insertedPoint - the point being added to the triangulation
- * @param {{p1: Point, p2: Point}} e - the edge we are checking for legality
+ * @param {Edge} e - the edge we are checking for legality
  * @param {Point} oppositePoint - The third point of the adjacent triangle to e.p1, e.p2,
  *   insertedPoint
  * @returns {boolean} true if the opposite point is not inside the circle which touches e.p1, e.p2,
