@@ -72,7 +72,7 @@ export function drawEnemyPolypointPath(polypointPath) {
 
 /**
  * @callback edgeStyleFunc
- * @param {{p1: Point, p2: Point}} e - an edge object
+ * @param {Edge} e
  * @returns {{color: number, alpha: number}} a hex color and alpha that the edge should be colored
  */
 

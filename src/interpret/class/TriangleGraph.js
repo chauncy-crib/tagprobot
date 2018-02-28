@@ -211,7 +211,7 @@ export class TriangleGraph extends Graph {
     return cornerPoint.add(normal.times(CLEARANCE));
   }
   /**
-   * @param {{p1: Point, p2: Point}} e - an edge
+   * @param {Edge} e
    * @returns {Triangle[]} all triangles which have one edge equal to e
    */
   findTrianglesWithEdge(e) {
@@ -315,7 +315,7 @@ export class TriangleGraph extends Graph {
     if (reg.length <= 3) return;
 
     // Extract out the points on the edge
-    const e = { p1: reg[0], p2: _.last(reg) };
+    const e = new Edge(reg[0], _.last(reg));
     assert(this.isConnected(e.p1, e.p2), `the edge of region ${reg} was not connected`);
     // Slice off the first and last element to get the inner region
     const innerReg = _.slice(reg, 1, -1);
@@ -451,9 +451,9 @@ export class TriangleGraph extends Graph {
   }
 
   /**
-   * @param {{p1: Point, p2: Point}[]} constrainedEdgesToRemove - a list of edges to unmark as fixed
+   * @param {Edge[]} constrainedEdgesToRemove - a list of edges to unmark as fixed
    *   in the DTGraph
-   * @param {{p1: Point, p2: Point}[]} constrainedEdgesToAdd - a list of edges to mark as fixed in
+   * @param {Edge[]} constrainedEdgesToAdd - a list of edges to mark as fixed in
    *   the DTGraph
    * @param {Point[]} verticesToRemove - a list of vertices to remove from the DTGraph (and
    *   retriangulate around them after each removal)
