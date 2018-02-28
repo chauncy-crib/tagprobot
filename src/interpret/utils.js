@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 import { assert, determinant } from '../global/utils';
+import { Edge } from './class/Edge';
 
 
 /**
@@ -101,7 +102,7 @@ export function areEdgesCollinear(e1, e2) {
 /**
  * @param {Point} p1
  * @param {Point} p2
- * @param {{p1: Point, p2: Point}} e - an edge
+ * @param {Edge} e
  * @returns {boolean} if the two points are on the same side of the edge
  */
 export function pointsOnSameSide(p1, p2, e) {
@@ -177,15 +178,15 @@ export function isTriangleIntersectingEdge(t, e) {
   if (pointsOnSameSide(t1, t2, e) && pointsOnSameSide(t2, t3, e)) return false;
 
   // False if e1 and e2 are both on other side of t1-t2 as t3
-  const t12 = { p1: t1, p2: t2 }; // edge between t1 and t2
+  const t12 = new Edge(t1, t2);
   if (!pointsOnSameSide(e1, t3, t12) && !pointsOnSameSide(e2, t3, t12)) return false;
 
   // False if e1 and e2 are both on other side of t2-t3 as t1
-  const t23 = { p1: t2, p2: t3 }; // edge between t2 and t3
+  const t23 = new Edge(t2, t3);
   if (!pointsOnSameSide(e1, t1, t23) && !pointsOnSameSide(e2, t1, t23)) return false;
 
   // False if e1 and e2 are both on other side of t3-t1 as t2
-  const t31 = { p1: t3, p2: t1 }; // edge between t3 and t1
+  const t31 = new Edge(t3, t1);
   if (!pointsOnSameSide(e1, t2, t31) && !pointsOnSameSide(e2, t2, t31)) return false;
 
   return true;
