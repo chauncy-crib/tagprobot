@@ -6,6 +6,7 @@ import { __RewireAPI__ as AroundRewireAPI } from '../../look/around';
 import { __RewireAPI__ as TileInfoRewireAPI } from '../../look/tileInfo';
 import { setupTiles, teardownTiles } from './setupTiles.spec';
 import { Point } from '../class/Point';
+import { Edge } from '../class/Edge';
 import {
   mapToEdgeTiles,
   graphFromTagproMap,
@@ -331,10 +332,10 @@ test('graphFromTagproMap', tester => {
       { x: 120, y: 120 },
     ]);
     t.same(graph.getEdges(), [
-      { p1: { x: 40, y: 40 }, p2: { x: 40, y: 120 } },
-      { p1: { x: 40, y: 40 }, p2: { x: 120, y: 40 } },
-      { p1: { x: 40, y: 120 }, p2: { x: 120, y: 120 } },
-      { p1: { x: 120, y: 40 }, p2: { x: 120, y: 120 } },
+      new Edge(new Point(40, 40), new Point(40, 120)),
+      new Edge(new Point(40, 40), new Point(120, 40)),
+      new Edge(new Point(40, 120), new Point(120, 120)),
+      new Edge(new Point(120, 40), new Point(120, 120)),
     ]);
 
     teardown();

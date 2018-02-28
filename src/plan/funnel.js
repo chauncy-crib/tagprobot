@@ -2,6 +2,7 @@ import _ from 'lodash';
 
 import { assert } from '../global/utils';
 import { pointsOnSameSide } from '../interpret/utils';
+import { Edge } from '../interpret/class/Edge';
 import { PolypointState } from './class/PolypointState';
 
 
@@ -79,8 +80,8 @@ export function funnelPolypoints(path, triangleGraph) {
   for (let portalIndex = 2; portalIndex < leftPoints.length; portalIndex++) {
     const currLeft = leftPoints[funnelIndices[0]];
     const currRight = rightPoints[funnelIndices[1]];
-    const leftEdge = { p1: startPoint, p2: currLeft.clearancePoint };
-    const rightEdge = { p1: startPoint, p2: currRight.clearancePoint };
+    const leftEdge = new Edge(startPoint, currLeft.clearancePoint);
+    const rightEdge = new Edge(startPoint, currRight.clearancePoint);
     const newLeft = leftPoints[portalIndex];
     const newRight = rightPoints[portalIndex];
 
