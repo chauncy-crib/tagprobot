@@ -38,9 +38,9 @@ export class TriangleGraph extends Graph {
 
   getAdjacentTriangles(t) {
     const res = [];
-    const op1 = this.findOppositePoint(t.p1, { p1: t.p2, p2: t.p3 });
-    const op2 = this.findOppositePoint(t.p2, { p1: t.p1, p2: t.p3 });
-    const op3 = this.findOppositePoint(t.p3, { p1: t.p1, p2: t.p2 });
+    const op1 = this.findOppositePoint(t.p1, new Edge(t.p2, t.p3));
+    const op2 = this.findOppositePoint(t.p2, new Edge(t.p1, t.p3));
+    const op3 = this.findOppositePoint(t.p3, new Edge(t.p1, t.p2));
     if (op3) res.push(this.findTriangle(t.p1, t.p2, op3));
     if (op2) res.push(this.findTriangle(t.p1, t.p3, op2));
     if (op1) res.push(this.findTriangle(t.p2, t.p3, op1));
@@ -220,7 +220,7 @@ export class TriangleGraph extends Graph {
 
   /**
    * @param {Point} p
-   * @param {{p1: Point, p2: Point}} e - an edge
+   * @param {Edge} e
    * @returns {Point|null} the point on the other side of edge e with respect to p, or null if the
    *   edge is fixed or is on the edge of the whole graph
    */
