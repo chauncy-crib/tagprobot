@@ -248,17 +248,17 @@ export class TriangleGraph extends Graph {
 
 
   /**
-   * If the edge e is not delaunay-legal, flip it, and recursively legalize the resulting triangles
+   * If the edge is not delaunay-legal, flip it, and recursively legalize the resulting triangles
    */
-  legalizeEdge(insertedPoint, e) {
-    const oppositePoint = this.findOppositePoint(insertedPoint, e);
-    if (oppositePoint && !isLegal(insertedPoint, e, oppositePoint)) {
-      this.removeTriangleByPoints(e.p1, e.p2, insertedPoint);
-      this.removeTriangleByPoints(e.p1, e.p2, oppositePoint);
-      this.addTriangle(new Triangle(insertedPoint, oppositePoint, e.p1));
-      this.addTriangle(new Triangle(insertedPoint, oppositePoint, e.p2));
-      this.legalizeEdge(insertedPoint, { p1: e.p1, p2: oppositePoint });
-      this.legalizeEdge(insertedPoint, { p1: e.p2, p2: oppositePoint });
+  legalizeEdge(insertedPoint, edge) {
+    const oppositePoint = this.findOppositePoint(insertedPoint, edge);
+    if (oppositePoint && !isLegal(insertedPoint, edge, oppositePoint)) {
+      this.removeTriangleByPoints(edge.p1, edge.p2, insertedPoint);
+      this.removeTriangleByPoints(edge.p1, edge.p2, oppositePoint);
+      this.addTriangle(new Triangle(insertedPoint, oppositePoint, edge.p1));
+      this.addTriangle(new Triangle(insertedPoint, oppositePoint, edge.p2));
+      this.legalizeEdge(insertedPoint, new Edge(edge.p1, oppositePoint));
+      this.legalizeEdge(insertedPoint, new Edge(edge.p2, oppositePoint));
     }
   }
 
@@ -281,9 +281,9 @@ export class TriangleGraph extends Graph {
       this.addTriangle(new Triangle(ct.p1, ct.p2, p));
       this.addTriangle(new Triangle(ct.p1, p, ct.p3));
       this.addTriangle(new Triangle(p, ct.p2, ct.p3));
-      this.legalizeEdge(p, { p1: ct.p1, p2: ct.p2 });
-      this.legalizeEdge(p, { p1: ct.p1, p2: ct.p3 });
-      this.legalizeEdge(p, { p1: ct.p2, p2: ct.p3 });
+      this.legalizeEdge(p, new Edge(ct.p1, ct.p2));
+      this.legalizeEdge(p, new Edge(ct.p1, ct.p3));
+      this.legalizeEdge(p, new Edge(ct.p2, ct.p3));
     } else if (containingTriangles.length === 2) {
       // Point lies on a line
       const ct1 = containingTriangles[0];
@@ -297,10 +297,10 @@ export class TriangleGraph extends Graph {
       this.addTriangle(new Triangle(cp.shared[0], cp.unique[1], p));
       this.addTriangle(new Triangle(cp.shared[1], cp.unique[0], p));
       this.addTriangle(new Triangle(cp.shared[1], cp.unique[1], p));
-      this.legalizeEdge(p, { p1: cp.shared[0], p2: cp.unique[0] });
-      this.legalizeEdge(p, { p1: cp.shared[0], p2: cp.unique[1] });
-      this.legalizeEdge(p, { p1: cp.shared[1], p2: cp.unique[0] });
-      this.legalizeEdge(p, { p1: cp.shared[1], p2: cp.unique[1] });
+      this.legalizeEdge(p, new Edge(cp.shared[0], cp.unique[0]));
+      this.legalizeEdge(p, new Edge(cp.shared[0], cp.unique[1]));
+      this.legalizeEdge(p, new Edge(cp.shared[1], cp.unique[0]));
+      this.legalizeEdge(p, new Edge(cp.shared[1], cp.unique[1]));
     }
   }
 
