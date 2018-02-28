@@ -250,8 +250,8 @@ export function updateUnmergedGraph(unmergedGraph, map, xt, yt) {
  *
  * @param {Graph} mergedGraph
  * @param {Graph} unmergedGraph
- * @param {{p1: Point, p2: Point}} bigE - An edge in the mergedGraph which is inline with smallE
- * @param {{p1: Point, p2: Point}} smallE - An edge which may or may not be in the unmergedGraph,
+ * @param {Edge} bigE - An edge in the mergedGraph which is inline with smallE
+ * @param {Edge} smallE - An edge which may or may not be in the unmergedGraph,
  *   which spans one tile-length, or diagonally across one tile.
  */
 function breakApartMergedEdge(mergedGraph, unmergedGraph, bigE, smallE) {
@@ -273,13 +273,13 @@ function breakApartMergedEdge(mergedGraph, unmergedGraph, bigE, smallE) {
   if ((vert && (bigP1.y <= smallP1.y && bigP2.y >= smallP2.y)) ||
       (!vert && (bigP1.x <= smallP1.x && bigP2.x >= smallP2.x))) {
     mergedGraph.removeEdge(new Edge(bigP1, bigP2));
-    const e1 = { p1: bigP1, p2: smallP1 };
-    const e2 = { p1: smallP2, p2: bigP2 };
+    const e1 = new Edge(bigP1, smallP1);
+    const e2 = new Edge(smallP2, bigP2);
     if (!e1.p1.equals(e1.p2)) {
-      mergedGraph.addEdgeAndVertices(new Edge(e1.p1, e1.p2));
+      mergedGraph.addEdgeAndVertices(e1);
     }
     if (!e2.p1.equals(e2.p2)) {
-      mergedGraph.addEdgeAndVertices(new Edge(e2.p1, e2.p2));
+      mergedGraph.addEdgeAndVertices(e2);
     }
   }
 }
@@ -340,7 +340,7 @@ export function updateMergedGraph(mergedGraph, unmergedGraph, map, xt, yt) {
     const inlineDiagEdges = mergedGraph.edgesInLineWith(dummyDiag);
     _.forEach(inlineDiagEdges, diagEdge => {
       // Split apart the diagonal edge if it contains the point
-      breakApartMergedEdge(mergedGraph, unmergedGraph, diagEdge, { p1: point, p2: point });
+      breakApartMergedEdge(mergedGraph, unmergedGraph, diagEdge, new Edge(point, point));
     });
     // Squash the vertex
     if (mergedGraph.hasVertex(point)) {
