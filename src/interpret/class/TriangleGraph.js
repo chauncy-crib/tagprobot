@@ -157,7 +157,7 @@ export class TriangleGraph extends Graph {
 
   addFixedEdge(e) {
     assert(this.hasVertex(e.p1) && this.hasVertex(e.p2));
-    super.addEdge(new Edge(e.p1, e.p2));
+    super.addEdge(e);
     this.fixedAdj[e.p1].push(e.p2);
     this.fixedAdj[e.p2].push(e.p1);
   }
@@ -340,7 +340,7 @@ export class TriangleGraph extends Graph {
   /**
    * Adds an edge to the graph as a constrained edge and re-triangulates the affected surrounding
    *   region
-   * @param {{p1: Point, p2: Point}} e - the edge to add
+   * @param {Edge} e - the edge to add
    */
   delaunayAddConstraintEdge(e) {
     const trianglesAcross = this.findTrianglesWithEdge(e);

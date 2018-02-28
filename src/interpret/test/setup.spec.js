@@ -2,6 +2,7 @@ import test from 'tape';
 
 import { dtGraph, delaunayTriangulation, __RewireAPI__ as SetupRewireAPI } from '../setup';
 import { Point } from '../class/Point';
+import { Edge } from '../class/Edge';
 import { Graph } from '../class/Graph';
 
 
@@ -60,7 +61,7 @@ test('delaunayTriangulation()', tester => {
     const p3 = new Point(19, 16);
     const p4 = new Point(20, 8);
     const mapGraph = {
-      getEdges: () => [{ p1: p2, p2: p3 }], // Make a constrained edge between p2 and p3
+      getEdges: () => [new Edge(p2, p3)], // Make a constrained edge between p2 and p3
       getVertices: () => [p1, p2, p3, p4],
     };
 
@@ -129,7 +130,7 @@ test('delaunayTriangulation()', tester => {
     const p3 = new Point(13, 16);
     const p4 = new Point(20, 8);
     const mapGraph = {
-      getEdges: () => [{ p1, p2: p4 }], // Make a constrained edge between p1 and p4
+      getEdges: () => [new Edge(p1, p4)], // Make a constrained edge between p1 and p4
       getVertices: () => [p1, p2, p3, p4],
     };
 

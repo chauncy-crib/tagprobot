@@ -38,14 +38,14 @@ export class Graph {
     const b = edge.getIntercept();
     if (!_.has(this.collinearEdges, m)) this.collinearEdges[m] = {};
     if (!_.has(this.collinearEdges[m], b)) this.collinearEdges[m][b] = [];
-    this.collinearEdges[m][b].push(new Edge(edge.p1, edge.p2));
+    this.collinearEdges[m][b].push(edge);
   }
 
 
   addEdgeAndVertices(edge) {
     this.addVertex(edge.p1);
     this.addVertex(edge.p2);
-    this.addEdge(new Edge(edge.p1, edge.p2));
+    this.addEdge(edge);
   }
 
 
@@ -55,7 +55,7 @@ export class Graph {
    */
   removeEdgeAndVertices(edge) {
     if (!this.isConnected(edge.p1, edge.p2)) return;
-    this.removeEdge(new Edge(edge.p1, edge.p2));
+    this.removeEdge(edge);
     if (this.neighbors(edge.p1).length === 0) this.removeVertex(edge.p1);
     if (this.neighbors(edge.p2).length === 0) this.removeVertex(edge.p2);
   }
@@ -68,10 +68,7 @@ export class Graph {
     if (!this.isConnected(edge.p1, edge.p2)) return;
     const m = edge.getSlope();
     const b = edge.getIntercept();
-    this.collinearEdges[m][b] = _.reject(
-      this.collinearEdges[m][b],
-      e => e.equals(new Edge(edge.p1, edge.p2)),
-    );
+    this.collinearEdges[m][b] = _.reject(this.collinearEdges[m][b], e => e.equals(edge));
     if (_.isEmpty(this.collinearEdges[m][b])) delete this.collinearEdges[m][b];
     this.adj[edge.p1] = _.reject(this.adj[edge.p1], p => p.equals(edge.p2));
     this.adj[edge.p2] = _.reject(this.adj[edge.p2], p => p.equals(edge.p1));
@@ -102,7 +99,7 @@ export class Graph {
   copy() {
     const g = new Graph();
     _.forEach(this.getVertices(), v => g.addVertex(v));
-    _.forEach(this.getEdges(), e => g.addEdge(new Edge(e.p1, e.p2)));
+    _.forEach(this.getEdges(), e => g.addEdge(e));
     return g;
   }
 
