@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import { PPTL } from '../global/constants';
 import { assert } from '../global/utils';
-import { threePointsInLine, areEdgesCollinear, areEdgesEqual } from './utils';
+import { threePointsInLine, areEdgesCollinear } from './utils';
 import { Point } from './class/Point';
 import { Edge } from './class/Edge';
 import { Graph } from './class/Graph';
@@ -351,11 +351,11 @@ export function updateMergedGraph(mergedGraph, unmergedGraph, map, xt, yt) {
   const afterVertices = mergedGraph.getVertices();
   const afterEdges = mergedGraph.getEdges();
   // Unfix all edges that existed before but do not anymore
-  const unfixEdges = _.reject(beforeEdges, b => _.some(afterEdges, a => areEdgesEqual(a, b)));
+  const unfixEdges = _.reject(beforeEdges, b => _.some(afterEdges, a => a.equals(b)));
   // Add constraining edges that didn't exist previously
   const constrainingEdges = _.reject(
     afterEdges,
-    a => _.some(beforeEdges, b => areEdgesEqual(a, b)),
+    a => _.some(beforeEdges, b => a.equals(b)),
   );
   // Remove vertices that now are not in the merged graph
   const removeVertices = _.reject(beforeVertices, b => _.some(afterVertices, a => a.equals(b)));
