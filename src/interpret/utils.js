@@ -190,13 +190,3 @@ export function isTriangleIntersectingEdge(t, e) {
 
   return true;
 }
-
-
-/**
- * @param {{p1: Point, p2: Point}} e1 - an edge object
- * @param {{p1: Point, p2: Point}} e2 - an edge object
- */
-export function areEdgesEqual(e1, e2) {
-  return (e1.p1.equals(e2.p1) && e1.p2.equals(e2.p2)) ||
-    (e1.p1.equals(e2.p2) && e1.p2.equals(e2.p1));
-}
