@@ -163,8 +163,8 @@ test('getClearancePoint()', tester => {
     tGraph.addVertex(cornerPoint);
     tGraph.addVertex(prevPoint);
     tGraph.addVertex(nextPoint);
-    tGraph.addFixedEdge({ p1: cornerPoint, p2: prevPoint });
-    tGraph.addFixedEdge({ p1: cornerPoint, p2: nextPoint });
+    tGraph.addFixedEdge(new Edge(cornerPoint, prevPoint));
+    tGraph.addFixedEdge(new Edge(cornerPoint, nextPoint));
 
     const clearancePoint = tGraph.getClearancePoint(cornerPoint);
     const expected = new Point(1, 1);
@@ -186,8 +186,8 @@ test('getClearancePoint()', tester => {
     tGraph.addVertex(cornerPoint);
     tGraph.addVertex(prevPoint);
     tGraph.addVertex(nextPoint);
-    tGraph.addFixedEdge({ p1: cornerPoint, p2: prevPoint });
-    tGraph.addFixedEdge({ p1: cornerPoint, p2: nextPoint });
+    tGraph.addFixedEdge(new Edge(cornerPoint, prevPoint));
+    tGraph.addFixedEdge(new Edge(cornerPoint, nextPoint));
 
     const clearancePoint = tGraph.getClearancePoint(cornerPoint);
     const expected = new Point(-1, 1);
@@ -209,8 +209,8 @@ test('getClearancePoint()', tester => {
     tGraph.addVertex(cornerPoint);
     tGraph.addVertex(prevPoint);
     tGraph.addVertex(nextPoint);
-    tGraph.addFixedEdge({ p1: cornerPoint, p2: prevPoint });
-    tGraph.addFixedEdge({ p1: cornerPoint, p2: nextPoint });
+    tGraph.addFixedEdge(new Edge(cornerPoint, prevPoint));
+    tGraph.addFixedEdge(new Edge(cornerPoint, nextPoint));
 
     const clearancePoint = tGraph.getClearancePoint(cornerPoint);
     const expected = new Point(-1, -1);
@@ -232,8 +232,8 @@ test('getClearancePoint()', tester => {
     tGraph.addVertex(cornerPoint);
     tGraph.addVertex(prevPoint);
     tGraph.addVertex(nextPoint);
-    tGraph.addFixedEdge({ p1: cornerPoint, p2: prevPoint });
-    tGraph.addFixedEdge({ p1: cornerPoint, p2: nextPoint });
+    tGraph.addFixedEdge(new Edge(cornerPoint, prevPoint));
+    tGraph.addFixedEdge(new Edge(cornerPoint, nextPoint));
 
     const clearancePoint = tGraph.getClearancePoint(cornerPoint);
     const expected = new Point(1, -1);
