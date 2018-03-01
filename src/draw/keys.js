@@ -8,10 +8,12 @@ let keyPressOn = false;
 
 let keyPressesVis; // PIXI Graphics for drawing the key press visualizations
 // Index of specific keys inside of the keyPressesVis children array
-const leftKeyIndex = 0;
-const downKeyIndex = 1;
-const rightKeyIndex = 2;
-const upKeyIndex = 3;
+const KEY_INDICES = {
+  left: 0,
+  down: 1,
+  right: 2,
+  up: 3,
+};
 const keySize = 30; // side length of keys in pixels
 const keyGap = 4; // gap between keys in pixels
 
@@ -44,19 +46,19 @@ export function drawBlankKeyPresses() {
   keyPressesVis.removeChildren();
   keyPressesVis.addChildAt(
     getPixiSquare(-(1.5 * keySize) - keyGap, 0, keySize, KEY_OFF_ALPHA, KEY_COLOR),
-    leftKeyIndex,
+    KEY_INDICES.left,
   );
   keyPressesVis.addChildAt(
     getPixiSquare(-(0.5 * keySize), 0, keySize, KEY_OFF_ALPHA, KEY_COLOR),
-    downKeyIndex,
+    KEY_INDICES.down,
   );
   keyPressesVis.addChildAt(
     getPixiSquare((0.5 * keySize) + keyGap, 0, keySize, KEY_OFF_ALPHA, KEY_COLOR),
-    rightKeyIndex,
+    KEY_INDICES.right,
   );
   keyPressesVis.addChildAt(
     getPixiSquare(-(0.5 * keySize), -keySize - keyGap, keySize, KEY_OFF_ALPHA, KEY_COLOR),
-    upKeyIndex,
+    KEY_INDICES.up,
   );
   // Set currKeyPresses to reflect the state of the drawing
   currKeyPresses.x = null;
@@ -73,19 +75,19 @@ function updateKeyPressesDrawing(keyIndex, newAlpha) {
   let xp;
   let yp;
   switch (keyIndex) {
-    case leftKeyIndex:
+    case KEY_INDICES.left:
       xp = -(1.5 * keySize) - keyGap;
       yp = 0;
       break;
-    case downKeyIndex:
+    case KEY_INDICES.down:
       xp = -(0.5 * keySize);
       yp = 0;
       break;
-    case rightKeyIndex:
+    case KEY_INDICES.right:
       xp = (0.5 * keySize) + keyGap;
       yp = 0;
       break;
-    case upKeyIndex:
+    case KEY_INDICES.up:
       xp = -(0.5 * keySize);
       yp = -keySize - keyGap;
       break;
@@ -114,8 +116,8 @@ export function drawKeyPresses(directions) {
     const rightAlpha = directions.x === 'RIGHT' ? KEY_ON_ALPHA : KEY_OFF_ALPHA;
 
     // Update left/right key drawings
-    updateKeyPressesDrawing(leftKeyIndex, leftAlpha);
-    updateKeyPressesDrawing(rightKeyIndex, rightAlpha);
+    updateKeyPressesDrawing(KEY_INDICES.left, leftAlpha);
+    updateKeyPressesDrawing(KEY_INDICES.right, rightAlpha);
   }
 
   if (directions.y !== currKeyPresses.y) {
@@ -124,8 +126,8 @@ export function drawKeyPresses(directions) {
     const upAlpha = directions.y === 'UP' ? KEY_ON_ALPHA : KEY_OFF_ALPHA;
 
     // Update down/up key drawings
-    updateKeyPressesDrawing(downKeyIndex, downAlpha);
-    updateKeyPressesDrawing(upKeyIndex, upAlpha);
+    updateKeyPressesDrawing(KEY_INDICES.down, downAlpha);
+    updateKeyPressesDrawing(KEY_INDICES.up, upAlpha);
   }
 }
 
