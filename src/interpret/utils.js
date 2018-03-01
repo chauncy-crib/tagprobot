@@ -1,7 +1,6 @@
 import _ from 'lodash';
 
 import { assert, determinant } from '../global/utils';
-import { Edge } from './class/Edge';
 
 
 /**
@@ -138,29 +137,4 @@ export function findUpperAndLowerPoints(intersectingTriangles, e) {
     triangles = _.reject(triangles, nextT);
   }
   return { upperPoints, lowerPoints };
-}
-
-
-/**
- * @param {Triangle} t
- * @param {Edge} e
- * @returns {boolean} if the triangle intersects or touches the edge
- */
-export function isTriangleIntersectingEdge(t, e) {
-  // False if t.p1, t.p2, and t.p3 are all on same side of e
-  if (e.onSameSideOfPoints(t.p1, t.p2) && e.onSameSideOfPoints(t.p2, t.p3)) return false;
-
-  // False if e.p1 and e.p2 are both on other side of t.p1-t.p2 as t.p3
-  const t12 = new Edge(t.p1, t.p2);
-  if (!t12.onSameSideOfPoints(e.p1, t.p3) && !t12.onSameSideOfPoints(e.p2, t.p3)) return false;
-
-  // False if e.p1 and e.p2 are both on other side of t.p2-t.p3 as t.p1
-  const t23 = new Edge(t.p2, t.p3);
-  if (!t23.onSameSideOfPoints(e.p1, t.p1) && !t23.onSameSideOfPoints(e.p2, t.p1)) return false;
-
-  // False if e.p1 and e.p2 are both on other side of t.p3-t.p1 as t.p2
-  const t31 = new Edge(t.p3, t.p1);
-  if (!t31.onSameSideOfPoints(e.p1, t.p2) && !t31.onSameSideOfPoints(e.p2, t.p2)) return false;
-
-  return true;
 }

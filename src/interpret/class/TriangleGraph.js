@@ -5,7 +5,6 @@ import {
   detD,
   detH,
   sortCounterClockwise,
-  isTriangleIntersectingEdge,
   findUpperAndLowerPoints,
 } from '../utils';
 import { Point } from './Point';
@@ -358,7 +357,7 @@ export class TriangleGraph extends Graph {
 
     // Find all triangles intersecting the edge
     const intersectingTriangles = _.filter(Array.from(this.triangles), t => (
-      isTriangleIntersectingEdge(t, e)
+      t.isIntersectingEdge(e)
     ));
 
     const { upperPoints, lowerPoints } = findUpperAndLowerPoints(intersectingTriangles, e);
