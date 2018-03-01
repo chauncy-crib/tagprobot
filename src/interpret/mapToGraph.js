@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import { PPTL } from '../global/constants';
 import { assert } from '../global/utils';
-import { threePointsInLine, areEdgesCollinear } from './utils';
+import { threePointsInLine } from './utils';
 import { Point } from './class/Point';
 import { Edge } from './class/Edge';
 import { Graph } from './class/Graph';
@@ -257,7 +257,7 @@ export function updateUnmergedGraph(unmergedGraph, map, xt, yt) {
 function breakApartMergedEdge(mergedGraph, unmergedGraph, bigE, smallE) {
   // Make sure the bigE is an edge in the mergedGraph
   assert(mergedGraph.isConnected(bigE.p1, bigE.p2));
-  assert(areEdgesCollinear(bigE, smallE));
+  assert(bigE.isCollinearWith(smallE));
   // If these edges are vertical
   const vert = bigE.p1.x === bigE.p2.x;
   // Find the left-most, or if they're vertical, top-most points of each edge
