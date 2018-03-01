@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { assert } from '../../global/utils';
-import { threePointsInLine } from '../utils';
+import { detD, threePointsInLine } from '../utils';
 
 
 export class Edge {
@@ -24,6 +24,16 @@ export class Edge {
   isCollinearWith(other) {
     return threePointsInLine(this.p1, this.p2, other.p1) &&
       threePointsInLine(this.p1, this.p2, other.p2);
+  }
+
+
+  /**
+   * @param {Point} p1
+   * @param {Point} p2
+   * @returns {boolean} if an infinite extension of the edge is between the two points
+   */
+  isBetweenPoints(p1, p2) {
+    return detD(this.p1, this.p2, p1) * detD(this.p1, this.p2, p2) <= 0;
   }
 
 
