@@ -89,17 +89,6 @@ export function sortCounterClockwise(points, inputCenter) {
 
 
 /**
- * @param {Edge} e1
- * @param {Edge} e2
- * @returns {boolean} true if the edges would lay on top of eachother if they were both extended
- *   infinitely in both directions
- */
-export function areEdgesCollinear(e1, e2) {
-  return threePointsInLine(e1.p1, e1.p2, e2.p1) && threePointsInLine(e1.p1, e1.p2, e2.p2);
-}
-
-
-/**
  * @param {Point} p1
  * @param {Point} p2
  * @param {Edge} e

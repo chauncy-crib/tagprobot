@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 import { assert } from '../../global/utils';
+import { threePointsInLine } from '../utils';
 
 
 export class Edge {
@@ -13,6 +14,16 @@ export class Edge {
   equals(other) {
     return (this.p1.equals(other.p1) && this.p2.equals(other.p2)) ||
       (this.p1.equals(other.p2) && this.p2.equals(other.p1));
+  }
+
+
+  /**
+   * @returns {boolean} true if the edges would lay on top of eachother if they were both extended
+   *   infinitely in both directions
+   */
+  isCollinearWith(other) {
+    return threePointsInLine(this.p1, this.p2, other.p1) &&
+      threePointsInLine(this.p1, this.p2, other.p2);
   }
 
 
