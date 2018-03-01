@@ -14,8 +14,8 @@ const KEY_INDICES = {
   right: 2,
   up: 3,
 };
-const keySize = 30; // side length of keys in pixels
-const keyGap = 4; // gap between keys in pixels
+const KEY_SIZE = 30; // side length of keys in pixels
+const KEY_GAP = 4; // gap between keys in pixels
 
 
 /**
@@ -29,7 +29,7 @@ export function centerKeyPressesVis() {
   const screenHeight = viewport.height();
 
   keyPressesVis.x = screenWidth / 2; // in the middle of the screen
-  keyPressesVis.y = screenHeight - keySize - 60; // just above the game timer
+  keyPressesVis.y = screenHeight - KEY_SIZE - 60; // just above the game timer
 }
 
 
@@ -45,19 +45,19 @@ export function drawBlankKeyPresses() {
 
   keyPressesVis.removeChildren();
   keyPressesVis.addChildAt(
-    getPixiRect(-(1.5 * keySize) - keyGap, 0, KEY_OFF_ALPHA, KEY_COLOR, keySize),
+    getPixiRect(-(1.5 * KEY_SIZE) - KEY_GAP, 0, KEY_OFF_ALPHA, KEY_COLOR, KEY_SIZE),
     KEY_INDICES.left,
   );
   keyPressesVis.addChildAt(
-    getPixiRect(-(0.5 * keySize), 0, KEY_OFF_ALPHA, KEY_COLOR, keySize),
+    getPixiRect(-(0.5 * KEY_SIZE), 0, KEY_OFF_ALPHA, KEY_COLOR, KEY_SIZE),
     KEY_INDICES.down,
   );
   keyPressesVis.addChildAt(
-    getPixiRect((0.5 * keySize) + keyGap, 0, KEY_OFF_ALPHA, KEY_COLOR, keySize),
+    getPixiRect((0.5 * KEY_SIZE) + KEY_GAP, 0, KEY_OFF_ALPHA, KEY_COLOR, KEY_SIZE),
     KEY_INDICES.right,
   );
   keyPressesVis.addChildAt(
-    getPixiRect(-(0.5 * keySize), -keySize - keyGap, KEY_OFF_ALPHA, KEY_COLOR, keySize),
+    getPixiRect(-(0.5 * KEY_SIZE), -KEY_SIZE - KEY_GAP, KEY_OFF_ALPHA, KEY_COLOR, KEY_SIZE),
     KEY_INDICES.up,
   );
   // Set currKeyPresses to reflect the state of the drawing
@@ -76,27 +76,27 @@ function updateKeyPressesDrawing(keyIndex, newAlpha) {
   let yp;
   switch (keyIndex) {
     case KEY_INDICES.left:
-      xp = -(1.5 * keySize) - keyGap;
+      xp = -(1.5 * KEY_SIZE) - KEY_GAP;
       yp = 0;
       break;
     case KEY_INDICES.down:
-      xp = -(0.5 * keySize);
+      xp = -(0.5 * KEY_SIZE);
       yp = 0;
       break;
     case KEY_INDICES.right:
-      xp = (0.5 * keySize) + keyGap;
+      xp = (0.5 * KEY_SIZE) + KEY_GAP;
       yp = 0;
       break;
     case KEY_INDICES.up:
-      xp = -(0.5 * keySize);
-      yp = -keySize - keyGap;
+      xp = -(0.5 * KEY_SIZE);
+      yp = -KEY_SIZE - KEY_GAP;
       break;
     default:
       assert(false, `Given key index does not exist: ${keyIndex}`);
   }
   keyPressesVis.removeChildAt(keyIndex);
   keyPressesVis.addChildAt(
-    getPixiRect(xp, yp, newAlpha, KEY_COLOR, keySize),
+    getPixiRect(xp, yp, newAlpha, KEY_COLOR, KEY_SIZE),
     keyIndex,
   );
 }
