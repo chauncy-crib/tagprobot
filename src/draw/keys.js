@@ -1,7 +1,7 @@
 import { assert } from '../global/utils';
 import { currKeyPresses } from '../interface/keys';
 import { KEY_COLOR, KEY_ON_ALPHA, KEY_OFF_ALPHA } from './constants';
-import { getPixiSquare } from './draw';
+import { getPixiRect } from './draw';
 
 
 let keyPressOn = false;
@@ -43,19 +43,19 @@ export function drawBlankKeyPresses() {
 
   keyPressesVis.removeChildren();
   keyPressesVis.addChildAt(
-    getPixiSquare(-(1.5 * keySize) - keyGap, 0, keySize, KEY_OFF_ALPHA, KEY_COLOR),
+    getPixiRect(-(1.5 * keySize) - keyGap, 0, KEY_OFF_ALPHA, KEY_COLOR, keySize),
     leftKeyIndex,
   );
   keyPressesVis.addChildAt(
-    getPixiSquare(-(0.5 * keySize), 0, keySize, KEY_OFF_ALPHA, KEY_COLOR),
+    getPixiRect(-(0.5 * keySize), 0, KEY_OFF_ALPHA, KEY_COLOR, keySize),
     downKeyIndex,
   );
   keyPressesVis.addChildAt(
-    getPixiSquare((0.5 * keySize) + keyGap, 0, keySize, KEY_OFF_ALPHA, KEY_COLOR),
+    getPixiRect((0.5 * keySize) + keyGap, 0, KEY_OFF_ALPHA, KEY_COLOR, keySize),
     rightKeyIndex,
   );
   keyPressesVis.addChildAt(
-    getPixiSquare(-(0.5 * keySize), -keySize - keyGap, keySize, KEY_OFF_ALPHA, KEY_COLOR),
+    getPixiRect(-(0.5 * keySize), -keySize - keyGap, KEY_OFF_ALPHA, KEY_COLOR, keySize),
     upKeyIndex,
   );
   // Set currKeyPresses to reflect the state of the drawing
@@ -94,7 +94,7 @@ function updateKeyPressesDrawing(keyIndex, newAlpha) {
   }
   keyPressesVis.removeChildAt(keyIndex);
   keyPressesVis.addChildAt(
-    getPixiSquare(xp, yp, keySize, newAlpha, KEY_COLOR),
+    getPixiRect(xp, yp, newAlpha, KEY_COLOR, keySize),
     keyIndex,
   );
 }

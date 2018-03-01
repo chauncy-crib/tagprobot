@@ -12,7 +12,7 @@ import { toggleTriangulationVis, togglePolypointVis, togglePathVis } from './tri
  * @returns {PIXI.Graphics} a PIXI.Graphics rectangle object with the specified x, y, width, height,
  *   alpha, and color
  */
-export function getPixiRect(xp, yp, width, height, alpha, color) {
+export function getPixiRect(xp, yp, alpha, color, width, height = width) {
   const graphics = new PIXI.Graphics();
   graphics.beginFill(color).drawRect(
     xp,
@@ -23,19 +23,6 @@ export function getPixiRect(xp, yp, width, height, alpha, color) {
   return graphics;
 }
 
-
-/**
- * @param {number} xp - top left x, in pixels
- * @param {number} yp - top left y, in pixels
- * @param {number} size - side length in pixels
- * @param {number} alpha - 0-1, where 0 is transparent
- * @param {number} color - a hex color
- * @returns {PIXI.Graphics} a PIXI.Graphics rectangle object with the specified x, y, size,
- *   alpha, and color
- */
-export function getPixiSquare(xp, yp, size, alpha, color) {
-  return getPixiRect(xp, yp, size, size, alpha, color);
-}
 
 /**
  * The tagpro object has a function that is called every time the user interface needs to be
