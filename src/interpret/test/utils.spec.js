@@ -1,6 +1,6 @@
 import test from 'tape';
 
-import { sortCounterClockwise, pointsOnSameSide, isTriangleIntersectingEdge } from '../utils';
+import { sortCounterClockwise, isTriangleIntersectingEdge } from '../utils';
 import { Point } from '../class/Point';
 import { Edge } from '../class/Edge';
 import { Triangle } from '../class/Triangle';
@@ -43,39 +43,6 @@ test('sortCounterClockwise sorts points in counter-clockwise order', t => {
   ]);
 
   t.end();
-});
-
-
-test('pointsOnSameSide()', tester => {
-  tester.test('returns true when points are on the left side of the edge', t => {
-    const edge = new Edge(new Point(3, 0), new Point(3, 1));
-    const p1 = new Point(0, 0);
-    const p2 = new Point(0, 1);
-
-    t.true(pointsOnSameSide(p1, p2, edge));
-
-    t.end();
-  });
-
-  tester.test('returns true when points are on the right side of the edge', t => {
-    const edge = new Edge(new Point(3, 0), new Point(3, 1));
-    const p1 = new Point(4, 0);
-    const p2 = new Point(4, 1);
-
-    t.true(pointsOnSameSide(p1, p2, edge));
-
-    t.end();
-  });
-
-  tester.test('returns false when points are on opposite sides of the edge', t => {
-    const edge = new Edge(new Point(3, 0), new Point(3, 1));
-    const p1 = new Point(0, 0);
-    const p2 = new Point(4, 1);
-
-    t.false(pointsOnSameSide(p1, p2, edge));
-
-    t.end();
-  });
 });
 
 
