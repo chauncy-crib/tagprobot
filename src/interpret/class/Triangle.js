@@ -4,6 +4,7 @@ import { assert } from '../../global/utils';
 import { threePointsInLine } from '../utils';
 import { Point } from './Point';
 import { Polypoint } from './Polypoint';
+import { Edge } from './Edge';
 
 
 export class Triangle {
@@ -71,6 +72,38 @@ export class Triangle {
 
   hasEdge(e) {
     return this.hasPoint(e.p1) && this.hasPoint(e.p2);
+  }
+
+
+  /**
+   * @param {Edge} e
+   * @returns {boolean} if the triangle intersects or touches the edge
+   */
+  isIntersectingEdge(e) {
+    // False if this.p1, this.p2, and this.p3 are all on same side of e
+    if (!e.isBetweenPoints(this.p1, this.p2) && !e.isBetweenPoints(this.p2, this.p3)) {
+      return false;
+    }
+
+    // False if e.p1 and e.p2 are both on other side of this.p1-this.p2 as this.p3
+    const t12 = new Edge(this.p1, this.p2);
+    if (t12.isBetweenPoints(e.p1, this.p3) && t12.isBetweenPoints(e.p2, this.p3)) {
+      return false;
+    }
+
+    // False if e.p1 and e.p2 are both on other side of this.p2-this.p3 as this.p1
+    const t23 = new Edge(this.p2, this.p3);
+    if (t23.isBetweenPoints(e.p1, this.p1) && t23.isBetweenPoints(e.p2, this.p1)) {
+      return false;
+    }
+
+    // False if e.p1 and e.p2 are both on other side of this.p3-this.p1 as this.p2
+    const t31 = new Edge(this.p3, this.p1);
+    if (t31.isBetweenPoints(e.p1, this.p2) && t31.isBetweenPoints(e.p2, this.p2)) {
+      return false;
+    }
+
+    return true;
   }
 
 
