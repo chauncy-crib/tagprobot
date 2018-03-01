@@ -89,17 +89,6 @@ export function sortCounterClockwise(points, inputCenter) {
 
 
 /**
- * @param {Point} p1
- * @param {Point} p2
- * @param {Edge} e
- * @returns {boolean} if the two points are on the same side of the edge
- */
-export function pointsOnSameSide(p1, p2, e) {
-  return detD(e.p1, e.p2, p1) * detD(e.p1, e.p2, p2) > 0;
-}
-
-
-/**
  * @param {Triangle[]} intersectingTriangles - array of triangles that intersect the edge
  * @param {Edge} e
  * @returns {{upperPoints: Point[], lowerPoints: Point[]}} the ordered points of the upper and lower
@@ -140,7 +129,7 @@ export function findUpperAndLowerPoints(intersectingTriangles, e) {
         lowerPoints.push(newPoint);
       } else {
         // Push point to either upper or lower region
-        if (pointsOnSameSide(newPoint, lastUpperPoint, e)) upperPoints.push(newPoint);
+        if (e.onSameSideOfPoints(newPoint, lastUpperPoint)) upperPoints.push(newPoint);
         else lowerPoints.push(newPoint);
       }
     }
@@ -151,6 +140,7 @@ export function findUpperAndLowerPoints(intersectingTriangles, e) {
   return { upperPoints, lowerPoints };
 }
 
+
 /**
  * @param {Triangle} t
  * @param {Edge} e
@@ -158,19 +148,19 @@ export function findUpperAndLowerPoints(intersectingTriangles, e) {
  */
 export function isTriangleIntersectingEdge(t, e) {
   // False if t.p1, t.p2, and t.p3 are all on same side of e
-  if (pointsOnSameSide(t.p1, t.p2, e) && pointsOnSameSide(t.p2, t.p3, e)) return false;
+  if (e.onSameSideOfPoints(t.p1, t.p2) && e.onSameSideOfPoints(t.p2, t.p3)) return false;
 
   // False if e.p1 and e.p2 are both on other side of t.p1-t.p2 as t.p3
   const t12 = new Edge(t.p1, t.p2);
-  if (!pointsOnSameSide(e.p1, t.p3, t12) && !pointsOnSameSide(e.p2, t.p3, t12)) return false;
+  if (!t12.onSameSideOfPoints(e.p1, t.p3) && !t12.onSameSideOfPoints(e.p2, t.p3)) return false;
 
   // False if e.p1 and e.p2 are both on other side of t.p2-t.p3 as t.p1
   const t23 = new Edge(t.p2, t.p3);
-  if (!pointsOnSameSide(e.p1, t.p1, t23) && !pointsOnSameSide(e.p2, t.p1, t23)) return false;
+  if (!t23.onSameSideOfPoints(e.p1, t.p1) && !t23.onSameSideOfPoints(e.p2, t.p1)) return false;
 
   // False if e.p1 and e.p2 are both on other side of t.p3-t.p1 as t.p2
   const t31 = new Edge(t.p3, t.p1);
-  if (!pointsOnSameSide(e.p1, t.p2, t31) && !pointsOnSameSide(e.p2, t.p2, t31)) return false;
+  if (!t31.onSameSideOfPoints(e.p1, t.p2) && !t31.onSameSideOfPoints(e.p2, t.p2)) return false;
 
   return true;
 }

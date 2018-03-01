@@ -1,7 +1,6 @@
 import _ from 'lodash';
 
 import { assert } from '../global/utils';
-import { pointsOnSameSide } from '../interpret/utils';
 import { Edge } from '../interpret/class/Edge';
 import { PolypointState } from './class/PolypointState';
 
@@ -96,16 +95,14 @@ export function funnelPolypoints(path, triangleGraph) {
       const other = 1 - curr; // the other index
       if (!funnelPoints[curr].equals(portalPoints[curr]) && portalIndex > funnelIndices[curr]) {
         // New point is different
-        if (pointsOnSameSide(
+        if (edges[curr].onSameSideOfPoints(
           portalPointsClearanced[curr],
           funnelPointsClearanced[other],
-          edges[curr],
         )) {
           // New point narrows the funnel
-          if (pointsOnSameSide(
+          if (edges[other].onSameSideOfPoints(
             portalPointsClearanced[curr],
             funnelPointsClearanced[curr],
-            edges[other],
           )) {
             // New point does not cross over, update that side of funnel
             funnelIndices[curr] = portalIndex;
