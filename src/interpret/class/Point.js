@@ -1,3 +1,7 @@
+import _ from 'lodash';
+import { assert } from '../../global/utils';
+
+
 /**
  * Represents an x, y location. Used as vertices to define polygons.
  */
@@ -66,6 +70,9 @@ export class Point {
    */
   static fromString(s) {
     const parsed = JSON.parse(s);
+    assert(_.size(parsed) === 2);
+    assert(_.has(parsed, 'x'));
+    assert(_.has(parsed, 'y'));
     return new Point(parsed.x, parsed.y);
   }
 }
