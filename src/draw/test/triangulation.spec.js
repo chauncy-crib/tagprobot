@@ -36,20 +36,23 @@ test('toggleTriangulationVis()', tester => {
     const mockGetGraphGraphics = sinon.spy();
     TriangulationRewireAPI.__Rewire__('getGraphGraphics', mockGetGraphGraphics);
     TriangulationRewireAPI.__Rewire__('dtGraph', mockGraph);
-    TriangulationRewireAPI.__Rewire__('NAV_MESH_THICKNESS', 'thick');
-    TriangulationRewireAPI.__Rewire__('NAV_MESH_ALPHA', 'transparent');
-    TriangulationRewireAPI.__Rewire__('NAV_MESH_VERTEX_COLOR', 'morebrown');
+    const mockThicknesses = { navMesh: 'thick' };
+    TriangulationRewireAPI.__Rewire__('THICKNESSES', mockThicknesses);
+    const mockColors = { navMesh: { vertex: 'brown' } };
+    TriangulationRewireAPI.__Rewire__('COLORS', mockColors);
+    const mockAlphas = { navMesh: { vertex: 'transparent' } };
+    TriangulationRewireAPI.__Rewire__('ALPHAS', mockAlphas);
     TriangulationRewireAPI.__Rewire__('trianglesOn', false);
     global.tagpro = { renderer: { layers: { foreground: { addChild: () => {} } } } };
     toggleTriangulationVis(true);
 
-    t.true(mockGetGraphGraphics.calledWith(mockGraph, 'thick', 'morebrown', 'transparent'));
+    t.true(mockGetGraphGraphics.calledWith(mockGraph, 'thick', 'brown', 'transparent'));
 
     TriangulationRewireAPI.__ResetDependency__('getGraphGraphics');
     TriangulationRewireAPI.__ResetDependency__('dtGraph');
-    TriangulationRewireAPI.__ResetDependency__('NAV_MESH_THICKNESS');
-    TriangulationRewireAPI.__ResetDependency__('NAV_MESH_ALPHA');
-    TriangulationRewireAPI.__ResetDependency__('NAV_MESH_VERTEX_COLOR');
+    TriangulationRewireAPI.__ResetDependency__('THICKNESSES');
+    TriangulationRewireAPI.__ResetDependency__('COLORS');
+    TriangulationRewireAPI.__ResetDependency__('ALPHAS');
     TriangulationRewireAPI.__ResetDependency__('trianglesOn');
     global.tagpro = undefined;
     t.end();
