@@ -1,7 +1,6 @@
 import _ from 'lodash';
 
 import { assert } from '../../global/utils';
-import { Point } from './Point';
 import { Edge } from './Edge';
 
 
@@ -10,7 +9,8 @@ import { Edge } from './Edge';
  */
 export class Graph {
   constructor() {
-    this.adj = {}; // map from point object to list of adjacent points
+    this.adj = {}; // map from point string representation to list of adjacent points
+    this.vertices = {}; // map from point string representation to actual point
     this.collinearEdges = {}; // map from slope to intercept to list of edges
   }
 
@@ -24,6 +24,7 @@ export class Graph {
     // Only add vertex if it doesn't already exist in the graph
     if (this.hasVertex(point)) return false;
     this.adj[point] = [];
+    this.vertices[point] = point;
     return true;
   }
 
@@ -85,6 +86,7 @@ export class Graph {
     });
     // Remove the vertex
     delete this.adj[vertex];
+    delete this.vertices[vertex];
   }
 
 
@@ -122,9 +124,8 @@ export class Graph {
    * @returns {Point[]} all vertices in the graph
    */
   getVertices() {
-    return _.map(_.keys(this.adj), s => Point.fromString(s));
+    return _.values(this.vertices);
   }
-
 
   /**
    * @returns {number} the number of vertices in the graph
