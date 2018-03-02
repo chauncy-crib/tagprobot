@@ -1,17 +1,6 @@
 import _ from 'lodash';
-import {
-  ALLY_PATH_COLOR,
-  ENEMY_PATH_COLOR,
-  NAV_MESH_EDGE_COLOR,
-  NAV_MESH_FIXED_EDGE_COLOR,
-  NAV_MESH_VERTEX_COLOR,
-  NAV_MESH_ALPHA,
-  NAV_MESH_FIXED_EDGE_ALPHA,
-  NAV_MESH_THICKNESS,
-  TRIANGULATION_EDGE_COLOR,
-  TRIANGULATION_ALPHA,
-  TRIANGULATION_THICKNESS,
-} from './constants';
+
+import { COLORS, ALPHAS, THICKNESSES } from './constants';
 import { dtGraph } from '../interpret/setup';
 
 
@@ -34,7 +23,7 @@ let pathsOn = false;
 function drawPolypointPath(polypointPathGraphics, polypointPath, polypointPathColor) {
   polypointPathGraphics.clear();
   polypointPathGraphics.lineStyle(
-    TRIANGULATION_THICKNESS + 1,
+    THICKNESSES.triangulation + 1,
     polypointPathColor,
     1,
   );
@@ -56,7 +45,7 @@ export function drawAllyPolypointPath(polypointPath) {
     allyPolypointPathGraphics = new PIXI.Graphics();
     tagpro.renderer.layers.background.addChild(allyPolypointPathGraphics);
   }
-  drawPolypointPath(allyPolypointPathGraphics, polypointPath, ALLY_PATH_COLOR);
+  drawPolypointPath(allyPolypointPathGraphics, polypointPath, COLORS.path.ally);
 }
 
 
@@ -66,7 +55,7 @@ export function drawEnemyPolypointPath(polypointPath) {
     enemyPolypointPathGraphics = new PIXI.Graphics();
     tagpro.renderer.layers.background.addChild(enemyPolypointPathGraphics);
   }
-  drawPolypointPath(enemyPolypointPathGraphics, polypointPath, ENEMY_PATH_COLOR);
+  drawPolypointPath(enemyPolypointPathGraphics, polypointPath, COLORS.path.enemy);
 }
 
 
@@ -131,13 +120,13 @@ function drawTriangulation() {
   if (!trianglesOn) return;
   triangulationSprite = triangulationSprite || getGraphGraphics(
     dtGraph,
-    NAV_MESH_THICKNESS,
-    NAV_MESH_VERTEX_COLOR,
-    NAV_MESH_ALPHA,
+    THICKNESSES.navMesh,
+    COLORS.navMesh.vertex,
+    ALPHAS.navMesh.vertex,
     e => (
       dtGraph.isEdgeFixed(e) ?
-        { color: NAV_MESH_FIXED_EDGE_COLOR, alpha: NAV_MESH_FIXED_EDGE_ALPHA } :
-        { color: NAV_MESH_EDGE_COLOR, alpha: NAV_MESH_ALPHA }
+        { color: COLORS.navMesh.fixedEdge, alpha: ALPHAS.navMesh.fixedEdge } :
+        { color: COLORS.navMesh.edge, alpha: ALPHAS.navMesh.edge }
     ),
     true,
   );
@@ -149,10 +138,10 @@ function drawPolypoints() {
   if (!polypointsOn) return;
   polypointSprite = polypointSprite || getGraphGraphics(
     dtGraph.polypoints,
-    TRIANGULATION_THICKNESS,
+    THICKNESSES.triangulation,
     null,
-    TRIANGULATION_ALPHA,
-    () => ({ color: TRIANGULATION_EDGE_COLOR, alpha: TRIANGULATION_ALPHA }),
+    ALPHAS.triangulation.vertex,
+    () => ({ color: COLORS.triangulation.edge, alpha: ALPHAS.triangulation.edge }),
     false,
   );
   tagpro.renderer.layers.foreground.addChild(triangulationSprite);

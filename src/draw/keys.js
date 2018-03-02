@@ -1,6 +1,6 @@
 import { assert } from '../global/utils';
 import { currKeyPresses } from '../interface/keys';
-import { KEY_COLOR, KEY_ON_ALPHA, KEY_OFF_ALPHA } from './constants';
+import { COLORS, ALPHAS } from './constants';
 import { getPixiRect } from './draw';
 
 
@@ -45,19 +45,19 @@ export function drawBlankKeyPresses() {
 
   keyPressesVis.removeChildren();
   keyPressesVis.addChildAt(
-    getPixiRect(-(1.5 * KEY_SIZE) - KEY_GAP, 0, KEY_OFF_ALPHA, KEY_COLOR, KEY_SIZE),
+    getPixiRect(-(1.5 * KEY_SIZE) - KEY_GAP, 0, ALPHAS.keys.off, COLORS.keys, KEY_SIZE),
     KEY_INDICES.left,
   );
   keyPressesVis.addChildAt(
-    getPixiRect(-(0.5 * KEY_SIZE), 0, KEY_OFF_ALPHA, KEY_COLOR, KEY_SIZE),
+    getPixiRect(-(0.5 * KEY_SIZE), 0, ALPHAS.keys.off, COLORS.keys, KEY_SIZE),
     KEY_INDICES.down,
   );
   keyPressesVis.addChildAt(
-    getPixiRect((0.5 * KEY_SIZE) + KEY_GAP, 0, KEY_OFF_ALPHA, KEY_COLOR, KEY_SIZE),
+    getPixiRect((0.5 * KEY_SIZE) + KEY_GAP, 0, ALPHAS.keys.off, COLORS.keys, KEY_SIZE),
     KEY_INDICES.right,
   );
   keyPressesVis.addChildAt(
-    getPixiRect(-(0.5 * KEY_SIZE), -KEY_SIZE - KEY_GAP, KEY_OFF_ALPHA, KEY_COLOR, KEY_SIZE),
+    getPixiRect(-(0.5 * KEY_SIZE), -KEY_SIZE - KEY_GAP, ALPHAS.keys.off, COLORS.keys, KEY_SIZE),
     KEY_INDICES.up,
   );
   // Set currKeyPresses to reflect the state of the drawing
@@ -96,7 +96,7 @@ function updateKeyPressesDrawing(keyIndex, newAlpha) {
   }
   keyPressesVis.removeChildAt(keyIndex);
   keyPressesVis.addChildAt(
-    getPixiRect(xp, yp, newAlpha, KEY_COLOR, KEY_SIZE),
+    getPixiRect(xp, yp, newAlpha, COLORS.keys, KEY_SIZE),
     keyIndex,
   );
 }
@@ -112,8 +112,8 @@ export function drawKeyPresses(directions) {
   if (!keyPressOn) return;
   if (directions.x !== currKeyPresses.x) {
     // Find new alpha values for left/right keys
-    const leftAlpha = directions.x === 'LEFT' ? KEY_ON_ALPHA : KEY_OFF_ALPHA;
-    const rightAlpha = directions.x === 'RIGHT' ? KEY_ON_ALPHA : KEY_OFF_ALPHA;
+    const leftAlpha = directions.x === 'LEFT' ? ALPHAS.keys.on : ALPHAS.keys.off;
+    const rightAlpha = directions.x === 'RIGHT' ? ALPHAS.keys.on : ALPHAS.keys.off;
 
     // Update left/right key drawings
     updateKeyPressesDrawing(KEY_INDICES.left, leftAlpha);
@@ -122,8 +122,8 @@ export function drawKeyPresses(directions) {
 
   if (directions.y !== currKeyPresses.y) {
     // Find new alpha values for down/up keys
-    const downAlpha = directions.y === 'DOWN' ? KEY_ON_ALPHA : KEY_OFF_ALPHA;
-    const upAlpha = directions.y === 'UP' ? KEY_ON_ALPHA : KEY_OFF_ALPHA;
+    const downAlpha = directions.y === 'DOWN' ? ALPHAS.keys.on : ALPHAS.keys.off;
+    const upAlpha = directions.y === 'UP' ? ALPHAS.keys.on : ALPHAS.keys.off;
 
     // Update down/up key drawings
     updateKeyPressesDrawing(KEY_INDICES.down, downAlpha);
