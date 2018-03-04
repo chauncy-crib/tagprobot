@@ -17,6 +17,11 @@ export class Edge {
   }
 
 
+  toString() {
+    return `p1: ${this.p1.toString()}, p2: ${this.p2.toString()}`;
+  }
+
+
   /**
    * @returns {boolean} true if the edges would lay on top of eachother if they were both extended
    *   infinitely in both directions

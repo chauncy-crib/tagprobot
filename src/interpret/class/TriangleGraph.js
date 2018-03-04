@@ -380,10 +380,10 @@ export class TriangleGraph extends Graph {
     _.forEach(this.getVertices(), p1 => {
       _.forEach(this.fixedAdj[p1], p2 => {
         const e = new Edge(p1, p2);
-        const edgeExists = _.has(edgesSet, `p1: ${p1.toString()}, p2: ${p2.toString()}`);
+        const edgeExists = _.has(edgesSet, new Edge(p2, p1));
         if (!edgeExists) {
           edges.push(e);
-          edgesSet[`p1: ${p2.toString()}, p2: ${p1.toString()}`] = true;
+          edgesSet[e] = true;
         }
       });
     });
