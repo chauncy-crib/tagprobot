@@ -62,17 +62,4 @@ export class Point {
   copy() {
     return new Point(this.x, this.y);
   }
-
-
-  /**
-   * @param {string} - a string representing a Point object. Follows this format: {"x":1,"y":2}
-   * @returns {Point} a new Point object
-   */
-  static fromString(s) {
-    const parsed = JSON.parse(s);
-    assert(_.size(parsed) === 2);
-    assert(_.has(parsed, 'x'));
-    assert(_.has(parsed, 'y'));
-    return new Point(parsed.x, parsed.y);
-  }
 }
