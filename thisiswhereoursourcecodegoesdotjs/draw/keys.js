@@ -6,7 +6,10 @@ import { getPixiRect } from './draw';
 
 let keyPressOn = false;
 
-let keyPressesVis; // PIXI Graphics for drawing the key press visualizations
+// PIXI Container for drawing the key press visualizations
+// TPB uses PIXI version 2.0.0. If it used an updated version of PIXI, we could just make
+// keypressesVis a PIXI.Container. Instad, we use DisplayObjectContainer
+let keyPressesVis;
 // Index of specific keys inside of the keyPressesVis children array
 const KEY_INDICES = {
   left: 0,
@@ -39,7 +42,7 @@ export function centerKeyPressesVis() {
  */
 export function drawBlankKeyPresses() {
   if (!keyPressesVis) {
-    keyPressesVis = new PIXI.Graphics();
+    keyPressesVis = new PIXI.DisplayObjectContainer();
     tagpro.renderer.layers.ui.addChild(keyPressesVis);
   }
 
