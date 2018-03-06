@@ -51,7 +51,7 @@ export class Point {
 
 
   toString() {
-    return JSON.stringify({ x: this.x, y: this.y });
+    return `x: ${this.x}, y: ${this.y}`;
   }
 
 
