@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { COLORS, ALPHAS, THICKNESSES } from './constants';
-import { dtGraph } from '../interpret/setup';
+import { getDTGraph } from '../interpret/setup';
 
 
 let allyPolypointPathGraphics = null; // PIXI Graphics for drawing the bot's polypoint path
@@ -119,12 +119,12 @@ function getGraphGraphics(
 function drawTriangulation() {
   if (!trianglesOn) return;
   triangulationSprite = triangulationSprite || getGraphGraphics(
-    dtGraph,
+    getDTGraph(),
     THICKNESSES.navMesh,
     COLORS.navMesh.vertex,
     ALPHAS.navMesh.vertex,
     e => (
-      dtGraph.isEdgeFixed(e) ?
+      getDTGraph().isEdgeFixed(e) ?
         { color: COLORS.navMesh.fixedEdge, alpha: ALPHAS.navMesh.fixedEdge } :
         { color: COLORS.navMesh.edge, alpha: ALPHAS.navMesh.edge }
     ),
@@ -137,7 +137,7 @@ function drawTriangulation() {
 function drawPolypoints() {
   if (!polypointsOn) return;
   polypointSprite = polypointSprite || getGraphGraphics(
-    dtGraph.polypoints,
+    getDTGraph().polypoints,
     THICKNESSES.triangulation,
     null,
     ALPHAS.triangulation.vertex,

@@ -4,7 +4,7 @@ import {
   getUnmergedGraph,
   getMergedGraph,
   initNavMesh,
-  __RewireAPI__ as SetupRewireAPI,
+  getDTGraph,
 } from '../../setup';
 import { isRoughly } from '../../../global/utils';
 import { Point } from '../Point';
@@ -115,8 +115,6 @@ test('delaunayRemoveVertex', tester => {
 test('dynamicUpdate', tester => {
   tester.test('single NT tile', t => {
     setupTiles();
-    const mockDTGraph = new TriangleGraph();
-    SetupRewireAPI.__Rewire__('dtGraph', mockDTGraph);
     const map = [
       [2, 2, 2, 2, 2],
       [2, 2, 2, 2, 2],
@@ -125,27 +123,27 @@ test('dynamicUpdate', tester => {
       [2, 2, 2, 2, 2],
     ];
     initNavMesh(map, true);
+    const dtGraph = getDTGraph();
 
-    t.is(mockDTGraph.numFixedEdges(), 8);
-    t.is(mockDTGraph.numEdges(), 17);
-    t.is(mockDTGraph.numTriangles(), 10);
+    t.is(dtGraph.numFixedEdges(), 8);
+    t.is(dtGraph.numEdges(), 17);
+    t.is(dtGraph.numTriangles(), 10);
 
     map[2][2] = '10.1';
     updateUnmergedGraph(getUnmergedGraph(), map, 2, 2);
     const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
       updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, 2, 2);
-    mockDTGraph.dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
+    dtGraph.dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
 
     t.is(unfixEdges.length, 4);
     t.is(constrainingEdges.length, 0);
     t.is(removeVertices.length, 4);
     t.is(addVertices.length, 0);
-    t.is(mockDTGraph.numTriangles(), 2);
-    t.is(mockDTGraph.numVertices(), 4);
-    t.is(mockDTGraph.numEdges(), 5);
-    t.is(mockDTGraph.numFixedEdges(), 4);
+    t.is(dtGraph.numTriangles(), 2);
+    t.is(dtGraph.numVertices(), 4);
+    t.is(dtGraph.numEdges(), 5);
+    t.is(dtGraph.numFixedEdges(), 4);
 
-    SetupRewireAPI.__ResetDependency__('dtGraph');
     teardownTiles();
     t.end();
   });
