@@ -30,6 +30,13 @@ export class TriangleGraph extends Graph {
   }
 
 
+  clear() {
+    super.clear();
+    this.triangles = new Set();
+    this.fixedAdj = {};
+    this.polypoints = new Graph();
+  }
+
   numTriangles() {
     return this.triangles.size;
   }

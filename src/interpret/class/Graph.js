@@ -14,6 +14,12 @@ export class Graph {
     this.collinearEdges = {}; // map from slope to intercept to list of edges
   }
 
+  clear() {
+    this.adj = {};
+    this.vertices = {};
+    this.collinearEdges = {};
+  }
+
 
   /**
    * Adds a point to the graph

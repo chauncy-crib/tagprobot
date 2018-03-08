@@ -7,7 +7,7 @@ import {
   tilesToUpdateValues,
   getUnmergedGraph,
   getMergedGraph,
-  dtGraph,
+  getDTGraph,
 } from './setup';
 import {
   updateMergedGraph,
@@ -24,7 +24,7 @@ function updateNavMeshAtLocation(map, xt, yt) {
   updateUnmergedGraph(getUnmergedGraph(), map, xt, yt);
   const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
     updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, xt, yt);
-  dtGraph.dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
+  getDTGraph().dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
 }
 
 
