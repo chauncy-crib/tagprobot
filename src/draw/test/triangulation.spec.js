@@ -35,7 +35,7 @@ test('toggleTriangulationVis()', tester => {
     mockGraph.addEdgeAndVertices(new Edge(down, left));
     const mockGetGraphGraphics = sinon.spy();
     TriangulationRewireAPI.__Rewire__('getGraphGraphics', mockGetGraphGraphics);
-    TriangulationRewireAPI.__Rewire__('dtGraph', mockGraph);
+    TriangulationRewireAPI.__Rewire__('getDTGraph', sinon.stub().returns(mockGraph));
     const mockThicknesses = { navMesh: 'thick' };
     TriangulationRewireAPI.__Rewire__('THICKNESSES', mockThicknesses);
     const mockColors = { navMesh: { vertex: 'brown' } };

@@ -3,7 +3,7 @@ import { assert, boundValue } from '../global/utils';
 import { ACCEL, MAX_SPEED, DAMPING_FACTOR } from './constants';
 import { getMe } from '../look/gameState';
 import { FSM } from '../think/fsm';
-import { dtGraph } from '../interpret/setup';
+import { getDTGraph } from '../interpret/setup';
 import { updateAndRedrawEntireNavmesh } from '../interpret/graphToTriangulation';
 import { getShortestPolypointPath } from '../plan/astar';
 import { drawAllyPolypointPath } from '../draw/triangulation';
@@ -181,7 +181,7 @@ export function getAccelValues() {
   const polypointShortestPath = getShortestPolypointPath(
     { xp: me.x + BRP, yp: me.y + BRP },
     finalTarget,
-    dtGraph,
+    getDTGraph(),
   );
 
   drawAllyPolypointPath(polypointShortestPath);

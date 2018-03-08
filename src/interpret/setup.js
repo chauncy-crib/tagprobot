@@ -14,7 +14,7 @@ export const internalMap = [];
 export const tilesToUpdate = [];
 export const tilesToUpdateValues = []; // the values stored in those locations
 
-export const dtGraph = new TriangleGraph();
+let dtGraph;
 let unmergedGraph;
 let mergedGraph;
 
@@ -101,6 +101,7 @@ export function delaunayTriangulation(
  * @returns {Graph} graph of the triangulation of all the vertices
  */
 export function initNavMesh(map, removeDummy = false) {
+  dtGraph = new TriangleGraph();
   unmergedGraph = unmergedGraphFromTagproMap(map);
   mergedGraph = graphFromTagproMap(map, unmergedGraph);
   delaunayTriangulation(
@@ -120,4 +121,9 @@ export function getMergedGraph() {
 
 export function getUnmergedGraph() {
   return unmergedGraph;
+}
+
+
+export function getDTGraph() {
+  return dtGraph;
 }
