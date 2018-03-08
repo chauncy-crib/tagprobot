@@ -6,7 +6,9 @@ import { getPixiRect } from './draw';
 
 let keyPressOn = false;
 
-let keyPressesVis; // PIXI Graphics for drawing the key press visualizations
+// PIXI DisplayObjectContainer for drawing the key press visualizations.
+//   Used instead of Container because tagpro uses PIXI 2.0.
+let keyPressesVis;
 // Index of specific keys inside of the keyPressesVis children array
 const KEY_INDICES = {
   left: 0,
@@ -39,7 +41,7 @@ export function centerKeyPressesVis() {
  */
 export function drawBlankKeyPresses() {
   if (!keyPressesVis) {
-    keyPressesVis = new PIXI.Graphics();
+    keyPressesVis = new PIXI.DisplayObjectContainer();
     tagpro.renderer.layers.ui.addChild(keyPressesVis);
   }
 
