@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import { Graph } from '../../interpret/class/Graph';
 
 
@@ -27,5 +29,26 @@ export class DrawableGraph extends Graph {
     this.vertexToDrawingIndex[point] = this.indexToVertex.length;
     this.indexToVertex.push(point);
     return true;
+  }
+
+  removeVertex(vertex) {
+    super.removeVertex(vertex);
+    // The index where the drawing we're removing is
+    const drawingIndex = this.vertexToDrawingIndex[vertex];
+    // Remove the last drawing from the container
+    const lastDrawing = this.drawingContainer.removeChildAt(this.indexToVertex.length - 1);
+
+    // Replace the drawing we're removing with the last drawing
+    if (drawingIndex < this.indexToVertex.length - 1) {
+      this.drawingContainer.removeChildAt(drawingIndex);
+      this.drawingContainer.addChildAt(lastDrawing, drawingIndex);
+      // Update data structures accordingly
+      this.vertexToDrawingIndex[_.last(this.indexToVertex)] = drawingIndex;
+      this.indexToVertex[drawingIndex] = this.indexToVertex.pop();
+    } else {
+      this.indexToVertex.pop();
+    }
+
+    delete this.vertexToDrawingIndex[vertex];
   }
 }
