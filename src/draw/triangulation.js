@@ -128,7 +128,7 @@ function drawTriangulation() {
         { color: COLORS.navMesh.fixedEdge, alpha: ALPHAS.navMesh.fixedEdge } :
         { color: COLORS.navMesh.edge, alpha: ALPHAS.navMesh.edge }
     ),
-    true,
+    false,
   );
   tagpro.renderer.layers.foreground.addChild(triangulationSprite);
 }
