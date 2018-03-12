@@ -1,5 +1,6 @@
 import { Graph } from '../../interpret/class/Graph';
 
+
 export class DrawableGraph extends Graph {
   /**
    * @param {number} vertexThickness - radius of the vertices in pixels
@@ -18,6 +19,13 @@ export class DrawableGraph extends Graph {
   }
 
   addVertex(point) {
-    return super.addVertex(point);
+    if (!super.addVertex(point)) return false;
+    const vertexDrawing = new PIXI.Graphics();
+    vertexDrawing.lineStyle(this.vertexThickness, this.vertexColor, this.vertexAlpha);
+    vertexDrawing.drawCircle(point.x, point.y, this.vertexThickness);
+    this.drawingContainer.addChildAt(vertexDrawing, this.indexToVertex.length);
+    this.vertexToDrawingIndex[point] = this.indexToVertex.length;
+    this.indexToVertex.push(point);
+    return true;
   }
 }
