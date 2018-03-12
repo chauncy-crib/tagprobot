@@ -25,7 +25,7 @@ export function setupPixiAndTagpro() {
   };
   /* eslint-enable class-methods-use-this */
   global.tagpro = { renderer: { layers: { foreground: { addChild: addChildSpy } } } };
-  return { addChildSpy, addChildAtSpy };
+  return { addChildSpy, addChildAtSpy, removeChildAtSpy };
 }
 
 
@@ -56,8 +56,48 @@ test('DrawableGraph', tester => {
     g.addVertex(new Point(1, 1));
     t.true(addChildAtSpy.calledThrice); // make sure no duplicate drawings
 
-    global.tagpro = undefined;
-    global.PIXI = undefined;
+    resetPixiAndTagpro();
+
+    t.end();
+  });
+
+  tester.test('addVertex', t => {
+    const { addChildAtSpy, removeChildAtSpy } = setupPixiAndTagpro();
+    const g = new DrawableGraph();
+    // Setup graph with three vertices
+    g.addVertex(new Point(1, 1));
+    g.addVertex(new Point(2, 2));
+    g.addVertex(new Point(3, 3));
+    g.addVertex(new Point(4, 4));
+    g.addVertex(new Point(5, 5));
+    t.is(addChildAtSpy.callCount, 5);
+
+    // Removes the last drawing by calling removeChildAt once
+    g.removeVertex(new Point(5, 5));
+    t.true(removeChildAtSpy.calledOnce);
+    t.true(removeChildAtSpy.firstCall.calledWithExactly(4));
+    t.is(addChildAtSpy.callCount, 5);
+
+    // Should move the last drawing in the container to replace 2, 2. removeChildAt should be called
+    // twice
+    g.removeVertex(new Point(2, 2));
+    t.is(addChildAtSpy.callCount, 6);
+    t.true(removeChildAtSpy.calledThrice);
+    t.true(removeChildAtSpy.secondCall.calledWithExactly(3));
+    t.true(removeChildAtSpy.thirdCall.calledWithExactly(1));
+    // The last drawing should replace the one we're removing
+    t.is(addChildAtSpy.getCall(5).args[1], 1);
+
+
+    g.removeVertex(new Point(4, 4));
+    t.is(addChildAtSpy.callCount, 7);
+    t.is(removeChildAtSpy.callCount, 5);
+    t.true(removeChildAtSpy.getCall(3).calledWithExactly(2));
+    t.true(removeChildAtSpy.getCall(4).calledWithExactly(1));
+    t.is(addChildAtSpy.getCall(6).args[1], 1);
+
+    resetPixiAndTagpro();
+
     t.end();
   });
 });
