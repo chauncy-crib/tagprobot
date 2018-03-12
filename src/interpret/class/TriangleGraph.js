@@ -11,7 +11,9 @@ import { Point } from './Point';
 import { Edge } from './Edge';
 import { Triangle } from './Triangle';
 import { Graph } from './Graph';
+import { DrawableGraph } from '../../draw/class/DrawableGraph';
 import { isLegal } from '../graphToTriangulation';
+import { COLORS, ALPHAS, THICKNESSES } from '../../draw/constants';
 
 
 const CLEARANCE = 27; // sqrt(BRP^2 + BRP^2) to have full clearance around a right-angle corner
@@ -21,9 +23,9 @@ const CLEARANCE = 27; // sqrt(BRP^2 + BRP^2) to have full clearance around a rig
  * Extend the Graph class to represent the delaunay triangles. Contains triangle objects in addition
  * to edges and vertices
  */
-export class TriangleGraph extends Graph {
+export class TriangleGraph extends DrawableGraph {
   constructor() {
-    super();
+    super(THICKNESSES.triangulation, ALPHAS.triangulation.vertex, COLORS.navMesh.vertex);
     this.triangles = new Set();
     this.fixedAdj = {};
     this.polypoints = new Graph();
@@ -157,7 +159,9 @@ export class TriangleGraph extends Graph {
    * Overrides the super class function to initialize point in the fixedAdj
    */
   addVertex(point) {
-    if (super.addVertex(point)) this.fixedAdj[point] = [];
+    if (!super.addVertex(point)) return false;
+    this.fixedAdj[point] = [];
+    return true;
   }
 
 
