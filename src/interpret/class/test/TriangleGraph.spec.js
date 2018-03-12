@@ -13,9 +13,14 @@ import { Triangle } from '../Triangle';
 import { TriangleGraph, __RewireAPI__ as TriangleGraphRewireAPI } from '../TriangleGraph';
 import { updateUnmergedGraph, updateMergedGraph } from '../../mapToGraph';
 import { setupTiles, teardownTiles } from '../../test/setupTiles.spec';
+import {
+  setupPixiAndTagpro,
+  resetPixiAndTagpro,
+} from '../../../draw/class/test/DrawableGraph.spec';
 
 
 test('findContainingTriangles finds containing triangles', t => {
+  setupPixiAndTagpro();
   const tGraph = new TriangleGraph();
   const p1 = new Point(0, 0);
   const p2 = new Point(-3, 8);
@@ -35,11 +40,15 @@ test('findContainingTriangles finds containing triangles', t => {
   t.is(c1.length, 1);
   t.is(c2.length, 2);
 
+  resetPixiAndTagpro();
+
   t.end();
 });
 
 
 test('triangulateRegion does not create flat triangle when points are in a line', t => {
+  setupPixiAndTagpro();
+
   const tGraph = new TriangleGraph();
   const p1 = new Point(1080, 640);
   const p2 = new Point(1200, 680);
@@ -56,12 +65,16 @@ test('triangulateRegion does not create flat triangle when points are in a line'
   t.true(tGraph.findTriangle(p1, p2, p3) !== null);
   t.true(tGraph.findTriangle(p1, p4, p2) === null);
 
+  resetPixiAndTagpro();
+
   t.end();
 });
 
 
 test('delaunayRemoveVertex', tester => {
   tester.test('removes vertex surrounded by 4 points, and validly retriangulates 4 points', t => {
+    setupPixiAndTagpro();
+
     const mockDTGraph = new TriangleGraph();
     const v0 = new Point(0, 0);
     const v1 = new Point(0, 10);
@@ -80,10 +93,14 @@ test('delaunayRemoveVertex', tester => {
     // One of the diagonals is connected
     t.true(mockDTGraph.isConnected(v0, v2) !== mockDTGraph.isConnected(v1, v3));
 
+    resetPixiAndTagpro();
+
     t.end();
   });
 
   tester.test('removes vertex surrounded by 5 points, and validly retriangulates 5 points', t => {
+    setupPixiAndTagpro();
+
     const mockDTGraph = new TriangleGraph();
     const v0 = new Point(0, 0);
     const v1 = new Point(0, 10);
@@ -107,6 +124,8 @@ test('delaunayRemoveVertex', tester => {
     // One of the diagonals is connected
     t.true(mockDTGraph.isConnected(v0, v2) !== mockDTGraph.isConnected(v1, v3));
 
+    resetPixiAndTagpro();
+
     t.end();
   });
 });
@@ -115,6 +134,8 @@ test('delaunayRemoveVertex', tester => {
 test('dynamicUpdate', tester => {
   tester.test('single NT tile', t => {
     setupTiles();
+    setupPixiAndTagpro();
+
     const map = [
       [2, 2, 2, 2, 2],
       [2, 2, 2, 2, 2],
@@ -145,6 +166,8 @@ test('dynamicUpdate', tester => {
     t.is(dtGraph.numFixedEdges(), 4);
 
     teardownTiles();
+    resetPixiAndTagpro();
+
     t.end();
   });
 });
@@ -156,6 +179,8 @@ test('getClearancePoint()', tester => {
     const cornerPoint = new Point(0, 0);
     const prevPoint = new Point(0, -1);
     const nextPoint = new Point(-1, 0);
+
+    setupPixiAndTagpro();
 
     const tGraph = new TriangleGraph();
     tGraph.addVertex(cornerPoint);
@@ -170,6 +195,8 @@ test('getClearancePoint()', tester => {
     t.true(isRoughly(clearancePoint.y, expected.y));
 
     TriangleGraphRewireAPI.__ResetDependency__('CLEARANCE');
+    resetPixiAndTagpro();
+
     t.end();
   });
 
@@ -179,6 +206,8 @@ test('getClearancePoint()', tester => {
     const cornerPoint = new Point(0, 0);
     const prevPoint = new Point(0, -1);
     const nextPoint = new Point(1, 0);
+
+    setupPixiAndTagpro();
 
     const tGraph = new TriangleGraph();
     tGraph.addVertex(cornerPoint);
@@ -193,6 +222,8 @@ test('getClearancePoint()', tester => {
     t.true(isRoughly(clearancePoint.y, expected.y));
 
     TriangleGraphRewireAPI.__ResetDependency__('CLEARANCE');
+    resetPixiAndTagpro();
+
     t.end();
   });
 
@@ -202,6 +233,8 @@ test('getClearancePoint()', tester => {
     const cornerPoint = new Point(0, 0);
     const prevPoint = new Point(0, 1);
     const nextPoint = new Point(1, 0);
+
+    setupPixiAndTagpro();
 
     const tGraph = new TriangleGraph();
     tGraph.addVertex(cornerPoint);
@@ -216,6 +249,8 @@ test('getClearancePoint()', tester => {
     t.true(isRoughly(clearancePoint.y, expected.y));
 
     TriangleGraphRewireAPI.__ResetDependency__('CLEARANCE');
+    resetPixiAndTagpro();
+
     t.end();
   });
 
@@ -225,6 +260,8 @@ test('getClearancePoint()', tester => {
     const cornerPoint = new Point(0, 0);
     const prevPoint = new Point(0, 1);
     const nextPoint = new Point(-1, 0);
+
+    setupPixiAndTagpro();
 
     const tGraph = new TriangleGraph();
     tGraph.addVertex(cornerPoint);
@@ -239,6 +276,8 @@ test('getClearancePoint()', tester => {
     t.true(isRoughly(clearancePoint.y, expected.y));
 
     TriangleGraphRewireAPI.__ResetDependency__('CLEARANCE');
+    resetPixiAndTagpro();
+
     t.end();
   });
 });
