@@ -8,8 +8,8 @@ export class DrawableGraph extends Graph {
    */
   constructor(vertexThickness, vertexAlpha, vertexColor) {
     super();
-    this.drawings = [];
-    this.vertexDrawingIndices = {};
+    this.vertexToDrawingIndex = {}; // map from vertex to its location in the drawing container
+    this.indexToVertex = []; // map from index in drawing container to vertex
     this.vertexThickness = vertexThickness;
     this.vertexAlpha = vertexAlpha;
     this.vertexColor = vertexColor;
