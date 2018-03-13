@@ -12,8 +12,8 @@ export class DrawableGraph extends Graph {
   constructor(vertexThickness, vertexAlpha, vertexColor) {
     super();
     this.drawingsOn = false;
-    this.vertexToDrawingIndex = {}; // map from vertex to its location in the drawing container
-    this.indexToVertex = []; // map from index in drawing container to vertex
+    this.drawingIndices = {}; // map from vertex/edge to its location in the drawing container
+    this.indexToGraphObject = []; // map from index in drawing container to vertex/edge
     this.vertexThickness = vertexThickness;
     this.vertexAlpha = vertexAlpha;
     this.vertexColor = vertexColor;
@@ -34,28 +34,28 @@ export class DrawableGraph extends Graph {
     const vertexDrawing = new PIXI.Graphics();
     vertexDrawing.lineStyle(this.vertexThickness, this.vertexColor, this.vertexAlpha);
     vertexDrawing.drawCircle(vertex.x, vertex.y, this.vertexThickness);
-    this.drawingContainer.addChildAt(vertexDrawing, this.indexToVertex.length);
-    this.vertexToDrawingIndex[vertex] = this.indexToVertex.length;
-    this.indexToVertex.push(vertex);
+    this.drawingContainer.addChildAt(vertexDrawing, this.indexToGraphObject.length);
+    this.drawingIndices[vertex] = this.indexToGraphObject.length;
+    this.indexToGraphObject.push(vertex);
   }
 
   removeVertexDrawing(vertex) {
     // The index where the drawing we're removing is
-    const drawingIndex = this.vertexToDrawingIndex[vertex];
+    const drawingIndex = this.drawingIndices[vertex];
     // Remove the last drawing from the container
-    const lastDrawing = this.drawingContainer.removeChildAt(this.indexToVertex.length - 1);
+    const lastDrawing = this.drawingContainer.removeChildAt(this.indexToGraphObject.length - 1);
 
     // Replace the drawing we're removing with the last drawing
-    if (drawingIndex < this.indexToVertex.length - 1) {
+    if (drawingIndex < this.indexToGraphObject.length - 1) {
       this.drawingContainer.removeChildAt(drawingIndex);
       this.drawingContainer.addChildAt(lastDrawing, drawingIndex);
       // Update data structures accordingly
-      this.vertexToDrawingIndex[_.last(this.indexToVertex)] = drawingIndex;
-      this.indexToVertex[drawingIndex] = this.indexToVertex.pop();
+      this.drawingIndices[_.last(this.indexToGraphObject)] = drawingIndex;
+      this.indexToGraphObject[drawingIndex] = this.indexToGraphObject.pop();
     } else {
-      this.indexToVertex.pop();
+      this.indexToGraphObject.pop();
     }
-    delete this.vertexToDrawingIndex[vertex];
+    delete this.drawingIndices[vertex];
   }
 
   addVertex(point) {
