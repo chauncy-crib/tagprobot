@@ -7,8 +7,6 @@ import { getDTGraph } from '../interpret/setup';
 let allyPolypointPathGraphics = null; // PIXI Graphics for drawing the bot's polypoint path
 let enemyPolypointPathGraphics = null; // PIXI Graphics for drawing the enemy polypoint path
 
-// The sprite for the triangulation graph
-let triangulationSprite;
 // The sprite for the polypoint graph
 let polypointSprite;
 
@@ -113,25 +111,6 @@ function getGraphGraphics(
 }
 
 
-/*
- * Draws the navigation mesh lines on the tagpro map. Runtime: O(E), O(1) if visualizations off
- */
-function drawTriangulation() {
-  if (!trianglesOn) return;
-  triangulationSprite = triangulationSprite || getGraphGraphics(
-    getDTGraph(),
-    THICKNESSES.navMesh,
-    COLORS.navMesh.vertex,
-    ALPHAS.navMesh.vertex,
-    e => (
-      getDTGraph().isEdgeFixed(e) ?
-        { color: COLORS.navMesh.fixedEdge, alpha: ALPHAS.navMesh.fixedEdge } :
-        { color: COLORS.navMesh.edge, alpha: ALPHAS.navMesh.edge }
-    ),
-    false,
-  );
-  tagpro.renderer.layers.foreground.addChild(triangulationSprite);
-}
 
 
 function drawPolypoints() {
@@ -144,7 +123,6 @@ function drawPolypoints() {
     () => ({ color: COLORS.triangulation.edge, alpha: ALPHAS.triangulation.edge }),
     false,
   );
-  tagpro.renderer.layers.foreground.addChild(triangulationSprite);
   tagpro.renderer.layers.foreground.addChild(polypointSprite);
 }
 
@@ -153,9 +131,9 @@ export function toggleTriangulationVis(setTo = !trianglesOn) {
   if (setTo === trianglesOn) return;
   trianglesOn = setTo;
   if (!trianglesOn) {
-    tagpro.renderer.layers.foreground.removeChild(triangulationSprite);
+    getDTGraph().turnOffDrawings();
   } else {
-    drawTriangulation();
+    getDTGraph().turnOnDrawings();
   }
 }
 
