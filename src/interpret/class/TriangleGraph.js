@@ -92,27 +92,7 @@ export class TriangleGraph extends DrawableGraph {
   findContainingTriangles(p) {
     const containingTriangles = [];
     this.triangles.forEach(t => {
-      // Compute vectors
-      const v0 = t.p3.subtract(t.p1);
-      const v1 = t.p2.subtract(t.p1);
-      const v2 = p.subtract(t.p1);
-
-      // Compute dot products
-      const dot00 = v0.dot(v0);
-      const dot01 = v0.dot(v1);
-      const dot02 = v0.dot(v2);
-      const dot11 = v1.dot(v1);
-      const dot12 = v1.dot(v2);
-
-      // Compute barycentric coordinates
-      const invDenom = 1 / ((dot00 * dot11) - (dot01 * dot01));
-      const u = ((dot11 * dot02) - (dot01 * dot12)) * invDenom;
-      const v = ((dot00 * dot12) - (dot01 * dot02)) * invDenom;
-
-      // Check if point is inside or on edge of triangle
-      if ((u >= 0) && (v >= 0) && (u + v <= 1)) {
-        containingTriangles.push(t);
-      }
+      if (t.containsPoint(p)) containingTriangles.push(t);
     });
     return containingTriangles;
   }
