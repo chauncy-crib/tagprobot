@@ -11,6 +11,7 @@ export class DrawableGraph extends Graph {
    */
   constructor(vertexThickness, vertexAlpha, vertexColor) {
     super();
+    this.drawingsOn = true;
     this.vertexToDrawingIndex = {}; // map from vertex to its location in the drawing container
     this.indexToVertex = []; // map from index in drawing container to vertex
     this.vertexThickness = vertexThickness;
@@ -18,6 +19,14 @@ export class DrawableGraph extends Graph {
     this.vertexColor = vertexColor;
     this.drawingContainer = new PIXI.DisplayObjectContainer();
     tagpro.renderer.layers.foreground.addChild(this.drawingContainer);
+  }
+
+  turnOffDrawings() {
+    if (this.drawingsOn) tagpro.renderer.layers.foreground.removeChild(this.drawingContainer);
+  }
+
+  turnOnDrawings() {
+    if (!this.drawingsOn) tagpro.renderer.layers.foreground.addChild(this.drawingContainer);
   }
 
   addVertexDrawing(vertex) {
