@@ -56,13 +56,11 @@ export function dequeueChatMessages() {
  * @param {string} chatData.to - the recipients of the message ('all', 'team', or 'group')
  * @param {string} chatData.c - the hex representation of the color to change the text to (for
  *   example for flair awards)
- * @param {boolean} chatData.mod - whether or not the sender of the message is a mod
+ * @param {boolean} chatData.mod - true if sender of message is a mod
  */
-export function parseChat(chatData) {
+function parseChat(chatData) {
   const msg = chatData.message;
-  if (msg.indexOf(' ') === -1) return; // no space found
-
-  const firstWord = msg.substr(0, msg.indexOf(' ') + 1);
+  const firstWord = msg.split(' ', 1)[0];
   switch (firstWord) {
     case KEY_WORDS.inform.role:
       // TODO
