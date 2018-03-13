@@ -13,7 +13,6 @@ import {
   updateMergedGraph,
   updateUnmergedGraph,
 } from './mapToGraph';
-import { redrawNavMesh } from '../draw/triangulation';
 
 
 /**
@@ -38,7 +37,6 @@ export function updateAndRedrawEntireNavmesh(map) {
     tilesToUpdate.length === tilesToUpdateValues.length,
     'the number of tiles to update and the number of values stored for them are not equal',
   );
-  let tileChanged = false;
   for (let i = 0; i < tilesToUpdate.length; i++) {
     const xy = tilesToUpdate[i];
     const tileId = map[xy.xt][xy.yt];
@@ -46,12 +44,10 @@ export function updateAndRedrawEntireNavmesh(map) {
     internalMap[xy.xt][xy.yt] = map[xy.xt][xy.yt];
     // if the traversability of the tile in this location has changed since the last state
     if (tileTraversability !== getTileProperty(tilesToUpdateValues[i], 'traversable')) {
-      tileChanged = true;
       tilesToUpdateValues[i] = tileId;
       updateNavMeshAtLocation(internalMap, xy.xt, xy.yt);
     }
   }
-  if (tileChanged) redrawNavMesh();
 }
 
 
