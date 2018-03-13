@@ -20,19 +20,16 @@ export class DrawableGraph extends Graph {
     tagpro.renderer.layers.foreground.addChild(this.drawingContainer);
   }
 
-  addVertex(point) {
-    if (!super.addVertex(point)) return false;
+  addVertexDrawing(vertex) {
     const vertexDrawing = new PIXI.Graphics();
     vertexDrawing.lineStyle(this.vertexThickness, this.vertexColor, this.vertexAlpha);
-    vertexDrawing.drawCircle(point.x, point.y, this.vertexThickness);
+    vertexDrawing.drawCircle(vertex.x, vertex.y, this.vertexThickness);
     this.drawingContainer.addChildAt(vertexDrawing, this.indexToVertex.length);
-    this.vertexToDrawingIndex[point] = this.indexToVertex.length;
-    this.indexToVertex.push(point);
-    return true;
+    this.vertexToDrawingIndex[vertex] = this.indexToVertex.length;
+    this.indexToVertex.push(vertex);
   }
 
-  removeVertex(vertex) {
-    super.removeVertex(vertex);
+  removeVertexDrawing(vertex) {
     // The index where the drawing we're removing is
     const drawingIndex = this.vertexToDrawingIndex[vertex];
     // Remove the last drawing from the container
@@ -48,7 +45,17 @@ export class DrawableGraph extends Graph {
     } else {
       this.indexToVertex.pop();
     }
-
     delete this.vertexToDrawingIndex[vertex];
+  }
+
+  addVertex(point) {
+    if (!super.addVertex(point)) return false;
+    this.addVertexDrawing(point);
+    return true;
+  }
+
+  removeVertex(vertex) {
+    super.removeVertex(vertex);
+    this.removeVertexDrawing(vertex);
   }
 }
