@@ -50,6 +50,7 @@ test('DrawableGraph', tester => {
   tester.test('addVertex places drawings at correct indices in container', t => {
     const { addChildSpy, addChildAtSpy } = setupPixiAndTagpro();
     const g = new DrawableGraph();
+    g.turnOnDrawings();
     t.true(addChildSpy.calledOnce); // constructor should call tagpro.addChild
 
     g.addVertex(new Point(1, 1));
@@ -76,6 +77,7 @@ test('DrawableGraph', tester => {
     t => {
       const { addChildAtSpy, removeChildAtSpy } = setupPixiAndTagpro();
       const g = new DrawableGraph();
+      g.turnOnDrawings();
       // Setup graph with three vertices
       g.addVertex(new Point(1, 1));
       g.addVertex(new Point(2, 2));
