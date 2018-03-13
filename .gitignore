@@ -1,10 +1,14 @@
 # Vim files
 *.swp
 
-.tern-project
-
+# Node libraries
 node_modules/
-public/bundle.js
-public/test.js
 
+# Webpack bundle file
+public/bundle.js
+
+# OSX desktop services store files
 .DS_Store
+
+# Python3 virtual environment
+simulation/env/
