@@ -4,7 +4,7 @@ import { initMe, initIsCenterFlag } from './look/gameState';
 import { initInternalMap, initTilesToUpdate, initNavMesh } from './interpret/setup';
 import { getAccelValues } from './control/physics';
 import { logHelpMenu, onKeyDown, isAutonomousMode, isVisualMode, move } from './interface/keys';
-import { dequeueChatMessages } from './interface/chat';
+import { dequeueChatMessages, setupChatCallback } from './interface/chat';
 import { turnOnAllDrawings, initUiUpdateFunction } from './draw/draw';
 
 
@@ -53,6 +53,8 @@ function start() {
 
   initUiUpdateFunction();
   turnOnAllDrawings();
+
+  setupChatCallback();
 
   // Run the bot
   loop();
