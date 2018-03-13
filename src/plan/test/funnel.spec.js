@@ -1,4 +1,5 @@
 import test from 'tape';
+import _ from 'lodash';
 
 import { Point } from '../../interpret/class/Point';
 import { Polypoint } from '../../interpret/class/Polypoint';
@@ -8,6 +9,7 @@ import {
   funnelPolypoints,
   __RewireAPI__ as FunnelRewireAPI,
 } from '../funnel';
+import { backwardsFunnelPath, backwardsFunnelGetClearancePoint } from './data';
 
 
 const mockGetClearancePoint = cornerPoint => cornerPoint.copy();
@@ -141,6 +143,23 @@ test('funnelPolypoints()', tester => {
 
     const funnelledPoints = funnelPolypoints(path).map(state => state.point);
     t.same(funnelledPoints, [path[0].point, path[1].point]);
+
+    t.end();
+  });
+
+
+  tester.test('funnels properly in stradle edge case', t => {
+    const mockTriangleGraph = { getClearancePoint: backwardsFunnelGetClearancePoint };
+    const funnelledPoints = funnelPolypoints(backwardsFunnelPath, mockTriangleGraph)
+      .map(state => state.point);
+    t.same(
+      funnelledPoints.join('_'),
+      [
+        backwardsFunnelPath[0].point,
+        new Point(1200, 360),
+        _.last(backwardsFunnelPath).point,
+      ].join('_'),
+    );
 
     t.end();
   });
