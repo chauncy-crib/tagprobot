@@ -12,13 +12,15 @@ import { Point } from '../../../interpret/class/Point';
  * @param {Object} directions - directions to draw
  * @param {(string|undefined)} directions.x - either 'RIGHT', 'LEFT', or undefined
  * @param {(string|undefined)} directions.y - either 'DOWN', 'UP', or undefined
- * @returns {{addChildSpy: sinon.spy, addChildAtSpy: sinon.spy, removeChildAtSpy: sinon.spy}} sinon
- *   spies on the tagpro.renderer.layers.foreground.addChild,
- *   PIXI.DisplayObjectContainer.addChildAt, and PIXI.DisplayObjectContainer.removeChildAt
- *   functions.
+ * @returns {Object} spies
+ * @returns {sinon.spy} spies.addChildSpy - spy on tagpro.renderer.layers.foreground.addChild
+ * @returns {sinon.spy} spies.removeChildSpy - spy on tagpro.renderer.layers.foreground.removeChild
+ * @returns {sinon.spy} spies.addChildAtSpy - spy on PIXI.DisplayObjectContainer.addChildAt
+ * @returns {sinon.spy} spies.removeChildAtSpy - spy on PIXI.DisplayObjectContainer.removeChildAt
  */
 export function setupPixiAndTagpro() {
   const addChildSpy = sinon.spy();
+  const removeChildSpy = sinon.spy();
   const addChildAtSpy = sinon.spy();
   const removeChildAtSpy = sinon.spy();
   /* eslint-disable class-methods-use-this */
@@ -35,8 +37,17 @@ export function setupPixiAndTagpro() {
     },
   };
   /* eslint-enable class-methods-use-this */
-  global.tagpro = { renderer: { layers: { foreground: { addChild: addChildSpy } } } };
-  return { addChildSpy, addChildAtSpy, removeChildAtSpy };
+  global.tagpro = {
+    renderer: {
+      layers: {
+        foreground: {
+          addChild: addChildSpy,
+          removeChild: removeChildSpy,
+        },
+      },
+    },
+  };
+  return { addChildSpy, removeChildSpy, addChildAtSpy, removeChildAtSpy };
 }
 
 
