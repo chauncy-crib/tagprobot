@@ -55,7 +55,8 @@ export class DrawableGraph extends Graph {
   }
 
   removeVertex(vertex) {
-    super.removeVertex(vertex);
+    if (!super.removeVertex(vertex)) return false;
     this.removeVertexDrawing(vertex);
+    return true;
   }
 }
