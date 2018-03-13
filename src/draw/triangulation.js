@@ -149,14 +149,6 @@ function drawPolypoints() {
 }
 
 
-function resetTriangulationAndPolypointDrawing() {
-  tagpro.renderer.layers.foreground.removeChild(polypointSprite);
-  tagpro.renderer.layers.foreground.removeChild(triangulationSprite);
-  triangulationSprite = null;
-  polypointSprite = null;
-}
-
-
 export function toggleTriangulationVis(setTo = !trianglesOn) {
   if (setTo === trianglesOn) return;
   trianglesOn = setTo;
@@ -186,14 +178,4 @@ export function togglePathVis(setTo = !pathsOn) {
     allyPolypointPathGraphics.clear();
     enemyPolypointPathGraphics.clear();
   }
-}
-
-
-/**
- * Redraw the triangulation and polypoints
- */
-export function redrawNavMesh() {
-  resetTriangulationAndPolypointDrawing();
-  drawTriangulation();
-  drawPolypoints();
 }
