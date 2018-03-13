@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { assert } from '../global/utils';
 import { Edge } from '../interpret/class/Edge';
 import { PolypointState } from './class/PolypointState';
+import { Triangle } from '../interpret/class/Triangle';
 
 
 /**
@@ -27,11 +28,7 @@ function getPortals(path, triangleGraph) {
     p2.clearancePoint = triangleGraph.getClearancePoint(p2);
 
     if (i === 1) {
-      // This is the first iteration, add the first triangle point and then arbitrarily add one
-      //   point to each list
-      const trianglePoint = _.difference(prevPoints, portalPoints);
-      leftPoints.push(trianglePoint[0]);
-      rightPoints.push(trianglePoint[0]);
+      // This is the first iteration, arbitrarily add one point to each list
       leftPoints.push(p1);
       rightPoints.push(p2);
     } else {
@@ -74,9 +71,45 @@ export function funnelPolypoints(path, triangleGraph) {
 
   const funnelledPath = [path[0]];
   let startPoint = path[0].point; // the apex of the funnel
-  const funnelIndices = [1, 1]; // the indices of the left and right points in the funnel
+  const funnelIndices = [0, 0]; // the indices of the left and right points in the funnel
 
-  for (let portalIndex = 2; portalIndex < leftPoints.length; portalIndex++) {
+  let startingPortal = 1;
+  // Skip over portal if the portal is behind us
+  const polygon1 = new Triangle(
+    leftPoints[0],
+    rightPoints[0].clearancePoint,
+    leftPoints[0].clearancePoint,
+    false,
+  );
+  const polygon2 = new Triangle(
+    leftPoints[0],
+    rightPoints[0].clearancePoint,
+    rightPoints[0],
+    false,
+  );
+  if (polygon1.containsPoint(startPoint) || polygon2.containsPoint(startPoint)) {
+    let leftFunnelEdge = new Edge(startPoint, leftPoints[funnelIndices[0]].clearancePoint);
+    let rightFunnelEdge = new Edge(startPoint, rightPoints[funnelIndices[1]].clearancePoint);
+
+    while (
+      leftFunnelEdge.isBetweenPoints(
+        path[startingPortal].point,
+        rightPoints[funnelIndices[0]].clearancePoint,
+      ) ||
+      rightFunnelEdge.isBetweenPoints(
+        path[startingPortal].point,
+        leftPoints[funnelIndices[1]].clearancePoint,
+      )
+    ) {
+      funnelIndices[0] += 1;
+      funnelIndices[1] += 1;
+      startingPortal += 1;
+      leftFunnelEdge = new Edge(startPoint, leftPoints[funnelIndices[0]].clearancePoint);
+      rightFunnelEdge = new Edge(startPoint, rightPoints[funnelIndices[1]].clearancePoint);
+    }
+  }
+
+  for (let portalIndex = startingPortal; portalIndex < leftPoints.length; portalIndex++) {
     const currLeft = leftPoints[funnelIndices[0]];
     const currRight = rightPoints[funnelIndices[1]];
     const leftEdge = new Edge(startPoint, currLeft.clearancePoint);
@@ -93,34 +126,35 @@ export function funnelPolypoints(path, triangleGraph) {
     // Look for funnel updates for the left and the right side
     for (let curr = 0; curr < 2; curr++) {
       const other = 1 - curr; // the other index
-      if (!funnelPoints[curr].equals(portalPoints[curr]) && portalIndex > funnelIndices[curr]) {
-        // New point is different
-        if (!edges[curr].isBetweenPoints(
-          portalPointsClearanced[curr],
-          funnelPointsClearanced[other],
-        )) {
-          // New point narrows the funnel
-          if (!edges[other].isBetweenPoints(
-            portalPointsClearanced[curr],
-            funnelPointsClearanced[curr],
-          )) {
-            // New point does not cross over, update that side of funnel
-            funnelIndices[curr] = portalIndex;
-          } else {
-            // New point crosses over other side
-            // Find next funnel index
-            while (allPortalPoints[other][funnelIndices[other]].equals(funnelPoints[other])) {
-              funnelIndices[other] += 1;
-            }
 
-            // Insert other point with clearance to path
-            funnelledPath.push(new PolypointState(funnelPointsClearanced[other]));
+      const differentPoint = !funnelPoints[curr].equals(portalPoints[curr]) &&
+        portalIndex > funnelIndices[curr];
+      const narrowsFunnel = !edges[curr].isBetweenPoints(
+        portalPointsClearanced[curr],
+        funnelPointsClearanced[other],
+      );
+      const crossesOver = edges[other].isBetweenPoints(
+        portalPointsClearanced[curr],
+        funnelPointsClearanced[curr],
+      );
 
-            // Restart funnel from right point
-            startPoint = funnelPointsClearanced[other];
-            funnelIndices[curr] = funnelIndices[other];
-            portalIndex = funnelIndices[other];
+      if (differentPoint && narrowsFunnel) {
+        if (crossesOver) {
+          // Find next funnel index
+          while (allPortalPoints[other][funnelIndices[other]].equals(funnelPoints[other])) {
+            funnelIndices[other] += 1;
           }
+
+          // Insert other point with clearance to path
+          funnelledPath.push(new PolypointState(funnelPointsClearanced[other]));
+
+          // Restart funnel from right point
+          startPoint = funnelPointsClearanced[other];
+          funnelIndices[curr] = funnelIndices[other];
+          portalIndex = funnelIndices[other];
+        } else {
+          // New point does not cross over, update that side of funnel
+          funnelIndices[curr] = portalIndex;
         }
       }
     }
