@@ -83,9 +83,11 @@ export class Graph {
 
 
   /**
-   * Removes a vertex from the graph, and clears all edges connected to it.
+   * Removes a vertex from the graph, and clears all edges connected to it. Returns true if the
+   * vertex was in the graph, false otherwise.
    */
   removeVertex(vertex) {
+    if (!this.hasVertex(vertex)) return false;
     // Clear all edges attached to the vertex
     _.forEach(this.adj[vertex], a => {
       this.removeEdge(new Edge(vertex, a));
@@ -93,6 +95,7 @@ export class Graph {
     // Remove the vertex
     delete this.adj[vertex];
     delete this.vertices[vertex];
+    return true;
   }
 
 
