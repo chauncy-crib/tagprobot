@@ -9,7 +9,7 @@ export const COLORS = {
     fixedEdge: 0x42aaf4, // bright blue
     vertex: 0xa5005d, // darker pink
   },
-  triangulation: {
+  polypoints: {
     edge: 0x006600, // turquoise
   },
 };
