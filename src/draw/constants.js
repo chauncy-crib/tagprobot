@@ -4,7 +4,7 @@ export const COLORS = {
     enemy: 0x99333, // dark red
   },
   keys: 0x753daf, // purple
-  navMesh: {
+  triangulation: {
     edge: 0xff0090, // pink
     fixedEdge: 0x42aaf4, // bright blue
     vertex: 0xa5005d, // darker pink
