@@ -25,7 +25,24 @@ const CLEARANCE = 27; // sqrt(BRP^2 + BRP^2) to have full clearance around a rig
  */
 export class TriangleGraph extends DrawableGraph {
   constructor() {
-    super(THICKNESSES.triangulation, ALPHAS.triangulation.vertex, COLORS.navMesh.vertex);
+    super(
+      THICKNESSES.triangulation,
+      ALPHAS.triangulation.vertex,
+      COLORS.navMesh.vertex,
+      e => (
+        this.isEdgeFixed(e) ?
+          {
+            color: COLORS.navMesh.fixedEdge,
+            alpha: ALPHAS.navMesh.fixedEdge,
+            thickness: THICKNESSES.navMesh,
+          } :
+          {
+            color: COLORS.navMesh.edge,
+            alpha: ALPHAS.navMesh.edge,
+            thickness: THICKNESSES.navMesh,
+          }
+      ),
+    );
     this.triangles = new Set();
     this.fixedAdj = {};
     this.polypoints = new Graph();
@@ -166,10 +183,13 @@ export class TriangleGraph extends DrawableGraph {
 
 
   addFixedEdge(e) {
-    assert(this.hasVertex(e.p1) && this.hasVertex(e.p2));
-    super.addEdge(e);
     this.fixedAdj[e.p1].push(e.p2);
     this.fixedAdj[e.p2].push(e.p1);
+    if (this.isConnected(e.p1, e.p2)) {
+      this.removeEdgeDrawing(e);
+      this.addEdgeDrawing(e);
+    }
+    this.addEdge(e);
   }
 
 

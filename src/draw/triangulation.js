@@ -70,7 +70,6 @@ export function drawEnemyPolypointPath(polypointPath) {
  * @param {number} thickness - thickness of the lines in pixels
  * @param {number} vertexColor - a hex color
  * @param {number} vertexAlpha - an alpha from 0.0-1.0
- * @param {edgeStyleFunc} getEdgeStyle - a function that returns the color and alpha for each edge.
  * @param {boolean} drawVertices - true if this function should draw the graph's vertices
  */
 function getGraphGraphics(
@@ -109,8 +108,6 @@ function getGraphGraphics(
 
   return graphGraphics;
 }
-
-
 
 
 function drawPolypoints() {

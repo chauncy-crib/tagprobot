@@ -1,6 +1,15 @@
 import _ from 'lodash';
 
 import { Graph } from '../../interpret/class/Graph';
+import { Edge } from '../../interpret/class/Edge';
+
+
+/**
+ * @callback edgeStyleFunc
+ * @param {Edge} e
+ * @returns {{color: number, alpha: number, thickness: number}} a hex color, alpha, and thickness
+ *   that the edge should be colored
+ */
 
 
 export class DrawableGraph extends Graph {
@@ -8,8 +17,10 @@ export class DrawableGraph extends Graph {
    * @param {number} vertexThickness - radius of the vertices in pixels
    * @param {number} vertexColor - a hex color
    * @param {number} vertexAlpha - an alpha from 0.0-1.0
+   * @param {edgeStyleFunc} getEdgeStyle - a function that returns the color, alpha, and thickness
+   *   for each edge.
    */
-  constructor(vertexThickness, vertexAlpha, vertexColor) {
+  constructor(vertexThickness, vertexAlpha, vertexColor, getEdgeStyle) {
     super();
     this.drawingsOn = false;
     this.drawingIndices = {}; // map from vertex/edge to its location in the drawing container
@@ -17,6 +28,7 @@ export class DrawableGraph extends Graph {
     this.vertexThickness = vertexThickness;
     this.vertexAlpha = vertexAlpha;
     this.vertexColor = vertexColor;
+    this.getEdgeStyle = getEdgeStyle;
     this.drawingContainer = new PIXI.DisplayObjectContainer();
   }
 
@@ -62,6 +74,24 @@ export class DrawableGraph extends Graph {
     this.addDrawing(vertexDrawing, vertex);
   }
 
+  addEdgeDrawing(edge) {
+    let e = edge;
+    // make sure e goes from left to right, so that when it gets removed we know what orientation
+    //   the key is in
+    if (e.p1.x > e.p2.x || (e.p1.x === e.p2.x && e.p1.y > e.p2.y)) e = new Edge(e.p2, e.p1);
+    const edgeDrawing = new PIXI.Graphics();
+    const { color, alpha, thickness } = this.getEdgeStyle(e);
+    edgeDrawing.lineStyle(thickness, color, alpha);
+    edgeDrawing.moveTo(e.p1.x, e.p1.y).lineTo(e.p2.x, e.p2.y);
+    this.addDrawing(edgeDrawing, e);
+  }
+
+  removeEdgeDrawing(edge) {
+    let e = edge;
+    if (e.p1.x > e.p2.x || (e.p1.x === e.p2.x && e.p1.y > e.p2.y)) e = new Edge(e.p2, e.p1);
+    this.removeDrawing(e);
+  }
+
   addVertex(point) {
     if (!super.addVertex(point)) return false;
     this.addVertexDrawing(point);
@@ -71,6 +101,18 @@ export class DrawableGraph extends Graph {
   removeVertex(vertex) {
     if (!super.removeVertex(vertex)) return false;
     this.removeDrawing(vertex);
+    return true;
+  }
+
+  addEdge(edge) {
+    if (!super.addEdge(edge)) return false;
+    this.addEdgeDrawing(edge);
+    return true;
+  }
+
+  removeEdge(edge) {
+    if (!super.removeEdge(edge)) return false;
+    this.removeEdgeDrawing(edge);
     return true;
   }
 }

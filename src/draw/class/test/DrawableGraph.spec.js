@@ -34,6 +34,8 @@ export function setupPixiAndTagpro() {
       lineStyle() {}
       removeVertex() {}
       drawCircle() {}
+      moveTo() { return this; }
+      lineTo() {}
     },
   };
   /* eslint-enable class-methods-use-this */
