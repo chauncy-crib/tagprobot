@@ -1,14 +1,11 @@
 import _ from 'lodash';
 
-import { COLORS, ALPHAS, THICKNESSES } from './constants';
+import { COLORS, THICKNESSES } from './constants';
 import { getDTGraph } from '../interpret/setup';
 
 
 let allyPolypointPathGraphics = null; // PIXI Graphics for drawing the bot's polypoint path
 let enemyPolypointPathGraphics = null; // PIXI Graphics for drawing the enemy polypoint path
-
-// The sprite for the polypoint graph
-let polypointSprite;
 
 let trianglesOn = false;
 let polypointsOn = false;
