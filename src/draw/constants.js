@@ -31,6 +31,5 @@ export const ALPHAS = {
 };
 
 export const THICKNESSES = {
-  navMesh: 4,
   triangulation: 4,
 };
