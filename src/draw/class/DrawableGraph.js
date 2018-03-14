@@ -36,16 +36,9 @@ export class DrawableGraph extends Graph {
     this.indexToGraphObject.push(object);
   }
 
-  addVertexDrawing(vertex) {
-    const vertexDrawing = new PIXI.Graphics();
-    vertexDrawing.lineStyle(this.vertexThickness, this.vertexColor, this.vertexAlpha);
-    vertexDrawing.drawCircle(vertex.x, vertex.y, this.vertexThickness);
-    this.addDrawing(vertexDrawing, vertex);
-  }
-
-  removeVertexDrawing(vertex) {
+  removeDrawing(object) {
     // The index where the drawing we're removing is
-    const drawingIndex = this.drawingIndices[vertex];
+    const drawingIndex = this.drawingIndices[object];
     // Remove the last drawing from the container
     const lastDrawing = this.drawingContainer.removeChildAt(this.indexToGraphObject.length - 1);
 
@@ -59,7 +52,14 @@ export class DrawableGraph extends Graph {
     } else {
       this.indexToGraphObject.pop();
     }
-    delete this.drawingIndices[vertex];
+    delete this.drawingIndices[object];
+  }
+
+  addVertexDrawing(vertex) {
+    const vertexDrawing = new PIXI.Graphics();
+    vertexDrawing.lineStyle(this.vertexThickness, this.vertexColor, this.vertexAlpha);
+    vertexDrawing.drawCircle(vertex.x, vertex.y, this.vertexThickness);
+    this.addDrawing(vertexDrawing, vertex);
   }
 
   addVertex(point) {
@@ -70,7 +70,7 @@ export class DrawableGraph extends Graph {
 
   removeVertex(vertex) {
     if (!super.removeVertex(vertex)) return false;
-    this.removeVertexDrawing(vertex);
+    this.removeDrawing(vertex);
     return true;
   }
 }
