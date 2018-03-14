@@ -35,10 +35,14 @@ export class Graph {
   }
 
 
+  /**
+   * Adds an edge to the graph. Throws an error if either vertex is not in the graph.
+   * @returns {boolean} if the edge was successfully added
+   */
   addEdge(edge) {
-    assert(_.has(this.adj, edge.p1), `${edge.p1} not initialized in the graph with addVertex()`);
-    assert(_.has(this.adj, edge.p2), `${edge.p2} not initialized in the graph with addVertex()`);
-    if (this.isConnected(edge.p1, edge.p2)) return;
+    assert(this.hasVertex(edge.p1), `${edge.p1} not initialized in the graph with addVertex()`);
+    assert(this.hasVertex(edge.p2), `${edge.p2} not initialized in the graph with addVertex()`);
+    if (this.isConnected(edge.p1, edge.p2)) return false;
     this.adj[edge.p1].push(edge.p2);
     this.adj[edge.p2].push(edge.p1);
     const m = edge.getSlope();
@@ -46,6 +50,7 @@ export class Graph {
     if (!_.has(this.collinearEdges, m)) this.collinearEdges[m] = {};
     if (!_.has(this.collinearEdges[m], b)) this.collinearEdges[m][b] = [];
     this.collinearEdges[m][b].push(edge);
+    return true;
   }
 
 
@@ -72,13 +77,14 @@ export class Graph {
    * Removes the edge between two points, if they are connected.
    */
   removeEdge(edge) {
-    if (!this.isConnected(edge.p1, edge.p2)) return;
+    if (!this.isConnected(edge.p1, edge.p2)) return false;
     const m = edge.getSlope();
     const b = edge.getIntercept();
     this.collinearEdges[m][b] = _.reject(this.collinearEdges[m][b], e => e.equals(edge));
     if (_.isEmpty(this.collinearEdges[m][b])) delete this.collinearEdges[m][b];
     this.adj[edge.p1] = _.reject(this.adj[edge.p1], p => p.equals(edge.p2));
     this.adj[edge.p2] = _.reject(this.adj[edge.p2], p => p.equals(edge.p1));
+    return true;
   }
 
 
