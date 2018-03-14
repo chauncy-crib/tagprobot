@@ -19,7 +19,7 @@ export const ALPHAS = {
     on: 0.75,
     off: 0.20,
   },
-  navMesh: {
+  triangulation: {
     edge: 0.20,
     fixedEdge: 1.00,
     vertex: 0.20,

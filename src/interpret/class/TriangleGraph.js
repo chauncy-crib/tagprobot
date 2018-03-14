@@ -26,18 +26,18 @@ export class TriangleGraph extends DrawableGraph {
   constructor() {
     super(
       THICKNESSES.triangulation,
-      ALPHAS.navMesh.vertex,
+      ALPHAS.triangulation.vertex,
       COLORS.triangulation.vertex,
       e => (
         this.isEdgeFixed(e) ?
           {
             color: COLORS.triangulation.fixedEdge,
-            alpha: ALPHAS.navMesh.fixedEdge,
+            alpha: ALPHAS.triangulation.fixedEdge,
             thickness: THICKNESSES.triangulation,
           } :
           {
             color: COLORS.triangulation.edge,
-            alpha: ALPHAS.navMesh.edge,
+            alpha: ALPHAS.triangulation.edge,
             thickness: THICKNESSES.triangulation,
           }
       ),
