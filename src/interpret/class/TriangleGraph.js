@@ -26,7 +26,7 @@ export class TriangleGraph extends DrawableGraph {
   constructor() {
     super(
       THICKNESSES.triangulation,
-      ALPHAS.triangulation.vertex,
+      ALPHAS.navMesh.vertex,
       COLORS.triangulation.vertex,
       e => (
         this.isEdgeFixed(e) ?
@@ -51,11 +51,11 @@ export class TriangleGraph extends DrawableGraph {
     this.fixedAdj = {};
     this.polypoints = new DrawableGraph(
       THICKNESSES.triangulation,
-      ALPHAS.triangulation.vertex,
+      ALPHAS.polypoints.vertex,
       COLORS.polypoints.edge,
       () => ({
         color: COLORS.polypoints.edge,
-        alpha: ALPHAS.triangulation.edge,
+        alpha: ALPHAS.polypoints.edge,
         thickness: THICKNESSES.triangulation,
       }),
     );
