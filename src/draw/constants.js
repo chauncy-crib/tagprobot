@@ -1,6 +1,6 @@
 export const COLORS = {
   path: {
-    ally: 0x00ff00, // green
+    ally: 0x00ff00, // bright green
     enemy: 0x99333, // dark red
   },
   keys: 0x753daf, // purple
@@ -10,7 +10,7 @@ export const COLORS = {
     vertex: 0xa5005d, // darker pink
   },
   polypoints: {
-    edge: 0x006600, // turquoise
+    edge: 0x006600, // dark green
   },
 };
 
