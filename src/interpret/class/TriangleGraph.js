@@ -10,7 +10,6 @@ import {
 import { Point } from './Point';
 import { Edge } from './Edge';
 import { Triangle } from './Triangle';
-import { Graph } from './Graph';
 import { DrawableGraph } from '../../draw/class/DrawableGraph';
 import { isLegal } from '../graphToTriangulation';
 import { COLORS, ALPHAS, THICKNESSES } from '../../draw/constants';
@@ -34,26 +33,38 @@ export class TriangleGraph extends DrawableGraph {
           {
             color: COLORS.navMesh.fixedEdge,
             alpha: ALPHAS.navMesh.fixedEdge,
-            thickness: THICKNESSES.navMesh,
+            thickness: THICKNESSES.triangulation,
           } :
           {
             color: COLORS.navMesh.edge,
             alpha: ALPHAS.navMesh.edge,
-            thickness: THICKNESSES.navMesh,
+            thickness: THICKNESSES.triangulation,
           }
       ),
     );
+    this.initDataStructures();
+  }
+
+
+  initDataStructures() {
     this.triangles = new Set();
     this.fixedAdj = {};
-    this.polypoints = new Graph();
+    this.polypoints = new DrawableGraph(
+      THICKNESSES.triangulation,
+      ALPHAS.triangulation.vertex,
+      COLORS.triangulation.edge,
+      () => ({
+        color: COLORS.triangulation.edge,
+        alpha: ALPHAS.triangulation.edge,
+        thickness: THICKNESSES.triangulation,
+      }),
+    );
   }
 
 
   clear() {
     super.clear();
-    this.triangles = new Set();
-    this.fixedAdj = {};
-    this.polypoints = new Graph();
+    this.initDataStructures();
   }
 
   numTriangles() {
