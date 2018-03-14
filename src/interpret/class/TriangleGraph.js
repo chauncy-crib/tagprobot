@@ -52,9 +52,9 @@ export class TriangleGraph extends DrawableGraph {
     this.polypoints = new DrawableGraph(
       THICKNESSES.triangulation,
       ALPHAS.triangulation.vertex,
-      COLORS.triangulation.edge,
+      COLORS.polypoints.edge,
       () => ({
-        color: COLORS.triangulation.edge,
+        color: COLORS.polypoints.edge,
         alpha: ALPHAS.triangulation.edge,
         thickness: THICKNESSES.triangulation,
       }),
