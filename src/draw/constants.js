@@ -24,7 +24,7 @@ export const ALPHAS = {
     fixedEdge: 1.00,
     vertex: 0.20,
   },
-  triangulation: {
+  polypoints: {
     edge: 0.20,
     vertex: 0.20,
   },
