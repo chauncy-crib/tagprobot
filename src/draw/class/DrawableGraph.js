@@ -30,13 +30,17 @@ export class DrawableGraph extends Graph {
     this.drawingsOn = true;
   }
 
+  addDrawing(drawing, object) {
+    this.drawingContainer.addChildAt(drawing, this.indexToGraphObject.length);
+    this.drawingIndices[object] = this.indexToGraphObject.length;
+    this.indexToGraphObject.push(object);
+  }
+
   addVertexDrawing(vertex) {
     const vertexDrawing = new PIXI.Graphics();
     vertexDrawing.lineStyle(this.vertexThickness, this.vertexColor, this.vertexAlpha);
     vertexDrawing.drawCircle(vertex.x, vertex.y, this.vertexThickness);
-    this.drawingContainer.addChildAt(vertexDrawing, this.indexToGraphObject.length);
-    this.drawingIndices[vertex] = this.indexToGraphObject.length;
-    this.indexToGraphObject.push(vertex);
+    this.addDrawing(vertexDrawing, vertex);
   }
 
   removeVertexDrawing(vertex) {
