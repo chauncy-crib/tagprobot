@@ -5,15 +5,23 @@ import { detD, threePointsInLine } from '../utils';
 
 
 export class Edge {
+  /**
+   * Store p1 as the left-most point, unless they have the same x, in which case store p1 as the
+   *   top-most point.
+   */
   constructor(p1, p2) {
+    if (p1.x > p2.x || (p1.x === p2.x && p1.y > p2.y)) {
+      this.p1 = p2;
+      this.p2 = p1;
+      return;
+    }
     this.p1 = p1;
     this.p2 = p2;
   }
 
 
   equals(other) {
-    return (this.p1.equals(other.p1) && this.p2.equals(other.p2)) ||
-      (this.p1.equals(other.p2) && this.p2.equals(other.p1));
+    return this.p1.equals(other.p1) && this.p2.equals(other.p2);
   }
 
 
