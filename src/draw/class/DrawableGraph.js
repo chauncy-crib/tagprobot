@@ -1,7 +1,6 @@
 import _ from 'lodash';
 
 import { Graph } from '../../interpret/class/Graph';
-import { Edge } from '../../interpret/class/Edge';
 
 
 /**
@@ -74,11 +73,9 @@ export class DrawableGraph extends Graph {
     this.addDrawing(vertexDrawing, vertex);
   }
 
-  addEdgeDrawing(edge) {
-    let e = edge;
-    // make sure e goes from left to right, so that when it gets removed we know what orientation
+  addEdgeDrawing(e) {
+    // Make sure e goes from left to right, so that when it gets removed we know what orientation
     //   the key is in
-    if (e.p1.x > e.p2.x || (e.p1.x === e.p2.x && e.p1.y > e.p2.y)) e = new Edge(e.p2, e.p1);
     const edgeDrawing = new PIXI.Graphics();
     const { color, alpha, thickness } = this.getEdgeStyle(e);
     edgeDrawing.lineStyle(thickness, color, alpha);
@@ -86,9 +83,7 @@ export class DrawableGraph extends Graph {
     this.addDrawing(edgeDrawing, e);
   }
 
-  removeEdgeDrawing(edge) {
-    let e = edge;
-    if (e.p1.x > e.p2.x || (e.p1.x === e.p2.x && e.p1.y > e.p2.y)) e = new Edge(e.p2, e.p1);
+  removeEdgeDrawing(e) {
     this.removeDrawing(e);
   }
 

@@ -90,7 +90,7 @@ export class Graph {
 
   /**
    * Removes a vertex from the graph, and clears all edges connected to it. Returns true if the
-   * vertex was in the graph, false otherwise.
+   *   vertex was in the graph, false otherwise.
    */
   removeVertex(vertex) {
     if (!this.hasVertex(vertex)) return false;
