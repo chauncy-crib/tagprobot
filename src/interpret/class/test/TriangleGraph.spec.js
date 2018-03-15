@@ -58,7 +58,7 @@ test('triangulateRegion does not create flat triangle when points are in a line'
   tGraph.addEdgeAndVertices(new Edge(p2, p3));
   tGraph.addEdgeAndVertices(new Edge(p3, p4));
   tGraph.addEdgeAndVertices(new Edge(p4, p1));
-  tGraph.addFixedEdge({ p1, p2: p4 });
+  tGraph.addFixedEdge(new Edge(p1, p4));
   t.doesNotThrow(() => tGraph.triangulateRegion([p1, p2, p3, p4]));
 
   t.true(tGraph.findTriangle(p1, p4, p3) !== null);
