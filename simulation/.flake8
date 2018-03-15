@@ -1,0 +1,10 @@
+[flake8]
+
+# Number of characters allowed in a single line
+max-line-length = 100
+
+# Rules to ignore
+# E128: continuation line under-indented for visual indent
+# E201: whitespace after '['
+# E241: multiple spaces after ','
+ignore = E128, E201, E241
