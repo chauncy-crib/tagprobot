@@ -56,4 +56,3 @@ if __name__ == '__main__':
     print(goal)
     print('K =')
     print(K)
-
