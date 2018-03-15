@@ -65,4 +65,15 @@ export class Edge {
     if (b === 0) return 0; // return an unsigned 0
     return b;
   }
+
+  /**
+   * @returns {Edge} a new Edge which has the same 2 points as this edge, but e.p1.x < e.p2.x.
+   * In the case e.p1.x == e.p2.x, set e.p1 to be the point with a smaller y
+   */
+  sortedLeftToRight() {
+    if (this.p1.x > this.p2.x || (this.p1.x === this.p2.x && this.p1.y > this.p2.y)) {
+      return new Edge(this.p2, this.p1);
+    }
+    return new Edge(this.p1, this.p2);
+  }
 }
