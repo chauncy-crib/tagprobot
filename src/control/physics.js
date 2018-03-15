@@ -1,12 +1,5 @@
-import { BRP } from '../global/constants';
-import { assert, boundValue } from '../global/utils';
+import { boundValue } from '../global/utils';
 import { ACCEL, MAX_SPEED, DAMPING_FACTOR } from './constants';
-import { getMe } from '../look/gameState';
-import { FSM } from '../think/fsm';
-import { getDTGraph } from '../interpret/setup';
-import { updateAndRedrawEntireNavmesh } from '../interpret/graphToTriangulation';
-import { getShortestPolypointPath } from '../plan/astar';
-import { drawAllyPath } from '../draw/triangulation';
 
 
 /**
@@ -158,50 +151,4 @@ export function getDesiredAccelerationMultipliers(xp, yp, vxp, vyp, destXp, dest
   if (flipY) res.accY *= -1;
 
   return res;
-}
-
-
-/**
- * @returns {{accX: number, accY: number}} The desired acceleration multipliers the bot should
- *   achieve with arrow key presses. Positive directions are down and right.
- */
-export function getAccelValues() {
-  const { map } = tagpro;
-  const me = getMe();
-
-  const goal = FSM(me);
-
-  const finalTarget = {
-    xp: goal.xp,
-    yp: goal.yp,
-  };
-
-  updateAndRedrawEntireNavmesh(map);
-
-  const polypointShortestPath = getShortestPolypointPath(
-    { xp: me.x + BRP, yp: me.y + BRP },
-    finalTarget,
-    getDTGraph(),
-  );
-
-  drawAllyPath(polypointShortestPath);
-
-  const target = { xp: me.x + BRP, yp: me.y + BRP };
-  if (polypointShortestPath) {
-    const { length } = polypointShortestPath;
-    assert(length > 1, `Shortest path was length ${length}`);
-    target.xp = polypointShortestPath[1].point.x;
-    target.yp = polypointShortestPath[1].point.y;
-  } else {
-    console.warn('Shortest path was null, using own location as target');
-  }
-
-  return getDesiredAccelerationMultipliers(
-    me.x + BRP, // the x center of our ball, in pixels
-    me.y + BRP, // the y center of our ball, in pixels
-    me.vx, // our v velocity
-    me.vy, // our y velocity
-    target.xp, // the x we are seeking toward (pixels)
-    target.yp, // the y we are seeking toward (pixels)
-  );
 }
