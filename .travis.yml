@@ -1,10 +1,23 @@
-language: node_js
-node_js:
-- node
-script:
-- npm run lint
-- npm run test:raw
-- npm run build:once
+# Use matrix to run tests for multiple languages in parallel
+matrix:
+  include:
+    - language: node_js
+      node_js:
+        - node
+      script:
+        - npm run lint
+        - npm run test:raw
+        - npm run build:once
+
+    - language: python
+      python: 3.5
+      before_install:
+        - cd simulation
+      install:
+        - pip install -r requirements.txt
+      script:
+        - flake8 src/
+
 notifications:
   email: false
   slack:
