@@ -58,6 +58,47 @@ function getPortals(path, triangleGraph) {
 
 
 /**
+ * @param {Point[]} leftPoints
+ * @param {Point[]} rightPoints
+ * @param {Point} ballLocation
+ * @param {PolypointState[]} path
+ * @returns {number} the index to start the funnel algorithm at
+ */
+function getStartFunnelIndex([leftPoints, rightPoints], ballLocation, path) {
+  let startingIndex = 0;
+
+  const left = leftPoints[0];
+  const right = rightPoints[0];
+  // Two triangles that together make up the polygon [left, right, leftClearance, rightClearance]
+  const polygon1 = new Triangle(left, right.clearancePoint, left.clearancePoint, false);
+  const polygon2 = new Triangle(left, right.clearancePoint, right, false);
+
+  if (polygon1.containsPoint(ballLocation) || polygon2.containsPoint(ballLocation)) {
+    // Portal is behind us
+    let leftFunnelEdge = new Edge(ballLocation, leftPoints[startingIndex].clearancePoint);
+    let rightFunnelEdge = new Edge(ballLocation, rightPoints[startingIndex].clearancePoint);
+
+    // Increment portal index until the portal is in front of us
+    while (
+      leftFunnelEdge.isBetweenPoints(
+        path[startingIndex + 1].point,
+        rightPoints[startingIndex].clearancePoint,
+      ) ||
+      rightFunnelEdge.isBetweenPoints(
+        path[startingIndex + 1].point,
+        leftPoints[startingIndex].clearancePoint,
+      )
+    ) {
+      startingIndex += 1;
+      leftFunnelEdge = new Edge(ballLocation, leftPoints[startingIndex].clearancePoint);
+      rightFunnelEdge = new Edge(ballLocation, rightPoints[startingIndex].clearancePoint);
+    }
+  }
+
+  return startingIndex;
+}
+
+/**
  * @param {PolypointState[]} path
  * @returns {PolypointState[]} a list of states, starting from the startState to the targetState
  *   that are funnelled to be as straight as possible
@@ -70,50 +111,16 @@ export function funnelPolypoints(path, triangleGraph) {
   const [leftPoints, rightPoints] = allPortalPoints;
 
   const funnelledPath = [path[0]];
-  let startPoint = path[0].point; // the apex of the funnel
-  const funnelIndices = [0, 0]; // the indices of the left and right points in the funnel
+  let funnelApex = path[0].point;
 
-  let startingPortal = 1;
-  // Skip over portal if the portal is behind us
-  const polygon1 = new Triangle(
-    leftPoints[0],
-    rightPoints[0].clearancePoint,
-    leftPoints[0].clearancePoint,
-    false,
-  );
-  const polygon2 = new Triangle(
-    leftPoints[0],
-    rightPoints[0].clearancePoint,
-    rightPoints[0],
-    false,
-  );
-  if (polygon1.containsPoint(startPoint) || polygon2.containsPoint(startPoint)) {
-    let leftFunnelEdge = new Edge(startPoint, leftPoints[funnelIndices[0]].clearancePoint);
-    let rightFunnelEdge = new Edge(startPoint, rightPoints[funnelIndices[1]].clearancePoint);
+  const startingIndex = getStartFunnelIndex(allPortalPoints, funnelApex, path);
+  const funnelIndices = [startingIndex, startingIndex];
 
-    while (
-      leftFunnelEdge.isBetweenPoints(
-        path[startingPortal].point,
-        rightPoints[funnelIndices[0]].clearancePoint,
-      ) ||
-      rightFunnelEdge.isBetweenPoints(
-        path[startingPortal].point,
-        leftPoints[funnelIndices[1]].clearancePoint,
-      )
-    ) {
-      funnelIndices[0] += 1;
-      funnelIndices[1] += 1;
-      startingPortal += 1;
-      leftFunnelEdge = new Edge(startPoint, leftPoints[funnelIndices[0]].clearancePoint);
-      rightFunnelEdge = new Edge(startPoint, rightPoints[funnelIndices[1]].clearancePoint);
-    }
-  }
-
-  for (let portalIndex = startingPortal; portalIndex < leftPoints.length; portalIndex++) {
+  for (let portalIndex = startingIndex + 1; portalIndex < leftPoints.length; portalIndex++) {
     const currLeft = leftPoints[funnelIndices[0]];
     const currRight = rightPoints[funnelIndices[1]];
-    const leftEdge = new Edge(startPoint, currLeft.clearancePoint);
-    const rightEdge = new Edge(startPoint, currRight.clearancePoint);
+    const leftEdge = new Edge(funnelApex, currLeft.clearancePoint);
+    const rightEdge = new Edge(funnelApex, currRight.clearancePoint);
     const newLeft = leftPoints[portalIndex];
     const newRight = rightPoints[portalIndex];
 
@@ -149,7 +156,7 @@ export function funnelPolypoints(path, triangleGraph) {
           funnelledPath.push(new PolypointState(funnelPointsClearanced[other]));
 
           // Restart funnel from right point
-          startPoint = funnelPointsClearanced[other];
+          funnelApex = funnelPointsClearanced[other];
           funnelIndices[curr] = funnelIndices[other];
           portalIndex = funnelIndices[other];
         } else {
