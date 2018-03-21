@@ -9,7 +9,7 @@ import {
   funnelPolypoints,
   __RewireAPI__ as FunnelRewireAPI,
 } from '../funnel';
-import { backwardsFunnelPath, backwardsFunnelGetClearancePoint } from './data';
+import { backwardsFunnelPath, backwardsFunnelGetClearancePoint } from './backwardsFunnelData';
 
 
 const mockGetClearancePoint = cornerPoint => cornerPoint.copy();
