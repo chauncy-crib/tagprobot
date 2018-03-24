@@ -111,28 +111,34 @@ export function funnelPolypoints(path, triangleGraph) {
   const [leftPoints, rightPoints] = allPortalPoints;
 
   const funnelledPath = [path[0]];
-  let funnelApex = path[0].point;
+  const ballLocation = path[0].point;
+  const startingIndex = getStartFunnelIndex(allPortalPoints, ballLocation, path);
 
-  const startingIndex = getStartFunnelIndex(allPortalPoints, funnelApex, path);
+  // The indices of the current left and right funnel points in leftPoints and rightPoints
   const funnelIndices = [startingIndex, startingIndex];
+  // The current base of the funnel, connects to the two funnel points to form the funnel V shape
+  let funnelApex = ballLocation;
 
+  // Loop through all the portals
   for (let portalIndex = startingIndex + 1; portalIndex < leftPoints.length; portalIndex++) {
+    // Current funnel
     const currLeft = leftPoints[funnelIndices[0]];
     const currRight = rightPoints[funnelIndices[1]];
     const leftEdge = new Edge(funnelApex, currLeft.clearancePoint);
     const rightEdge = new Edge(funnelApex, currRight.clearancePoint);
-    const newLeft = leftPoints[portalIndex];
-    const newRight = rightPoints[portalIndex];
-
     const funnelPoints = [currLeft, currRight];
     const funnelPointsClearanced = [currLeft.clearancePoint, currRight.clearancePoint];
     const edges = [leftEdge, rightEdge];
+
+    // Current portal
+    const newLeft = leftPoints[portalIndex];
+    const newRight = rightPoints[portalIndex];
     const portalPoints = [newLeft, newRight];
     const portalPointsClearanced = [newLeft.clearancePoint, newRight.clearancePoint];
 
-    // Look for funnel updates for the left and the right side
+    // Look for possible funnel updates for the left (0) and right (1) side
     for (let curr = 0; curr < 2; curr++) {
-      const other = 1 - curr; // the other index
+      const other = 1 - curr; // the other side
 
       const differentPoint = !funnelPoints[curr].equals(portalPoints[curr]) &&
         portalIndex > funnelIndices[curr];
