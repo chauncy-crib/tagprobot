@@ -6,7 +6,7 @@ import numpy as np
 def dlqr(A, B, Q, R, goal):
     """ Run discrete linear quadratic regulator on the inputs to determine optimal K matrix. """
     # A = [A, A @ goal - goal; 0, 1]
-    A = np.append(A, A @ goal - goal, axis=1)
+    A = np.append(A, (A @ goal) - goal, axis=1)
     A = np.append(A, np.append(np.zeros((1, A.shape[0])), [[1]], axis=1), axis=0)
 
     # B = [B; 0]
