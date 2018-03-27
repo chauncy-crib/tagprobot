@@ -12,3 +12,6 @@ public/bundle.js
 
 # Python3 virtual environment
 simulation/env/
+
+# Python bytecode
+simulation/src/__pycache__
