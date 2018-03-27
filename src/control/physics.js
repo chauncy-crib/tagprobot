@@ -6,7 +6,7 @@ import { FSM } from '../think/fsm';
 import { getDTGraph } from '../interpret/setup';
 import { updateAndRedrawEntireNavmesh } from '../interpret/graphToTriangulation';
 import { getShortestPolypointPath } from '../plan/astar';
-import { drawAllyPolypointPath } from '../draw/triangulation';
+import { drawAllyPath } from '../draw/triangulation';
 
 
 /**
@@ -184,7 +184,7 @@ export function getAccelValues() {
     getDTGraph(),
   );
 
-  drawAllyPolypointPath(polypointShortestPath);
+  drawAllyPath(polypointShortestPath);
 
   const target = { xp: me.x + BRP, yp: me.y + BRP };
   if (polypointShortestPath) {

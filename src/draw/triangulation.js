@@ -1,11 +1,11 @@
 import _ from 'lodash';
 
-import { COLORS, THICKNESSES } from './constants';
+import { COLORS, ALPHAS, THICKNESSES } from './constants';
 import { getDTGraph } from '../interpret/setup';
 
 
-let allyPolypointPathGraphics = null; // PIXI Graphics for drawing the bot's polypoint path
-let enemyPolypointPathGraphics = null; // PIXI Graphics for drawing the enemy polypoint path
+let allyPathGraphics = null; // PIXI Graphics for drawing the bot's polypoint path
+let enemyPathGraphics = null; // PIXI Graphics for drawing the enemy polypoint path
 
 let trianglesOn = false;
 let polypointsOn = false;
@@ -13,19 +13,19 @@ let pathsOn = false;
 
 
 /**
- * @param {PolypointState[]} polypointPath - a list of states that define the path
+ * @param {PolypointState[]} path - a list of states that define the path
  */
-function drawPolypointPath(polypointPathGraphics, polypointPath, polypointPathColor) {
-  polypointPathGraphics.clear();
-  polypointPathGraphics.lineStyle(
-    THICKNESSES.triangulation + 1,
-    polypointPathColor,
-    1,
+function drawPath(pathGraphics, path, pathColor) {
+  pathGraphics.clear();
+  pathGraphics.lineStyle(
+    THICKNESSES.path,
+    pathColor,
+    ALPHAS.path,
   );
   let prevPoint;
-  _.forEach(polypointPath, p => {
+  _.forEach(path, p => {
     if (prevPoint) {
-      polypointPathGraphics
+      pathGraphics
         .moveTo(prevPoint.point.x, prevPoint.point.y)
         .lineTo(p.point.x, p.point.y);
     }
@@ -34,23 +34,23 @@ function drawPolypointPath(polypointPathGraphics, polypointPath, polypointPathCo
 }
 
 
-export function drawAllyPolypointPath(polypointPath) {
+export function drawAllyPath(path) {
   if (!pathsOn) return;
-  if (!allyPolypointPathGraphics) {
-    allyPolypointPathGraphics = new PIXI.Graphics();
-    tagpro.renderer.layers.background.addChild(allyPolypointPathGraphics);
+  if (!allyPathGraphics) {
+    allyPathGraphics = new PIXI.Graphics();
+    tagpro.renderer.layers.background.addChild(allyPathGraphics);
   }
-  drawPolypointPath(allyPolypointPathGraphics, polypointPath, COLORS.path.ally);
+  drawPath(allyPathGraphics, path, COLORS.path.ally);
 }
 
 
-export function drawEnemyPolypointPath(polypointPath) {
+export function drawEnemyPath(path) {
   if (!pathsOn) return;
-  if (!enemyPolypointPathGraphics) {
-    enemyPolypointPathGraphics = new PIXI.Graphics();
-    tagpro.renderer.layers.background.addChild(enemyPolypointPathGraphics);
+  if (!enemyPathGraphics) {
+    enemyPathGraphics = new PIXI.Graphics();
+    tagpro.renderer.layers.background.addChild(enemyPathGraphics);
   }
-  drawPolypointPath(enemyPolypointPathGraphics, polypointPath, COLORS.path.enemy);
+  drawPath(enemyPathGraphics, path, COLORS.path.enemy);
 }
 
 
@@ -80,7 +80,7 @@ export function togglePathVis(setTo = !pathsOn) {
   if (setTo === pathsOn) return;
   pathsOn = setTo;
   if (!pathsOn) {
-    allyPolypointPathGraphics.clear();
-    enemyPolypointPathGraphics.clear();
+    allyPathGraphics.clear();
+    enemyPathGraphics.clear();
   }
 }
