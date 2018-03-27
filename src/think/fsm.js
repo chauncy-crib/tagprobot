@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { BRP } from '../global/constants';
-import { drawEnemyPolypointPath } from '../draw/triangulation';
+import { drawEnemyPath } from '../draw/triangulation';
 import { amRed,
   amBlue,
   getEnemyGoal,
@@ -129,6 +129,6 @@ export function FSM(me) {
       }
     }
   }
-  drawEnemyPolypointPath(enemyShortestPath);
+  drawEnemyPath(enemyShortestPath);
   return goal;
 }

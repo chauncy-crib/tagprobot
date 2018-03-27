@@ -15,6 +15,7 @@ export const COLORS = {
 };
 
 export const ALPHAS = {
+  path: 0.5,
   keys: {
     on: 0.75,
     off: 0.20,
@@ -31,5 +32,6 @@ export const ALPHAS = {
 };
 
 export const THICKNESSES = {
+  path: 38,
   triangulation: 4,
 };
