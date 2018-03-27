@@ -1,10 +1,9 @@
-""" File to define controls-related functions. """
-
 import numpy as np
 
 
-def dlqr(A, B, Q, R, goal):
-    """ Run discrete linear quadratic regulator on the inputs to determine optimal K matrix """
+def dlqr(A, B, Q, F, R, goal, T):
+    """ Run discrete linear quadratic regulator on the inputs to determine optimal K matrix for
+    different deadlines from 0 to T """
     # A = [A, A @ goal - goal; 0, 1]
     A = np.append(A, (A @ goal) - goal, axis=1)
     A = np.append(A, np.append(np.zeros((1, A.shape[0])), [[1]], axis=1), axis=0)
@@ -15,44 +14,20 @@ def dlqr(A, B, Q, R, goal):
     # Q =  [Q, 0; 0, 0]
     Q = np.append(Q, np.zeros((Q.shape[0], 1)), axis=1)
     Q = np.append(Q, np.zeros((1, Q.shape[1])), axis=0)
-    P = Q
-    T = 1000
 
-    for _ in range(T):
-        P = (A.T @ P @ A) - (A.T @ P @ B) @ np.linalg.inv(R + (B.T @ P @ B)) @ (B.T @ P @ A) + Q
+    # F =  [F, 0; 0, 0]
+    F = np.append(F, np.zeros((F.shape[0], 1)), axis=1)
+    F = np.append(F, np.zeros((1, F.shape[1])), axis=0)
 
-    K = np.linalg.inv(R + B.T @ P @ B) @ (B.T @ P @ A)
+    # Ps = [[0], [0], ... , [F]]
+    Ps = np.zeros((T, Q.shape[0], Q.shape[1]))
+    Ps[-1] = F
 
-    return K
+    Ks = np.zeros((T - 1, R.shape[0], A.shape[1]))
 
+    for t in np.arange(start=T - 2, stop=0, step=-1):
+        Ps[t] = (A.T @ Ps[t + 1] @ A) - (A.T @ Ps[t + 1] @ B) @ np.linalg.inv(R + B.T @
+                Ps[t + 1] @ B) @ (B.T @ Ps[t + 1] @ A) + Q
+        Ks[t] = np.linalg.inv(R + B.T @ Ps[t] @ B) @ (B.T @ Ps[t] @ A)
 
-if __name__ == '__main__':
-    # DLQR example
-    dt = 0.1
-    A = np.array([
-        [1, dt, 0,  0],
-        [0,  1, 0,  0],
-        [0,  0, 1, dt],
-        [0,  0, 0,  1]])
-    B = np.array([
-        [ 0,  0],
-        [dt,  0],
-        [ 0,  0],
-        [ 0, dt]])
-    Q = np.diag([10, 1, 10, 1])
-    R = np.diag([1, 1])
-    goal = np.array([[1], [0], [1], [0]])
-    K = dlqr(A, B, Q, R, goal)
-
-    print('A =')
-    print(A)
-    print('B =')
-    print(B)
-    print('Q =')
-    print(Q)
-    print('R =')
-    print(R)
-    print('goal =')
-    print(goal)
-    print('K =')
-    print(K)
+    return Ks
