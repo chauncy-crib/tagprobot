@@ -1,5 +1,5 @@
 import numpy as np
-import seaborn as sbs
+import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib import animation
 
@@ -14,13 +14,13 @@ class TagProAnimation(object):
         self.tagpro_ball = plt.Circle((0, 0), radius=19, facecolor=(1.0, 0.0, 0.0))
 
         # Plot
-        sbs.set()
+        sns.set()
         self.fig = plt.figure(figsize=(10, 12))
         self.plot_states()
         self.animate_states()
 
         if save:
-            self.anim.save('asdf.mp4', writer='ffmpeg')
+            self.anim.save('tpb_animation.mp4', writer='ffmpeg')
 
         plt.show()
 
