@@ -20,3 +20,14 @@ $ pip install -r requirements.txt
 $ pip install PACKAGE_NAME
 $ pip freeze > requirements.txt
 ```
+
+## Run
+
+To view a simulation, run
+```bash
+$ python main.py
+```
+
+There are currently two types of simulations that can be run. The type of simulation that runs can be changed by editing `main.py` to execute the following functions:
+* `without_control()`: simulation with initial state
+* `with_control()`: simulation with initial state and goal state, using an LQR controller

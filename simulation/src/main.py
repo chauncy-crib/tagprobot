@@ -5,6 +5,8 @@ import animation
 
 
 def without_control():
+    """ Simulates and visualizes a TagPro ball of the specified initial state for the specified
+    duration """
     # Simulate
     x0 = np.array([[0], [250], [0], [100]])  # initial state [[x], [vx], [y], [vy]]
     dur = 9.0  # time to run for, in seconds
@@ -16,6 +18,8 @@ def without_control():
 
 
 def with_control():
+    """ Simulates and visualizes a TagPro ball of the specified initial state for the specified
+    duration, using an LQR controller to attempt to reach the specified goal state """
     # Simulate
     x0 = np.array([[0], [0], [0], [-100]])  # initial state [[x], [vx], [y], [vy]]
     goal = np.array([[100], [-50], [50], [-25]])  # goal state
