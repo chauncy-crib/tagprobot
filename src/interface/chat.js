@@ -58,7 +58,7 @@ export function dequeueChatMessages() {
  *   example for flair awards)
  * @param {boolean} chatData.mod - true if sender of message is a mod
  */
-function parseChat(chatData) {
+function parseChatForCommunication(chatData) {
   const msg = chatData.message;
   const firstWord = msg.split(' ', 1)[0];
   switch (firstWord) {
@@ -78,5 +78,5 @@ function parseChat(chatData) {
  * Define a function to run every time a message is sent to the TagPro chat
  */
 export function setupChatCallback() {
-  tagpro.socket.on('chat', parseChat);
+  tagpro.socket.on('chat', parseChatForCommunication);
 }
