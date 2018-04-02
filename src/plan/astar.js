@@ -5,7 +5,6 @@ import { assert } from '../global/utils';
 import { Point } from '../interpret/class/Point';
 import { Polypoint } from '../interpret/class/Polypoint';
 import { PolypointState } from './class/PolypointState';
-import { funnelPolypoints } from './funnel';
 
 
 /**
@@ -109,6 +108,5 @@ export function getShortestPolypointPath(me, target, triangleGraph) {
   const initialPositionState = new PolypointState(new Polypoint(me.xp, me.yp, startTriangle));
   const targetPositionState = new PolypointState(new Polypoint(target.xp, target.yp, endTriangle));
   const fullPath = [initialPositionState].concat(_.slice(path, 1, -1)).concat(targetPositionState);
-
-  return funnelPolypoints(fullPath, triangleGraph);
+  return fullPath;
 }

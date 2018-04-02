@@ -11,6 +11,7 @@ import { getShortestPolypointPath } from './plan/astar';
 import { BRP } from './global/constants';
 import { drawAllyPath } from './draw/triangulation';
 import { getDesiredAccelerationMultipliers } from './control/physics';
+import { funnelPolypoints } from './plan/funnel';
 import { assert } from './global/utils';
 
 // Run onKeyDown any time a key is pressed to parse user input
@@ -53,16 +54,17 @@ function botLoop() {
     getDTGraph(),
   );
 
-  drawAllyPath(polypointShortestPath);
-  const target = getTargetFromPath(polypointShortestPath, me);
+  const funnelledPath = funnelPolypoints(polypointShortestPath, getDTGraph());
+  drawAllyPath(funnelledPath);
 
+  const target = getTargetFromPath(funnelledPath, me);
 
   // The desired acceleration multipliers the bot should achieve with arrow key presses. Positive
   //   directions are down and right.
   const accelValues = getDesiredAccelerationMultipliers(
     me.x + BRP, // the x center of our ball, in pixels
     me.y + BRP, // the y center of our ball, in pixels
-    me.vx, // our v velocity
+    me.vx, // our x velocity
     me.vy, // our y velocity
     target.xp, // the x we are seeking toward (pixels)
     target.yp, // the y we are seeking toward (pixels)
