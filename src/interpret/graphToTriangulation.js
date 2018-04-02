@@ -32,7 +32,7 @@ function updateNavMeshAtLocation(map, xt, yt) {
  *   navmesh around those tiles.
  * @param {number} map - 2D array representing the Tagpro map
  */
-export function updateAndRedrawEntireNavmesh(map) {
+export function updateNavMesh(map) {
   assert(
     tilesToUpdate.length === tilesToUpdateValues.length,
     'the number of tiles to update and the number of values stored for them are not equal',
