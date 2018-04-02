@@ -6,7 +6,7 @@ import { logHelpMenu, onKeyDown, isAutonomousMode, move } from './interface/keys
 import { FSM } from './think/fsm';
 import { dequeueChatMessages, setupChatCallback } from './interface/chat';
 import { turnOnAllDrawings, initUiUpdateFunction } from './draw/draw';
-import { updateAndRedrawEntireNavmesh } from './interpret/graphToTriangulation';
+import { updateNavMesh } from './interpret/graphToTriangulation';
 import { getShortestPolypointPath } from './plan/astar';
 import { BRP } from './global/constants';
 import { drawAllyPath } from './draw/triangulation';
@@ -45,7 +45,7 @@ function botLoop() {
   const { map } = tagpro;
   const me = getMe();
   const goal = FSM(me);
-  updateAndRedrawEntireNavmesh(map);
+  updateNavMesh(map);
 
   const polypointShortestPath = getShortestPolypointPath(
     { xp: me.x + BRP, yp: me.y + BRP },
