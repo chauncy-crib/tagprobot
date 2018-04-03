@@ -6,22 +6,12 @@ import controls
 
 def clip_accel(accel):
     max_accel = 150
-
-    if accel < -max_accel:
-        return -max_accel
-    if accel > max_accel:
-        return max_accel
-    return accel
+    return max(min(max_accel, accel), -max_accel)
 
 
 def clip_vel(vel):
     max_vel = 250
-
-    if vel < -max_vel:
-        return -max_vel
-    if vel > max_vel:
-        return max_vel
-    return vel
+    return max(min(max_vel, vel), -max_vel)
 
 
 def tagpro_simulate(x0, dur, dt):
