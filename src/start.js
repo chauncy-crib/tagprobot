@@ -2,7 +2,7 @@ import { setupClientVelocity, initLocations } from './look/setup';
 import { computeTileInfo } from './look/tileInfo';
 import { getMe, initMe, initIsCenterFlag } from './look/gameState';
 import { getDTGraph, initInternalMap, initTilesToUpdate, initNavMesh } from './interpret/setup';
-import { logHelpMenu, onKeyDown, isAutonomousMode, move } from './interface/keys';
+import { logHelpMenu, onKeyDown, isAutonomousMode, isVisualMode, move } from './interface/keys';
 import { FSM } from './think/fsm';
 import { dequeueChatMessages, setupChatCallback } from './interface/chat';
 import { turnOnAllDrawings, initUiUpdateFunction } from './draw/draw';
@@ -43,6 +43,10 @@ function getTargetFromPath(path, me) {
  */
 function botLoop() {
   dequeueChatMessages();
+
+  // If we're not autonomous or drawing, then don't run the bot
+  if (!isAutonomousMode() && !isVisualMode()) return;
+
   const { map } = tagpro;
   const me = getMe();
   const goal = FSM(me);
