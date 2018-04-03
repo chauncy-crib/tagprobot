@@ -4,7 +4,7 @@ import physics
 import animation
 
 
-def without_control():
+def without_lqr(save):
     """ Simulates and visualizes a TagPro ball of the specified initial state for the specified
     duration """
     # Simulate
@@ -14,10 +14,10 @@ def without_control():
     solution = physics.tagpro_simulate(x0, dur, dt)  # solved states over time
 
     # Visualize
-    animation.TagProAnimation(solution, dt)
+    animation.TagProAnimation(solution, dt, save=save)
 
 
-def with_control():
+def with_lqr(save):
     """ Simulates and visualizes a TagPro ball of the specified initial state for the specified
     duration, using an LQR controller to attempt to reach the specified goal state """
     # Simulate
@@ -28,8 +28,18 @@ def with_control():
     solution = physics.tagpro_simulate_with_control(x0, goal, dur, dt)  # solved states over time
 
     # Visualize
-    animation.TagProAnimation(solution, dt, goal, save=False)
+    animation.TagProAnimation(solution, dt, goal_state=goal, save=save)
 
 
 if __name__ == '__main__':
-    with_control()
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--lqr", action="store_true", help="run LQR to a goal position")
+    parser.add_argument("--save", action="store_true", help="save the animation as tpb_anim.mp4")
+    args = parser.parse_args()
+
+    if args.lqr:
+        with_lqr(args.save)
+    else:
+        without_lqr(args.save)

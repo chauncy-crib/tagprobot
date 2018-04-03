@@ -8,8 +8,10 @@ A place to run simulations and create visuals.
 
 #### Install
 ```bash
-$ sudo apt-get install python3-venv
-$ python3 -m venv env
+$ sudo add-apt-repository ppa:deadsnakes/ppa
+$ sudo apt-get update
+$ sudo apt-get install python3.6 python3.6-venv python3.6-tk
+$ python3.6 -m venv env
 $ source env/bin/activate
 $ pip install --upgrade pip
 $ pip install -r requirements.txt

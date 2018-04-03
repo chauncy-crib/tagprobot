@@ -4,6 +4,26 @@ import numpy as np
 import controls
 
 
+def clip_accel(accel):
+    max_accel = 150
+
+    if accel < -max_accel:
+        return -max_accel
+    if accel > max_accel:
+        return max_accel
+    return accel
+
+
+def clip_vel(vel):
+    max_vel = 250
+
+    if vel < -max_vel:
+        return -max_vel
+    if vel > max_vel:
+        return max_vel
+    return vel
+
+
 def tagpro_simulate(x0, dur, dt):
     """ Return a matrix of states calculated using TagPro physics """
     if not (dur / dt).is_integer():
@@ -44,7 +64,7 @@ def tagpro_simulate_with_control(x0, goal, dur, dt):
         [0,          0, 1,         dt],   # y = y + (dy/dt * dt)
         [0,          0, 0, 1 - b * dt]])  # dy/dt = dx/dt + (dy/dt * (-b * dt))
 
-    B = np.array([
+    B = np.array([  # matrix to apply our control signal to our state
         [ 0,  0],
         [dt,  0],
         [ 0,  0],
@@ -61,9 +81,16 @@ def tagpro_simulate_with_control(x0, goal, dur, dt):
     xs = np.zeros((T, x0.shape[0], x0.shape[1]))
     xs[0] = x0
 
+    us = np.zeros((T - 1, Ks.shape[1], x0.shape[1]))
+
     for t in range(T - 1):
         x = np.append(xs[t] - goal, np.array([[1]]), axis=0)
-        u = -Ks[t] @ x
-        xs[t + 1] = (A @ xs[t]) + (B @ u)
+        us[t] = -Ks[t] @ x
+        us[t, 0, 0] = clip_accel(us[t, 0, 0])  # clip x acceleration
+        us[t, 1, 0] = clip_accel(us[t, 1, 0])  # clip y acceleration
 
-    return xs
+        xs[t + 1] = (A @ xs[t]) + (B @ us[t])
+        xs[t + 1, 1, 0] = clip_vel(xs[t + 1, 1, 0])  # clip x velocity
+        xs[t + 1, 3, 0] = clip_vel(xs[t + 1, 3, 0])  # clip x velocity
+
+    return (xs, us)
