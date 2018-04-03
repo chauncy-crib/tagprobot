@@ -4,25 +4,31 @@ import numpy as np
 def dlqr(A, B, Q, F, R, goal, T):
     """ Run discrete linear quadratic regulator on the inputs to determine optimal K matrix for
     different deadlines from 0 to T """
+    # State difference equations
     # A = [A, A @ goal - goal; 0, 1]
     A = np.append(A, (A @ goal) - goal, axis=1)
     A = np.append(A, np.append(np.zeros((1, A.shape[0])), [[1]], axis=1), axis=0)
 
+    # Matrix to apply our control signal to our state
     # B = [B; 0]
     B = np.append(B, np.zeros((1, B.shape[1])), axis=0)
 
+    # Intermediate state cost
     # Q =  [Q, 0; 0, 0]
     Q = np.append(Q, np.zeros((Q.shape[0], 1)), axis=1)
     Q = np.append(Q, np.zeros((1, Q.shape[1])), axis=0)
 
+    # Terminal state cost
     # F =  [F, 0; 0, 0]
     F = np.append(F, np.zeros((F.shape[0], 1)), axis=1)
     F = np.append(F, np.zeros((1, F.shape[1])), axis=0)
 
+    # Cost at each time step
     # Ps = [[0], [0], ... , [F]]
     Ps = np.zeros((T, Q.shape[0], Q.shape[1]))
     Ps[-1] = F
 
+    # Matrix used to generate optimal control signal at each time step
     Ks = np.zeros((T - 1, R.shape[0], A.shape[1]))
 
     for t in np.arange(start=T - 2, stop=0, step=-1):
