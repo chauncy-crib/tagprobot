@@ -17,7 +17,7 @@ matrix:
         - pip install -r requirements.txt
       script:
         - flake8 src/
-        - python src/main.py
+        - python src/main.py --lqr --no-animate
 
 notifications:
   email: false
