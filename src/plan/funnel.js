@@ -104,8 +104,8 @@ function getStartFunnelIndex([leftPoints, rightPoints], ballLocation, path) {
  *   that are funnelled to be as straight as possible
  */
 export function funnelPolypoints(path, triangleGraph) {
-  // Don't bother funnelling if our path has no intermediate polypoints
-  if (path.length <= 2) return path;
+  // Don't bother funnelling if our path has no intermediate polypoints, or the path is null
+  if (!path || path.length <= 2) return path;
 
   const allPortalPoints = getPortals(path, triangleGraph);
   const [leftPoints, rightPoints] = allPortalPoints;
