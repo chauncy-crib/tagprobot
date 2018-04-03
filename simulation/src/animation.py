@@ -6,10 +6,9 @@ from matplotlib import animation
 
 class TagProAnimation(object):
     def __init__(self, solution, dt, goal_state=None, save=False):
+        self.lqr = True
         if goal_state is None:
             self.lqr = False
-        else:
-            self.lqr = True
 
         if self.lqr:
             self.states = solution[0]
