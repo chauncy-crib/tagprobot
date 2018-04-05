@@ -12,6 +12,7 @@ import { amRed,
 import { findCachedTile, findEnemyFC } from '../look/tileLocations';
 import { getShortestPolypointPath } from '../plan/astar';
 import { Point } from '../interpret/class/Point';
+import { funnelPolypoints } from '../plan/funnel';
 import { getDTGraph } from '../interpret/setup';
 
 
@@ -46,11 +47,11 @@ function getPointsAlongPath(path, granularity = 40) {
 export function chaseEnemyFC(me, goal, enemyFC, enemyShortestPath) {
   // Runtime: O(M*CPTL^2) with visualizations on, O(M + S*CPTL^2) with visualizations off
   _.forEach(
-    getShortestPolypointPath(
+    funnelPolypoints(getShortestPolypointPath(
       { xp: enemyFC.x + BRP, yp: enemyFC.y + BRP },
       getEnemyGoal(),
       getDTGraph(),
-    ),
+    ), getDTGraph()),
     polypoint => enemyShortestPath.push(polypoint),
   );
 
