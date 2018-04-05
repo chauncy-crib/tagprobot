@@ -1,15 +1,26 @@
+import _ from 'lodash';
 import differenceInMilliseconds from 'date-fns/difference_in_milliseconds';
+
+import { assert } from '../global/utils';
 
 
 // FIFO queue for delaying chat messages
 const messageQueue = [];
 
-const KEY_WORDS = {
-  inform: {
-    role: 'TPBIR',
+const CHATS = {
+  ALL: 'ALL',
+  TEAM: 'TEAM',
+};
+
+export const KEY_WORDS = {
+  INFORM: {
+    ROLE: 'TPBIR',
   },
-  command: {
-    role: 'TPBCR',
+  REQUEST: {
+    ROLE: 'TPBRR',
+  },
+  COMMAND: {
+    ROLE: 'TPBCR',
   },
 };
 
@@ -18,8 +29,9 @@ const KEY_WORDS = {
  * Enqueues the message in the message queue to be chatted when appropriate.
  * @param {string} message - the message to chat
  */
-export function chat(message) {
-  messageQueue.push(message);
+export function sendMessageToChat(chat, message) {
+  assert(_.has(CHATS, chat), `tried to send message to non-existent chat: ${chat}`);
+  messageQueue.push({ chat, message });
 }
 
 
@@ -39,9 +51,10 @@ export function dequeueChatMessages() {
   const timeDiff = differenceInMilliseconds(now, lastMessageTime);
 
   if (messageQueue.length && timeDiff > chatDelay) {
+    const chatData = messageQueue.shift(); // Dequeue the first message
     tagpro.socket.emit('chat', {
-      message: messageQueue.shift(), // Dequeue the first message
-      toAll: 0,
+      message: chatData.message,
+      toAll: chatData.chat === CHATS.ALL,
     });
     lastMessageTime = now;
   }
