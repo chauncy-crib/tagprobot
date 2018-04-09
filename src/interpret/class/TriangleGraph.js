@@ -310,18 +310,17 @@ export class TriangleGraph extends DrawableGraph {
       const ct1 = containingTriangles[0];
       const ct2 = containingTriangles[1];
       const cp = ct1.categorizePoints(ct2); // categorized points
-      assert(cp.shared.length > 1, `cp.shared length was ${cp.shared.length}`);
-      assert(cp.unique.length > 1, `cp.unique length was ${cp.unique.length}`);
+      assert(cp.shared.length === 2, `cp.shared length was ${cp.shared.length}`);
       this.removeTriangleByReference(ct1);
       this.removeTriangleByReference(ct2);
-      this.addTriangle(new Triangle(cp.shared[0], cp.unique[0], p));
-      this.addTriangle(new Triangle(cp.shared[0], cp.unique[1], p));
-      this.addTriangle(new Triangle(cp.shared[1], cp.unique[0], p));
-      this.addTriangle(new Triangle(cp.shared[1], cp.unique[1], p));
-      this.legalizeEdge(p, new Edge(cp.shared[0], cp.unique[0]));
-      this.legalizeEdge(p, new Edge(cp.shared[0], cp.unique[1]));
-      this.legalizeEdge(p, new Edge(cp.shared[1], cp.unique[0]));
-      this.legalizeEdge(p, new Edge(cp.shared[1], cp.unique[1]));
+      this.addTriangle(new Triangle(cp.shared[0], cp.myPoint, p));
+      this.addTriangle(new Triangle(cp.shared[0], cp.otherPoint, p));
+      this.addTriangle(new Triangle(cp.shared[1], cp.myPoint, p));
+      this.addTriangle(new Triangle(cp.shared[1], cp.otherPoint, p));
+      this.legalizeEdge(p, new Edge(cp.shared[0], cp.myPoint));
+      this.legalizeEdge(p, new Edge(cp.shared[0], cp.otherPoint));
+      this.legalizeEdge(p, new Edge(cp.shared[1], cp.myPoint));
+      this.legalizeEdge(p, new Edge(cp.shared[1], cp.otherPoint));
     }
   }
 
