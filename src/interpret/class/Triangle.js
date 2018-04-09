@@ -47,14 +47,15 @@ export class Triangle {
 
   /**
    * @param {Triangle} other
-   * @returns {{shared: Point[], unique: Point[]}} shared contains all points which appear in both
-   *   triangles, unique has all points contained in exactly one of the triangles
+   * @returns {{shared: Point[], myPoint: Point, otherPoint: Point}} shared contains all points
+   *   which appear in both triangles, myPoint is the point unique to this triangle, otherPoint is
+   *   the point unique to the other triangle
    */
   categorizePoints(other) {
     const shared = _.intersectionBy(this.getPoints(), other.getPoints(), p => p.toString());
-    const allPoints = this.getPoints().concat(other.getPoints());
-    const unique = _.reject(allPoints, p => _.some(shared, s => s.equals(p)));
-    return { shared, unique };
+    const myPoint = _.reject(this.getPoints(), p => _.some(shared, s => s.equals(p)))[0];
+    const otherPoint = _.reject(other.getPoints(), p => _.some(shared, s => s.equals(p)))[0];
+    return { shared, myPoint, otherPoint };
   }
 
 

@@ -15,7 +15,8 @@ test('categorizePoints separates points into shared and unique', t => {
   const c = t1.categorizePoints(t3);
 
   t.is(c.shared.length, 2);
-  t.is(c.unique.length, 2);
+  t.true(c.myPoint.equals(p2));
+  t.true(c.otherPoint.equals(p4));
 
   t.end();
 });
