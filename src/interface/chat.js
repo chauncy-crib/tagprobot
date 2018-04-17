@@ -1,28 +1,21 @@
 import _ from 'lodash';
 import differenceInMilliseconds from 'date-fns/difference_in_milliseconds';
 
+
 import { assert } from '../global/utils';
+import { ROLES } from '../look/constants';
+import {
+  getMe,
+  playerRoles,
+  idIsMine,
+  isMyTurnToAssumeRole,
+  assumeComplementaryRole,
+} from '../look/gameState';
+import { CHATS, KEY_WORDS } from './constants';
 
 
 // FIFO queue for delaying chat messages
 const messageQueue = [];
-
-const CHATS = {
-  ALL: 'ALL',
-  TEAM: 'TEAM',
-};
-
-export const KEY_WORDS = {
-  INFORM: {
-    ROLE: 'TPBIR',
-  },
-  REQUEST: {
-    ROLE: 'TPBRR',
-  },
-  COMMAND: {
-    ROLE: 'TPBCR',
-  },
-};
 
 
 /**
@@ -51,7 +44,7 @@ export function dequeueChatMessages() {
   const timeDiff = differenceInMilliseconds(now, lastMessageTime);
 
   if (messageQueue.length && timeDiff > chatDelay) {
-    const chatData = messageQueue.shift(); // Dequeue the first message
+    const chatData = messageQueue.shift(); // dequeue the first message
     tagpro.socket.emit('chat', {
       message: chatData.message,
       toAll: chatData.chat === CHATS.ALL,
@@ -72,17 +65,51 @@ export function dequeueChatMessages() {
  * @param {boolean} chatData.mod - true if sender of message is a mod
  */
 function parseChatForCommunication(chatData) {
-  const msg = chatData.message;
-  const firstWord = msg.split(' ', 1)[0];
+  const msg = chatData.message.split(' ');
+  const firstWord = msg[0];
   switch (firstWord) {
-    case KEY_WORDS.inform.role:
-      // TODO
+    case KEY_WORDS.INFORM.ROLE: {
+      const role = msg[1];
+      assert(
+        _.has(ROLES, role),
+        `received ${KEY_WORDS.INFORM.ROLE} second parameter that was non-role: ${role}`,
+      );
+      playerRoles[chatData.from] = role;
+      if (
+        !idIsMine(chatData.from) &&
+        playerRoles[getMe().id] === ROLES.UNDEFINED &&
+        isMyTurnToAssumeRole()
+      ) {
+        assumeComplementaryRole();
+      }
       break;
-    case KEY_WORDS.command.role:
-      // TODO
+    } case KEY_WORDS.REQUEST.ROLE: {
+      const playerId = parseInt(msg[1], 10);
+      assert(
+        !_.isNaN(playerId),
+        `received ${KEY_WORDS.REQUEST.ROLE} first parameter that was non-number: ${msg[1]}`,
+      );
+      if (idIsMine(playerId)) {
+        sendMessageToChat(CHATS.TEAM, `${KEY_WORDS.INFORM.ROLE} ${playerRoles[playerId]}`);
+      }
       break;
-    default:
-      // TODO
+    } case KEY_WORDS.COMMAND.ROLE: {
+      const playerId = parseInt(msg[1], 10);
+      assert(
+        !_.isNaN(playerId),
+        `received ${KEY_WORDS.COMMAND.ROLE} second parameter that was non-number: ${msg[1]}`,
+      );
+      const role = msg[2];
+      assert(
+        _.has(ROLES, role),
+        `received ${KEY_WORDS.COMMAND.ROLE} third parameter that was non-role: ${role}`,
+      );
+      if (idIsMine(playerId)) {
+        playerRoles[playerId] = role;
+        sendMessageToChat(CHATS.TEAM, `${KEY_WORDS.INFORM.ROLE} ${role}`);
+      }
+      break;
+    } default:
   }
 }
 

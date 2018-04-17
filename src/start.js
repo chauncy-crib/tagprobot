@@ -1,4 +1,4 @@
-import { setupClientVelocity, initLocations } from './look/setup';
+import { setupClientVelocity, initLocations, setupRoleCommunication } from './look/setup';
 import { computeTileInfo } from './look/tileInfo';
 import { getMe, initMe, initIsCenterFlag } from './look/gameState';
 import { getDTGraph, initInternalMap, initTilesToUpdate, initNavMesh } from './interpret/setup';
@@ -13,6 +13,7 @@ import { drawAllyPath } from './draw/triangulation';
 import { getDesiredAccelerationMultipliers } from './control/physics';
 import { funnelPolypoints } from './plan/funnel';
 import { assert } from './global/utils';
+
 
 // Run onKeyDown any time a key is pressed to parse user input
 window.onkeydown = onKeyDown;
@@ -107,6 +108,8 @@ function start() {
   turnOnAllDrawings();
 
   setupChatCallback();
+
+  setupRoleCommunication();
 
   // Run the bot
   loop();
