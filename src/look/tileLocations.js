@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { PPTL } from '../global/constants';
 import { tileLocations } from './setup';
 import { tileHasName } from './tileInfo';
-import { isOnMyTeam } from './gameState';
+import { playerIsOnMyTeam } from './gameState';
 
 
 /**
@@ -57,7 +57,7 @@ export function findCachedTile(tileNames) {
  */
 export function findEnemyFC() {
   return _.find(tagpro.players, player => (
-    !isOnMyTeam(player) &&
+    !playerIsOnMyTeam(player) &&
     player.flag &&
     !player.dead &&
     player.draw

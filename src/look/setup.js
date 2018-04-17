@@ -1,6 +1,10 @@
 import { assert } from '../global/utils';
+import { ROLES } from './constants';
 import { centerOfMass } from './tileLocations';
 import { tileIsOneOf } from './tileInfo';
+import { getMe, playerRoles, getNumTeammates, requestTeammateRoles } from './gameState';
+import { CHATS, KEY_WORDS } from '../interface/constants';
+import { sendMessageToChat } from '../interface/chat';
 
 
 export const tileLocations = {};
@@ -42,5 +46,21 @@ export function initLocations() {
         tileLocations.YELLOW_FLAG_TAKEN = { xt, yt };
       }
     }
+  }
+}
+
+
+/*
+ * If I am the only player on my team, set my role to offense. Otherwise, set my role to undefined
+ *   and request the roles of my teammates.
+ */
+export function setupRoleCommunication() {
+  const numTeammates = getNumTeammates();
+  if (numTeammates === 0) {
+    playerRoles[getMe().id] = ROLES.OFFENSE;
+    sendMessageToChat(CHATS.TEAM, `${KEY_WORDS.INFORM.ROLE} ${ROLES.OFFENSE}`);
+  } else {
+    playerRoles[getMe().id] = ROLES.UNDEFINED;
+    requestTeammateRoles();
   }
 }
