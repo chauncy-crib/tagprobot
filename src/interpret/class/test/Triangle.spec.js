@@ -96,7 +96,6 @@ test('Triangle.intersectsEdge()', tester => {
     t.end();
   });
 
-  // TODO: is this expected behavior?
   tester.test('returns false when two points lay inside the edge', t => {
     const edge = new Edge(new Point(2, 0), new Point(6, 0));
     const triangle = new Triangle(new Point(3, 0), new Point(4, 0), new Point(3, 1));
