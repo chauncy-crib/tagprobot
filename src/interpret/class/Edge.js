@@ -35,9 +35,8 @@ export class Edge {
    * @returns {boolean} true if the edges would lay on top of eachother if they were both extended
    *   infinitely in both directions
    */
-  isCollinearWith(other) {
-    return threePointsInLine(this.p1, this.p2, other.p1) &&
-      threePointsInLine(this.p1, this.p2, other.p2);
+  isCollinearWithEdge(other) {
+    return this.isCollinearWithPoint(other.p1) && this.isCollinearWithPoint(other.p2);
   }
 
 
@@ -45,8 +44,8 @@ export class Edge {
    * @param {Point} p
    * @returns {boolean} true if the point would lay on the infinite extension of this edge
    */
-  isCollinearWithPoint(other) {
-    return threePointsInLine(this.p1, this.p2, other);
+  isCollinearWithPoint(p) {
+    return threePointsInLine(this.p1, this.p2, p);
   }
 
 
