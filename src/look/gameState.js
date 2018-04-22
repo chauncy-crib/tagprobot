@@ -59,8 +59,8 @@ function playerRoleIsKnown(player) {
 
 
 /**
- * Remove roles for players that are no longer in the game and add ROLES.UNDEFINED roles for each
- *   player that think is not a bot
+ * Remove roles for players that are no longer in the game and assign ROLES.NOT_DEFINED roles for
+ *   each teammate whose role we do not know
  */
 function cleanTeammateRoles() {
   // Remove roles for players that are no longer in the game
@@ -68,11 +68,10 @@ function cleanTeammateRoles() {
     if (!_.has(tagpro.players, playerId)) delete playerRoles[playerId];
   });
 
-  // Add ROLES.UNDEFINED roles to players that aren't bots
+  // Assign ROLES.NOT_DEFINED roles to teammates whose roles we don't know yet
   _.forEach(tagpro.players, player => {
-    // if (playerIsOnMyTeam(player) && !playerRoleIsKnown(player) && !playerIsSomeBall(player)) {
     if (playerIsOnMyTeam(player) && !playerRoleIsKnown(player)) {
-      playerRoles[player.id] = ROLES.UNDEFINED;
+      playerRoles[player.id] = ROLES.NOT_DEFINED;
     }
   });
 }
@@ -88,11 +87,7 @@ export function requestTeammateRoles() {
 
 
 export function getNumTeammates() {
-  let numTeammates = 0;
-  _.forEach(tagpro.players, player => {
-    if (playerIsOnMyTeam(player) && !playerIsMe(player)) numTeammates += 1;
-  });
-  return numTeammates;
+  return _.filter(tagpro.players, player => playerIsOnMyTeam(player) && !playerIsMe(player)).length;
 }
 
 
@@ -111,7 +106,7 @@ function getTeammatesWithLowerIds() {
  */
 export function isMyTurnToAssumeRole() {
   cleanTeammateRoles();
-  return _.every(getTeammatesWithLowerIds(), player => playerRoles[player.id] !== ROLES.UNDEFINED);
+  return _.every(getTeammatesWithLowerIds(), player => playerRoles[player.id] !== ROLES.NOT_DEFINED);
 }
 
 
