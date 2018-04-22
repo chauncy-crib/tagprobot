@@ -59,8 +59,7 @@ export class Edge {
    */
   isBetweenPoints(p1, p2, strict = true) {
     const res = detD(this.p1, this.p2, p1) * detD(this.p1, this.p2, p2);
-    if (strict) return res < 0;
-    return res <= 0;
+    return strict ? res < 0 : res <= 0;
   }
 
 
