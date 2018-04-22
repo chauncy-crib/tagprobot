@@ -82,25 +82,28 @@ export class Triangle {
    */
   intersectsEdge(e) {
     // False if this.p1, this.p2, and this.p3 are all on same side of e
-    if (!e.isBetweenPoints(this.p1, this.p2) && !e.isBetweenPoints(this.p2, this.p3)) {
+    if (
+      !e.isBetweenPoints(this.p1, this.p2, false) &&
+      !e.isBetweenPoints(this.p2, this.p3, false)
+    ) {
       return false;
     }
 
     // False if e.p1 and e.p2 are both on other side of this.p1-this.p2 as this.p3
     const t12 = new Edge(this.p1, this.p2);
-    if (t12.isBetweenPoints(e.p1, this.p3) && t12.isBetweenPoints(e.p2, this.p3)) {
+    if (t12.isBetweenPoints(e.p1, this.p3, false) && t12.isBetweenPoints(e.p2, this.p3, false)) {
       return false;
     }
 
     // False if e.p1 and e.p2 are both on other side of this.p2-this.p3 as this.p1
     const t23 = new Edge(this.p2, this.p3);
-    if (t23.isBetweenPoints(e.p1, this.p1) && t23.isBetweenPoints(e.p2, this.p1)) {
+    if (t23.isBetweenPoints(e.p1, this.p1, false) && t23.isBetweenPoints(e.p2, this.p1, false)) {
       return false;
     }
 
     // False if e.p1 and e.p2 are both on other side of this.p3-this.p1 as this.p2
     const t31 = new Edge(this.p3, this.p1);
-    if (t31.isBetweenPoints(e.p1, this.p2) && t31.isBetweenPoints(e.p2, this.p2)) {
+    if (t31.isBetweenPoints(e.p1, this.p2, false) && t31.isBetweenPoints(e.p2, this.p2, false)) {
       return false;
     }
 

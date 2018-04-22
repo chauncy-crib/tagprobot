@@ -53,10 +53,15 @@ export class Edge {
   /**
    * @param {Point} p1
    * @param {Point} p2
-   * @returns {boolean} if an infinite extension of the edge is between the two points
+   * @param {boolean} strict - true if this function should return false if one (or both) of the
+   *   points is collinear with the edge
+   * @returns {boolean} true if an infinite extension of the edge is between the two points, or if
+   *   strict=false and one (or both) of the points is collinear with the edge
    */
-  isBetweenPoints(p1, p2) {
-    return detD(this.p1, this.p2, p1) * detD(this.p1, this.p2, p2) <= 0;
+  isBetweenPoints(p1, p2, strict = true) {
+    const res = detD(this.p1, this.p2, p1) * detD(this.p1, this.p2, p2);
+    if (strict) return res < 0;
+    return res <= 0;
   }
 
 

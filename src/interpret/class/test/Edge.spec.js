@@ -25,6 +25,28 @@ test('Edge.isBetweenPoints()', tester => {
     t.end();
   });
 
+  tester.test('returns strict behavior when one point is collinear with edge', t => {
+    const edge = new Edge(new Point(3, 3), new Point(5, 5));
+    const p1 = new Point(4, 4);
+    const p2 = new Point(5, 4);
+
+    t.false(edge.isBetweenPoints(p1, p2, true));
+    t.true(edge.isBetweenPoints(p1, p2, false));
+
+    t.end();
+  });
+
+  tester.test('returns strict behavior when one point is an edge endpoint', t => {
+    const edge = new Edge(new Point(3, 3), new Point(5, 5));
+    const p1 = new Point(3, 3);
+    const p2 = new Point(3, 5);
+
+    t.false(edge.isBetweenPoints(p1, p2, true));
+    t.true(edge.isBetweenPoints(p1, p2, false));
+
+    t.end();
+  });
+
   tester.test('returns false when points are on opposite sides of the edge', t => {
     const edge = new Edge(new Point(3, 0), new Point(3, 1));
     const p1 = new Point(0, 0);

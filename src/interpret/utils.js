@@ -128,7 +128,7 @@ export function findUpperAndLowerPoints(intersectingTriangles, e) {
         lowerPoints.push(newPoint);
       } else {
         // Push point to either upper or lower region
-        if (!e.isBetweenPoints(newPoint, lastUpperPoint)) upperPoints.push(newPoint);
+        if (!e.isBetweenPoints(newPoint, lastUpperPoint, false)) upperPoints.push(newPoint);
         else lowerPoints.push(newPoint);
       }
     }

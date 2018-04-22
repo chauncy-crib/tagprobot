@@ -83,10 +83,12 @@ function getStartFunnelIndex([leftPoints, rightPoints], ballLocation, path) {
       leftFunnelEdge.isBetweenPoints(
         path[startingIndex + 1].point,
         rightPoints[startingIndex].clearancePoint,
+        false,
       ) ||
       rightFunnelEdge.isBetweenPoints(
         path[startingIndex + 1].point,
         leftPoints[startingIndex].clearancePoint,
+        false,
       )
     ) {
       startingIndex += 1;
@@ -145,10 +147,12 @@ export function funnelPolypoints(path, triangleGraph) {
       const narrowsFunnel = !edges[curr].isBetweenPoints(
         portalPointsClearanced[curr],
         funnelPointsClearanced[other],
+        false,
       );
       const crossesOver = edges[other].isBetweenPoints(
         portalPointsClearanced[curr],
         funnelPointsClearanced[curr],
+        false,
       );
 
       if (differentPoint && narrowsFunnel) {
