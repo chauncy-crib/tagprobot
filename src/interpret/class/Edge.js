@@ -31,6 +31,7 @@ export class Edge {
 
 
   /**
+   * @param {Edge} other
    * @returns {boolean} true if the edges would lay on top of eachother if they were both extended
    *   infinitely in both directions
    */
