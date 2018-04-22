@@ -5,12 +5,12 @@ export const CHATS = {
 
 export const KEY_WORDS = {
   INFORM: {
-    ROLE: 'TPBIR',
+    ROLE: 'TPB-IR',
   },
   REQUEST: {
-    ROLE: 'TPBRR',
+    ROLE: 'TPB-RR',
   },
   COMMAND: {
-    ROLE: 'TPBCR',
+    ROLE: 'TPB-CR',
   },
 };
