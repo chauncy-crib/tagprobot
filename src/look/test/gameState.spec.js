@@ -18,7 +18,7 @@ test.only('cleanTeammateRoles', tester => {
     t.end();
   });
 
-  tester.test('assigns ROLES.UNDEFINED roles to players that are not bots', t => {
+  tester.test('assigns ROLES.NOT_DEFINED roles to players that are not bots', t => {
     const mockTagproPlayers = {
       1: { id: 1, name: 'Some Ball 1', team: 1 },
       2: { id: 2, name: 'Some Ball', team: 1 },
@@ -29,7 +29,7 @@ test.only('cleanTeammateRoles', tester => {
     GameStateRewireAPI.__Rewire__('playerRoles', mockPlayerRoles);
 
     cleanTeammateRoles();
-    t.same(mockPlayerRoles, { 2: 'UNDEFINED', 3: 'UNDEFINED' });
+    t.same(mockPlayerRoles, { 2: 'NOT_DEFINED', 3: 'NOT_DEFINED' });
 
     global.tagpro = undefined;
     GameStateRewireAPI.__ResetDependency__('playerRoles');

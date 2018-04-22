@@ -60,7 +60,7 @@ export function setupRoleCommunication() {
     playerRoles[getMe().id] = ROLES.OFFENSE;
     sendMessageToChat(CHATS.TEAM, `${KEY_WORDS.INFORM.ROLE} ${ROLES.OFFENSE}`);
   } else {
-    playerRoles[getMe().id] = ROLES.UNDEFINED;
+    playerRoles[getMe().id] = ROLES.NOT_DEFINED;
     requestTeammateRoles();
   }
 }

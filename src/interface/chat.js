@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import differenceInMilliseconds from 'date-fns/difference_in_milliseconds';
 
-
 import { assert } from '../global/utils';
 import { ROLES } from '../look/constants';
 import {
@@ -15,11 +14,12 @@ import { CHATS, KEY_WORDS } from './constants';
 
 
 // FIFO queue for delaying chat messages
-const messageQueue = [];
+const messageQueue = []; // {chat: string, message: string}[]
 
 
 /**
  * Enqueues the message in the message queue to be chatted when appropriate.
+ * @chat {'ALL'|'TEAM'} chat - the chat channel to send the message to
  * @param {string} message - the message to chat
  */
 export function sendMessageToChat(chat, message) {
@@ -55,7 +55,8 @@ export function dequeueChatMessages() {
 
 
 /**
- * Checks the first word in the given chat data for a key word and reacts appropriately.
+ * Checks the first word in the given chat data for a key word and reacts appropriately. The
+ *   chatData object used in this function is dictated by TagPro.
  * @param {(number|null)} chatData.from - the index of the player who sent the message or null if
  *   the message is a system message
  * @param {string} chatData.message - the message sent
@@ -77,7 +78,7 @@ function parseChatForCommunication(chatData) {
       playerRoles[chatData.from] = role;
       if (
         !idIsMine(chatData.from) &&
-        playerRoles[getMe().id] === ROLES.UNDEFINED &&
+        playerRoles[getMe().id] === ROLES.NOT_DEFINED &&
         isMyTurnToAssumeRole()
       ) {
         assumeComplementaryRole();
