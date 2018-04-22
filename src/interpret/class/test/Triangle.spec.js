@@ -21,6 +21,35 @@ test('categorizePoints separates points into shared and unique', t => {
 });
 
 
+test('Triangle.containsPoint()', tester => {
+  tester.test('returns true when point is inside triangle', t => {
+    const triangle = new Triangle(new Point(0, 0), new Point(2, 0), new Point(0, 2));
+    t.true(triangle.containsPoint(new Point(1, 1)));
+    t.end();
+  });
+
+  tester.test('returns false when point is outside triangle', t => {
+    const triangle = new Triangle(new Point(0, 0), new Point(2, 0), new Point(0, 2));
+    t.false(triangle.containsPoint(new Point(2, 2)));
+    t.false(triangle.containsPoint(new Point(3, -1)));
+    t.end();
+  });
+
+  tester.test('returns true when point lays on edge of triangle', t => {
+    const triangle = new Triangle(new Point(0, 0), new Point(2, 0), new Point(0, 2));
+    t.true(triangle.containsPoint(new Point(1, 0)));
+    t.true(triangle.containsPoint(new Point(1, 1)));
+    t.end();
+  });
+
+  tester.test('returns true when point is one of triangles 3 points', t => {
+    const triangle = new Triangle(new Point(0, 0), new Point(2, 0), new Point(0, 2));
+    t.true(triangle.containsPoint(new Point(2, 0)));
+    t.end();
+  });
+});
+
+
 test('Triangle.intersectsEdge()', tester => {
   tester.test('returns true when two edges intersect edge', t => {
     const edge = new Edge(new Point(2, 0), new Point(4, 0));

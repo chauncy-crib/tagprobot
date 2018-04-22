@@ -111,6 +111,11 @@ export class Triangle {
   }
 
 
+  /**
+   *
+   * @returns {boolean} true if the input point either lays inside the triangle, the point is on
+   *   one of the triangles' edges, or is one of the triangles' 3 points.
+   */
   containsPoint(p) {
     // Compute vectors
     const v0 = this.p3.subtract(this.p1);
