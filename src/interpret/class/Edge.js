@@ -42,6 +42,15 @@ export class Edge {
 
 
   /**
+   * @param {Point} p
+   * @returns {boolean} true if the point would lay on the infinite extension of this edge
+   */
+  isCollinearWithPoint(other) {
+    return threePointsInLine(this.p1, this.p2, other);
+  }
+
+
+  /**
    * @param {Point} p1
    * @param {Point} p2
    * @returns {boolean} if an infinite extension of the edge is between the two points
