@@ -2,7 +2,8 @@ import _ from 'lodash';
 
 import { BRP } from '../global/constants';
 import { drawEnemyPath } from '../draw/triangulation';
-import { amRed,
+import {
+  amRed,
   amBlue,
   getEnemyGoal,
   isCenterFlag,
