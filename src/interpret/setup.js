@@ -67,7 +67,7 @@ export function delaunayTriangulation(
   const vertices = mapGraph.getVertices();
 
   const t = new Triangle(dummyPoint1, dummyPoint2, dummyPoint3);
-  dtGraph.addTriangle(t);
+  dtGraph.addTriangle(t, true);
 
   const shuffledVertices = _.shuffle(vertices);
   // Check if dummy triangle contains each point
@@ -79,7 +79,7 @@ export function delaunayTriangulation(
   });
   timeLog('  Adding vertices...');
   _.forEach(shuffledVertices, vertex => {
-    dtGraph.delaunayAddVertex(vertex);
+    dtGraph.delaunayAddVertex(vertex, true);
   });
 
   timeLog('  Adding constrained edges...');
