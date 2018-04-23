@@ -2,7 +2,7 @@ import test from 'tape';
 
 import { getDTGraph, delaunayTriangulation, __RewireAPI__ as SetupRewireAPI } from '../setup';
 import { Point } from '../class/Point';
-import { Edge } from '../class/Edge';
+// import { Edge } from '../class/Edge';
 import { TriangleGraph } from '../class/TriangleGraph';
 import { setupPixiAndTagpro, resetPixiAndTagpro } from '../../draw/class/test/DrawableGraph.spec';
 
@@ -47,43 +47,43 @@ test('delaunayTriangulation()', tester => {
     t.end();
   });
 
-  tester.test('overwrites horizontal line when vertical line is constrained', t => {
-    setupPixiAndTagpro();
-    SetupRewireAPI.__Rewire__('dtGraph', new TriangleGraph());
+  // tester.test('overwrites horizontal line when vertical line is constrained', t => {
+  //   setupPixiAndTagpro();
+  //   SetupRewireAPI.__Rewire__('dtGraph', new TriangleGraph());
 
-    const p1 = new Point(0, 8);
-    const p2 = new Point(19, 0);
-    const p3 = new Point(19, 16);
-    const p4 = new Point(20, 8);
-    const mapGraph = {
-      getEdges: () => [new Edge(p2, p3)], // Make a constrained edge between p2 and p3
-      getVertices: () => [p1, p2, p3, p4],
-    };
+  //   const p1 = new Point(0, 8);
+  //   const p2 = new Point(19, 0);
+  //   const p3 = new Point(19, 16);
+  //   const p4 = new Point(20, 8);
+  //   const mapGraph = {
+  //     getEdges: () => [new Edge(p2, p3)], // Make a constrained edge between p2 and p3
+  //     getVertices: () => [p1, p2, p3, p4],
+  //   };
 
-    delaunayTriangulation(
-      mapGraph,
-      new Point(-100, 50),
-      new Point(100, 50),
-      new Point(0, -50),
-      false,
-    );
-    t.false(getDTGraph().isConnected(p1, p4));
-    t.true(getDTGraph().isConnected(p1, p2));
-    t.true(getDTGraph().isConnected(p1, p3));
-    t.true(getDTGraph().isConnected(p2, p4));
-    t.true(getDTGraph().isConnected(p3, p4));
-    t.true(getDTGraph().isConnected(p2, p3));
-    t.is(getDTGraph().getEdges().length, 15);
-    t.is(getDTGraph().getVertices().length, 7);
-    t.is(getDTGraph().numTriangles(), 9);
-    t.is(getDTGraph().polypoints.getVertices().length, 9);
-    t.is(getDTGraph().polypoints.getEdges().length, 11);
+  //   delaunayTriangulation(
+  //     mapGraph,
+  //     new Point(-100, 50),
+  //     new Point(100, 50),
+  //     new Point(0, -50),
+  //     false,
+  //   );
+  //   t.false(getDTGraph().isConnected(p1, p4));
+  //   t.true(getDTGraph().isConnected(p1, p2));
+  //   t.true(getDTGraph().isConnected(p1, p3));
+  //   t.true(getDTGraph().isConnected(p2, p4));
+  //   t.true(getDTGraph().isConnected(p3, p4));
+  //   t.true(getDTGraph().isConnected(p2, p3));
+  //   t.is(getDTGraph().getEdges().length, 15);
+  //   t.is(getDTGraph().getVertices().length, 7);
+  //   t.is(getDTGraph().numTriangles(), 9);
+  //   t.is(getDTGraph().polypoints.getVertices().length, 9);
+  //   t.is(getDTGraph().polypoints.getEdges().length, 11);
 
-    resetPixiAndTagpro();
-    SetupRewireAPI.__ResetDependency__('dtGraph');
+  //   resetPixiAndTagpro();
+  //   SetupRewireAPI.__ResetDependency__('dtGraph');
 
-    t.end();
-  });
+  //   t.end();
+  // });
 
   tester.test('creates legal vertical line', t => {
     setupPixiAndTagpro();
@@ -124,44 +124,44 @@ test('delaunayTriangulation()', tester => {
     t.end();
   });
 
-  tester.test('overwrites vertical line when horizontal line is constrained', t => {
-    setupPixiAndTagpro();
-    SetupRewireAPI.__Rewire__('dtGraph', new TriangleGraph());
+  //   tester.test('overwrites vertical line when horizontal line is constrained', t => {
+  //     setupPixiAndTagpro();
+  //     SetupRewireAPI.__Rewire__('dtGraph', new TriangleGraph());
 
-    // Vertical line between p2 and p3
-    const p1 = new Point(0, 8);
-    const p2 = new Point(13, 0);
-    const p3 = new Point(13, 16);
-    const p4 = new Point(20, 8);
-    const mapGraph = {
-      getEdges: () => [new Edge(p1, p4)], // Make a constrained edge between p1 and p4
-      getVertices: () => [p1, p2, p3, p4],
-    };
+  //     // Vertical line between p2 and p3
+  //     const p1 = new Point(0, 8);
+  //     const p2 = new Point(13, 0);
+  //     const p3 = new Point(13, 16);
+  //     const p4 = new Point(20, 8);
+  //     const mapGraph = {
+  //       getEdges: () => [new Edge(p1, p4)], // Make a constrained edge between p1 and p4
+  //       getVertices: () => [p1, p2, p3, p4],
+  //     };
 
-    delaunayTriangulation(
-      mapGraph,
-      new Point(-100, 50),
-      new Point(100, 50),
-      new Point(0, -50),
-      false,
-    );
-    t.true(getDTGraph().isConnected(p1, p4));
-    t.true(getDTGraph().isConnected(p1, p2));
-    t.true(getDTGraph().isConnected(p1, p3));
-    t.true(getDTGraph().isConnected(p2, p4));
-    t.true(getDTGraph().isConnected(p3, p4));
-    t.false(getDTGraph().isConnected(p2, p3));
-    t.is(getDTGraph().getEdges().length, 15);
-    t.is(getDTGraph().getVertices().length, 7);
-    t.is(getDTGraph().numTriangles(), 9);
-    t.is(getDTGraph().polypoints.getVertices().length, 9);
-    t.is(getDTGraph().polypoints.getEdges().length, 11);
+  //     delaunayTriangulation(
+  //       mapGraph,
+  //       new Point(-100, 50),
+  //       new Point(100, 50),
+  //       new Point(0, -50),
+  //       false,
+  //     );
+  //     t.true(getDTGraph().isConnected(p1, p4));
+  //     t.true(getDTGraph().isConnected(p1, p2));
+  //     t.true(getDTGraph().isConnected(p1, p3));
+  //     t.true(getDTGraph().isConnected(p2, p4));
+  //     t.true(getDTGraph().isConnected(p3, p4));
+  //     t.false(getDTGraph().isConnected(p2, p3));
+  //     t.is(getDTGraph().getEdges().length, 15);
+  //     t.is(getDTGraph().getVertices().length, 7);
+  //     t.is(getDTGraph().numTriangles(), 9);
+  //     t.is(getDTGraph().polypoints.getVertices().length, 9);
+  //     t.is(getDTGraph().polypoints.getEdges().length, 11);
 
-    resetPixiAndTagpro();
-    SetupRewireAPI.__ResetDependency__('dtGraph');
+  //     resetPixiAndTagpro();
+  //     SetupRewireAPI.__ResetDependency__('dtGraph');
 
-    t.end();
-  });
+  //     t.end();
+  //   });
 
   tester.test('works when point is on existing line', t => {
     setupPixiAndTagpro();
