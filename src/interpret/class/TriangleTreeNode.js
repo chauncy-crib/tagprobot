@@ -29,9 +29,9 @@ export class TriangleTreeNode {
 
   /**
    * @param {Point} p
-   * @returns {{containingTriangles: Triangle[], newTriangles: Triangle[]}} the triangle(s) that
-   *   contained the point, and the new triangles created by splitting apart the containing
-   *   triangles.
+   * @returns {{containingTriangles: Triangle[], newNodes: TriangleTreeNode[]}} the triangle(s) that
+   *   contained the point, and the new nodes containing triangles created by splitting apart the
+   *   containing triangles.
    */
   addVertex(p) {
     const containingNodes = this.findContainingNodes(p);
@@ -43,10 +43,13 @@ export class TriangleTreeNode {
         new Triangle(p1, p3, p),
         new Triangle(p2, p3, p),
       ];
+      const newNodes = [];
       _.forEach(newTriangles, nt => {
-        containingNodes[0].addChild(new TriangleTreeNode(nt));
+        const newN = new TriangleTreeNode(nt);
+        newNodes.push(newN);
+        containingNodes[0].addChild(newN);
       });
-      return { containingTriangles: [containingTriangle], newTriangles };
+      return { containingTriangles: [containingTriangle], newNodes };
     } else if (containingNodes.length === 2) {
       const ct1 = containingNodes[0].triangle;
       const ct2 = containingNodes[1].triangle;
@@ -58,11 +61,12 @@ export class TriangleTreeNode {
         new Triangle(cp.shared[1], cp.myPoint, p),
         new Triangle(cp.shared[1], cp.otherPoint, p),
       ];
-      containingNodes[0].addChild(new TriangleTreeNode(newTriangles[0]));
-      containingNodes[0].addChild(new TriangleTreeNode(newTriangles[2]));
-      containingNodes[1].addChild(new TriangleTreeNode(newTriangles[1]));
-      containingNodes[1].addChild(new TriangleTreeNode(newTriangles[3]));
-      return { containingTriangles: [ct1, ct2], newTriangles };
+      const newNodes = _.map(newTriangles, t => new TriangleTreeNode(t));
+      containingNodes[0].addChild(newNodes[0]);
+      containingNodes[0].addChild(newNodes[2]);
+      containingNodes[1].addChild(newNodes[1]);
+      containingNodes[1].addChild(newNodes[3]);
+      return { containingTriangles: [ct1, ct2], newNodes };
     }
     assert(false, `Found ${containingNodes.length} containingNodes for ${p}`);
     return null;
