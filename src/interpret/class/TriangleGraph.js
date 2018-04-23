@@ -461,7 +461,10 @@ export class TriangleGraph extends DrawableGraph {
    * @param {Point} p the point to remove from the triangulation graph and validly triangulate
    *   around.
    */
-  delaunayRemoveVertex(p) {
+  delaunayRemoveVertex(p, updateNode = false) {
+    if (updateNode) {
+      this.rootNode.removeVertex(p, this.neighbors(p));
+    }
     const N = sortCounterClockwise(this.neighbors(p), p);
     for (let i = 0; i < N.length; i++) {
       const n1 = N[i ? i - 1 : N.length - 1];

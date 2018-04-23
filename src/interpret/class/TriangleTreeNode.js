@@ -117,6 +117,7 @@ export class TriangleTreeNode {
       N[nIdx],
       N[(nIdx + 1) % N.length],
     )));
+    _.forEach(nTriangles, nt => assert(nt, 'nt was null'));
     while (nIndices.length > 3) {
       let ear = null;
       let i = -1;
