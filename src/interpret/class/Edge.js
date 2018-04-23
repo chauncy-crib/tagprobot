@@ -20,6 +20,11 @@ export class Edge {
   }
 
 
+  hasPoint(p) {
+    return this.p1.equals(p) || this.p2.equals(p);
+  }
+
+
   equals(other) {
     return this.p1.equals(other.p1) && this.p2.equals(other.p2);
   }
