@@ -82,11 +82,11 @@ export function delaunayTriangulation(
     dtGraph.delaunayAddVertex(vertex, true);
   });
 
-  timeLog('  Adding constrained edges...');
-  const shuffledEdges = _.shuffle(mapGraph.getEdges());
-  _.forEach(shuffledEdges, e => {
-    dtGraph.delaunayAddConstraintEdge(e);
-  });
+  // timeLog('  Adding constrained edges...');
+  // const shuffledEdges = _.shuffle(mapGraph.getEdges());
+  // _.forEach(shuffledEdges, e => {
+  //   dtGraph.delaunayAddConstraintEdge(e);
+  // });
 
   if (removeDummy) {
     _.forEach([dummyPoint1, dummyPoint2, dummyPoint3], dummyPoint => {
