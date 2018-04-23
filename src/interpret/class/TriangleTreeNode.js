@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { assert } from '../../global/utils';
 import { Triangle } from './Triangle';
+import { detD, detH, sortCounterClockwise } from '../utils';
 
 export class TriangleTreeNode {
   /**
@@ -100,6 +101,59 @@ export class TriangleTreeNode {
     const N = _.filter(nodesWithCenter, n => n.triangle.equals(t));
     assert(N.length < 2, `found ${N.length} nodes with triangle ${t}`);
     return N.length === 0 ? null : N[0];
+  }
+
+  /**
+   * @param {Point} p
+   * @param {Point[]} neighbors - the neighbors of p in the graph
+   */
+  removeVertex(p, neighbors) {
+    const N = sortCounterClockwise(neighbors, p);
+    // The indices of neighbors we have not detached from p
+    const nIndices = _.range(N.length);
+    // The triangles surrounding p
+    const nTriangles = _.map(nIndices, nIdx => this.findNodeWithTriangle(new Triangle(
+      p,
+      N[nIdx],
+      N[(nIdx + 1) % N.length],
+    )));
+    while (nIndices.length > 3) {
+      let ear = null;
+      let i = -1;
+      const L = nIndices.length;
+      while (!ear && i < L - 1) {
+        i += 1;
+        // The three consecutive neighbors still attached to p
+        const v1 = N[nIndices[i]];
+        const v2 = N[nIndices[(i + 1) % L]];
+        const v3 = N[nIndices[(i + 2) % L]];
+        if (detD(v1, v2, v3) >= 0 && detD(v1, v3, p) >= 0) {
+          // Neighbors not in this triple
+          const otherNbrs = _.map(_.range(i + 3, i + L), j => N[nIndices[j % L]]);
+          // Ear is delaunay if none of the other neighbors fall inside the circumcircle
+          const delaunayValid = !_.some(otherNbrs, n => detH(v1, v2, v3, n) > 0);
+          if (delaunayValid) {
+            ear = [v1, v2, v3];
+          }
+        }
+      }
+      assert(ear, 'Could not find valid ear to remove');
+      const newNode = new TriangleTreeNode(new Triangle(ear[0], ear[1], ear[2]));
+      let j = nIndices[i];
+      // Add the newNode as a child of all old nodes which overlap with it
+      while (j !== nIndices[(i + 2) % L]) {
+        nTriangles[j].addChild(newNode);
+        j = (j + 1) % N.length;
+      }
+      nIndices.splice((i + 1) % L, 1);
+    }
+    // The final triangle overlaps with every old triangle
+    const finalNewNode = new TriangleTreeNode(new Triangle(
+      N[nIndices[0]],
+      N[nIndices[1]],
+      N[nIndices[2]],
+    ));
+    _.forEach(nTriangles, nt => nt.addChild(finalNewNode));
   }
 
   /**
