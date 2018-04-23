@@ -138,6 +138,44 @@ test('TriangleTreeNode.findNodesWithPoint()', tester => {
   });
 });
 
+test('TriangleTreeNode.findNodeWithTriangle()', tester => {
+  tester.test('returns node with input triangle', t => {
+    const node = new TriangleTreeNode(new Triangle(
+      new Point(0, 0),
+      new Point(10, 0),
+      new Point(5, 10),
+    ));
+
+    node.addVertex(new Point(5, 5));
+
+    let tr = new Triangle(
+      new Point(0, 0),
+      new Point(5, 10),
+      new Point(5, 5),
+    );
+    // Find the left triangle
+    let n = node.findNodeWithTriangle(tr);
+    t.true(n.triangle.equals(tr));
+
+    node.addVertex(new Point(3, 5));
+
+    // This triangle was broken apart, so we shouldn't find it anymore
+    n = node.findNodeWithTriangle(tr);
+    t.is(n, null);
+
+    // One of the new smaller triangles
+    tr = new Triangle(
+      new Point(0, 0),
+      new Point(5, 10),
+      new Point(3, 5),
+    );
+    n = node.findNodeWithTriangle(tr);
+    t.true(n.triangle.equals(tr));
+
+    t.end();
+  });
+});
+
 
 test('TriangleTreeNode.findNodeAcross()', tester => {
   tester.test('returns node across from triangle', t => {

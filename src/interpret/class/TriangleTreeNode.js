@@ -90,6 +90,18 @@ export class TriangleTreeNode {
     return nodesWithEdge[0];
   }
 
+
+  /**
+   * @param {Triangle} t
+   * @returns {TriangleTreeNode} the node containing the triangle, null if doesn't exist
+   */
+  findNodeWithTriangle(t) {
+    const nodesWithCenter = this.findContainingNodes(t.getCenter());
+    const N = _.filter(nodesWithCenter, n => n.triangle.equals(t));
+    assert(N.length < 2, `found ${N.length} nodes with triangle ${t}`);
+    return N.length === 0 ? null : N[0];
+  }
+
   /**
    * @param {Edge} e
    * @returns {TriangleTreeNode[]} all nodes with triangles which have one edge equal to e
