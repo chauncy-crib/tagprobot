@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 import { assert } from '../../global/utils';
+import { TriangleTreeNode } from './TriangleTreeNode';
 import {
   detD,
   detH,
@@ -47,6 +48,7 @@ export class TriangleGraph extends DrawableGraph {
 
 
   initDataStructures() {
+    this.rootNode = null;
     this.triangles = new Set();
     this.fixedAdj = {};
     this.polypoints = new DrawableGraph(
@@ -98,7 +100,10 @@ export class TriangleGraph extends DrawableGraph {
   }
 
 
-  addTriangle(t) {
+  addTriangle(t, updateNode = false) {
+    if (this.numVertices() === 0 && updateNode) {
+      this.rootNode = new TriangleTreeNode(t);
+    }
     this.triangles.add(t);
     this.addEdgeAndVertices(new Edge(t.p1, t.p2));
     this.addEdgeAndVertices(new Edge(t.p1, t.p3));
@@ -288,8 +293,11 @@ export class TriangleGraph extends DrawableGraph {
    * Adds the point to the triangulation. Ensures the triangulation is delaunay-legal after
    *   insertion
    */
-  delaunayAddVertex(p) {
+  delaunayAddVertex(p, updateNode = false) {
     assert(!this.hasVertex(p));
+    if (updateNode) {
+      this.rootNode.addVertex(p);
+    }
     const containingTriangles = this.findContainingTriangles(p);
     assert(
       containingTriangles.length > 0 && containingTriangles.length <= 2,
