@@ -114,6 +114,31 @@ test('TriangleTreeNode.findNodesWithEdge()', tester => {
 });
 
 
+test('TriangleTreeNode.findNodesWithPoint()', tester => {
+  tester.test('returns correct triangles with point', t => {
+    const node = new TriangleTreeNode(new Triangle(
+      new Point(0, 0),
+      new Point(10, 0),
+      new Point(5, 10),
+    ));
+
+    node.addVertex(new Point(5, 5));
+    node.addVertex(new Point(3, 5));
+
+    let nodesWithPoint = node.findNodesWithPoint(new Point(3, 5));
+    t.is(nodesWithPoint.length, 3);
+
+    nodesWithPoint = node.findNodesWithPoint(new Point(5, 5));
+    t.is(nodesWithPoint.length, 4);
+
+    nodesWithPoint = node.findNodesWithPoint(new Point(4, 5));
+    t.is(nodesWithPoint.length, 0);
+
+    t.end();
+  });
+});
+
+
 test('TriangleTreeNode.findNodeAcross()', tester => {
   tester.test('returns node across from triangle', t => {
     const node = new TriangleTreeNode(new Triangle(
