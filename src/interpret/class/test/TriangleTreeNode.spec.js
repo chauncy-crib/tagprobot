@@ -1,5 +1,6 @@
 import test from 'tape';
 import { TriangleTreeNode } from '../TriangleTreeNode';
+import { Edge } from '../Edge';
 import { Point } from '../Point';
 import { Triangle } from '../Triangle';
 
@@ -78,6 +79,35 @@ test('TriangleTreeNode.addVertex()', tester => {
     t.is(containingTriangles.length, 2);
     t.is(newTriangles.length, 4);
     t.is(node.findAllNodes().length, 5); // we should have add 2 to the triangle count
+
+    t.end();
+  });
+});
+
+
+test('TriangleTreeNode.findNodesWithEdge()', tester => {
+  tester.test('returns correct nodes with edge', t => {
+    const node = new TriangleTreeNode(new Triangle(
+      new Point(0, 0),
+      new Point(10, 0),
+      new Point(5, 10),
+    ));
+
+    node.addVertex(new Point(5, 5));
+
+    let nWithEdge = node.findNodesWithEdge(new Edge(new Point(5, 5), new Point(5, 10)));
+
+    t.is(nWithEdge.length, 2);
+    t.notEqual(nWithEdge[0], nWithEdge[1]);
+
+    nWithEdge = node.findNodesWithEdge(new Edge(new Point(0, 0), new Point(10, 0)));
+    t.is(nWithEdge.length, 1);
+
+    nWithEdge = node.findNodesWithEdge(new Edge(new Point(5, 10), new Point(10, 0)));
+    t.is(nWithEdge.length, 1);
+
+    nWithEdge = node.findNodesWithEdge(new Edge(new Point(5, 5), new Point(10, 0)));
+    t.is(nWithEdge.length, 2);
 
     t.end();
   });

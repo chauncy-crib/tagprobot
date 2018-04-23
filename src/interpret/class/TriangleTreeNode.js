@@ -68,6 +68,18 @@ export class TriangleTreeNode {
     return null;
   }
 
+
+  /**
+   * @param {Edge} e
+   * @returns {TriangleTreeNode[]} all nodes with triangles which have one edge equal to e
+   */
+  findNodesWithEdge(e) {
+    const n1 = this.findContainingNodes(e.p1);
+    const n2 = this.findContainingNodes(e.p2);
+    return _.uniq(_.filter(n1.concat(n2), n => n.triangle.hasEdge(e)));
+  }
+
+
   /**
    * @param {Point} p
    * @returns {TriangleTreeNode[]}
