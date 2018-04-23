@@ -202,3 +202,36 @@ test('TriangleTreeNode.findNodeAcross()', tester => {
     t.end();
   });
 });
+
+
+test('TriangleTreeNode.removeVertex()', tester => {
+  tester.test('removed vertex with 5 neighbors, and retriangulates region', t => {
+    const node = new TriangleTreeNode(new Triangle(
+      new Point(0, 0),
+      new Point(10, 0),
+      new Point(5, 10),
+    ));
+    node.addVertex(new Point(5, 3));
+    node.addVertex(new Point(5, 7));
+    node.addVertex(new Point(6, 7));
+    const neighbors = [
+      new Point(0, 0),
+      new Point(5, 3),
+      new Point(10, 0),
+      new Point(5, 10),
+      new Point(6, 7),
+    ];
+
+    t.is(node.findNodesWithPoint(new Point(5, 7)).length, 5);
+    t.is(node.findAllNodes().length, 7);
+    node.removeVertex(new Point(5, 7), neighbors);
+    // After removal, there should be 2 less triangles
+    t.is(node.findAllNodes().length, 5);
+    // No triangles should have a vertex equal to the removed point
+    t.is(node.findNodesWithPoint(new Point(5, 7)).length, 0);
+    // But it should still be contained in the triangulation
+    t.is(node.findContainingNodes(new Point(5, 7)).length, 1);
+
+    t.end();
+  });
+});
