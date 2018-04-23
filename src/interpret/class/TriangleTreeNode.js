@@ -103,6 +103,15 @@ export class TriangleTreeNode {
 
   /**
    * @param {Point} p
+   * @returns {TriangleTreeNode[]} all nodes with triangles which have one point equal to p
+   */
+  findNodesWithPoint(p) {
+    return _.filter(this.findContainingNodes(p), n => n.triangle.hasPoint(p));
+  }
+
+
+  /**
+   * @param {Point} p
    * @returns {TriangleTreeNode[]}
    */
   findContainingNodes(p) {
