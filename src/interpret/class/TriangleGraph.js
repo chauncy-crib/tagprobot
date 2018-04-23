@@ -15,6 +15,8 @@ import { DrawableGraph } from '../../draw/class/DrawableGraph';
 import { isLegal } from '../graphToTriangulation';
 import { COLORS, ALPHAS, THICKNESSES } from '../../draw/constants';
 
+let legalizeCount1 = 0;
+let legalizeCount2 = 0;
 
 const CLEARANCE = 27; // sqrt(BRP^2 + BRP^2) to have full clearance around a right-angle corner
 
@@ -277,6 +279,7 @@ export class TriangleGraph extends DrawableGraph {
    * If the edge is not delaunay-legal, flip it, and recursively legalize the resulting triangles
    */
   legalizeEdge(insertedPoint, edge) {
+    legalizeCount1 += 1;
     const oppositePoint = this.findOppositePoint(insertedPoint, edge);
     if (oppositePoint && !isLegal(insertedPoint, edge, oppositePoint)) {
       this.removeTriangleByPoints(edge.p1, edge.p2, insertedPoint);
@@ -288,6 +291,31 @@ export class TriangleGraph extends DrawableGraph {
     }
   }
 
+  /**
+   * @param {TriangleTreeNode} node
+   * @param {Point} newPoint
+   */
+  legalizeEdgeNode(node, newPoint) {
+    legalizeCount2 += 1;
+    const edgeBetween = node.triangle.getEdgeWithoutPoint(newPoint);
+    const otherNode = this.rootNode.findNodeAcross(node.triangle, edgeBetween);
+    if (otherNode) {
+      const oppositePoint = otherNode.triangle.getPointNotOnEdge(edgeBetween);
+      if (!isLegal(newPoint, edgeBetween, oppositePoint)) {
+        const t1 = new Triangle(newPoint, oppositePoint, edgeBetween.p1);
+        const t2 = new Triangle(newPoint, oppositePoint, edgeBetween.p2);
+        const n1 = new TriangleTreeNode(t1);
+        const n2 = new TriangleTreeNode(t2);
+        node.addChild(n1);
+        node.addChild(n2);
+        otherNode.addChild(n1);
+        otherNode.addChild(n2);
+        this.legalizeEdgeNode(n1, newPoint);
+        this.legalizeEdgeNode(n2, newPoint);
+      }
+    }
+  }
+
 
   /**
    * Adds the point to the triangulation. Ensures the triangulation is delaunay-legal after
@@ -295,8 +323,11 @@ export class TriangleGraph extends DrawableGraph {
    */
   delaunayAddVertex(p, updateNode = false) {
     assert(!this.hasVertex(p));
+    let nodeNews;
     if (updateNode) {
-      this.rootNode.addVertex(p);
+      const temp = this.rootNode.addVertex(p);
+      nodeNews = temp.newNodes;
+      _.forEach(nodeNews, n => this.legalizeEdgeNode(n, p));
     }
     const containingTriangles = this.findContainingTriangles(p);
     assert(
@@ -330,6 +361,7 @@ export class TriangleGraph extends DrawableGraph {
       this.legalizeEdge(p, new Edge(cp.shared[1], cp.myPoint));
       this.legalizeEdge(p, new Edge(cp.shared[1], cp.otherPoint));
     }
+    assert(legalizeCount1 === legalizeCount2);
   }
 
 

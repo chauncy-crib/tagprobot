@@ -80,6 +80,10 @@ export class TriangleTreeNode {
    */
   findNodeAcross(t, edge) {
     const nodesWithEdge = this.findNodesWithEdge(edge);
+    if (nodesWithEdge.length === 1) {
+      assert(nodesWithEdge[0].triangle.equals(t));
+      return null;
+    }
     assert(nodesWithEdge.length === 2, `Found ${nodesWithEdge.length} nodes with edge ${edge}`);
     if (nodesWithEdge[0].triangle.equals(t)) return nodesWithEdge[1];
     assert(nodesWithEdge[1].triangle.equals(t));
