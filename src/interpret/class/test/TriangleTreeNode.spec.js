@@ -112,3 +112,30 @@ test('TriangleTreeNode.findNodesWithEdge()', tester => {
     t.end();
   });
 });
+
+
+test('TriangleTreeNode.findNodeAcross()', tester => {
+  tester.test('returns node across from triangle', t => {
+    const node = new TriangleTreeNode(new Triangle(
+      new Point(0, 0),
+      new Point(10, 0),
+      new Point(5, 10),
+    ));
+
+    node.addVertex(new Point(5, 5));
+
+    const nodeAcross = node.findNodeAcross(new Triangle(
+      new Point(0, 0),
+      new Point(5, 10),
+      new Point(5, 5),
+    ), new Edge(new Point(5, 10), new Point(5, 5)));
+
+    t.true(nodeAcross.triangle.equals(new Triangle(
+      new Point(10, 0),
+      new Point(5, 10),
+      new Point(5, 5),
+    )));
+
+    t.end();
+  });
+});

@@ -70,6 +70,19 @@ export class TriangleTreeNode {
 
 
   /**
+   * @param {Triangle} t
+   * @param {Edge} edge
+   * @returns {TriangleTreeNode} the node containing the triangle that shares the edge with t
+   */
+  findNodeAcross(t, edge) {
+    const nodesWithEdge = this.findNodesWithEdge(edge);
+    assert(nodesWithEdge.length === 2, `Found ${nodesWithEdge.length} nodes with edge ${edge}`);
+    if (nodesWithEdge[0].triangle.equals(t)) return nodesWithEdge[1];
+    assert(nodesWithEdge[1].triangle.equals(t));
+    return nodesWithEdge[0];
+  }
+
+  /**
    * @param {Edge} e
    * @returns {TriangleTreeNode[]} all nodes with triangles which have one edge equal to e
    */
