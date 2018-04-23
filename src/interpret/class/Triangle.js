@@ -40,6 +40,20 @@ export class Triangle {
   }
 
 
+  getEdgeWithoutPoint(p) {
+    assert(this.hasPoint(p));
+    if (p.equals(this.p1)) return new Edge(this.p2, this.p3);
+    if (p.equals(this.p2)) return new Edge(this.p1, this.p3);
+    return new Edge(this.p1, this.p2);
+  }
+
+  getPointNotOnEdge(edge) {
+    if (!edge.hasPoint(this.p1)) return this.p1;
+    if (!edge.hasPoint(this.p2)) return this.p2;
+    return this.p3;
+  }
+
+
   getPoints() {
     return [this.p1, this.p2, this.p3];
   }
