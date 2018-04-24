@@ -65,7 +65,7 @@ export function dequeueChatMessages() {
  *   example for flair awards)
  * @param {boolean} chatData.mod - true if sender of message is a mod
  */
-function parseChatForCommunication(chatData) {
+export function parseChatForCommunication(chatData) {
   const msg = chatData.message.split(' ');
   const firstWord = msg[0];
   switch (firstWord) {
