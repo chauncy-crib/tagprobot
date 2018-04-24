@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import differenceInMilliseconds from 'date-fns/difference_in_milliseconds';
 
-import { assert } from '../global/utils';
+import { assert, prefer } from '../global/utils';
 import { ROLES } from '../look/constants';
 import {
   playerRoles,
@@ -71,7 +71,7 @@ export function parseChatForCommunication(chatData) {
   switch (firstWord) {
     case KEY_WORDS.INFORM.ROLE: {
       const role = msg[1];
-      assert(
+      prefer(
         _.has(ROLES, role),
         `received ${KEY_WORDS.INFORM.ROLE} second parameter that was non-role: ${role}`,
       );
@@ -86,7 +86,7 @@ export function parseChatForCommunication(chatData) {
       break;
     } case KEY_WORDS.REQUEST.ROLE: {
       const playerId = parseInt(msg[1], 10);
-      assert(
+      prefer(
         !_.isNaN(playerId),
         `received ${KEY_WORDS.REQUEST.ROLE} first parameter that was non-number: ${msg[1]}`,
       );
@@ -96,12 +96,12 @@ export function parseChatForCommunication(chatData) {
       break;
     } case KEY_WORDS.COMMAND.ROLE: {
       const playerId = parseInt(msg[1], 10);
-      assert(
+      prefer(
         !_.isNaN(playerId),
         `received ${KEY_WORDS.COMMAND.ROLE} second parameter that was non-number: ${msg[1]}`,
       );
       const role = msg[2];
-      assert(
+      prefer(
         _.has(ROLES, role),
         `received ${KEY_WORDS.COMMAND.ROLE} third parameter that was non-role: ${role}`,
       );
