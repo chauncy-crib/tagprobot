@@ -87,6 +87,15 @@ test('Triangle.intersectsEdge()', tester => {
     t.end();
   });
 
+  tester.test('returns false when the edge is one of the triangle\'s edges', t => {
+    const edge = new Edge(new Point(2, 0), new Point(4, 0));
+    const triangle = new Triangle(new Point(3, -1), new Point(2, 0), new Point(4, 0));
+
+    t.false(triangle.intersectsEdge(edge));
+
+    t.end();
+  });
+
   tester.test('returns false when one point touches edge endpoint, other in middle of edge', t => {
     const edge = new Edge(new Point(2, 0), new Point(4, 0));
     const triangle = new Triangle(new Point(2, 0), new Point(3, 0), new Point(3, 1));
