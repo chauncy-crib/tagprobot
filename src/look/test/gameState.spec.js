@@ -6,6 +6,7 @@ import {
   initMe,
   cleanTeammateRoles,
   isMyTurnToAssumeRole,
+  assumeComplementaryRole,
   __RewireAPI__ as GameStateRewireAPI,
 } from '../gameState';
 
@@ -87,6 +88,43 @@ test('isMyTurnToAssumeRole()', tester => {
     GameStateRewireAPI.__ResetDependency__('cleanTeammateRoles');
     GameStateRewireAPI.__ResetDependency__('getTeammatesWithLowerIds');
     GameStateRewireAPI.__ResetDependency__('playerRoles');
+    t.end();
+  });
+});
+
+
+test.only('assumeComplementaryRole()', tester => {
+  tester.test('assume offense if 0 offense and 0 defense', t => {
+    const mockPlayerRoles = { 1: ROLES.NOT_DEFINED, 2: ROLES.NOT_DEFINED };
+    GameStateRewireAPI.__Rewire__('playerRoles', mockPlayerRoles);
+    const mockSetMyRole = sinon.spy();
+    GameStateRewireAPI.__Rewire__('setMyRole', mockSetMyRole);
+    const mockGetMyRole = sinon.stub();
+    GameStateRewireAPI.__Rewire__('getMyRole', mockGetMyRole);
+
+    assumeComplementaryRole();
+    t.is(mockSetMyRole.firstCall.args[0], ROLES.OFFENSE);
+
+    GameStateRewireAPI.__ResetDependency__('playerRoles');
+    GameStateRewireAPI.__ResetDependency__('setMyRole');
+    GameStateRewireAPI.__ResetDependency__('getMyRole');
+    t.end();
+  });
+
+  tester.test('assume defense if 1 offense and 0 defense', t => {
+    const mockPlayerRoles = { 1: ROLES.OFFENSE, 2: ROLES.NOT_DEFINED };
+    GameStateRewireAPI.__Rewire__('playerRoles', mockPlayerRoles);
+    const mockSetMyRole = sinon.spy();
+    GameStateRewireAPI.__Rewire__('setMyRole', mockSetMyRole);
+    const mockGetMyRole = sinon.stub();
+    GameStateRewireAPI.__Rewire__('getMyRole', mockGetMyRole);
+
+    assumeComplementaryRole();
+    t.is(mockSetMyRole.firstCall.args[0], ROLES.DEFENSE);
+
+    GameStateRewireAPI.__ResetDependency__('playerRoles');
+    GameStateRewireAPI.__ResetDependency__('setMyRole');
+    GameStateRewireAPI.__ResetDependency__('getMyRole');
     t.end();
   });
 });
