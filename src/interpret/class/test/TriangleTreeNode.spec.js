@@ -5,6 +5,24 @@ import { Point } from '../Point';
 import { Triangle } from '../Triangle';
 
 
+test('TriangleTreeNode.findContainingNodes()', tester => {
+  tester.test('returns correct number of nodes', t => {
+    const node = new TriangleTreeNode(new Triangle(
+      new Point(0, 0),
+      new Point(10, 0),
+      new Point(5, 10),
+    ));
+
+    node.addVertex(new Point(5, 5));
+    t.is(node.findContainingNodes(new Point(5, 5)).length, 3);
+    t.is(node.findContainingNodes(new Point(6, 5)).length, 1);
+    t.is(node.findContainingNodes(new Point(0, -1)).length, 0);
+
+    t.end();
+  });
+});
+
+
 test('TriangleTreeNode.addVertex()', tester => {
   tester.test('returns correct triangles when inserting into middle of triangle', t => {
     const node = new TriangleTreeNode(new Triangle(
