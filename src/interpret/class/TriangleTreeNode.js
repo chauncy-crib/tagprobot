@@ -167,6 +167,29 @@ export class TriangleTreeNode {
     return _.uniq(_.filter(n1.concat(n2), n => n.triangle.hasEdge(e)));
   }
 
+  findNodesWithCondition(conditionFunc) {
+    const nodes = [];
+    this.privateFindNodesWithCondition(conditionFunc, nodes);
+    // Undo the markings
+    _.forEach(nodes, n => {
+      delete n.mark;
+    });
+    return nodes;
+  }
+
+  privateFindNodesWithCondition(conditionFunc, nodes) {
+    // TODO: should this be shares area with?
+    if (!conditionFunc(this)) return;
+    if (this.isLeaf()) {
+      if (!this.mark && conditionFunc(this)) {
+        nodes.push(this);
+        this.mark = true;
+      }
+    } else {
+      _.forEach(this.children, c => c.privateFindNodesWithCondition(conditionFunc, nodes));
+    }
+  }
+
 
   /**
    * @param {Point} p
@@ -182,27 +205,9 @@ export class TriangleTreeNode {
    * @returns {TriangleTreeNode[]}
    */
   findContainingNodes(p) {
-    const nodes = [];
-    this.privateFindContainingNodes(p, nodes);
-    // Undo the markings
-    _.forEach(nodes, n => {
-      delete n.mark;
-    });
-    return nodes;
+    return this.findNodesWithCondition(n => n.triangle.containsPoint(p));
   }
 
-  privateFindContainingNodes(p, nodes) {
-    // TODO: should this be shares area with?
-    if (!this.triangle.containsPoint(p)) return;
-    if (this.isLeaf()) {
-      if (!this.mark && this.triangle.containsPoint(p)) {
-        nodes.push(this);
-        this.mark = true;
-      }
-    } else {
-      _.forEach(this.children, c => c.privateFindContainingNodes(p, nodes));
-    }
-  }
 
   /**
    * @returns {Triangle[]} all triangles in leaf-nodes that are descendents of this node
@@ -215,25 +220,6 @@ export class TriangleTreeNode {
    * @returns {TriangleTreeNode[]} all leaf-nodes that are descendents of this node
    */
   findAllNodes() {
-    const nodes = [];
-    this.privateFindAllNodes(nodes);
-    // Undo the markings
-    _.forEach(nodes, n => {
-      delete n.mark; // TODO, are these deletes efficient?
-    });
-    return nodes;
-  }
-
-  // For class-internal use only
-  // TODO; use underscores
-  privateFindAllNodes(nodes) {
-    // TODO: does recursion in JS suck dicks?
-    if (this.isLeaf() && !this.mark) {
-      // Mark nodes we add so we know not to add them to the list again. This is because there are
-      //   multiple valid paths from the root to each leaf.
-      nodes.push(this);
-      this.mark = true;
-    }
-    _.forEach(this.children, c => c.privateFindAllNodes(nodes));
+    return this.findNodesWithCondition(() => true);
   }
 }
