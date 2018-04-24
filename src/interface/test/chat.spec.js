@@ -4,7 +4,6 @@ import addMilliseconds from 'date-fns/add_milliseconds';
 import subMilliseconds from 'date-fns/sub_milliseconds';
 
 import { ROLES } from '../../look/constants';
-import { initMe, __RewireAPI__ as GameStateRewireAPI } from '../../look/gameState';
 import { CHATS, KEY_WORDS } from '../constants';
 import {
   sendMessageToChat,
