@@ -1,9 +1,8 @@
 /**
  * Throws a specified error message if a condition is not met. If no message
- * is specified, then a default error message is thrown.
- *
- * condition: the condition, which, if false, will cause an error to be thrown
- * errorMessage: the error message to throw if condition is not true
+ *   is specified, then a default error message is thrown.
+ * @param {boolean} condition - the condition, which, if false, will cause an error to be thrown
+ * @param {string|undefined} errorMessage - the error message to throw if condition is not true
  */
 export function assert(condition, errorMessage = 'Assertion failed') {
   if (!condition) {
@@ -28,6 +27,19 @@ export function assertGridInBounds(grid, x, y) {
     y < height,
     `Grid out of bounds error: y>= height of input grid. y=${y}, height=${height}`,
   );
+}
+
+
+/**
+ * A less strict version of the assert function above. Sends the specified error message to the
+ *   cosole if the condition is not true.
+ * @param {boolean} condition - the condition, which, if false, will log an error message to the
+ *   console
+ * @param {string|undefined} errorMessage - the error message sent to the console if condition is
+ *   not true
+ */
+export function prefer(condition, errorMessage = 'Preference not met') {
+  if (!condition) console.error(errorMessage);
 }
 
 
