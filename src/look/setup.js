@@ -2,7 +2,7 @@ import { assert } from '../global/utils';
 import { ROLES } from './constants';
 import { centerOfMass } from './tileLocations';
 import { tileIsOneOf } from './tileInfo';
-import { getMe, playerRoles, getNumTeammates, requestTeammateRoles } from './gameState';
+import { setMyRole, getNumTeammates, requestTeammateRoles } from './gameState';
 import { CHATS, KEY_WORDS } from '../interface/constants';
 import { sendMessageToChat } from '../interface/chat';
 
@@ -56,10 +56,10 @@ export function initLocations() {
  */
 export function setupRoleCommunication() {
   if (getNumTeammates() === 0) {
-    playerRoles[getMe().id] = ROLES.OFFENSE;
+    setMyRole(ROLES.OFFENSE);
     sendMessageToChat(CHATS.TEAM, `${KEY_WORDS.INFORM.ROLE} ${ROLES.OFFENSE}`);
   } else {
-    playerRoles[getMe().id] = ROLES.NOT_DEFINED;
+    setMyRole(ROLES.NOT_DEFINED);
     requestTeammateRoles();
   }
 }

@@ -4,9 +4,9 @@ import differenceInMilliseconds from 'date-fns/difference_in_milliseconds';
 import { assert } from '../global/utils';
 import { ROLES } from '../look/constants';
 import {
-  getMe,
   playerRoles,
   idIsMine,
+  getMyRole,
   isMyTurnToAssumeRole,
   assumeComplementaryRole,
 } from '../look/gameState';
@@ -78,7 +78,7 @@ function parseChatForCommunication(chatData) {
       playerRoles[chatData.from] = role;
       if (
         !idIsMine(chatData.from) &&
-        playerRoles[getMe().id] === ROLES.NOT_DEFINED &&
+        getMyRole() === ROLES.NOT_DEFINED &&
         isMyTurnToAssumeRole()
       ) {
         assumeComplementaryRole();

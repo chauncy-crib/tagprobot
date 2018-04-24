@@ -58,11 +58,21 @@ function playerRoleIsKnown(player) {
 }
 
 
+export function getMyRole() {
+  return playerRoles[getMe().id];
+}
+
+
+export function setMyRole(role) {
+  playerRoles[getMe().id] = role;
+}
+
+
 /**
  * Remove roles for players that are no longer in the game and assign ROLES.NOT_DEFINED roles for
  *   each teammate whose role we do not know
  */
-function cleanTeammateRoles() {
+export function cleanTeammateRoles() {
   // Remove roles for players that are no longer in the game
   _.forEach(_.keys(playerRoles), playerId => {
     if (!_.has(tagpro.players, playerId)) delete playerRoles[playerId];
@@ -106,7 +116,10 @@ function getTeammatesWithLowerIds() {
  */
 export function isMyTurnToAssumeRole() {
   cleanTeammateRoles();
-  return _.every(getTeammatesWithLowerIds(), player => playerRoles[player.id] !== ROLES.NOT_DEFINED);
+  return _.every(
+    getTeammatesWithLowerIds(),
+    player => playerRoles[player.id] !== ROLES.NOT_DEFINED,
+  );
 }
 
 
@@ -121,10 +134,10 @@ export function assumeComplementaryRole() {
     if (playerRole === ROLES.OFFENSE) numOffense += 1;
     else if (playerRole === ROLES.DEFENSE) numDefense += 1;
   });
-  if (numDefense < numOffense) playerRoles[getMe().id] = ROLES.DEFENSE;
-  else playerRoles[getMe().id] = ROLES.OFFENSE;
+  if (numDefense < numOffense) setMyRole(ROLES.DEFENSE);
+  else setMyRole(ROLES.OFFENSE);
 
-  sendMessageToChat(CHATS.TEAM, `${KEY_WORDS.INFORM.ROLE} ${playerRoles[getMe().id]}`);
+  sendMessageToChat(CHATS.TEAM, `${KEY_WORDS.INFORM.ROLE} ${getMyRole()}`);
 }
 
 
