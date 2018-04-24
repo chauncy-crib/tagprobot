@@ -127,16 +127,12 @@ export function isMyTurnToAssumeRole() {
  * Define own role based on teammate's roles.
  */
 export function assumeComplementaryRole() {
-  let numOffense = 0;
-  let numDefense = 0;
-
-  _.forEach(playerRoles, playerRole => {
-    if (playerRole === ROLES.OFFENSE) numOffense += 1;
-    else if (playerRole === ROLES.DEFENSE) numDefense += 1;
-  });
-  if (numDefense < numOffense) setMyRole(ROLES.DEFENSE);
-  else setMyRole(ROLES.OFFENSE);
-
+  const roleCount = _.countBy(playerRoles);
+  if (_.get(roleCount, ROLES.DEFENSE, 0) < _.get(roleCount, ROLES.OFFENSE, 0)) {
+    setMyRole(ROLES.DEFENSE);
+  } else {
+    setMyRole(ROLES.OFFENSE);
+  }
   sendMessageToChat(CHATS.TEAM, `${KEY_WORDS.INFORM.ROLE} ${getMyRole()}`);
 }
 
