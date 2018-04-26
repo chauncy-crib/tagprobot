@@ -93,7 +93,7 @@ test('isMyTurnToAssumeRole()', tester => {
 });
 
 
-test.only('assumeComplementaryRole()', tester => {
+test('assumeComplementaryRole()', tester => {
   tester.test('assume offense if 0 offense and 0 defense', t => {
     const mockPlayerRoles = { 1: ROLES.NOT_DEFINED, 2: ROLES.NOT_DEFINED };
     GameStateRewireAPI.__Rewire__('playerRoles', mockPlayerRoles);
