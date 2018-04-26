@@ -30,6 +30,13 @@ export class Triangle {
     );
   }
 
+  getEdges() {
+    return [
+      new Edge(this.p1, this.p2),
+      new Edge(this.p2, this.p3),
+      new Edge(this.p1, this.p3),
+    ];
+  }
 
   getEdgeCenters() {
     return [
