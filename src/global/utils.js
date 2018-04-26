@@ -1,3 +1,6 @@
+import { startTime } from '../start';
+
+
 /**
  * Throws a specified error message if a condition is not met. If no message
  *   is specified, then a default error message is thrown.
@@ -75,4 +78,29 @@ export function determinant(matrix) {
     sum += ((j % 2) ? -1 : 1) * matrix[0][j] * determinant(subMatrix);
   }
   return sum;
+}
+
+
+/*
+ * @param {number} millisTime - a time in milliseconds
+ * @returns {string} the number of seconds since millisTime with 3 decimal places
+ */
+function secondsSince(millisTime) {
+  return ((Date.now() - millisTime) / 1000).toFixed(3);
+}
+
+
+/*
+ * @returns {string} the number of seconds since the start of the script
+ */
+function secondsSinceStart() {
+  return secondsSince(startTime);
+}
+
+
+/*
+ * Sends a time stamped message to the info stream of the console
+ */
+export function timeLog(message) {
+  console.info(`${secondsSinceStart()}: ${message}`);
 }
