@@ -1,4 +1,7 @@
 import math from 'mathjs';
+import _ from 'lodash';
+
+import { assert } from '../../global/utils';
 
 
 /**
@@ -9,11 +12,46 @@ export class Matrix {
    * @param {number[][]} array - an array of arrays of numbers
    */
   constructor(array) {
+    if (typeof array === 'number') array = [array];
+    assert(_.isArray(array), 'input to Matrix is not an array');
     this.array = array;
   }
 
+  isValidIndex(index) {
+    return _.inRange(index, 0, this.array.length);
+  }
+
   get(index) {
-    return this.array[index];
+    assert(this.isValidIndex(index), 'Matrix.get called with index out of bounds');
+    return new Matrix(this.array[index]);
+  }
+
+  set(index, other) {
+    assert(this.isValidIndex(index), 'Matrix.set called with index out of bounds');
+    this.array[index] = other.array;
+  }
+
+  append(other, axis = 0) {
+    const array = other instanceof Matrix ? other.array : other;
+    if (axis === 0) {
+      assert(
+        array.length === 1 && array[0].length === this.array[0].length,
+        'Matrix.append called with bad sized array',
+      );
+      this.array.push(array[0]);
+    } else if (axis === 1) {
+      assert(array.length === this.array.length, 'Matrix.append called with bad sized array');
+      assert(_.isArray(array[0]), 'Matrix.append axis=1 not called with a column vector');
+      _.forEach(this.array, (row, i) => row.push(array[i][0]));
+    } else assert(false, 'Matrix.append called with invalid axis');
+  }
+
+  shape() {
+    return math.size(this.array);
+  }
+
+  scalarMultiply(scalar) {
+    return new Matrix(math.multiply(this.array, scalar));
   }
 
   /**
@@ -21,18 +59,27 @@ export class Matrix {
    *   for 2D arrays, and inner product of vectors for 1D arrays.
    */
   dot(other) {
-    return math.multiply(this.array, other.array);
+    return new Matrix(math.multiply(this.array, other.array));
   }
 
   add(other) {
-    return math.add(this.array, other.array);
+    return new Matrix(math.add(this.array, other.array));
   }
 
   subtract(other) {
-    return math.subtract(this.array, other.array);
+    return new Matrix(math.subtract(this.array, other.array));
   }
 
   inverse() {
-    return math.inv(this.array);
+    return new Matrix(math.inv(this.array));
+  }
+
+  transpose() {
+    return new Matrix(math.transpose(this.array));
+  }
+
+  equals(other) {
+    if (!other) return false;
+    return math.deepEqual(this.array, other.array);
   }
 }

@@ -25,7 +25,7 @@ def with_lqr(animate, save):
     x0 = np.array([[0], [0], [0], [-100]])  # initial state [[x], [vx], [y], [vy]]
     goal = np.array([[100], [-50], [50], [-25]])  # goal state
     dur = 5  # time to run for, in seconds
-    dt = 0.01  # time step, in seconds
+    dt = 1 / 60  # time step, in seconds
     solution = physics.tagpro_simulate_with_control(x0, goal, dur, dt)  # solved states over time
 
     # Visualize
