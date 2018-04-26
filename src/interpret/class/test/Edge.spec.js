@@ -68,3 +68,40 @@ test('Edge.isBetweenPoints()', tester => {
     t.end();
   });
 });
+
+
+test('Edge.overlapsEdge()', tester => {
+  tester.test('returns true when edges overlap', t => {
+    const e1 = new Edge(new Point(3, 0), new Point(6, 3));
+
+    let e2 = new Edge(new Point(4, 1), new Point(5, 2));
+    t.true(e1.overlapsEdge(e2));
+
+    e2 = new Edge(new Point(4, 1), new Point(6, 3));
+    t.true(e1.overlapsEdge(e2));
+
+    e2 = new Edge(new Point(4, 1), new Point(7, 4));
+    t.true(e1.overlapsEdge(e2));
+
+    e2 = new Edge(new Point(6, 3), new Point(7, 4));
+    t.true(e1.overlapsEdge(e2));
+
+    t.end();
+  });
+
+  tester.test('returns false when edges do not overlap', t => {
+    const e1 = new Edge(new Point(3, 0), new Point(6, 3));
+
+    let e2 = new Edge(new Point(4, 1), new Point(5, 1));
+    t.false(e1.overlapsEdge(e2));
+
+    e2 = new Edge(new Point(4, 1), new Point(6, 2));
+    t.false(e1.overlapsEdge(e2));
+
+    e2 = new Edge(new Point(7, 4), new Point(8, 5));
+    t.false(e1.overlapsEdge(e2));
+
+    t.end();
+  });
+});
+

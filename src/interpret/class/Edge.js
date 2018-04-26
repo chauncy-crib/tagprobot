@@ -46,6 +46,20 @@ export class Edge {
 
 
   /**
+   * @param {Edge} e
+   * @returns {boolean} true if the other edge is collinear with this edge, and if one of either
+   *   this edge or e's points lays on top of the other edge
+   */
+  overlapsEdge(e) {
+    if (!this.isCollinearWithEdge(e)) return false;
+    return e.p1.laysOnEdge(this) ||
+           e.p2.laysOnEdge(this) ||
+           this.p1.laysOnEdge(e) ||
+           this.p2.laysOnEdge(e);
+  }
+
+
+  /**
    * @param {Point} p
    * @returns {boolean} true if the point would lay on the infinite extension of this edge
    */
