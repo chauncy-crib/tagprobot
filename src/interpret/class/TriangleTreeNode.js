@@ -183,28 +183,26 @@ export class TriangleTreeNode {
   findNodesWithCondition(parentCondition, leafCondition) {
     const leafCond = leafCondition || parentCondition;
     const nodes = [];
-    this.privateFindNodesWithCondition(parentCondition, leafCond, nodes);
+    const visited = [];
+    this.privateFindNodesWithCondition(parentCondition, leafCond, nodes, visited);
     // Undo the markings
-    _.forEach(nodes, n => {
+    _.forEach(visited, n => {
       delete n.mark;
     });
     return nodes;
   }
 
-  privateFindNodesWithCondition(parentCondition, leafCondition, nodes) {
-    // TODO: should this be shares area with?
+  privateFindNodesWithCondition(parentCondition, leafCondition, nodes, visited) {
+    if (this.mark) return;
+    // Mark the node so we don't visit it again
+    this.mark = true;
+    visited.push(this);
     if (!parentCondition(this)) return;
-    if (this.isLeaf()) {
-      if (!this.mark && leafCondition(this)) {
-        nodes.push(this);
-        this.mark = true;
-      }
-    } else {
-      _.forEach(
-        this.children,
-        c => c.privateFindNodesWithCondition(parentCondition, leafCondition, nodes),
-      );
-    }
+    if (this.isLeaf() && leafCondition(this)) nodes.push(this);
+    _.forEach(
+      this.children,
+      c => c.privateFindNodesWithCondition(parentCondition, leafCondition, nodes, visited),
+    );
   }
 
 
