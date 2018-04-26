@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { assert } from '../global/utils';
+import { assert, timeLog } from '../global/utils';
 import { getTileProperty } from '../look/tileInfo';
 import { Point } from './class/Point';
 import { Triangle } from './class/Triangle';
@@ -77,10 +77,12 @@ export function delaunayTriangulation(
       `Dummy triangle did not contain point at ${v.x}, ${v.y}`,
     );
   });
+  timeLog('  Adding vertices...');
   _.forEach(shuffledVertices, vertex => {
     dtGraph.delaunayAddVertex(vertex);
   });
 
+  timeLog('  Adding constrained edges...');
   const shuffledEdges = _.shuffle(mapGraph.getEdges());
   _.forEach(shuffledEdges, e => {
     dtGraph.delaunayAddConstraintEdge(e);
