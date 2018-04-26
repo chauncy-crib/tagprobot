@@ -81,10 +81,6 @@ export class DrawableGraph extends Graph {
     this.addDrawing(edgeDrawing, e);
   }
 
-  removeEdgeDrawing(e) {
-    this.removeDrawing(e);
-  }
-
   addVertex(point) {
     if (!super.addVertex(point)) return false;
     this.addVertexDrawing(point);
@@ -105,7 +101,7 @@ export class DrawableGraph extends Graph {
 
   removeEdge(edge) {
     if (!super.removeEdge(edge)) return false;
-    this.removeEdgeDrawing(edge);
+    this.removeDrawing(edge);
     return true;
   }
 }

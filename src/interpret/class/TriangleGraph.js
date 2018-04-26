@@ -184,7 +184,7 @@ export class TriangleGraph extends DrawableGraph {
     this.fixedAdj[e.p1].push(e.p2);
     this.fixedAdj[e.p2].push(e.p1);
     if (this.isConnected(e.p1, e.p2)) {
-      this.removeEdgeDrawing(e);
+      this.removeDrawing(e);
       this.addEdgeDrawing(e);
     }
     this.addEdge(e);
