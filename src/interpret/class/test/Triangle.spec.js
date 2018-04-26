@@ -115,6 +115,15 @@ test('Triangle.intersectsEdge()', tester => {
     t.end();
   });
 
+  tester.test('returns false when edge is a sub-edge of triangles edge', t => {
+    const edge = new Edge(new Point(2, 0), new Point(3, 0));
+    const triangle = new Triangle(new Point(0, 0), new Point(4, 0), new Point(3, 1));
+
+    t.false(triangle.intersectsEdge(edge));
+
+    t.end();
+  });
+
   tester.test('returns false when triangle is above edge', t => {
     const edge = new Edge(new Point(2, 0), new Point(4, 0));
     const triangle = new Triangle(new Point(3, -1), new Point(3, -2), new Point(4, -1));

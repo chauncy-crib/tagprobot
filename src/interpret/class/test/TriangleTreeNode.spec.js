@@ -224,7 +224,7 @@ test('TriangleTreeNode.findNodeAcross()', tester => {
 
 
 test('TriangleTreeNode.removeVertex()', tester => {
-  tester.test('removed vertex with 5 neighbors, and retriangulates region', t => {
+  tester.test('removes vertex with 5 neighbors, and retriangulates region', t => {
     const node = new TriangleTreeNode(new Triangle(
       new Point(0, 0),
       new Point(10, 0),
