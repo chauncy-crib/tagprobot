@@ -1,4 +1,5 @@
 import test from 'tape';
+import _ from 'lodash';
 import { TriangleTreeNode } from '../TriangleTreeNode';
 import { Edge } from '../Edge';
 import { Point } from '../Point';
@@ -249,6 +250,65 @@ test('TriangleTreeNode.removeVertex()', tester => {
     t.is(node.findNodesWithPoint(new Point(5, 7)).length, 0);
     // But it should still be contained in the triangulation
     t.is(node.findContainingNodes(new Point(5, 7)).length, 1);
+
+    t.end();
+  });
+});
+
+
+test('TriangleTreeNode.findNodesIntersectingEdge()', tester => {
+  tester.test('returns all nodes where n.triangle.intersectsEdge() is true', t => {
+    const node = new TriangleTreeNode(new Triangle(
+      new Point(0, 0),
+      new Point(10, 0),
+      new Point(5, 10),
+    ));
+    node.addVertex(new Point(5, 3));
+    node.addVertex(new Point(5, 7));
+    node.addVertex(new Point(6, 7));
+
+    const edgesToTest = [
+      new Edge(new Point(5, 7), new Point(6, 7)),
+      new Edge(new Point(5, 7), new Point(5, 10)),
+      new Edge(new Point(5, 8), new Point(5, 9)),
+      new Edge(new Point(4, 7), new Point(6, 7)),
+      new Edge(new Point(4, 6), new Point(6, 7)),
+      new Edge(new Point(0, 0), new Point(10, 0)),
+      new Edge(new Point(0, 0), new Point(6, 6)),
+      new Edge(new Point(5, 7), new Point(5, 2)),
+      new Edge(new Point(5, 10), new Point(5, 3)),
+      new Edge(new Point(5, 10), new Point(4, 2)),
+    ];
+
+
+    // Check all the above edges to make sure the function returns the correct thing
+    const runTest = () => {
+      const allNodes = node.findAllNodes();
+      _.forEach(edgesToTest, e => {
+        const intersectingNodes1 = node.findNodesIntersectingEdge(e);
+        const intersectingNodes2 = _.filter(allNodes, n => n.triangle.intersectsEdge(e));
+        t.is(intersectingNodes1.length, intersectingNodes2.length);
+      });
+    };
+    runTest();
+
+    // Remove a vertex and run the test
+    const neighbors = [
+      new Point(0, 0),
+      new Point(5, 3),
+      new Point(10, 0),
+      new Point(5, 10),
+      new Point(6, 7),
+    ];
+    node.removeVertex(new Point(5, 7), neighbors);
+    runTest();
+
+    // Add it back and run the test
+    node.addVertex(new Point(5, 7));
+    runTest();
+
+    node.addVertex(new Point(3, 4));
+    runTest();
 
     t.end();
   });

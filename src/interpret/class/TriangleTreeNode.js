@@ -167,6 +167,21 @@ export class TriangleTreeNode {
     return _.uniq(_.filter(n1.concat(n2), n => n.triangle.hasEdge(e)));
   }
 
+  /**
+   * @param {Edge} e
+   * @returns {TriangleTreeNode[]} all nodes with triangles where t.intersectsEdge(e) returns true
+   */
+  findNodesIntersectingEdge(e) {
+    return this.findNodesWithCondition(
+      // Parent condition: either the edge intersects the triangle, or one of the triangle's edges
+      //   overlaps the input edge
+      n => n.triangle.intersectsEdge(e) ||
+        _.some(n.triangle.getEdges(), et => et.overlapsEdge(e)),
+      // Leaf condition: the triangle intersects the edge
+      n => n.triangle.intersectsEdge(e),
+    );
+  }
+
   findNodesWithCondition(parentCondition, leafCondition) {
     const leafCond = leafCondition || parentCondition;
     const nodes = [];
