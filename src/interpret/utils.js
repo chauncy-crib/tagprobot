@@ -99,6 +99,9 @@ export function findUpperAndLowerPoints(intersectingTriangles, e) {
   const upperPoints = [e.p1];
   const lowerPoints = [e.p1];
 
+  const orderedTriangles = Array(triangles.length);
+  let i = 0;
+
   while (!_.isEmpty(triangles)) {
     const lastUpperPoint = _.last(upperPoints);
     const lastLowerPoint = _.last(lowerPoints);
@@ -109,6 +112,8 @@ export function findUpperAndLowerPoints(intersectingTriangles, e) {
     ));
 
     assert(!_.isNil(nextT), 'Could not find triangle containing both last upper and last lower');
+
+    orderedTriangles[i] = nextT;
 
     // Add points to upperPoints and lowerPoints
     if (upperPoints.length === 1) {
@@ -135,6 +140,7 @@ export function findUpperAndLowerPoints(intersectingTriangles, e) {
 
     // Remove triangle and edges from graph and from triangles
     triangles = _.reject(triangles, nextT);
+    i += 1;
   }
-  return { upperPoints, lowerPoints };
+  return { upperPoints, lowerPoints, orderedTriangles };
 }
