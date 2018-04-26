@@ -131,11 +131,9 @@ export class TriangleTreeNode {
         if (detD(v1, v2, v3) >= 0 && detD(v1, v3, p) >= 0) {
           // Neighbors not in this triple
           const otherNbrs = _.map(_.range(i + 3, i + L), j => N[nIndices[j % L]]);
-          // Ear is delaunay if none of the other neighbors fall inside the circumcircle
+          // Ear is delaunay-legal if none of the other neighbors fall inside the circumcircle
           const delaunayValid = !_.some(otherNbrs, n => detH(v1, v2, v3, n) > 0);
-          if (delaunayValid) {
-            ear = [v1, v2, v3];
-          }
+          if (delaunayValid) ear = [v1, v2, v3];
         }
       }
       assert(ear, 'Could not find valid ear to remove');
