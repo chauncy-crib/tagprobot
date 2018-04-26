@@ -1,3 +1,5 @@
+import { assert, timeLog } from './global/utils';
+import { BRP } from './global/constants';
 import { setupClientVelocity, initLocations, setupRoleCommunication } from './look/setup';
 import { computeTileInfo } from './look/tileInfo';
 import { getMe, initMe, initIsCenterFlag } from './look/gameState';
@@ -8,11 +10,9 @@ import { dequeueChatMessages, setupChatCallback } from './interface/chat';
 import { turnOnAllDrawings, initUiUpdateFunction } from './draw/draw';
 import { updateNavMesh } from './interpret/graphToTriangulation';
 import { getShortestPolypointPath } from './plan/astar';
-import { BRP } from './global/constants';
 import { drawAllyPath } from './draw/triangulation';
 import { getDesiredAccelerationMultipliers } from './control/physics';
 import { funnelPolypoints } from './plan/funnel';
-import { assert } from './global/utils';
 
 
 // Run onKeyDown any time a key is pressed to parse user input
@@ -93,23 +93,32 @@ function loop() {
  */
 function start() {
   // Setup
+  timeLog('initializing me...');
   initMe();
+  timeLog('setting up client velocity...');
   setupClientVelocity();
+  timeLog('computing tile info...');
   computeTileInfo();
+  timeLog('initializing locations...');
   initLocations();
+  timeLog('initializing isCenterFlag()...');
   initIsCenterFlag();
-  logHelpMenu();
-
+  timeLog('initializing internal map...');
   initInternalMap(tagpro.map);
+  timeLog('initializing tiles to update...');
   initTilesToUpdate(tagpro.map);
+  timeLog('initializing nav mesh...');
   initNavMesh(tagpro.map);
-
+  timeLog('initializing UI update function...');
   initUiUpdateFunction();
+  timeLog('turning on all drawings...');
   turnOnAllDrawings();
-
+  timeLog('setting up chat callback...');
   setupChatCallback();
-
+  timeLog('setting up role communication...');
   setupRoleCommunication();
+  timeLog('done.');
+  logHelpMenu();
 
   // Run the bot
   loop();

@@ -1,4 +1,4 @@
-import { startTime } from '../start';
+const startTime = Date.now(); // time when script started, in milliseconds
 
 
 /**
