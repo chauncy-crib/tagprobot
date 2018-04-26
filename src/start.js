@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { setupClientVelocity, initLocations, setupRoleCommunication } from './look/setup';
 import { computeTileInfo } from './look/tileInfo';
 import { getMe, initMe, initIsCenterFlag } from './look/gameState';
@@ -45,6 +47,7 @@ function getTargetFromPath(path, me) {
 function botLoop() {
   dequeueChatMessages();
 
+  /*
   // If we're not autonomous or drawing, then don't run the bot
   if (!isAutonomousMode() && !isVisualMode()) return;
 
@@ -75,6 +78,7 @@ function botLoop() {
     target.yp, // the y we are seeking toward (pixels)
   );
   if (isAutonomousMode()) move(accelValues);
+  */
 }
 
 
@@ -94,6 +98,7 @@ function loop() {
 function start() {
   // Setup
   initMe();
+  /*
   setupClientVelocity();
   computeTileInfo();
   initLocations();
@@ -106,6 +111,7 @@ function start() {
 
   initUiUpdateFunction();
   turnOnAllDrawings();
+  */
 
   setupChatCallback();
 
