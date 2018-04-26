@@ -361,7 +361,7 @@ export class TriangleGraph extends DrawableGraph {
       this.legalizeEdge(p, new Edge(cp.shared[1], cp.myPoint));
       this.legalizeEdge(p, new Edge(cp.shared[1], cp.otherPoint));
     }
-    assert(legalizeCount1 === legalizeCount2);
+    if (updateNode) assert(legalizeCount1 === legalizeCount2);
   }
 
 
