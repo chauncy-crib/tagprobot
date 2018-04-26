@@ -58,4 +58,16 @@ export class Point {
   copy() {
     return new Point(this.x, this.y);
   }
+
+  /*
+   * @param {Edge}
+   * @returns {boolean} - true if the given point is coincident with the input edge
+   */
+  laysOnEdge(e) {
+    if (!e.isCollinearWithPoint(this)) return false;
+    const d1 = this.distanceSquared(e.p1);
+    const d2 = this.distanceSquared(e.p2);
+    const d3 = e.p1.distanceSquared(e.p2);
+    return d1 <= d3 && d2 <= d3;
+  }
 }
