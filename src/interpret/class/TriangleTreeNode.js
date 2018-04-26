@@ -167,9 +167,10 @@ export class TriangleTreeNode {
     return _.uniq(_.filter(n1.concat(n2), n => n.triangle.hasEdge(e)));
   }
 
-  findNodesWithCondition(conditionFunc) {
+  findNodesWithCondition(parentCondition, leafCondition) {
+    const leafCond = leafCondition || parentCondition;
     const nodes = [];
-    this.privateFindNodesWithCondition(conditionFunc, nodes);
+    this.privateFindNodesWithCondition(parentCondition, leafCond, nodes);
     // Undo the markings
     _.forEach(nodes, n => {
       delete n.mark;
@@ -177,16 +178,19 @@ export class TriangleTreeNode {
     return nodes;
   }
 
-  privateFindNodesWithCondition(conditionFunc, nodes) {
+  privateFindNodesWithCondition(parentCondition, leafCondition, nodes) {
     // TODO: should this be shares area with?
-    if (!conditionFunc(this)) return;
+    if (!parentCondition(this)) return;
     if (this.isLeaf()) {
-      if (!this.mark && conditionFunc(this)) {
+      if (!this.mark && leafCondition(this)) {
         nodes.push(this);
         this.mark = true;
       }
     } else {
-      _.forEach(this.children, c => c.privateFindNodesWithCondition(conditionFunc, nodes));
+      _.forEach(
+        this.children,
+        c => c.privateFindNodesWithCondition(parentCondition, leafCondition, nodes),
+      );
     }
   }
 
