@@ -459,8 +459,8 @@ export class TriangleGraph extends DrawableGraph {
     const lc = this.triangulateRegion(lowerPoints);
     if (updateNode) {
       assert(this.numTriangles() === this.rootNode.findAllTriangles().length);
-      assert(uc === upperCount);
-      assert(lc === lowerCount);
+      assert((uc === upperCount && lc === lowerCount) ||
+        (uc === lowerCount && lc === upperCount));
     }
   }
 
