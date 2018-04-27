@@ -298,6 +298,7 @@ export class TriangleGraph extends DrawableGraph {
   legalizeEdgeNode(node, newPoint) {
     legalizeCount2 += 1;
     const edgeBetween = node.triangle.getEdgeWithoutPoint(newPoint);
+    if (this.isEdgeFixed(edgeBetween)) return;
     const otherNode = this.rootNode.findNodeAcross(node.triangle, edgeBetween);
     if (otherNode) {
       const oppositePoint = otherNode.triangle.getPointNotOnEdge(edgeBetween);
