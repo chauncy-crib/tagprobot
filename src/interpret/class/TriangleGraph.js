@@ -526,9 +526,9 @@ export class TriangleGraph extends DrawableGraph {
    *   retriangulate around them after each addition)
    */
   dynamicUpdate(constrainedEdgesToRemove, constrainedEdgesToAdd, verticesToRemove, verticesToAdd) {
-    // _.forEach(constrainedEdgesToRemove, e => this.unfixEdge(e));
-    _.forEach(verticesToRemove, v => this.delaunayRemoveVertex(v, true));
-    _.forEach(verticesToAdd, v => this.delaunayAddVertex(v, true));
-    // _.forEach(constrainedEdgesToAdd, e => this.delaunayAddConstraintEdge(e));
+    _.forEach(constrainedEdgesToRemove, e => this.unfixEdge(e));
+    _.forEach(verticesToRemove, v => this.delaunayRemoveVertex(v, false));
+    _.forEach(verticesToAdd, v => this.delaunayAddVertex(v, false));
+    _.forEach(constrainedEdgesToAdd, e => this.delaunayAddConstraintEdge(e));
   }
 }
