@@ -246,6 +246,7 @@ export class TriangleTreeNode {
    * @param {Point[]} reg - the region defined by an array of points connected in a cycle
    * @param {TriangleTreeNode[]} regNodes - a list of nodes containing triangles that span across
    *   the region
+   * @returns {number} the number of times the function was called recursively
    */
   static triangulateRegion(reg, regNodes) {
     if (reg.length === 3) {
@@ -253,7 +254,7 @@ export class TriangleTreeNode {
       const newNode = new TriangleTreeNode(newTriangle);
       _.forEach(regNodes, n => n.addChild(newNode));
     }
-    if (reg.length <= 3) return;
+    if (reg.length <= 3) return 1;
     // Extract out the points on the edge
     const e = new Edge(reg[0], _.last(reg));
     // Slice off the first and last element to get the inner region
@@ -271,15 +272,19 @@ export class TriangleTreeNode {
     const newNode = new TriangleTreeNode(newTriangle);
     _.forEach(regNodes, n => n.addChild(newNode));
 
+    let callCount = 1;
+
     // Call this recursively on the two sub-regions split by this triangle
-    TriangleTreeNode.triangulateRegion(
+    callCount += TriangleTreeNode.triangulateRegion(
       _.concat(e.p1, _.slice(innerReg, 0, cIndex + 1)),
       regNodes,
     );
-    TriangleTreeNode.triangulateRegion(
+    callCount += TriangleTreeNode.triangulateRegion(
       _.concat(_.slice(innerReg, cIndex, innerReg.length), e.p2),
       regNodes,
     );
+
+    return callCount;
   }
 
   findNodesWithCondition(parentCondition, leafCondition) {

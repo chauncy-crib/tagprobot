@@ -361,19 +361,26 @@ export class TriangleGraph extends DrawableGraph {
       this.legalizeEdge(p, new Edge(cp.shared[0], cp.otherPoint));
       this.legalizeEdge(p, new Edge(cp.shared[1], cp.myPoint));
       this.legalizeEdge(p, new Edge(cp.shared[1], cp.otherPoint));
+      if (updateNode) assert(nodeNews.length === 4, `nodeNews was length ${nodeNews.length}`);
     }
-    if (updateNode) assert(legalizeCount1 === legalizeCount2);
+    if (updateNode) {
+      assert(
+        legalizeCount1 === legalizeCount2,
+        `Node was legalized ${legalizeCount2}, should be ${legalizeCount1}`,
+      );
+    }
   }
 
 
   /**
    * Recursively triangulates an un-triangulated region of points
    * @param {Point[]} reg - the region defined by an array of points connected in a cycle
+   * @returns {number} - the number of times the function was called recursively
    */
   triangulateRegion(reg) {
     // Base cases: make triangle if region is 3 points, skip if region is <3 points
     if (reg.length === 3) this.addTriangle(new Triangle(reg[0], reg[1], reg[2]));
-    if (reg.length <= 3) return;
+    if (reg.length <= 3) return 1;
 
     // Extract out the points on the edge
     const e = new Edge(reg[0], _.last(reg));
@@ -392,9 +399,12 @@ export class TriangleGraph extends DrawableGraph {
     // Make that triangle with vertex c
     this.addTriangle(new Triangle(e.p1, innerReg[cIndex], e.p2));
 
+    let callCount = 1;
+
     // Call this recursively on the two sub-regions split by this triangle
-    this.triangulateRegion(_.concat(e.p1, _.slice(innerReg, 0, cIndex + 1)));
-    this.triangulateRegion(_.concat(_.slice(innerReg, cIndex, innerReg.length), e.p2));
+    callCount += this.triangulateRegion(_.concat(e.p1, _.slice(innerReg, 0, cIndex + 1)));
+    callCount += this.triangulateRegion(_.concat(_.slice(innerReg, cIndex, innerReg.length), e.p2));
+    return callCount;
   }
 
 
@@ -403,7 +413,7 @@ export class TriangleGraph extends DrawableGraph {
    *   region
    * @param {Edge} e - the edge to add
    */
-  delaunayAddConstraintEdge(e) {
+  delaunayAddConstraintEdge(e, updateNode = false) {
     const trianglesAcross = this.findTrianglesWithEdge(e);
     if (trianglesAcross.length === 2) {
       this.polypoints.removeEdge(new Edge(
@@ -415,6 +425,19 @@ export class TriangleGraph extends DrawableGraph {
     if (this.isConnected(e.p1, e.p2)) {
       this.addFixedEdge(e);
       return;
+    }
+
+    let upperCount;
+    let lowerCount;
+
+    if (updateNode) {
+      const intersectingNodes = this.rootNode.findNodesIntersectingEdge(e);
+      const { upperPoints, lowerPoints, orderedNodes } = TriangleTreeNode.findUpperAndLowerPoints(
+        intersectingNodes,
+        e,
+      );
+      upperCount = TriangleTreeNode.triangulateRegion(upperPoints, orderedNodes);
+      lowerCount = TriangleTreeNode.triangulateRegion(lowerPoints, orderedNodes);
     }
 
     // Find all triangles intersecting the edge
@@ -431,8 +454,13 @@ export class TriangleGraph extends DrawableGraph {
     this.addFixedEdge(e);
 
     // Re-triangulate the upper and lower regions
-    this.triangulateRegion(upperPoints);
-    this.triangulateRegion(lowerPoints);
+    const uc = this.triangulateRegion(upperPoints);
+    const lc = this.triangulateRegion(lowerPoints);
+    if (updateNode) {
+      assert(this.numTriangles() === this.rootNode.findAllTriangles().length);
+      assert(uc === upperCount);
+      assert(lc === lowerCount);
+    }
   }
 
 
