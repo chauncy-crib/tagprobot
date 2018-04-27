@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import { assert } from '../../global/utils';
 import { Triangle } from './Triangle';
+import { Edge } from './Edge';
+import { isLegal } from '../graphToTriangulation';
 import { detD, detH, sortCounterClockwise } from '../utils';
 
 export class TriangleTreeNode {
@@ -237,6 +239,47 @@ export class TriangleTreeNode {
       i += 1;
     }
     return { upperPoints, lowerPoints, orderedNodes };
+  }
+
+  /**
+   * Recursively triangulates an un-triangulated region of points
+   * @param {Point[]} reg - the region defined by an array of points connected in a cycle
+   * @param {TriangleTreeNode[]} regNodes - a list of nodes containing triangles that span across
+   *   the region
+   */
+  static triangulateRegion(reg, regNodes) {
+    if (reg.length === 3) {
+      const newTriangle = new Triangle(reg[0], reg[1], reg[2]);
+      const newNode = new TriangleTreeNode(newTriangle);
+      _.forEach(regNodes, n => n.addChild(newNode));
+    }
+    if (reg.length <= 3) return;
+    // Extract out the points on the edge
+    const e = new Edge(reg[0], _.last(reg));
+    // Slice off the first and last element to get the inner region
+    const innerReg = _.slice(reg, 1, -1);
+
+    // Find vertex c on the region that triangle [e1, e2, c] is delaunay-legal with all other
+    //   points in the region
+    const cIndex = _.findIndex(innerReg, p => {
+      const otherPoints = _.reject(innerReg, p);
+      // Must be delaunay-legal with respect to every other point
+      return _.every(otherPoints, other => isLegal(p, e, other));
+    });
+
+    const newTriangle = new Triangle(e.p1, innerReg[cIndex], e.p2);
+    const newNode = new TriangleTreeNode(newTriangle);
+    _.forEach(regNodes, n => n.addChild(newNode));
+
+    // Call this recursively on the two sub-regions split by this triangle
+    TriangleTreeNode.triangulateRegion(
+      _.concat(e.p1, _.slice(innerReg, 0, cIndex + 1)),
+      regNodes,
+    );
+    TriangleTreeNode.triangulateRegion(
+      _.concat(_.slice(innerReg, cIndex, innerReg.length), e.p2),
+      regNodes,
+    );
   }
 
   findNodesWithCondition(parentCondition, leafCondition) {
