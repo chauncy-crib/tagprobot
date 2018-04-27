@@ -313,3 +313,37 @@ test('TriangleTreeNode.findNodesIntersectingEdge()', tester => {
     t.end();
   });
 });
+
+
+test('TriangleTreeNode.findUpperAndLowerPoints()', tester => {
+  tester.test('returns upper and lower points, and orderedNodes', t => {
+    const node = new TriangleTreeNode(new Triangle(
+      new Point(0, 0),
+      new Point(10, 0),
+      new Point(5, 10),
+    ));
+    node.addVertex(new Point(5, 3));
+    node.addVertex(new Point(5, 7));
+    node.addVertex(new Point(6, 7));
+    const e = new Edge(new Point(0, 0), new Point(6, 7));
+    const intersectingNodes = node.findNodesIntersectingEdge(e);
+
+    const { upperPoints, lowerPoints, orderedNodes } = TriangleTreeNode.findUpperAndLowerPoints(
+      intersectingNodes,
+      e,
+    );
+
+    t.is(intersectingNodes.length, 3);
+    // One of the lists should be length 3, the other should be length 4
+    if (upperPoints.length === 4) {
+      t.is(lowerPoints.length, 3);
+    } else {
+      t.is(upperPoints.length, 3);
+      t.is(lowerPoints.length, 4);
+    }
+    t.is(orderedNodes.length, 3);
+
+    t.end();
+  });
+});
+
