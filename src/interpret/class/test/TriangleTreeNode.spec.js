@@ -347,3 +347,46 @@ test('TriangleTreeNode.findUpperAndLowerPoints()', tester => {
   });
 });
 
+
+test('TriangleTreeNode.triangulateRegion()', tester => {
+  tester.test('retriangulates region with constraint edge', t => {
+    const node = new TriangleTreeNode(new Triangle(
+      new Point(0, 0),
+      new Point(10, 0),
+      new Point(5, 10),
+    ));
+    node.addVertex(new Point(5, 3));
+    node.addVertex(new Point(5, 7));
+    node.addVertex(new Point(6, 7));
+    const e = new Edge(new Point(0, 0), new Point(6, 7));
+    t.is(node.findNodesWithEdge(e).length, 0); // this edge is not currently in the graph
+
+    const intersectingNodes = node.findNodesIntersectingEdge(e);
+
+    const { upperPoints, lowerPoints, orderedNodes } = TriangleTreeNode.findUpperAndLowerPoints(
+      intersectingNodes,
+      e,
+    );
+
+    TriangleTreeNode.triangulateRegion(upperPoints, orderedNodes);
+    TriangleTreeNode.triangulateRegion(lowerPoints, orderedNodes);
+
+    // After calling triangulateRegion, two triangles have the edge
+    t.is(node.findNodesWithEdge(e).length, 2);
+    t.is(node.findAllNodes().length, 7);
+
+    t.false(_.isNil(node.findNodeWithTriangle(new Triangle(
+      new Point(0, 0),
+      new Point(5, 7),
+      new Point(6, 7),
+    ))));
+
+    t.false(_.isNil(node.findNodeWithTriangle(new Triangle(
+      new Point(0, 0),
+      new Point(5, 3),
+      new Point(6, 7),
+    ))));
+
+    t.end();
+  });
+});
