@@ -345,6 +345,7 @@ export class TriangleGraph extends DrawableGraph {
       this.legalizeEdge(p, new Edge(ct.p1, ct.p2));
       this.legalizeEdge(p, new Edge(ct.p1, ct.p3));
       this.legalizeEdge(p, new Edge(ct.p2, ct.p3));
+      if (updateNode) assert(nodeNews.length === 3, `nodeNews was length ${nodeNews.length}`);
     } else if (containingTriangles.length === 2) {
       // Point lies on a line
       const ct1 = containingTriangles[0];
@@ -556,8 +557,8 @@ export class TriangleGraph extends DrawableGraph {
    */
   dynamicUpdate(constrainedEdgesToRemove, constrainedEdgesToAdd, verticesToRemove, verticesToAdd) {
     _.forEach(constrainedEdgesToRemove, e => this.unfixEdge(e));
-    _.forEach(verticesToRemove, v => this.delaunayRemoveVertex(v, false));
-    _.forEach(verticesToAdd, v => this.delaunayAddVertex(v, false));
-    _.forEach(constrainedEdgesToAdd, e => this.delaunayAddConstraintEdge(e));
+    _.forEach(verticesToRemove, v => this.delaunayRemoveVertex(v, true));
+    _.forEach(verticesToAdd, v => this.delaunayAddVertex(v, true));
+    _.forEach(constrainedEdgesToAdd, e => this.delaunayAddConstraintEdge(e, true));
   }
 }
