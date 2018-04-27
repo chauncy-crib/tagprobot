@@ -143,12 +143,12 @@ test('dynamicUpdate', tester => {
       [2, 2, 2, 2, 2],
       [2, 2, 2, 2, 2],
     ];
-    initNavMesh(map, true);
+    initNavMesh(map, false);
     const dtGraph = getDTGraph();
 
-    // t.is(dtGraph.numFixedEdges(), 8);
-    t.is(dtGraph.numEdges(), 17);
-    t.is(dtGraph.numTriangles(), 10);
+    t.is(dtGraph.numFixedEdges(), 8);
+    t.is(dtGraph.numEdges(), 27);
+    t.is(dtGraph.numTriangles(), 17);
 
     map[2][2] = '10.1';
     updateUnmergedGraph(getUnmergedGraph(), map, 2, 2);
@@ -160,10 +160,10 @@ test('dynamicUpdate', tester => {
     t.is(constrainingEdges.length, 0);
     t.is(removeVertices.length, 4);
     t.is(addVertices.length, 0);
-    t.is(dtGraph.numTriangles(), 2);
-    t.is(dtGraph.numVertices(), 4);
-    t.is(dtGraph.numEdges(), 5);
-    // t.is(dtGraph.numFixedEdges(), 4);
+    t.is(dtGraph.numTriangles(), 9);
+    t.is(dtGraph.numVertices(), 7);
+    t.is(dtGraph.numEdges(), 15);
+    t.is(dtGraph.numFixedEdges(), 4);
 
     teardownTiles();
     resetPixiAndTagpro();
