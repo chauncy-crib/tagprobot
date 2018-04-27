@@ -72,7 +72,7 @@ export class TriangleGraph extends DrawableGraph {
   }
 
   numTriangles() {
-    return this.triangles.size;
+    return this.rootNode.findAllTriangles().length;
   }
 
 
