@@ -18,6 +18,13 @@ export class Triangle {
     this.p3 = p3;
   }
 
+  /**
+   * @returns {Triangle} a new Triangle object
+   */
+  static fromCoords(x1, y1, x2, y2, x3, y3) {
+    return new Triangle(new Point(x1, y1), new Point(x2, y2), new Point(x3, y3));
+  }
+
 
   /**
    * @returns {Polypoint} the center point of the triangle
