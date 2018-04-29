@@ -248,9 +248,10 @@ export class TriangleTreeNode {
    *   the region
    * @returns {number} the number of times the function was called recursively
    */
-  static triangulateRegion(reg, regNodes) {
+  static triangulateRegion(reg, regNodes, newTriangles) {
     if (reg.length === 3) {
       const newTriangle = new Triangle(reg[0], reg[1], reg[2]);
+      newTriangles.push(newTriangle);
       const newNode = new TriangleTreeNode(newTriangle);
       _.forEach(regNodes, n => n.addChild(newNode));
     }
@@ -269,6 +270,7 @@ export class TriangleTreeNode {
     });
 
     const newTriangle = new Triangle(e.p1, innerReg[cIndex], e.p2);
+    newTriangles.push(newTriangle);
     const newNode = new TriangleTreeNode(newTriangle);
     _.forEach(regNodes, n => n.addChild(newNode));
 
@@ -278,10 +280,12 @@ export class TriangleTreeNode {
     callCount += TriangleTreeNode.triangulateRegion(
       _.concat(e.p1, _.slice(innerReg, 0, cIndex + 1)),
       regNodes,
+      newTriangles,
     );
     callCount += TriangleTreeNode.triangulateRegion(
       _.concat(_.slice(innerReg, cIndex, innerReg.length), e.p2),
       regNodes,
+      newTriangles,
     );
 
     return callCount;

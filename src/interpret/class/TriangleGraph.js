@@ -6,7 +6,6 @@ import {
   detD,
   detH,
   sortCounterClockwise,
-  findUpperAndLowerPoints,
 } from '../utils';
 import { Point } from './Point';
 import { Edge } from './Edge';
@@ -345,7 +344,7 @@ export class TriangleGraph extends DrawableGraph {
    * @param {Edge} e - the edge to add
    */
   delaunayAddConstraintEdge(e, updateNode = false) {
-    const trianglesAcross = this.findTrianglesWithEdge(e);
+    const trianglesAcross = _.map(this.rootNode.findNodesWithEdge(e), n => n.triangle);
     if (trianglesAcross.length === 2) {
       this.polypoints.removeEdge(new Edge(
         trianglesAcross[0].getCenter(),
@@ -358,39 +357,19 @@ export class TriangleGraph extends DrawableGraph {
       return;
     }
 
-    let upperCount;
-    let lowerCount;
-
     if (updateNode) {
       const intersectingNodes = this.rootNode.findNodesIntersectingEdge(e);
+      const newTriangles = [];
+      _.forEach(intersectingNodes, n => this.removeTrianglePointsEdgesPolypoints(n.triangle));
       const { upperPoints, lowerPoints, orderedNodes } = TriangleTreeNode.findUpperAndLowerPoints(
         intersectingNodes,
         e,
       );
-      upperCount = TriangleTreeNode.triangulateRegion(upperPoints, orderedNodes);
-      lowerCount = TriangleTreeNode.triangulateRegion(lowerPoints, orderedNodes);
-    }
-
-    // Find all triangles intersecting the edge
-    const intersectingTriangles = _.filter(Array.from(this.triangles), t => (
-      t.intersectsEdge(e)
-    ));
-
-    const { upperPoints, lowerPoints } = findUpperAndLowerPoints(intersectingTriangles, e);
-
-    // Remove all intersecting triangles
-    _.forEach(intersectingTriangles, t => this.removeTriangleByReference(t));
-
-    // Add the fixed edge to the graph
-    this.addFixedEdge(e);
-
-    // Re-triangulate the upper and lower regions
-    const uc = this.triangulateRegion(upperPoints);
-    const lc = this.triangulateRegion(lowerPoints);
-    if (updateNode) {
-      assert(this.numTriangles() === this.rootNode.findAllTriangles().length);
-      assert((uc === upperCount && lc === lowerCount) ||
-        (uc === lowerCount && lc === upperCount));
+      TriangleTreeNode.triangulateRegion(upperPoints, orderedNodes, newTriangles);
+      TriangleTreeNode.triangulateRegion(lowerPoints, orderedNodes, newTriangles);
+      this.addFixedEdge(e);
+      _.forEach(newTriangles, t => this.addTriangleEdgesAndVertices(t));
+      _.forEach(newTriangles, t => this.updatePolypoints(t));
     }
   }
 

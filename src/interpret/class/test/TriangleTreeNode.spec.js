@@ -368,8 +368,8 @@ test('TriangleTreeNode.triangulateRegion()', tester => {
       e,
     );
 
-    TriangleTreeNode.triangulateRegion(upperPoints, orderedNodes);
-    TriangleTreeNode.triangulateRegion(lowerPoints, orderedNodes);
+    TriangleTreeNode.triangulateRegion(upperPoints, orderedNodes, []);
+    TriangleTreeNode.triangulateRegion(lowerPoints, orderedNodes, []);
 
     // After calling triangulateRegion, two triangles have the edge
     t.is(node.findNodesWithEdge(e).length, 2);
