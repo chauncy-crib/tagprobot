@@ -33,7 +33,7 @@ test('delaunayAddConstraintEdge does not create flat triangle when points are in
   tGraph.delaunayAddVertex(p3, true);
   tGraph.delaunayAddVertex(p4, true);
 
-  t.doesNotThrow(() => tGraph.delaunayAddConstraintEdge(new Edge(p1, p4), true));
+  t.doesNotThrow(() => tGraph.delaunayAddConstraintEdge(new Edge(p1, p4)));
   t.true(tGraph.findTriangle(p1, p4, p3) !== null);
   t.true(tGraph.findTriangle(p1, p2, p3) !== null);
   t.true(tGraph.findTriangle(p1, p4, p2) === null);

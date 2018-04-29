@@ -82,7 +82,7 @@ export function delaunayTriangulation(
   timeLog('  Adding constrained edges...');
   const shuffledEdges = _.shuffle(mapGraph.getEdges());
   _.forEach(shuffledEdges, e => {
-    dtGraph.delaunayAddConstraintEdge(e, true);
+    dtGraph.delaunayAddConstraintEdge(e);
   });
 }
 
