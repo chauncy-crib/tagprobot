@@ -89,6 +89,18 @@ export class TriangleGraph extends DrawableGraph {
   }
 
 
+  updatePolypoints(t) {
+    const unfixedEdges = _.reject(t.getEdges(), e => this.isEdgeFixed(e));
+    const nodesAcross = _.map(unfixedEdges, e => this.rootNode.findNodeAcross(t, e));
+    const nullFiltered = _.reject(nodesAcross, _.isNil);
+    const tAcross = _.map(nullFiltered, n => n.triangle);
+    _.forEach(tAcross, adjT => {
+      const adjCenter = adjT.getCenter();
+      this.polypoints.addEdge(new Edge(t.getCenter(), adjCenter));
+    });
+  }
+
+
   /**
    * @param {Point} p
    * @returns {Triangle[]} all triangles in the triangulation containing the point
@@ -99,6 +111,14 @@ export class TriangleGraph extends DrawableGraph {
       if (t.containsPoint(p)) containingTriangles.push(t);
     });
     return containingTriangles;
+  }
+
+
+  addTriangleEdgesAndVertices(t) {
+    this.addEdgeAndVertices(new Edge(t.p1, t.p2));
+    this.addEdgeAndVertices(new Edge(t.p1, t.p3));
+    this.addEdgeAndVertices(new Edge(t.p2, t.p3));
+    this.polypoints.addVertex(t.getCenter());
   }
 
 
@@ -156,6 +176,14 @@ export class TriangleGraph extends DrawableGraph {
   removeTriangleByPoints(p1, p2, p3) {
     const r = this.findTriangle(p1, p2, p3);
     if (r) this.removeTriangleByReference(r);
+  }
+
+
+  removeTrianglePointsEdgesPolypoints(t) {
+    if (this.polypoints.hasVertex(t.getCenter())) {
+      this.polypoints.removeVertex(t.getCenter());
+    }
+    _.forEach(t.getEdges(), e => this.removeEdge(e));
   }
 
 
