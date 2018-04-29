@@ -44,64 +44,76 @@ test('delaunayAddConstraintEdge does not create flat triangle when points are in
 });
 
 
-// test('delaunayRemoveVertex', tester => {
-//   tester.test('removes vertex surrounded by 4 points, and validly retriangulates 4 points', t => {
-//     setupPixiAndTagpro();
+test('delaunayRemoveVertex', tester => {
+  tester.test('removes vertex surrounded by 4 points, and validly retriangulates 4 points', t => {
+    setupPixiAndTagpro();
 
-//     const mockDTGraph = new TriangleGraph();
-//     const v0 = new Point(0, 0);
-//     const v1 = new Point(0, 10);
-//     const v2 = new Point(10, 10);
-//     const v3 = new Point(10, 0);
-//     const p = new Point(3, 6);
-//     mockDTGraph.addTriangle(new Triangle(p, v0, v1));
-//     mockDTGraph.addTriangle(new Triangle(p, v1, v2));
-//     mockDTGraph.addTriangle(new Triangle(p, v2, v3));
-//     mockDTGraph.addTriangle(new Triangle(p, v3, v0));
-//     mockDTGraph.delaunayRemoveVertex(p);
+    const mockDTGraph = new TriangleGraph();
+    mockDTGraph.addFirstTriangle(Triangle.fromCoords(-10, -10, -10, 100, 100, -10));
+    const v0 = new Point(0, 0);
+    const v1 = new Point(0, 10);
+    const v2 = new Point(10, 10);
+    const v3 = new Point(10, 0);
+    const p = new Point(3, 6);
+    mockDTGraph.delaunayAddVertex(v0, true);
+    mockDTGraph.delaunayAddVertex(v1, true);
+    mockDTGraph.delaunayAddVertex(v2, true);
+    mockDTGraph.delaunayAddVertex(v3, true);
+    mockDTGraph.delaunayAddVertex(p, true);
 
-//     t.is(mockDTGraph.triangles.size, 2);
-//     t.is(mockDTGraph.getVertices().length, 4);
-//     t.is(mockDTGraph.getEdges().length, 5);
-//     // One of the diagonals is connected
-//     t.true(mockDTGraph.isConnected(v0, v2) !== mockDTGraph.isConnected(v1, v3));
+    t.is(mockDTGraph.numVertices(), 8); // 5 inputs, plus 3 dummy
+    t.is(mockDTGraph.numEdges(), 18);
+    t.is(mockDTGraph.numTriangles(), 11);
 
-//     resetPixiAndTagpro();
+    mockDTGraph.delaunayRemoveVertex(p, true);
 
-//     t.end();
-//   });
+    t.false(mockDTGraph.hasVertex(p));
+    t.is(mockDTGraph.numVertices(), 7); // one vertex gone
+    t.is(mockDTGraph.numEdges(), 15); // lost 3 edges
+    t.is(mockDTGraph.numTriangles(), 9); // lost 2 triangles
+    // One of the diagonals is connected
+    t.true(mockDTGraph.isConnected(v0, v2) !== mockDTGraph.isConnected(v1, v3));
 
-//   tester.test('removes vertex surrounded by 5 points, and validly retriangulates 5 points', t => {
-//     setupPixiAndTagpro();
+    resetPixiAndTagpro();
+    t.end();
+  });
 
-//     const mockDTGraph = new TriangleGraph();
-//     const v0 = new Point(0, 0);
-//     const v1 = new Point(0, 10);
-//     const v2 = new Point(10, 10);
-//     const v3 = new Point(10, 0);
-//     const v4 = new Point(-3, 5);
-//     const p = new Point(3, 6);
-//     // Create a pentagon, with p in the center connected to all other vertices
-//     mockDTGraph.addTriangle(new Triangle(p, v0, v4));
-//     mockDTGraph.addTriangle(new Triangle(p, v4, v1));
-//     mockDTGraph.addTriangle(new Triangle(p, v1, v2));
-//     mockDTGraph.addTriangle(new Triangle(p, v2, v3));
-//     mockDTGraph.addTriangle(new Triangle(p, v3, v0));
-//     mockDTGraph.delaunayRemoveVertex(p);
+  tester.test('removes vertex surrounded by 5 points, and validly retriangulates 5 points', t => {
+    setupPixiAndTagpro();
 
-//     t.is(mockDTGraph.triangles.size, 3);
-//     t.is(mockDTGraph.getVertices().length, 5);
-//     t.is(mockDTGraph.getEdges().length, 7);
-//     // Triangle on the left of the square is connected
-//     t.true(mockDTGraph.isConnected(v0, v1));
-//     // One of the diagonals is connected
-//     t.true(mockDTGraph.isConnected(v0, v2) !== mockDTGraph.isConnected(v1, v3));
+    const mockDTGraph = new TriangleGraph();
+    const v0 = new Point(0, 0);
+    const v1 = new Point(0, 10);
+    const v2 = new Point(10, 10);
+    const v3 = new Point(10, 0);
+    const v4 = new Point(-3, 5);
+    const p = new Point(3, 6);
+    // Create a pentagon, with p in the center connected to all other vertices
+    mockDTGraph.addFirstTriangle(Triangle.fromCoords(-10, -10, -10, 100, 100, -10));
+    mockDTGraph.delaunayAddVertex(v0, true);
+    mockDTGraph.delaunayAddVertex(v1, true);
+    mockDTGraph.delaunayAddVertex(v2, true);
+    mockDTGraph.delaunayAddVertex(v3, true);
+    mockDTGraph.delaunayAddVertex(v4, true);
+    mockDTGraph.delaunayAddVertex(p, true);
+    t.is(mockDTGraph.neighbors(p).length, 5);
+    t.is(mockDTGraph.numVertices(), 9);
+    t.is(mockDTGraph.numTriangles(), 13);
 
-//     resetPixiAndTagpro();
+    mockDTGraph.delaunayRemoveVertex(p, true);
 
-//     t.end();
-//   });
-// });
+    t.false(mockDTGraph.hasVertex(p));
+    t.is(mockDTGraph.numVertices(), 8); // lost one vertex
+    t.is(mockDTGraph.numTriangles(), 11); // lost 2 triangles
+    // Triangle on the left of the square is connected
+    t.true(mockDTGraph.isConnected(v0, v1));
+    // One of the diagonals is connected
+    t.true(mockDTGraph.isConnected(v0, v2) !== mockDTGraph.isConnected(v1, v3));
+
+    resetPixiAndTagpro();
+    t.end();
+  });
+});
 
 
 // test('dynamicUpdate', tester => {
