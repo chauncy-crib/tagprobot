@@ -98,11 +98,9 @@ export function delaunayTriangulation(
 
 /**
  * @param {num} map - array of all vertices
- * @param {boolean} removeDummy - true if the dummy points should be removed from the triangulation
- *   after it is complete.
  * @returns {Graph} graph of the triangulation of all the vertices
  */
-export function initNavMesh(map, removeDummy = false) {
+export function initNavMesh(map) {
   dtGraph = new TriangleGraph();
   unmergedGraph = unmergedGraphFromTagproMap(map);
   mergedGraph = graphFromTagproMap(map, unmergedGraph);
@@ -111,7 +109,7 @@ export function initNavMesh(map, removeDummy = false) {
     new Point(-9999, -100),
     new Point(9999, -100),
     new Point(0, 9999),
-    removeDummy,
+    false,
   );
 }
 
