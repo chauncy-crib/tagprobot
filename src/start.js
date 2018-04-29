@@ -108,7 +108,7 @@ function start() {
   timeLog('Initializing tiles to update...');
   initTilesToUpdate(tagpro.map);
   timeLog('Initializing nav mesh...');
-  initNavMesh(tagpro.map, false);
+  initNavMesh(tagpro.map);
   timeLog('Initializing UI update function...');
   initUiUpdateFunction();
   timeLog('Turning on all drawings...');

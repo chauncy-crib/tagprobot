@@ -128,7 +128,7 @@ test('dynamicUpdate', tester => {
       [2, 2, 2, 2, 2],
       [2, 2, 2, 2, 2],
     ];
-    initNavMesh(map, false);
+    initNavMesh(map);
     const dtGraph = getDTGraph();
 
     t.is(dtGraph.numFixedEdges(), 8);
