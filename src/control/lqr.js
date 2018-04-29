@@ -3,6 +3,7 @@ import math from 'mathjs';
 
 import { Matrix } from './class/Matrix';
 import { FPS, ACCEL, DAMPING_FACTOR } from './constants';
+import { boundValue } from '../global/utils';
 
 let currentGoalState;
 let currentKs;
@@ -136,15 +137,9 @@ export function getLQRAccelerationMultipliers(initialState, goalState, totalTime
   const u = currentKs.get(currentTime).scalarMultiply(-1).dot(x); // [[ax], [ay]]
   currentTime += 1;
 
-  const multipliers = {
-    accX: u.array[0][0] / ACCEL,
-    accY: u.array[1][0] / ACCEL,
-  };
-
   // Max acceleration at 1 or -1
-  return _.mapValues(multipliers, acc => {
-    if (acc > 1) return 1;
-    if (acc < -1) return -1;
-    return acc;
-  });
+  return {
+    accX: boundValue(u.array[0][0] / ACCEL, -1, 1),
+    accY: boundValue(u.array[1][0] / ACCEL, -1, 1),
+  };
 }
