@@ -235,7 +235,7 @@ export class TriangleGraph extends DrawableGraph {
    *   region
    * @param {Edge} e - the edge to add
    */
-  delaunayAddConstraintEdge(e, updateNode = false) {
+  delaunayAddConstraintEdge(e) {
     const trianglesAcross = _.map(this.rootNode.findNodesWithEdge(e), n => n.triangle);
     if (trianglesAcross.length === 2) {
       this.polypoints.removeEdge(new Edge(
@@ -249,20 +249,18 @@ export class TriangleGraph extends DrawableGraph {
       return;
     }
 
-    if (updateNode) {
-      const intersectingNodes = this.rootNode.findNodesIntersectingEdge(e);
-      const newTriangles = [];
-      _.forEach(intersectingNodes, n => this.removeTrianglePointsEdgesPolypoints(n.triangle));
-      const { upperPoints, lowerPoints, orderedNodes } = TriangleTreeNode.findUpperAndLowerPoints(
-        intersectingNodes,
-        e,
-      );
-      TriangleTreeNode.triangulateRegion(upperPoints, orderedNodes, newTriangles);
-      TriangleTreeNode.triangulateRegion(lowerPoints, orderedNodes, newTriangles);
-      this.addFixedEdge(e);
-      _.forEach(newTriangles, t => this.addTriangleEdgesAndVertices(t));
-      _.forEach(newTriangles, t => this.updatePolypoints(t));
-    }
+    const intersectingNodes = this.rootNode.findNodesIntersectingEdge(e);
+    const newTriangles = [];
+    _.forEach(intersectingNodes, n => this.removeTrianglePointsEdgesPolypoints(n.triangle));
+    const { upperPoints, lowerPoints, orderedNodes } = TriangleTreeNode.findUpperAndLowerPoints(
+      intersectingNodes,
+      e,
+    );
+    TriangleTreeNode.triangulateRegion(upperPoints, orderedNodes, newTriangles);
+    TriangleTreeNode.triangulateRegion(lowerPoints, orderedNodes, newTriangles);
+    this.addFixedEdge(e);
+    _.forEach(newTriangles, t => this.addTriangleEdgesAndVertices(t));
+    _.forEach(newTriangles, t => this.updatePolypoints(t));
   }
 
 
@@ -324,6 +322,6 @@ export class TriangleGraph extends DrawableGraph {
     _.forEach(constrainedEdgesToRemove, e => this.unfixEdge(e));
     _.forEach(verticesToRemove, v => this.delaunayRemoveVertex(v, true));
     _.forEach(verticesToAdd, v => this.delaunayAddVertex(v, true));
-    _.forEach(constrainedEdgesToAdd, e => this.delaunayAddConstraintEdge(e, true));
+    _.forEach(constrainedEdgesToAdd, e => this.delaunayAddConstraintEdge(e));
   }
 }
