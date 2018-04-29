@@ -5,14 +5,14 @@ import { assert } from '../../global/utils';
 
 
 /**
- * A wrapper around 2D javascript arrays which supports matrix math operations
+ * A wrapper around 1D, 2D, and 3D javascript arrays which supports matrix math operations
  */
 export class Matrix {
   /**
-   * @param {number[][]} array - an array of arrays of numbers
+   * @param {number|number[]|number[][]|number[][][]} array - an array of arrays of numbers
    */
   constructor(array) {
-    if (typeof array === 'number') array = [array];
+    if (_.isNumber(array)) array = [array];
     assert(_.isArray(array), 'input to Matrix is not an array');
     this.array = array;
   }
@@ -22,15 +22,19 @@ export class Matrix {
   }
 
   get(index) {
-    assert(this.isValidIndex(index), 'Matrix.get called with index out of bounds');
+    assert(this.isValidIndex(index), `Matrix.get called with index out of bounds: ${index}`);
     return new Matrix(this.array[index]);
   }
 
   set(index, other) {
-    assert(this.isValidIndex(index), 'Matrix.set called with index out of bounds');
+    assert(this.isValidIndex(index), `Matrix.set called with index out of bounds: ${index}`);
     this.array[index] = other.array;
   }
 
+  /**
+   * @param {Matrix|Array} other - matrix to append to this matrix
+   * @param {0|1} [axis=0] - 0 to append matrix as a row, 1 to append matrix as a column
+   */
   append(other, axis = 0) {
     const array = other instanceof Matrix ? other.array : other;
     if (axis === 0) {
@@ -46,6 +50,10 @@ export class Matrix {
     } else assert(false, 'Matrix.append called with invalid axis');
   }
 
+  /**
+   * @returns {number[]} the number of rows and columns, and depth of the matrix according to how
+   *   many dimensions it has.  Takes the format [rows, columns, depth]
+   */
   shape() {
     return math.size(this.array);
   }

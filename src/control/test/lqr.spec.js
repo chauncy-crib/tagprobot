@@ -16,7 +16,6 @@ test('getLQRAccelerationMultipliers', tester => {
     const goal = new Matrix([[100], [-50], [50], [-25]]);
 
     const multipliers = getLQRAccelerationMultipliers(x0, goal, 5);
-
     t.true(isRoughly(multipliers.accX, 0.28));
     t.true(isRoughly(multipliers.accY, 0.44));
 
@@ -32,7 +31,6 @@ test('getLQRAccelerationMultipliers', tester => {
     RewireAPI.__Rewire__('currentKs', null);
     RewireAPI.__Rewire__('currentTime', null);
     RewireAPI.__Rewire__('dlqr', dlqrSpy);
-
     const x0 = new Matrix([[0], [0], [0], [-100]]);
     const goal = new Matrix([[100], [-50], [50], [-25]]);
 
@@ -54,7 +52,6 @@ test('getLQRAccelerationMultipliers', tester => {
     RewireAPI.__Rewire__('currentKs', null);
     RewireAPI.__Rewire__('currentTime', null);
     RewireAPI.__Rewire__('dlqr', dlqrSpy);
-
     const x0 = new Matrix([[0], [0], [0], [-100]]);
     const goal = new Matrix([[100], [-50], [50], [-25]]);
     const newGoal = new Matrix([[200], [-50], [50], [-25]]);

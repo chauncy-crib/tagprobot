@@ -49,10 +49,10 @@ def tagpro_simulate_with_control(x0, goal, dur, dt):
 
     b = 0.50  # damping coefficient
     A = np.array([  # difference equations
-        [1,         dt, 0,          0],   # x = x + (dx/dt * dt)
-        [0, 1 - b * dt, 0,          0],   # dx/dt = dx/dt + (dx/dt * (-b * dt))
-        [0,          0, 1,         dt],   # y = y + (dy/dt * dt)
-        [0,          0, 0, 1 - b * dt]])  # dy/dt = dx/dt + (dy/dt * (-b * dt))
+        [1,            dt, 0,             0],   # x = x + (dx/dt * dt)
+        [0, 1 + (-b * dt), 0,             0],   # dx/dt = dx/dt + (dx/dt * (-b * dt))
+        [0,             0, 1,            dt],   # y = y + (dy/dt * dt)
+        [0,             0, 0, 1 + (-b * dt)]])  # dx/dt = dx/dt + (dy/dt * (-b * dt))
 
     B = np.array([  # matrix to apply our control signal to our state
         [ 0,  0],

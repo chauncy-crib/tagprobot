@@ -3,6 +3,8 @@ import math from 'mathjs';
 
 import { Matrix } from './class/Matrix';
 import { FPS, ACCEL, DAMPING_FACTOR } from './constants';
+import { boundValue } from '../global/utils';
+
 
 let currentGoalState;
 let currentKs;
@@ -38,7 +40,7 @@ export function dlqr(A, B, Q, F, R, goal, T) {
 
   // Cost at each time step
   const Ps = new Matrix(math.zeros([T, Q.shape()[0], Q.shape()[1]]));
-  Ps.set(Ps.array.length - 1, F);
+  Ps.set(Ps.shape()[0] - 1, F);
 
   const Ks = new Matrix(math.zeros([T - 1, R.shape()[0], A.shape()[1]]));
 
@@ -93,9 +95,9 @@ function recalculateKMatrices(goalState, T) {
   // Difference equations
   const A = new Matrix([
     [1, dt, 0, 0], // x = x + (dx/dt * dt)
-    [0, 1 - (b * dt), 0, 0], // dx/dt = dx/dt + (dx/dt * (-b * dt))
+    [0, 1 + (-b * dt), 0, 0], // dx/dt = dx/dt + (dx/dt * (-b * dt))
     [0, 0, 1, dt], // y = y + (dy/dt * dt)
-    [0, 0, 0, 1 - (b * dt)], // dy/dt = dx/dt + (dy/dt * (-b * dt))
+    [0, 0, 0, 1 + (-b * dt)], // dy/dt = dy/dt + (dy/dt * (-b * dt))
   ]);
 
   // Matrix to apply our control signal to our state
@@ -136,15 +138,9 @@ export function getLQRAccelerationMultipliers(initialState, goalState, totalTime
   const u = currentKs.get(currentTime).scalarMultiply(-1).dot(x); // [[ax], [ay]]
   currentTime += 1;
 
-  const multipliers = {
-    accX: u.array[0][0] / ACCEL,
-    accY: u.array[1][0] / ACCEL,
-  };
-
   // Max acceleration at 1 or -1
-  return _.mapValues(multipliers, acc => {
-    if (acc > 1) return 1;
-    if (acc < -1) return -1;
-    return acc;
-  });
+  return {
+    accX: boundValue(u.array[0][0] / ACCEL, -1, 1),
+    accY: boundValue(u.array[1][0] / ACCEL, -1, 1),
+  };
 }
