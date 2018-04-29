@@ -402,48 +402,12 @@ export class TriangleGraph extends DrawableGraph {
    */
   delaunayRemoveVertex(p, updateNode = false) {
     if (updateNode) {
-      this.rootNode.removeVertex(p, this.neighbors(p));
+      const { oldTriangles, newTriangles } = this.rootNode.removeVertex(p, this.neighbors(p));
+      _.forEach(oldTriangles, t => this.removeTrianglePointsEdgesPolypoints(t));
+      _.forEach(newTriangles, t => this.addTriangleEdgesAndVertices(t));
+      _.forEach(newTriangles, t => this.updatePolypoints(t));
+      this.removeVertex(p);
     }
-    const N = sortCounterClockwise(this.neighbors(p), p);
-    for (let i = 0; i < N.length; i++) {
-      const n1 = N[i ? i - 1 : N.length - 1];
-      const n2 = N[i];
-      assert(this.isConnected(n1, n2), `Cycle not formed by neighbors around ${p}`);
-    }
-    while (this.neighbors(p).length > 3) {
-      let ear = null;
-      const neighbors = sortCounterClockwise(this.neighbors(p), p);
-      const L = neighbors.length;
-      // Find an ear to remove, iterate until you find an ear
-      let i = 0;
-      while (!ear && i < L) {
-        const v1 = neighbors[i];
-        const v2 = neighbors[(i + 1) % L];
-        const v3 = neighbors[(i + 2) % L];
-        if (detD(v1, v2, v3) >= 0 && detD(v1, v3, p) >= 0) {
-          // Neighbors not in this triple
-          const otherNbrs = _.reject(neighbors, n => n.equals(v1) || n.equals(v2) || n.equals(v3));
-          // Ear is delaunay if none of the other neighbors fall inside the circumcircle
-          const delaunayValid = !_.some(otherNbrs, n => detH(v1, v2, v3, n) > 0);
-          if (delaunayValid) ear = [v1, v2, v3];
-        }
-        i += 1;
-      }
-      assert(!_.isNull(ear), 'Could not find valid ear to remove');
-      // Flip the diagonal to remove a neighbor of p
-      this.removeTriangleByPoints(p, ear[0], ear[1]);
-      this.removeTriangleByPoints(p, ear[1], ear[2]);
-      this.addTriangle(new Triangle(ear[0], ear[1], ear[2]));
-      this.addTriangle(new Triangle(ear[0], ear[2], p, false));
-    }
-    // Merge the remaining three triangles
-    const neighbors = this.neighbors(p);
-    assert(neighbors.length === 3);
-    this.removeTriangleByPoints(p, neighbors[0], neighbors[1]);
-    this.removeTriangleByPoints(p, neighbors[0], neighbors[2]);
-    this.removeTriangleByPoints(p, neighbors[1], neighbors[2]);
-    this.addTriangle(new Triangle(neighbors[0], neighbors[1], neighbors[2]));
-    this.removeVertex(p);
   }
 
 
@@ -465,9 +429,9 @@ export class TriangleGraph extends DrawableGraph {
    *   retriangulate around them after each addition)
    */
   dynamicUpdate(constrainedEdgesToRemove, constrainedEdgesToAdd, verticesToRemove, verticesToAdd) {
-    // _.forEach(constrainedEdgesToRemove, e => this.unfixEdge(e));
-    // _.forEach(verticesToRemove, v => this.delaunayRemoveVertex(v, true));
-    // _.forEach(verticesToAdd, v => this.delaunayAddVertex(v, true));
-    // _.forEach(constrainedEdgesToAdd, e => this.delaunayAddConstraintEdge(e, true));
+    _.forEach(constrainedEdgesToRemove, e => this.unfixEdge(e));
+    _.forEach(verticesToRemove, v => this.delaunayRemoveVertex(v, true));
+    _.forEach(verticesToAdd, v => this.delaunayAddVertex(v, true));
+    _.forEach(constrainedEdgesToAdd, e => this.delaunayAddConstraintEdge(e, true));
   }
 }

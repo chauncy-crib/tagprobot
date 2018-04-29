@@ -119,6 +119,8 @@ export class TriangleTreeNode {
       N[nIdx],
       N[(nIdx + 1) % N.length],
     )));
+    const oldTriangles = _.map(nTriangles, n => n.triangle);
+    const newTriangles = [];
     _.forEach(nTriangles, nt => assert(nt, 'nt was null'));
     while (nIndices.length > 3) {
       let ear = null;
@@ -140,6 +142,7 @@ export class TriangleTreeNode {
       }
       assert(ear, 'Could not find valid ear to remove');
       const newNode = new TriangleTreeNode(new Triangle(ear[0], ear[1], ear[2]));
+      newTriangles.push(newNode.triangle);
       let j = nIndices[i];
       // Add the newNode as a child of all old nodes which overlap with it
       while (j !== nIndices[(i + 2) % L]) {
@@ -154,7 +157,9 @@ export class TriangleTreeNode {
       N[nIndices[1]],
       N[nIndices[2]],
     ));
+    newTriangles.push(finalNewNode.triangle);
     _.forEach(nTriangles, nt => nt.addChild(finalNewNode));
+    return { oldTriangles, newTriangles };
   }
 
   /**
