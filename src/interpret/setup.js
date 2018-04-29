@@ -76,7 +76,7 @@ export function delaunayTriangulation(
   });
   timeLog('  Adding vertices...');
   _.forEach(shuffledVertices, vertex => {
-    dtGraph.delaunayAddVertex(vertex, true);
+    dtGraph.delaunayAddVertex(vertex);
   });
 
   timeLog('  Adding constrained edges...');

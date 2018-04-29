@@ -183,19 +183,17 @@ export class TriangleGraph extends DrawableGraph {
    * Adds the point to the triangulation. Ensures the triangulation is delaunay-legal after
    *   insertion
    */
-  delaunayAddVertex(p, updateNode = false) {
+  delaunayAddVertex(p) {
     assert(!this.hasVertex(p));
-    if (updateNode) {
-      const { containingTriangles, newNodes } = this.rootNode.addVertex(p);
-      assert(
-        containingTriangles.length > 0 && containingTriangles.length <= 2,
-        `Found ${containingTriangles.length} containing triangles`,
-      );
-      _.forEach(containingTriangles, t => this.removeTrianglePointsEdgesPolypoints(t));
-      _.forEach(newNodes, n => this.addTriangleEdgesAndVertices(n.triangle));
-      _.forEach(newNodes, n => this.updatePolypoints(n.triangle));
-      _.forEach(newNodes, n => this.legalizeEdgeNode(n, p));
-    }
+    const { containingTriangles, newNodes } = this.rootNode.addVertex(p);
+    assert(
+      containingTriangles.length > 0 && containingTriangles.length <= 2,
+      `Found ${containingTriangles.length} containing triangles`,
+    );
+    _.forEach(containingTriangles, t => this.removeTrianglePointsEdgesPolypoints(t));
+    _.forEach(newNodes, n => this.addTriangleEdgesAndVertices(n.triangle));
+    _.forEach(newNodes, n => this.updatePolypoints(n.triangle));
+    _.forEach(newNodes, n => this.legalizeEdgeNode(n, p));
   }
 
   /**
@@ -321,7 +319,7 @@ export class TriangleGraph extends DrawableGraph {
   dynamicUpdate(constrainedEdgesToRemove, constrainedEdgesToAdd, verticesToRemove, verticesToAdd) {
     _.forEach(constrainedEdgesToRemove, e => this.unfixEdge(e));
     _.forEach(verticesToRemove, v => this.delaunayRemoveVertex(v, true));
-    _.forEach(verticesToAdd, v => this.delaunayAddVertex(v, true));
+    _.forEach(verticesToAdd, v => this.delaunayAddVertex(v));
     _.forEach(constrainedEdgesToAdd, e => this.delaunayAddConstraintEdge(e));
   }
 }

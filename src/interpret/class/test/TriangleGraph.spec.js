@@ -28,10 +28,10 @@ test('delaunayAddConstraintEdge does not create flat triangle when points are in
   const p2 = new Point(1200, 680);
   const p3 = new Point(1200, 720);
   const p4 = new Point(1200, 760);
-  tGraph.delaunayAddVertex(p1, true);
-  tGraph.delaunayAddVertex(p2, true);
-  tGraph.delaunayAddVertex(p3, true);
-  tGraph.delaunayAddVertex(p4, true);
+  tGraph.delaunayAddVertex(p1);
+  tGraph.delaunayAddVertex(p2);
+  tGraph.delaunayAddVertex(p3);
+  tGraph.delaunayAddVertex(p4);
 
   t.doesNotThrow(() => tGraph.delaunayAddConstraintEdge(new Edge(p1, p4)));
   t.true(tGraph.findTriangle(p1, p4, p3) !== null);
@@ -55,11 +55,11 @@ test('delaunayRemoveVertex', tester => {
     const v2 = new Point(10, 10);
     const v3 = new Point(10, 0);
     const p = new Point(3, 6);
-    mockDTGraph.delaunayAddVertex(v0, true);
-    mockDTGraph.delaunayAddVertex(v1, true);
-    mockDTGraph.delaunayAddVertex(v2, true);
-    mockDTGraph.delaunayAddVertex(v3, true);
-    mockDTGraph.delaunayAddVertex(p, true);
+    mockDTGraph.delaunayAddVertex(v0);
+    mockDTGraph.delaunayAddVertex(v1);
+    mockDTGraph.delaunayAddVertex(v2);
+    mockDTGraph.delaunayAddVertex(v3);
+    mockDTGraph.delaunayAddVertex(p);
 
     t.is(mockDTGraph.numVertices(), 8); // 5 inputs, plus 3 dummy
     t.is(mockDTGraph.numEdges(), 18);
@@ -90,12 +90,12 @@ test('delaunayRemoveVertex', tester => {
     const p = new Point(3, 6);
     // Create a pentagon, with p in the center connected to all other vertices
     mockDTGraph.addFirstTriangle(Triangle.fromCoords(-10, -10, -10, 100, 100, -10));
-    mockDTGraph.delaunayAddVertex(v0, true);
-    mockDTGraph.delaunayAddVertex(v1, true);
-    mockDTGraph.delaunayAddVertex(v2, true);
-    mockDTGraph.delaunayAddVertex(v3, true);
-    mockDTGraph.delaunayAddVertex(v4, true);
-    mockDTGraph.delaunayAddVertex(p, true);
+    mockDTGraph.delaunayAddVertex(v0);
+    mockDTGraph.delaunayAddVertex(v1);
+    mockDTGraph.delaunayAddVertex(v2);
+    mockDTGraph.delaunayAddVertex(v3);
+    mockDTGraph.delaunayAddVertex(v4);
+    mockDTGraph.delaunayAddVertex(p);
 
     t.is(mockDTGraph.neighbors(p).length, 5);
     t.is(mockDTGraph.numVertices(), 9);
