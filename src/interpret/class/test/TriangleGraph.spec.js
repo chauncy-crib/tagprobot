@@ -19,33 +19,6 @@ import {
 } from '../../../draw/class/test/DrawableGraph.spec';
 
 
-test('findContainingTriangles finds containing triangles', t => {
-  setupPixiAndTagpro();
-  const tGraph = new TriangleGraph();
-  const p1 = new Point(0, 0);
-  const p2 = new Point(-3, 8);
-  const p3 = new Point(0, 10);
-  const p4 = new Point(40, 40);
-  const p5 = new Point(-40, 40);
-  const t1 = new Triangle(p1, p2, p3);
-  const t2 = new Triangle(p2, p3, p5);
-  const t3 = new Triangle(p1, p3, p4);
-  tGraph.addTriangle(t1);
-  tGraph.addTriangle(t2);
-  tGraph.addTriangle(t3);
-  const c1 = tGraph.findContainingTriangles(new Point(1, 5));
-  const c2 = tGraph.findContainingTriangles(new Point(0, 2));
-
-  t.is(c1[0], t3);
-  t.is(c1.length, 1);
-  t.is(c2.length, 2);
-
-  resetPixiAndTagpro();
-
-  t.end();
-});
-
-
 test('triangulateRegion does not create flat triangle when points are in a line', t => {
   setupPixiAndTagpro();
 
