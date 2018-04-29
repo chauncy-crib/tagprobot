@@ -32,8 +32,8 @@ test('delaunayAddConstraintEdge does not create flat triangle when points are in
   tGraph.delaunayAddVertex(p2, true);
   tGraph.delaunayAddVertex(p3, true);
   tGraph.delaunayAddVertex(p4, true);
-  t.doesNotThrow(() => tGraph.delaunayAddConstraintEdge(new Edge(p1, p4), true));
 
+  t.doesNotThrow(() => tGraph.delaunayAddConstraintEdge(new Edge(p1, p4), true));
   t.true(tGraph.findTriangle(p1, p4, p3) !== null);
   t.true(tGraph.findTriangle(p1, p2, p3) !== null);
   t.true(tGraph.findTriangle(p1, p4, p2) === null);
@@ -96,6 +96,7 @@ test('delaunayRemoveVertex', tester => {
     mockDTGraph.delaunayAddVertex(v3, true);
     mockDTGraph.delaunayAddVertex(v4, true);
     mockDTGraph.delaunayAddVertex(p, true);
+
     t.is(mockDTGraph.neighbors(p).length, 5);
     t.is(mockDTGraph.numVertices(), 9);
     t.is(mockDTGraph.numTriangles(), 13);
@@ -116,46 +117,44 @@ test('delaunayRemoveVertex', tester => {
 });
 
 
-// test('dynamicUpdate', tester => {
-//   tester.test('single NT tile', t => {
-//     setupTiles();
-//     setupPixiAndTagpro();
+test('dynamicUpdate', tester => {
+  tester.test('single NT tile', t => {
+    setupTiles();
+    setupPixiAndTagpro();
+    const map = [
+      [2, 2, 2, 2, 2],
+      [2, 2, 2, 2, 2],
+      [2, 2, 10, 2, 2],
+      [2, 2, 2, 2, 2],
+      [2, 2, 2, 2, 2],
+    ];
+    initNavMesh(map, false);
+    const dtGraph = getDTGraph();
 
-//     const map = [
-//       [2, 2, 2, 2, 2],
-//       [2, 2, 2, 2, 2],
-//       [2, 2, 10, 2, 2],
-//       [2, 2, 2, 2, 2],
-//       [2, 2, 2, 2, 2],
-//     ];
-//     initNavMesh(map, false);
-//     const dtGraph = getDTGraph();
+    t.is(dtGraph.numFixedEdges(), 8);
+    t.is(dtGraph.numEdges(), 27);
+    t.is(dtGraph.numTriangles(), 17);
 
-//     t.is(dtGraph.numFixedEdges(), 8);
-//     t.is(dtGraph.numEdges(), 27);
-//     t.is(dtGraph.numTriangles(), 17);
+    map[2][2] = '10.1';
+    updateUnmergedGraph(getUnmergedGraph(), map, 2, 2);
+    const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
+      updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, 2, 2);
+    dtGraph.dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
 
-//     map[2][2] = '10.1';
-//     updateUnmergedGraph(getUnmergedGraph(), map, 2, 2);
-//     const { unfixEdges, constrainingEdges, removeVertices, addVertices } =
-//       updateMergedGraph(getMergedGraph(), getUnmergedGraph(), map, 2, 2);
-//     dtGraph.dynamicUpdate(unfixEdges, constrainingEdges, removeVertices, addVertices);
+    t.is(unfixEdges.length, 4);
+    t.is(constrainingEdges.length, 0);
+    t.is(removeVertices.length, 4);
+    t.is(addVertices.length, 0);
+    t.is(dtGraph.numTriangles(), 9);
+    t.is(dtGraph.numVertices(), 7);
+    t.is(dtGraph.numEdges(), 15);
+    t.is(dtGraph.numFixedEdges(), 4);
 
-//     t.is(unfixEdges.length, 4);
-//     t.is(constrainingEdges.length, 0);
-//     t.is(removeVertices.length, 4);
-//     t.is(addVertices.length, 0);
-//     t.is(dtGraph.numTriangles(), 9);
-//     t.is(dtGraph.numVertices(), 7);
-//     t.is(dtGraph.numEdges(), 15);
-//     t.is(dtGraph.numFixedEdges(), 4);
-
-//     teardownTiles();
-//     resetPixiAndTagpro();
-
-//     t.end();
-//   });
-// });
+    teardownTiles();
+    resetPixiAndTagpro();
+    t.end();
+  });
+});
 
 
 test('getClearancePoint()', tester => {
