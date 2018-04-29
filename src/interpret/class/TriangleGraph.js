@@ -2,11 +2,6 @@ import _ from 'lodash';
 
 import { assert } from '../../global/utils';
 import { TriangleTreeNode } from './TriangleTreeNode';
-import {
-  detD,
-  detH,
-  sortCounterClockwise,
-} from '../utils';
 import { Point } from './Point';
 import { Edge } from './Edge';
 import { Triangle } from './Triangle';
@@ -47,7 +42,6 @@ export class TriangleGraph extends DrawableGraph {
 
   initDataStructures() {
     this.rootNode = null;
-    this.triangles = new Set();
     this.fixedAdj = {};
     this.polypoints = new DrawableGraph(
       THICKNESSES.triangulation,
@@ -59,6 +53,16 @@ export class TriangleGraph extends DrawableGraph {
         thickness: THICKNESSES.triangulation,
       }),
     );
+  }
+
+
+  addFirstTriangle(t) {
+    assert(this.numVertices() === 0, `addFirstTriangle called with ${this.numVertices()} vertices`);
+    this.rootNode = new TriangleTreeNode(t);
+  }
+
+  findContainingTriangles(p) {
+    return _.map(this.rootNode.findContainingNodes(p), n => n.triangle);
   }
 
 
@@ -83,19 +87,6 @@ export class TriangleGraph extends DrawableGraph {
   }
 
 
-  /**
-   * @param {Point} p
-   * @returns {Triangle[]} all triangles in the triangulation containing the point
-   */
-  findContainingTriangles(p) {
-    const containingTriangles = [];
-    this.triangles.forEach(t => {
-      if (t.containsPoint(p)) containingTriangles.push(t);
-    });
-    return containingTriangles;
-  }
-
-
   addTriangleEdgesAndVertices(t) {
     this.addEdgeAndVertices(new Edge(t.p1, t.p2));
     this.addEdgeAndVertices(new Edge(t.p1, t.p3));
@@ -104,71 +95,11 @@ export class TriangleGraph extends DrawableGraph {
   }
 
 
-  addTriangle(t, updateNode = false) {
-    if (this.numVertices() === 0 && updateNode) {
-      this.rootNode = new TriangleTreeNode(t);
-    }
-    this.triangles.add(t);
-  }
-
-
-  /**
-   * @param {Point} p1
-   * @param {Point} p2
-   * @param {Point} p3
-   * @returns {Triangle} a reference to the triangle which has the same location as the three input
-   *   points
-   */
-  findTriangle(p1, p2, p3) {
-    const r = new Triangle(p1, p2, p3, false);
-    let res = null;
-    this.triangles.forEach(t => {
-      if (r.equals(t)) res = t;
-    });
-    return res;
-  }
-
-
-  /**
-   * Remove all triangles and the associated edges connected to a point
-   */
-  removeVertexAndTriangles(p) {
-    this.triangles.forEach(t => {
-      // remove all triangles connected to the point
-      if (t.p1.equals(p) || t.p2.equals(p) || t.p3.equals(p)) {
-        this.removeTriangleByReference(t);
-        // add back the edges we just removed
-        if (t.p1.equals(p)) this.addEdge(new Edge(t.p2, t.p3));
-        if (t.p2.equals(p)) this.addEdge(new Edge(t.p1, t.p3));
-        if (t.p3.equals(p)) this.addEdge(new Edge(t.p1, t.p2));
-      }
-    });
-    this.removeVertex(p);
-  }
-
-
-  removeTriangleByPoints(p1, p2, p3) {
-    const r = this.findTriangle(p1, p2, p3);
-    if (r) this.removeTriangleByReference(r);
-  }
-
-
   removeTrianglePointsEdgesPolypoints(t) {
     if (this.polypoints.hasVertex(t.getCenter())) {
       this.polypoints.removeVertex(t.getCenter());
     }
     _.forEach(t.getEdges(), e => this.removeEdge(e));
-  }
-
-
-  removeTriangleByReference(t) {
-    if (this.polypoints.hasVertex(t.getCenter())) {
-      this.polypoints.removeVertex(t.getCenter());
-    }
-    this.triangles.delete(t);
-    this.removeEdge(new Edge(t.p1, t.p2));
-    this.removeEdge(new Edge(t.p1, t.p3));
-    this.removeEdge(new Edge(t.p2, t.p3));
   }
 
 
@@ -243,15 +174,6 @@ export class TriangleGraph extends DrawableGraph {
 
 
   /**
-   * @param {Edge} e
-   * @returns {Triangle[]} all triangles which have one edge equal to e
-   */
-  findTrianglesWithEdge(e) {
-    return _.filter(Array.from(this.triangles), t => t.hasEdge(e));
-  }
-
-
-  /**
    * Adds the point to the triangulation. Ensures the triangulation is delaunay-legal after
    *   insertion
    */
@@ -299,42 +221,6 @@ export class TriangleGraph extends DrawableGraph {
         this.legalizeEdgeNode(n2, newPoint);
       }
     }
-  }
-
-
-  /**
-   * Recursively triangulates an un-triangulated region of points
-   * @param {Point[]} reg - the region defined by an array of points connected in a cycle
-   * @returns {number} - the number of times the function was called recursively
-   */
-  triangulateRegion(reg) {
-    // Base cases: make triangle if region is 3 points, skip if region is <3 points
-    if (reg.length === 3) this.addTriangle(new Triangle(reg[0], reg[1], reg[2]));
-    if (reg.length <= 3) return 1;
-
-    // Extract out the points on the edge
-    const e = new Edge(reg[0], _.last(reg));
-    assert(this.isConnected(e.p1, e.p2), `the edge of region ${reg} was not connected`);
-    // Slice off the first and last element to get the inner region
-    const innerReg = _.slice(reg, 1, -1);
-
-    // Find vertex c on the region that triangle [e1, e2, c] is delaunay-legal with all other
-    //   points in the region
-    const cIndex = _.findIndex(innerReg, p => {
-      const otherPoints = _.reject(innerReg, p);
-      // Must be delaunay-legal with respect to every other point
-      return _.every(otherPoints, other => isLegal(p, e, other));
-    });
-
-    // Make that triangle with vertex c
-    this.addTriangle(new Triangle(e.p1, innerReg[cIndex], e.p2));
-
-    let callCount = 1;
-
-    // Call this recursively on the two sub-regions split by this triangle
-    callCount += this.triangulateRegion(_.concat(e.p1, _.slice(innerReg, 0, cIndex + 1)));
-    callCount += this.triangulateRegion(_.concat(_.slice(innerReg, cIndex, innerReg.length), e.p2));
-    return callCount;
   }
 
 
