@@ -27,7 +27,6 @@ test('delaunayTriangulation()', tester => {
       new Point(-100, 50),
       new Point(100, 50),
       new Point(0, -50),
-      false,
     );
     t.true(getDTGraph().isConnected(p1, p4));
     t.true(getDTGraph().isConnected(p1, p2));
@@ -65,7 +64,6 @@ test('delaunayTriangulation()', tester => {
   //     new Point(-100, 50),
   //     new Point(100, 50),
   //     new Point(0, -50),
-  //     false,
   //   );
   //   t.false(getDTGraph().isConnected(p1, p4));
   //   t.true(getDTGraph().isConnected(p1, p2));
@@ -104,7 +102,6 @@ test('delaunayTriangulation()', tester => {
       new Point(-100, 50),
       new Point(100, 50),
       new Point(0, -50),
-      false,
     );
     t.false(getDTGraph().isConnected(p1, p4));
     t.true(getDTGraph().isConnected(p1, p2));
@@ -143,7 +140,6 @@ test('delaunayTriangulation()', tester => {
   //       new Point(-100, 50),
   //       new Point(100, 50),
   //       new Point(0, -50),
-  //       false,
   //     );
   //     t.true(getDTGraph().isConnected(p1, p4));
   //     t.true(getDTGraph().isConnected(p1, p2));
@@ -181,7 +177,6 @@ test('delaunayTriangulation()', tester => {
       new Point(-40, 40),
       new Point(40, 40),
       new Point(0, -40),
-      false,
     );
     t.is(getDTGraph().getVertices().length, 7);
     t.is(getDTGraph().numTriangles(), 9);
@@ -209,7 +204,6 @@ test('delaunayTriangulation()', tester => {
       new Point(-200, -5),
       new Point(20, 200),
       new Point(13, -1),
-      false,
     );
     const pp = getDTGraph().polypoints;
 

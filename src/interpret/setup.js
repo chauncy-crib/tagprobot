@@ -51,8 +51,6 @@ export function initTilesToUpdate(map) {
  * @param {Point} dummyPoint1 - a dummy point to start the triangulation with. Dummy points 1-3
  *   should surround all other vertices that will get added. This function will assertion error if
  *   they don't
- * @param {boolean} removeDummy - true if the dummy points should be removed from the triangulation
- *   after it is complete.
  * @returns {Graph} graph of the triangulation of all the vertices
  */
 export function delaunayTriangulation(
@@ -60,7 +58,6 @@ export function delaunayTriangulation(
   dummyPoint1,
   dummyPoint2,
   dummyPoint3,
-  removeDummy = false,
 ) {
   const numVertices = dtGraph.getVertices().length;
   assert(numVertices === 0, `dtGraph had ${numVertices} vertices.`);
@@ -87,12 +84,6 @@ export function delaunayTriangulation(
   _.forEach(shuffledEdges, e => {
     dtGraph.delaunayAddConstraintEdge(e, true);
   });
-
-  if (removeDummy) {
-    _.forEach([dummyPoint1, dummyPoint2, dummyPoint3], dummyPoint => {
-      dtGraph.removeVertexAndTriangles(dummyPoint);
-    });
-  }
 }
 
 
@@ -109,7 +100,6 @@ export function initNavMesh(map) {
     new Point(-9999, -100),
     new Point(9999, -100),
     new Point(0, 9999),
-    false,
   );
 }
 
