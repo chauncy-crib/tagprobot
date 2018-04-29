@@ -15,9 +15,6 @@ import { DrawableGraph } from '../../draw/class/DrawableGraph';
 import { isLegal } from '../graphToTriangulation';
 import { COLORS, ALPHAS, THICKNESSES } from '../../draw/constants';
 
-let legalizeCount1 = 0;
-let legalizeCount2 = 0;
-
 const CLEARANCE = 27; // sqrt(BRP^2 + BRP^2) to have full clearance around a right-angle corner
 
 
@@ -75,20 +72,6 @@ export class TriangleGraph extends DrawableGraph {
     return this.rootNode.findAllTriangles().length;
   }
 
-
-  getAdjacentTriangles(t) {
-    const res = [];
-    const op1 = this.findOppositePoint(t.p1, new Edge(t.p2, t.p3));
-    const op2 = this.findOppositePoint(t.p2, new Edge(t.p1, t.p3));
-    const op3 = this.findOppositePoint(t.p3, new Edge(t.p1, t.p2));
-    if (op3) res.push(this.findTriangle(t.p1, t.p2, op3));
-    if (op2) res.push(this.findTriangle(t.p1, t.p3, op2));
-    if (op1) res.push(this.findTriangle(t.p2, t.p3, op1));
-    assert(!_.some(res, _.isNull), 'One triangle was null');
-    return res;
-  }
-
-
   updatePolypoints(t) {
     const unfixedEdges = _.reject(t.getEdges(), e => this.isEdgeFixed(e));
     const nodesAcross = _.map(unfixedEdges, e => this.rootNode.findNodeAcross(t, e));
@@ -127,14 +110,6 @@ export class TriangleGraph extends DrawableGraph {
       this.rootNode = new TriangleTreeNode(t);
     }
     this.triangles.add(t);
-    this.addEdgeAndVertices(new Edge(t.p1, t.p2));
-    this.addEdgeAndVertices(new Edge(t.p1, t.p3));
-    this.addEdgeAndVertices(new Edge(t.p2, t.p3));
-    this.polypoints.addVertex(t.getCenter());
-    _.forEach(this.getAdjacentTriangles(t), adjT => {
-      const adjCenter = adjT.getCenter();
-      this.polypoints.addEdge(new Edge(t.getCenter(), adjCenter));
-    });
   }
 
 
@@ -266,6 +241,8 @@ export class TriangleGraph extends DrawableGraph {
     // Return new point with clearance from the corner
     return cornerPoint.add(normal.times(CLEARANCE));
   }
+
+
   /**
    * @param {Edge} e
    * @returns {Triangle[]} all triangles which have one edge equal to e
@@ -274,48 +251,23 @@ export class TriangleGraph extends DrawableGraph {
     return _.filter(Array.from(this.triangles), t => t.hasEdge(e));
   }
 
-  /**
-   * @param {Point} p
-   * @param {Edge} e
-   * @returns {Point|null} the point on the other side of edge e with respect to p, or null if the
-   *   edge is fixed or is on the edge of the whole graph
-   */
-  findOppositePoint(p, e) {
-    assert(this.isConnected(p, e.p1), `${p} was not connected to p1 of edge: ${e.p1}`);
-    assert(this.isConnected(p, e.p2), `${p} was not connected to p2 of edge: ${e.p2}`);
-
-    // No opposite point to a fixed edge
-    if (this.isEdgeFixed(e)) return null;
-
-    const n1 = this.neighbors(e.p1);
-    const n2 = this.neighbors(e.p2);
-    const sharedPoints = _.intersectionBy(n1, n2, point => point.toString());
-    const oppositePoint = _.filter(sharedPoints, point => (
-      // Point forms a triangle with the edge and is not the inserted point
-      this.findTriangle(point, e.p1, e.p2) && !point.equals(p)
-    ));
-    assert(
-      oppositePoint.length <= 1,
-      `Found ${oppositePoint.length} opposite points to ${JSON.stringify(e)} from ${p} and they are
-      ${oppositePoint}`,
-    );
-    return _.isEmpty(oppositePoint) ? null : oppositePoint[0];
-  }
-
 
   /**
-   * If the edge is not delaunay-legal, flip it, and recursively legalize the resulting triangles
+   * Adds the point to the triangulation. Ensures the triangulation is delaunay-legal after
+   *   insertion
    */
-  legalizeEdge(insertedPoint, edge) {
-    legalizeCount1 += 1;
-    const oppositePoint = this.findOppositePoint(insertedPoint, edge);
-    if (oppositePoint && !isLegal(insertedPoint, edge, oppositePoint)) {
-      this.removeTriangleByPoints(edge.p1, edge.p2, insertedPoint);
-      this.removeTriangleByPoints(edge.p1, edge.p2, oppositePoint);
-      this.addTriangle(new Triangle(insertedPoint, oppositePoint, edge.p1));
-      this.addTriangle(new Triangle(insertedPoint, oppositePoint, edge.p2));
-      this.legalizeEdge(insertedPoint, new Edge(edge.p1, oppositePoint));
-      this.legalizeEdge(insertedPoint, new Edge(edge.p2, oppositePoint));
+  delaunayAddVertex(p, updateNode = false) {
+    assert(!this.hasVertex(p));
+    if (updateNode) {
+      const { containingTriangles, newNodes } = this.rootNode.addVertex(p);
+      assert(
+        containingTriangles.length > 0 && containingTriangles.length <= 2,
+        `Found ${containingTriangles.length} containing triangles`,
+      );
+      _.forEach(containingTriangles, t => this.removeTrianglePointsEdgesPolypoints(t));
+      _.forEach(newNodes, n => this.addTriangleEdgesAndVertices(n.triangle));
+      _.forEach(newNodes, n => this.updatePolypoints(n.triangle));
+      _.forEach(newNodes, n => this.legalizeEdgeNode(n, p));
     }
   }
 
@@ -324,7 +276,6 @@ export class TriangleGraph extends DrawableGraph {
    * @param {Point} newPoint
    */
   legalizeEdgeNode(node, newPoint) {
-    legalizeCount2 += 1;
     const edgeBetween = node.triangle.getEdgeWithoutPoint(newPoint);
     if (this.isEdgeFixed(edgeBetween)) return;
     const otherNode = this.rootNode.findNodeAcross(node.triangle, edgeBetween);
@@ -339,64 +290,15 @@ export class TriangleGraph extends DrawableGraph {
         node.addChild(n2);
         otherNode.addChild(n1);
         otherNode.addChild(n2);
+        this.removeTrianglePointsEdgesPolypoints(node.triangle);
+        this.removeTrianglePointsEdgesPolypoints(otherNode.triangle);
+        this.addTriangleEdgesAndVertices(t1);
+        this.addTriangleEdgesAndVertices(t2);
+        this.updatePolypoints(t1);
+        this.updatePolypoints(t2);
         this.legalizeEdgeNode(n1, newPoint);
         this.legalizeEdgeNode(n2, newPoint);
       }
-    }
-  }
-
-
-  /**
-   * Adds the point to the triangulation. Ensures the triangulation is delaunay-legal after
-   *   insertion
-   */
-  delaunayAddVertex(p, updateNode = false) {
-    assert(!this.hasVertex(p));
-    let nodeNews;
-    if (updateNode) {
-      const temp = this.rootNode.addVertex(p);
-      nodeNews = temp.newNodes;
-      _.forEach(nodeNews, n => this.legalizeEdgeNode(n, p));
-    }
-    const containingTriangles = this.findContainingTriangles(p);
-    assert(
-      containingTriangles.length > 0 && containingTriangles.length <= 2,
-      `Found ${containingTriangles.length} containing triangles`,
-    );
-    if (containingTriangles.length === 1) {
-      // Point is inside one triangle
-      const ct = containingTriangles[0];
-      this.removeTriangleByReference(ct);
-      this.addTriangle(new Triangle(ct.p1, ct.p2, p));
-      this.addTriangle(new Triangle(ct.p1, p, ct.p3));
-      this.addTriangle(new Triangle(p, ct.p2, ct.p3));
-      this.legalizeEdge(p, new Edge(ct.p1, ct.p2));
-      this.legalizeEdge(p, new Edge(ct.p1, ct.p3));
-      this.legalizeEdge(p, new Edge(ct.p2, ct.p3));
-      if (updateNode) assert(nodeNews.length === 3, `nodeNews was length ${nodeNews.length}`);
-    } else if (containingTriangles.length === 2) {
-      // Point lies on a line
-      const ct1 = containingTriangles[0];
-      const ct2 = containingTriangles[1];
-      const cp = ct1.categorizePoints(ct2); // categorized points
-      assert(cp.shared.length === 2, `cp.shared length was ${cp.shared.length}`);
-      this.removeTriangleByReference(ct1);
-      this.removeTriangleByReference(ct2);
-      this.addTriangle(new Triangle(cp.shared[0], cp.myPoint, p));
-      this.addTriangle(new Triangle(cp.shared[0], cp.otherPoint, p));
-      this.addTriangle(new Triangle(cp.shared[1], cp.myPoint, p));
-      this.addTriangle(new Triangle(cp.shared[1], cp.otherPoint, p));
-      this.legalizeEdge(p, new Edge(cp.shared[0], cp.myPoint));
-      this.legalizeEdge(p, new Edge(cp.shared[0], cp.otherPoint));
-      this.legalizeEdge(p, new Edge(cp.shared[1], cp.myPoint));
-      this.legalizeEdge(p, new Edge(cp.shared[1], cp.otherPoint));
-      if (updateNode) assert(nodeNews.length === 4, `nodeNews was length ${nodeNews.length}`);
-    }
-    if (updateNode) {
-      assert(
-        legalizeCount1 === legalizeCount2,
-        `Node was legalized ${legalizeCount2}, should be ${legalizeCount1}`,
-      );
     }
   }
 
