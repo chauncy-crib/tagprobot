@@ -59,6 +59,7 @@ export class TriangleGraph extends DrawableGraph {
   addFirstTriangle(t) {
     assert(this.numVertices() === 0, `addFirstTriangle called with ${this.numVertices()} vertices`);
     this.rootNode = new TriangleTreeNode(t);
+    this.addTriangleEdgesAndVertices(t);
   }
 
   findContainingTriangles(p) {
