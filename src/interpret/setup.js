@@ -67,13 +67,13 @@ export function delaunayTriangulation(
   const vertices = mapGraph.getVertices();
 
   const t = new Triangle(dummyPoint1, dummyPoint2, dummyPoint3);
-  dtGraph.addTriangle(t, true);
+  dtGraph.addFirstTriangle(t, true);
 
   const shuffledVertices = _.shuffle(vertices);
   // Check if dummy triangle contains each point
   _.forEach(shuffledVertices, v => {
     assert(
-      dtGraph.findContainingTriangles(v).length === 1,
+      dtGraph.rootNode.findContainingNodes(v).length === 1,
       `Dummy triangle did not contain point at ${v.x}, ${v.y}`,
     );
   });
