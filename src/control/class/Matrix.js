@@ -12,7 +12,7 @@ export class Matrix {
    * @param {number[][]} array - an array of arrays of numbers
    */
   constructor(array) {
-    if (typeof array === 'number') array = [array];
+    if (_.isNumber(array)) array = [array];
     assert(_.isArray(array), 'input to Matrix is not an array');
     this.array = array;
   }
@@ -22,15 +22,19 @@ export class Matrix {
   }
 
   get(index) {
-    assert(this.isValidIndex(index), 'Matrix.get called with index out of bounds');
+    assert(this.isValidIndex(index), `Matrix.get called with index out of bounds: ${index}`);
     return new Matrix(this.array[index]);
   }
 
   set(index, other) {
-    assert(this.isValidIndex(index), 'Matrix.set called with index out of bounds');
+    assert(this.isValidIndex(index), `Matrix.set called with index out of bounds: ${index}`);
     this.array[index] = other.array;
   }
 
+  /**
+   * @param {Matrix|Array} other - matrix to append to this matrix
+   * @param {0|1} axis - (optional) 0 to append matrix as a row, 1 to append matrix as a column
+   */
   append(other, axis = 0) {
     const array = other instanceof Matrix ? other.array : other;
     if (axis === 0) {
@@ -46,6 +50,10 @@ export class Matrix {
     } else assert(false, 'Matrix.append called with invalid axis');
   }
 
+  /**
+   * @returns {[number, number]} the number of rows and columns in the matrix in the format
+   *   [rows, columns]
+   */
   shape() {
     return math.size(this.array);
   }
