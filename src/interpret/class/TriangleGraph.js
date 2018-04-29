@@ -66,6 +66,11 @@ export class TriangleGraph extends DrawableGraph {
     return _.map(this.rootNode.findContainingNodes(p), n => n.triangle);
   }
 
+  findTriangle(p1, p2, p3) {
+    const n = this.rootNode.findNodeWithTriangle(new Triangle(p1, p2, p3));
+    return n ? n.triangle : null;
+  }
+
 
   clear() {
     super.clear();

@@ -19,20 +19,20 @@ import {
 } from '../../../draw/class/test/DrawableGraph.spec';
 
 
-test('triangulateRegion does not create flat triangle when points are in a line', t => {
+test('delaunayAddConstraintEdge does not create flat triangle when points are in a line', t => {
   setupPixiAndTagpro();
 
   const tGraph = new TriangleGraph();
+  tGraph.addFirstTriangle(Triangle.fromCoords(0, 0, 2000, 0, 1000, 2000));
   const p1 = new Point(1080, 640);
   const p2 = new Point(1200, 680);
   const p3 = new Point(1200, 720);
   const p4 = new Point(1200, 760);
-  tGraph.addEdgeAndVertices(new Edge(p1, p2));
-  tGraph.addEdgeAndVertices(new Edge(p2, p3));
-  tGraph.addEdgeAndVertices(new Edge(p3, p4));
-  tGraph.addEdgeAndVertices(new Edge(p4, p1));
-  tGraph.addFixedEdge(new Edge(p1, p4));
-  t.doesNotThrow(() => tGraph.triangulateRegion([p1, p2, p3, p4]));
+  tGraph.delaunayAddVertex(p1, true);
+  tGraph.delaunayAddVertex(p2, true);
+  tGraph.delaunayAddVertex(p3, true);
+  tGraph.delaunayAddVertex(p4, true);
+  t.doesNotThrow(() => tGraph.delaunayAddConstraintEdge(new Edge(p1, p4), true));
 
   t.true(tGraph.findTriangle(p1, p4, p3) !== null);
   t.true(tGraph.findTriangle(p1, p2, p3) !== null);
