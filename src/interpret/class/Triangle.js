@@ -18,6 +18,7 @@ export class Triangle {
     this.p3 = p3;
   }
 
+
   /**
    * @returns {Triangle} a new Triangle object
    */
@@ -37,6 +38,7 @@ export class Triangle {
     );
   }
 
+
   getEdges() {
     return [
       new Edge(this.p1, this.p2),
@@ -44,6 +46,7 @@ export class Triangle {
       new Edge(this.p1, this.p3),
     ];
   }
+
 
   getEdgeCenters() {
     return [
@@ -60,6 +63,7 @@ export class Triangle {
     if (p.equals(this.p2)) return new Edge(this.p1, this.p3);
     return new Edge(this.p1, this.p2);
   }
+
 
   getPointNotOnEdge(edge) {
     if (!edge.hasPoint(this.p1)) return this.p1;

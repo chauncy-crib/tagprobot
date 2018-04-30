@@ -65,7 +65,7 @@ test('delaunayRemoveVertex', tester => {
     t.is(mockDTGraph.numEdges(), 18);
     t.is(mockDTGraph.numTriangles(), 11);
 
-    mockDTGraph.delaunayRemoveVertex(p, true);
+    mockDTGraph.delaunayRemoveVertex(p);
 
     t.false(mockDTGraph.hasVertex(p));
     t.is(mockDTGraph.numVertices(), 7); // one vertex gone
@@ -101,7 +101,7 @@ test('delaunayRemoveVertex', tester => {
     t.is(mockDTGraph.numVertices(), 9);
     t.is(mockDTGraph.numTriangles(), 13);
 
-    mockDTGraph.delaunayRemoveVertex(p, true);
+    mockDTGraph.delaunayRemoveVertex(p);
 
     t.false(mockDTGraph.hasVertex(p));
     t.is(mockDTGraph.numVertices(), 8); // lost one vertex
