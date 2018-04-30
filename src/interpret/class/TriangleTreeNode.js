@@ -12,12 +12,15 @@ export class TriangleTreeNode {
   constructor(triangle) {
     this.triangle = triangle;
     this.children = [];
+    this.mark = false;
   }
+
 
   toString() {
     return `t: ${this.triangle}, c1: ${this.children[0]}, c2: ${this.children[1]}, ` +
       `c3: ${this.children[2]}`;
   }
+
 
   /**
    * @param {TriangleTreeNode} child
@@ -26,9 +29,11 @@ export class TriangleTreeNode {
     this.children.push(child);
   }
 
+
   isLeaf() {
     return this.children.length === 0;
   }
+
 
   /**
    * @param {Point} p
@@ -105,6 +110,7 @@ export class TriangleTreeNode {
     return N.length === 0 ? null : N[0];
   }
 
+
   /**
    * @param {Point} p
    * @param {Point[]} neighbors - the neighbors of p in the graph
@@ -114,14 +120,13 @@ export class TriangleTreeNode {
     // The indices of neighbors we have not detached from p
     const nIndices = _.range(N.length);
     // The triangles surrounding p
-    const nTriangles = _.map(nIndices, nIdx => this.findNodeWithTriangle(new Triangle(
+    const surroundingNodes = _.map(nIndices, nIdx => this.findNodeWithTriangle(new Triangle(
       p,
       N[nIdx],
       N[(nIdx + 1) % N.length],
     )));
-    const oldTriangles = _.map(nTriangles, n => n.triangle);
+    const oldTriangles = _.map(surroundingNodes, n => n.triangle);
     const newTriangles = [];
-    _.forEach(nTriangles, nt => assert(nt, 'nt was null'));
     while (nIndices.length > 3) {
       let ear = null;
       let i = -1;
@@ -146,7 +151,7 @@ export class TriangleTreeNode {
       let j = nIndices[i];
       // Add the newNode as a child of all old nodes which overlap with it
       while (j !== nIndices[(i + 2) % L]) {
-        nTriangles[j].addChild(newNode);
+        surroundingNodes[j].addChild(newNode);
         j = (j + 1) % N.length;
       }
       nIndices.splice((i + 1) % L, 1);
@@ -158,9 +163,10 @@ export class TriangleTreeNode {
       N[nIndices[2]],
     ));
     newTriangles.push(finalNewNode.triangle);
-    _.forEach(nTriangles, nt => nt.addChild(finalNewNode));
+    _.forEach(surroundingNodes, nt => nt.addChild(finalNewNode));
     return { oldTriangles, newTriangles };
   }
+
 
   /**
    * @param {Edge} e
@@ -171,6 +177,7 @@ export class TriangleTreeNode {
     const n2 = this.findContainingNodes(e.p2);
     return _.uniq(_.filter(n1.concat(n2), n => n.triangle.hasEdge(e)));
   }
+
 
   /**
    * @param {Edge} e
@@ -186,6 +193,7 @@ export class TriangleTreeNode {
       n => n.triangle.intersectsEdge(e),
     );
   }
+
 
   /**
    * @param {TriangleTreeNode[]} intersectingTriangles - array of nodes that intersect the edge
@@ -246,12 +254,14 @@ export class TriangleTreeNode {
     return { upperPoints, lowerPoints, orderedNodes };
   }
 
+
   /**
-   * Recursively triangulates an un-triangulated region of points
+   * Recursively triangulates an un-triangulated region of points. Adds all new triangles as
+   *   children to every node in regNodes
    * @param {Point[]} reg - the region defined by an array of points connected in a cycle
    * @param {TriangleTreeNode[]} regNodes - a list of nodes containing triangles that span across
    *   the region
-   * @returns {number} the number of times the function was called recursively
+   * @param {Triangle[]} newTriangles - a list to store every new triangle the function creates in
    */
   static triangulateRegion(reg, regNodes, newTriangles) {
     if (reg.length === 3) {
@@ -260,7 +270,7 @@ export class TriangleTreeNode {
       const newNode = new TriangleTreeNode(newTriangle);
       _.forEach(regNodes, n => n.addChild(newNode));
     }
-    if (reg.length <= 3) return 1;
+    if (reg.length <= 3) return;
     // Extract out the points on the edge
     const e = new Edge(reg[0], _.last(reg));
     // Slice off the first and last element to get the inner region
@@ -268,47 +278,46 @@ export class TriangleTreeNode {
 
     // Find vertex c on the region that triangle [e1, e2, c] is delaunay-legal with all other
     //   points in the region
-    const cIndex = _.findIndex(innerReg, p => {
-      const otherPoints = _.reject(innerReg, p);
+    const cIndex = _.findIndex(innerReg, p =>
       // Must be delaunay-legal with respect to every other point
-      return _.every(otherPoints, other => isLegal(p, e, other));
-    });
+      _.every(innerReg, other => isLegal(p, e, other) || p === other));
 
     const newTriangle = new Triangle(e.p1, innerReg[cIndex], e.p2);
     newTriangles.push(newTriangle);
     const newNode = new TriangleTreeNode(newTriangle);
     _.forEach(regNodes, n => n.addChild(newNode));
 
-    let callCount = 1;
-
     // Call this recursively on the two sub-regions split by this triangle
-    callCount += TriangleTreeNode.triangulateRegion(
+    TriangleTreeNode.triangulateRegion(
       _.concat(e.p1, _.slice(innerReg, 0, cIndex + 1)),
       regNodes,
       newTriangles,
     );
-    callCount += TriangleTreeNode.triangulateRegion(
+    TriangleTreeNode.triangulateRegion(
       _.concat(_.slice(innerReg, cIndex, innerReg.length), e.p2),
       regNodes,
       newTriangles,
     );
-
-    return callCount;
   }
 
+  /**
+   * Given a two functions, both which take in a node and return a boolean, finds all leaf nodes
+   * where leafCondition(leaf) returns true, and parentCondition(parent) returns true for all
+   * parents, grandparents, etc. of the leaf node.
+   */
   findNodesWithCondition(parentCondition, leafCondition) {
     const leafCond = leafCondition || parentCondition;
     const nodes = [];
     const visited = [];
-    this.privateFindNodesWithCondition(parentCondition, leafCond, nodes, visited);
+    this._findNodesWithCondition(parentCondition, leafCond, nodes, visited);
     // Undo the markings
     _.forEach(visited, n => {
-      delete n.mark;
+      n.mark = false;
     });
     return nodes;
   }
 
-  privateFindNodesWithCondition(parentCondition, leafCondition, nodes, visited) {
+  _findNodesWithCondition(parentCondition, leafCondition, nodes, visited) {
     if (this.mark) return;
     // Mark the node so we don't visit it again
     this.mark = true;
@@ -317,7 +326,7 @@ export class TriangleTreeNode {
     if (this.isLeaf() && leafCondition(this)) nodes.push(this);
     _.forEach(
       this.children,
-      c => c.privateFindNodesWithCondition(parentCondition, leafCondition, nodes, visited),
+      c => c._findNodesWithCondition(parentCondition, leafCondition, nodes, visited),
     );
   }
 
@@ -346,6 +355,7 @@ export class TriangleTreeNode {
   findAllTriangles() {
     return _.map(this.findAllNodes(), n => n.triangle);
   }
+
 
   /**
    * @returns {TriangleTreeNode[]} all leaf-nodes that are descendents of this node
