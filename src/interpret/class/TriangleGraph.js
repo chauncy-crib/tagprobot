@@ -59,12 +59,14 @@ export class TriangleGraph extends DrawableGraph {
   addFirstTriangle(t) {
     assert(this.numVertices() === 0, `addFirstTriangle called with ${this.numVertices()} vertices`);
     this.rootNode = new TriangleTreeNode(t);
-    this.addTriangleEdgesAndVertices(t);
+    this.addVerticesEdgesAndPolypoint(t);
   }
+
 
   findContainingTriangles(p) {
     return _.map(this.rootNode.findContainingNodes(p), n => n.triangle);
   }
+
 
   findTriangle(p1, p2, p3) {
     const n = this.rootNode.findNodeWithTriangle(new Triangle(p1, p2, p3));
@@ -77,11 +79,17 @@ export class TriangleGraph extends DrawableGraph {
     this.initDataStructures();
   }
 
+
   numTriangles() {
     return this.rootNode.findAllTriangles().length;
   }
 
-  updatePolypoints(t) {
+
+  /**
+   * Given a triangle, adds polypoints between it and all other triangles which share a non-fixed
+   * edge
+   */
+  updatePolypoint(t) {
     const unfixedEdges = _.reject(t.getEdges(), e => this.isEdgeFixed(e));
     const nodesAcross = _.map(unfixedEdges, e => this.rootNode.findNodeAcross(t, e));
     const nullFiltered = _.reject(nodesAcross, _.isNil);
@@ -93,7 +101,11 @@ export class TriangleGraph extends DrawableGraph {
   }
 
 
-  addTriangleEdgesAndVertices(t) {
+  /**
+   * Adds the edges and vertices from a triangle to the graph, if they do not exist. Adds the center
+   * of the triangle to the polypoint-graph
+   */
+  addVerticesEdgesAndPolypoint(t) {
     this.addEdgeAndVertices(new Edge(t.p1, t.p2));
     this.addEdgeAndVertices(new Edge(t.p1, t.p3));
     this.addEdgeAndVertices(new Edge(t.p2, t.p3));
@@ -101,11 +113,26 @@ export class TriangleGraph extends DrawableGraph {
   }
 
 
-  removeTrianglePointsEdgesPolypoints(t) {
+  /**
+   * Removes the edges of the triangle from the graph. Removes the polypoint from the polypoint
+   * graph (and clears all edges going to it)
+   */
+  removeEdgesAndPolypoint(t) {
     if (this.polypoints.hasVertex(t.getCenter())) {
       this.polypoints.removeVertex(t.getCenter());
     }
     _.forEach(t.getEdges(), e => this.removeEdge(e));
+  }
+
+
+  /**
+   * Removes the edges and polypoint for each triangle in trianglesToRemove, and adds edges,
+   * vertices, and polypoints for each triangle in trianglesToAdd.
+   */
+  updateGraph(trianglesToRemove, trianglesToAdd) {
+    _.forEach(trianglesToRemove, t => this.removeEdgesAndPolypoint(t));
+    _.forEach(trianglesToAdd, t => this.addVerticesEdgesAndPolypoint(t));
+    _.forEach(trianglesToAdd, t => this.updatePolypoint(t));
   }
 
 
@@ -190,13 +217,12 @@ export class TriangleGraph extends DrawableGraph {
       containingTriangles.length > 0 && containingTriangles.length <= 2,
       `Found ${containingTriangles.length} containing triangles`,
     );
-    _.forEach(containingTriangles, t => this.removeTrianglePointsEdgesPolypoints(t));
-    _.forEach(newNodes, n => this.addTriangleEdgesAndVertices(n.triangle));
-    _.forEach(newNodes, n => this.updatePolypoints(n.triangle));
+    this.updateGraph(containingTriangles, _.map(newNodes, n => n.triangle));
     _.forEach(newNodes, n => this.legalizeEdgeNode(n, p));
   }
 
   /**
+   * If the edge is not delaunay-legal, flip it, and recursively legalize the resulting triangles.
    * @param {TriangleTreeNode} node
    * @param {Point} newPoint
    */
@@ -215,12 +241,7 @@ export class TriangleGraph extends DrawableGraph {
         node.addChild(n2);
         otherNode.addChild(n1);
         otherNode.addChild(n2);
-        this.removeTrianglePointsEdgesPolypoints(node.triangle);
-        this.removeTrianglePointsEdgesPolypoints(otherNode.triangle);
-        this.addTriangleEdgesAndVertices(t1);
-        this.addTriangleEdgesAndVertices(t2);
-        this.updatePolypoints(t1);
-        this.updatePolypoints(t2);
+        this.updateGraph([node.triangle, otherNode.triangle], [t1, t2]);
         this.legalizeEdgeNode(n1, newPoint);
         this.legalizeEdgeNode(n2, newPoint);
       }
@@ -249,7 +270,6 @@ export class TriangleGraph extends DrawableGraph {
 
     const intersectingNodes = this.rootNode.findNodesIntersectingEdge(e);
     const newTriangles = [];
-    _.forEach(intersectingNodes, n => this.removeTrianglePointsEdgesPolypoints(n.triangle));
     const { upperPoints, lowerPoints, orderedNodes } = TriangleTreeNode.findUpperAndLowerPoints(
       intersectingNodes,
       e,
@@ -257,8 +277,7 @@ export class TriangleGraph extends DrawableGraph {
     TriangleTreeNode.triangulateRegion(upperPoints, orderedNodes, newTriangles);
     TriangleTreeNode.triangulateRegion(lowerPoints, orderedNodes, newTriangles);
     this.addFixedEdge(e);
-    _.forEach(newTriangles, t => this.addTriangleEdgesAndVertices(t));
-    _.forEach(newTriangles, t => this.updatePolypoints(t));
+    this.updateGraph(_.map(intersectingNodes, n => n.triangle), newTriangles);
   }
 
 
@@ -288,14 +307,10 @@ export class TriangleGraph extends DrawableGraph {
    * @param {Point} p the point to remove from the triangulation graph and validly triangulate
    *   around.
    */
-  delaunayRemoveVertex(p, updateNode = false) {
-    if (updateNode) {
-      const { oldTriangles, newTriangles } = this.rootNode.removeVertex(p, this.neighbors(p));
-      _.forEach(oldTriangles, t => this.removeTrianglePointsEdgesPolypoints(t));
-      _.forEach(newTriangles, t => this.addTriangleEdgesAndVertices(t));
-      _.forEach(newTriangles, t => this.updatePolypoints(t));
-      this.removeVertex(p);
-    }
+  delaunayRemoveVertex(p) {
+    const { oldTriangles, newTriangles } = this.rootNode.removeVertex(p, this.neighbors(p));
+    this.updateGraph(oldTriangles, newTriangles);
+    this.removeVertex(p);
   }
 
 
@@ -318,7 +333,7 @@ export class TriangleGraph extends DrawableGraph {
    */
   dynamicUpdate(constrainedEdgesToRemove, constrainedEdgesToAdd, verticesToRemove, verticesToAdd) {
     _.forEach(constrainedEdgesToRemove, e => this.unfixEdge(e));
-    _.forEach(verticesToRemove, v => this.delaunayRemoveVertex(v, true));
+    _.forEach(verticesToRemove, v => this.delaunayRemoveVertex(v));
     _.forEach(verticesToAdd, v => this.delaunayAddVertex(v));
     _.forEach(constrainedEdgesToAdd, e => this.delaunayAddConstraintEdge(e));
   }
