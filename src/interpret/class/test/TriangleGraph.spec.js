@@ -55,6 +55,7 @@ test('delaunayRemoveVertex', tester => {
     const v2 = new Point(10, 10);
     const v3 = new Point(10, 0);
     const p = new Point(3, 6);
+
     mockDTGraph.delaunayAddVertex(v0);
     mockDTGraph.delaunayAddVertex(v1);
     mockDTGraph.delaunayAddVertex(v2);
@@ -88,6 +89,7 @@ test('delaunayRemoveVertex', tester => {
     const v3 = new Point(10, 0);
     const v4 = new Point(-3, 5);
     const p = new Point(3, 6);
+
     // Create a pentagon, with p in the center connected to all other vertices
     mockDTGraph.addFirstTriangle(Triangle.fromCoords(-10, -10, -10, 100, 100, -10));
     mockDTGraph.delaunayAddVertex(v0);

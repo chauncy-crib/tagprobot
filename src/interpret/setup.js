@@ -70,7 +70,7 @@ export function delaunayTriangulation(
   // Check if dummy triangle contains each point
   _.forEach(shuffledVertices, v => {
     assert(
-      dtGraph.rootNode.findContainingNodes(v).length === 1,
+      dtGraph.findContainingTriangles(v).length === 1,
       `Dummy triangle did not contain point at ${v.x}, ${v.y}`,
     );
   });
