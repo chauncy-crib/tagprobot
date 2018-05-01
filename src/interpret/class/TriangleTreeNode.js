@@ -5,9 +5,71 @@ import { Edge } from './Edge';
 import { isLegal } from '../graphToTriangulation';
 import { detD, detH, sortCounterClockwise } from '../utils';
 
+
 export function getTriangles(nodes) {
   return _.map(nodes, n => n.triangle);
 }
+
+
+/**
+ * @param {TriangleTreeNode[]} intersectingTriangles - array of nodes that intersect the edge
+ * @param {Edge} e
+ * @returns {{upperPoints: Point[], lowerPoints: Point[], orderedNodes: TriangleTreeNode[]}} the
+ *   ordered points of the upper and lower regions that share the edge, and the nodes containing
+ *   the points in order
+ */
+export function findUpperAndLowerPoints(intersectingNodes, e) {
+  let nodes = intersectingNodes;
+  // Keep track of the points in order in the regions above and below the edge
+  const upperPoints = [e.p1];
+  const lowerPoints = [e.p1];
+
+  const orderedNodes = Array(nodes.length);
+  let i = 0;
+
+  while (!_.isEmpty(nodes)) {
+    const lastUpperPoint = _.last(upperPoints);
+    const lastLowerPoint = _.last(lowerPoints);
+
+    // Find next triangle
+    const nextN = _.find(nodes, n => (
+      n.triangle.hasPoint(lastUpperPoint) && n.triangle.hasPoint(lastLowerPoint)
+    ));
+
+    assert(!_.isNil(nextN), 'Could not find node containing both last upper and last lower');
+
+    orderedNodes[i] = nextN;
+
+    // Add points to upperPoints and lowerPoints
+    if (upperPoints.length === 1) {
+      // This is the first triangle, add one point to upper polygon and the other to lower
+      const newPoints = _.reject(nextN.triangle.getPoints(), p => p.equals(lastUpperPoint));
+      upperPoints.push(newPoints[0]);
+      lowerPoints.push(newPoints[1]);
+    } else {
+      // Get the third point that's not in either pseudo-polygon
+      const newPoint = _.find(nextN.triangle.getPoints(), p => (
+        !p.equals(lastUpperPoint) && !p.equals(lastLowerPoint)
+      ));
+
+      if (newPoint.equals(e.p2)) {
+        // This is the last point, add it to both regions
+        upperPoints.push(newPoint);
+        lowerPoints.push(newPoint);
+      } else {
+        // Push point to either upper or lower region
+        if (!e.isBetweenPoints(newPoint, lastUpperPoint, false)) upperPoints.push(newPoint);
+        else lowerPoints.push(newPoint);
+      }
+    }
+
+    // Remove triangle and edges from graph and from triangles
+    nodes = _.reject(nodes, nextN);
+    i += 1;
+  }
+  return { upperPoints, lowerPoints, orderedNodes };
+}
+
 
 export class TriangleTreeNode {
   /**
@@ -40,6 +102,10 @@ export class TriangleTreeNode {
 
 
   /**
+   * Inserts a new point into the triangulation by splitting apart the triangle(s) that contained
+   *   the point. If the point lays directly inside a triangle, three new triangles are created
+   *   inside the containing triangle. If the point lays on an edge, then the edge is split in half,
+   *   and both triangles which have that edge are split in half (creating four new triangles).
    * @param {Point} p
    * @returns {{containingTriangles: Triangle[], newNodes: TriangleTreeNode[]}} the triangle(s) that
    *   contained the point, and the new nodes containing triangles created by splitting apart the
@@ -205,66 +271,6 @@ export class TriangleTreeNode {
       // Leaf condition: the triangle intersects the edge
       n => n.triangle.intersectsEdge(e),
     );
-  }
-
-
-  /**
-   * @param {TriangleTreeNode[]} intersectingTriangles - array of nodes that intersect the edge
-   * @param {Edge} e
-   * @returns {{upperPoints: Point[], lowerPoints: Point[], orderedNodes: TriangleTreeNode[]}} the
-   *   ordered points of the upper and lower regions that share the edge, and the nodes containing
-   *   the points in order
-   */
-  static findUpperAndLowerPoints(intersectingNodes, e) {
-    let nodes = intersectingNodes;
-    // Keep track of the points in order in the regions above and below the edge
-    const upperPoints = [e.p1];
-    const lowerPoints = [e.p1];
-
-    const orderedNodes = Array(nodes.length);
-    let i = 0;
-
-    while (!_.isEmpty(nodes)) {
-      const lastUpperPoint = _.last(upperPoints);
-      const lastLowerPoint = _.last(lowerPoints);
-
-      // Find next triangle
-      const nextN = _.find(nodes, n => (
-        n.triangle.hasPoint(lastUpperPoint) && n.triangle.hasPoint(lastLowerPoint)
-      ));
-
-      assert(!_.isNil(nextN), 'Could not find node containing both last upper and last lower');
-
-      orderedNodes[i] = nextN;
-
-      // Add points to upperPoints and lowerPoints
-      if (upperPoints.length === 1) {
-        // This is the first triangle, add one point to upper polygon and the other to lower
-        const newPoints = _.reject(nextN.triangle.getPoints(), p => p.equals(lastUpperPoint));
-        upperPoints.push(newPoints[0]);
-        lowerPoints.push(newPoints[1]);
-      } else {
-        // Get the third point that's not in either pseudo-polygon
-        const newPoint = _.find(nextN.triangle.getPoints(), p => (
-          !p.equals(lastUpperPoint) && !p.equals(lastLowerPoint)
-        ));
-
-        if (newPoint.equals(e.p2)) {
-          // This is the last point, add it to both regions
-          upperPoints.push(newPoint);
-          lowerPoints.push(newPoint);
-        } else {
-          // Push point to either upper or lower region
-          if (!e.isBetweenPoints(newPoint, lastUpperPoint, false)) upperPoints.push(newPoint);
-          else lowerPoints.push(newPoint);
-        }
-      }
-
-      // Remove triangle and edges from graph and from triangles
-      nodes = _.reject(nodes, nextN);
-      i += 1;
-    }
-    return { upperPoints, lowerPoints, orderedNodes };
   }
 
 
