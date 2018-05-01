@@ -1,7 +1,6 @@
 import _ from 'lodash';
-
 import { assert } from '../../global/utils';
-import { TriangleTreeNode } from './TriangleTreeNode';
+import { TriangleTreeNode, getTriangles } from './TriangleTreeNode';
 import { Point } from './Point';
 import { Edge } from './Edge';
 import { Triangle } from './Triangle';
@@ -93,7 +92,7 @@ export class TriangleGraph extends DrawableGraph {
     const unfixedEdges = _.reject(t.getEdges(), e => this.isEdgeFixed(e));
     const nodesAcross = _.map(unfixedEdges, e => this.rootNode.findNodeAcross(t, e));
     const nullFiltered = _.reject(nodesAcross, _.isNil);
-    const tAcross = _.map(nullFiltered, n => n.triangle);
+    const tAcross = getTriangles(nullFiltered);
     _.forEach(tAcross, adjT => {
       const adjCenter = adjT.getCenter();
       this.polypoints.addEdge(new Edge(t.getCenter(), adjCenter));
@@ -218,7 +217,7 @@ export class TriangleGraph extends DrawableGraph {
       containingTriangles.length > 0 && containingTriangles.length <= 2,
       `Found ${containingTriangles.length} containing triangles`,
     );
-    this.updateGraph(containingTriangles, _.map(newNodes, n => n.triangle));
+    this.updateGraph(containingTriangles, getTriangles(newNodes));
     _.forEach(newNodes, n => this.legalizeEdgeNode(n, p));
   }
 
@@ -256,7 +255,7 @@ export class TriangleGraph extends DrawableGraph {
    * @param {Edge} e - the edge to add
    */
   delaunayAddConstraintEdge(e) {
-    const trianglesAcross = _.map(this.rootNode.findNodesWithEdge(e), n => n.triangle);
+    const trianglesAcross = this.rootNode.findTrianglesWithEdge(e);
     if (trianglesAcross.length === 2) {
       this.polypoints.removeEdge(new Edge(
         trianglesAcross[0].getCenter(),
