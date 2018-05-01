@@ -88,7 +88,7 @@ export class TriangleGraph extends DrawableGraph {
    * Given a triangle, adds polypoints between it and all other triangles which share a non-fixed
    *   edge
    */
-  updatePolypoint(t) {
+  connectPolypoint(t) {
     const unfixedEdges = _.reject(t.getEdges(), e => this.isEdgeFixed(e));
     const nodesAcross = _.map(unfixedEdges, e => this.rootNode.findNodeAcross(t, e));
     const nullFiltered = _.reject(nodesAcross, _.isNil);
@@ -132,7 +132,7 @@ export class TriangleGraph extends DrawableGraph {
   updateGraph(trianglesToRemove, trianglesToAdd) {
     _.forEach(trianglesToRemove, t => this.removeTriangle(t));
     _.forEach(trianglesToAdd, t => this.addTriangle(t));
-    _.forEach(trianglesToAdd, t => this.updatePolypoint(t));
+    _.forEach(trianglesToAdd, t => this.connectPolypoint(t));
   }
 
 
