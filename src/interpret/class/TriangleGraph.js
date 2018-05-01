@@ -1,6 +1,12 @@
 import _ from 'lodash';
+import fp from 'lodash/fp';
 import { assert } from '../../global/utils';
-import { TriangleTreeNode, getTriangles } from './TriangleTreeNode';
+import {
+  TriangleTreeNode,
+  getTriangles,
+  findUpperAndLowerPoints,
+  triangulateRegion,
+} from './TriangleTreeNode';
 import { Point } from './Point';
 import { Edge } from './Edge';
 import { Triangle } from './Triangle';
@@ -67,7 +73,7 @@ export class TriangleGraph extends DrawableGraph {
   }
 
 
-  findTriangle(p1, p2, p3) {
+  findTriangleByPoints(p1, p2, p3) {
     const n = this.rootNode.findNodeWithTriangle(new Triangle(p1, p2, p3));
     return n ? n.triangle : null;
   }
@@ -89,14 +95,14 @@ export class TriangleGraph extends DrawableGraph {
    *   edge
    */
   connectPolypoint(t) {
-    const unfixedEdges = _.reject(t.getEdges(), e => this.isEdgeFixed(e));
-    const nodesAcross = _.map(unfixedEdges, e => this.rootNode.findNodeAcross(t, e));
-    const nullFiltered = _.reject(nodesAcross, _.isNil);
-    const tAcross = getTriangles(nullFiltered);
-    _.forEach(tAcross, adjT => {
-      const adjCenter = adjT.getCenter();
-      this.polypoints.addEdge(new Edge(t.getCenter(), adjCenter));
-    });
+    _.flow(
+      fp.reject(e => this.isEdgeFixed(e)), // ignore fixed edges
+      fp.map(e => this.rootNode.findNodeAcross(t, e)), // find nodes which share an edge with t
+      fp.reject(_.isNil),
+      fp.map(n => n.triangle.getCenter()),
+      // Add edge between center of neighbor nodes and this one
+      fp.forEach(adjCenter => { this.polypoints.addEdge(new Edge(t.getCenter(), adjCenter)); }),
+    )(t.getEdges());
   }
 
 
@@ -227,12 +233,18 @@ export class TriangleGraph extends DrawableGraph {
    * @param {Point} newPoint
    */
   legalizeEdgeNode(node, newPoint) {
+    // Find the edge that will be between newPoint and oppositePoint
     const edgeBetween = node.triangle.getEdgeWithoutPoint(newPoint);
+    // If the edge is fixed, we cannot flip it
     if (this.isEdgeFixed(edgeBetween)) return;
+    // Find the node containing the triangle sharing an edge with node.triangle, but without point
+    //   newPoint
     const otherNode = this.rootNode.findNodeAcross(node.triangle, edgeBetween);
     if (otherNode) {
       const oppositePoint = otherNode.triangle.getPointNotOnEdge(edgeBetween);
       if (!isLegal(newPoint, edgeBetween, oppositePoint)) {
+        // If the edge is illegal, flip it by creating the two new triangles, and adding them as
+        //   children to the two old triangles
         const t1 = new Triangle(newPoint, oppositePoint, edgeBetween.p1);
         const t2 = new Triangle(newPoint, oppositePoint, edgeBetween.p2);
         const n1 = new TriangleTreeNode(t1);
@@ -241,7 +253,9 @@ export class TriangleGraph extends DrawableGraph {
         node.addChild(n2);
         otherNode.addChild(n1);
         otherNode.addChild(n2);
+        // Remove the old triangles, add the new ones from the graph
         this.updateGraph([node.triangle, otherNode.triangle], [t1, t2]);
+        // Recursively legalize resulting triangles
         this.legalizeEdgeNode(n1, newPoint);
         this.legalizeEdgeNode(n2, newPoint);
       }
@@ -270,14 +284,14 @@ export class TriangleGraph extends DrawableGraph {
 
     const intersectingNodes = this.rootNode.findNodesIntersectingEdge(e);
     const newTriangles = [];
-    const { upperPoints, lowerPoints, orderedNodes } = TriangleTreeNode.findUpperAndLowerPoints(
+    const { upperPoints, lowerPoints, orderedNodes } = findUpperAndLowerPoints(
       intersectingNodes,
       e,
     );
-    TriangleTreeNode.triangulateRegion(upperPoints, orderedNodes, newTriangles);
-    TriangleTreeNode.triangulateRegion(lowerPoints, orderedNodes, newTriangles);
+    triangulateRegion(upperPoints, orderedNodes, newTriangles);
+    triangulateRegion(lowerPoints, orderedNodes, newTriangles);
     this.addFixedEdge(e);
-    this.updateGraph(_.map(intersectingNodes, n => n.triangle), newTriangles);
+    this.updateGraph(getTriangles(intersectingNodes), newTriangles);
   }
 
 
