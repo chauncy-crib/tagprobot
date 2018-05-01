@@ -21,7 +21,6 @@ import {
 
 test('delaunayAddConstraintEdge does not create flat triangle when points are in a line', t => {
   setupPixiAndTagpro();
-
   const tGraph = new TriangleGraph();
   tGraph.addFirstTriangle(Triangle.fromCoords(0, 0, 2000, 0, 1000, 2000));
   const p1 = new Point(1080, 640);
@@ -34,12 +33,11 @@ test('delaunayAddConstraintEdge does not create flat triangle when points are in
   tGraph.delaunayAddVertex(p4);
 
   t.doesNotThrow(() => tGraph.delaunayAddConstraintEdge(new Edge(p1, p4)));
-  t.true(tGraph.findTriangle(p1, p4, p3) !== null);
-  t.true(tGraph.findTriangle(p1, p2, p3) !== null);
-  t.true(tGraph.findTriangle(p1, p4, p2) === null);
+  t.true(tGraph.findTriangleByPoints(p1, p4, p3) !== null);
+  t.true(tGraph.findTriangleByPoints(p1, p2, p3) !== null);
+  t.true(tGraph.findTriangleByPoints(p1, p4, p2) === null);
 
   resetPixiAndTagpro();
-
   t.end();
 });
 
@@ -47,7 +45,6 @@ test('delaunayAddConstraintEdge does not create flat triangle when points are in
 test('delaunayRemoveVertex', tester => {
   tester.test('removes vertex surrounded by 4 points, and validly retriangulates 4 points', t => {
     setupPixiAndTagpro();
-
     const mockDTGraph = new TriangleGraph();
     mockDTGraph.addFirstTriangle(Triangle.fromCoords(-10, -10, -10, 100, 100, -10));
     const v0 = new Point(0, 0);
@@ -55,7 +52,6 @@ test('delaunayRemoveVertex', tester => {
     const v2 = new Point(10, 10);
     const v3 = new Point(10, 0);
     const p = new Point(3, 6);
-
     mockDTGraph.delaunayAddVertex(v0);
     mockDTGraph.delaunayAddVertex(v1);
     mockDTGraph.delaunayAddVertex(v2);
@@ -81,7 +77,6 @@ test('delaunayRemoveVertex', tester => {
 
   tester.test('removes vertex surrounded by 5 points, and validly retriangulates 5 points', t => {
     setupPixiAndTagpro();
-
     const mockDTGraph = new TriangleGraph();
     const v0 = new Point(0, 0);
     const v1 = new Point(0, 10);

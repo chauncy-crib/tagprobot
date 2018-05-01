@@ -1,6 +1,10 @@
 import test from 'tape';
 import _ from 'lodash';
-import { TriangleTreeNode } from '../TriangleTreeNode';
+import {
+  TriangleTreeNode,
+  findUpperAndLowerPoints,
+  triangulateRegion,
+} from '../TriangleTreeNode';
 import { Edge } from '../Edge';
 import { Point } from '../Point';
 import { Triangle } from '../Triangle';
@@ -316,7 +320,7 @@ test('TriangleTreeNode.findNodesIntersectingEdge()', tester => {
 });
 
 
-test('TriangleTreeNode.findUpperAndLowerPoints()', tester => {
+test('findUpperAndLowerPoints()', tester => {
   tester.test('returns upper and lower points, and orderedNodes', t => {
     const node = new TriangleTreeNode(new Triangle(
       new Point(0, 0),
@@ -329,7 +333,7 @@ test('TriangleTreeNode.findUpperAndLowerPoints()', tester => {
     const e = new Edge(new Point(0, 0), new Point(6, 7));
     const intersectingNodes = node.findNodesIntersectingEdge(e);
 
-    const { upperPoints, lowerPoints, orderedNodes } = TriangleTreeNode.findUpperAndLowerPoints(
+    const { upperPoints, lowerPoints, orderedNodes } = findUpperAndLowerPoints(
       intersectingNodes,
       e,
     );
@@ -349,7 +353,7 @@ test('TriangleTreeNode.findUpperAndLowerPoints()', tester => {
 });
 
 
-test('TriangleTreeNode.triangulateRegion()', tester => {
+test('triangulateRegion()', tester => {
   tester.test('retriangulates region with constraint edge', t => {
     const node = new TriangleTreeNode(new Triangle(
       new Point(0, 0),
@@ -364,12 +368,12 @@ test('TriangleTreeNode.triangulateRegion()', tester => {
     t.is(node.findNodesWithEdge(e).length, 0); // this edge is not currently in the graph
 
     const intersectingNodes = node.findNodesIntersectingEdge(e);
-    const { upperPoints, lowerPoints, orderedNodes } = TriangleTreeNode.findUpperAndLowerPoints(
+    const { upperPoints, lowerPoints, orderedNodes } = findUpperAndLowerPoints(
       intersectingNodes,
       e,
     );
-    TriangleTreeNode.triangulateRegion(upperPoints, orderedNodes, []);
-    TriangleTreeNode.triangulateRegion(lowerPoints, orderedNodes, []);
+    triangulateRegion(upperPoints, orderedNodes, []);
+    triangulateRegion(lowerPoints, orderedNodes, []);
 
     // After calling triangulateRegion, two triangles have the edge
     t.is(node.findNodesWithEdge(e).length, 2);
