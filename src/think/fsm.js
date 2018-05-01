@@ -1,7 +1,6 @@
 import _ from 'lodash';
 
 import { BRP } from '../global/constants';
-import { drawEnemyPath } from '../draw/triangulation';
 import {
   amRed,
   amBlue,
@@ -87,8 +86,9 @@ export function chaseEnemyFC(me, goal, enemyFC, enemyShortestPath) {
  *     If an enemy in view has the flage, chase.
  *     Else, go to the enemy base.
  * @param { Object } me
- * @returns {{xp: number, yp: number}} the position, in pixels, of the bot's goal, which is
- *   determined by the current state of the game
+ * @returns {{goal: {xp: number, yp: number}, enemyShortestPath: PolyPoint[]}} goal, our global
+ *   destination in pixels and enemyShortestPath, the polypoints that we predict our enemy to
+ *   follow
  */
 export function FSM(me) {
   let goal = {};
@@ -131,6 +131,5 @@ export function FSM(me) {
       }
     }
   }
-  drawEnemyPath(enemyShortestPath);
-  return goal;
+  return { goal, enemyShortestPath };
 }
