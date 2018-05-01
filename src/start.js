@@ -10,7 +10,7 @@ import { dequeueChatMessages, setupChatCallback } from './interface/chat';
 import { turnOnAllDrawings, initUiUpdateFunction } from './draw/draw';
 import { updateNavMesh } from './interpret/graphToTriangulation';
 import { getShortestPolypointPath } from './plan/astar';
-import { drawAllyPath } from './draw/triangulation';
+import { drawEnemyPath, drawAllyPath } from './draw/triangulation';
 import { getDesiredAccelerationMultipliers } from './control/physics';
 import { funnelPolypoints } from './plan/funnel';
 
@@ -50,7 +50,8 @@ function botLoop() {
 
   const { map } = tagpro;
   const me = getMe();
-  const goal = FSM(me);
+  const { goal, enemyShortestPath } = FSM(me);
+  drawEnemyPath(enemyShortestPath);
   updateNavMesh(map);
 
   const polypointShortestPath = getShortestPolypointPath(
