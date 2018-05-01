@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { assert } from '../../global/utils';
-import { TriangleTreeNode, getTriangles } from './TriangleTreeNode';
+import { TriangleTreeNode, getTriangles, findUpperAndLowerPoints } from './TriangleTreeNode';
 import { Point } from './Point';
 import { Edge } from './Edge';
 import { Triangle } from './Triangle';
@@ -227,12 +227,18 @@ export class TriangleGraph extends DrawableGraph {
    * @param {Point} newPoint
    */
   legalizeEdgeNode(node, newPoint) {
+    // Find the edge that will be between newPoint and oppositePoint
     const edgeBetween = node.triangle.getEdgeWithoutPoint(newPoint);
+    // If the edge is fixed, we cannot flip it
     if (this.isEdgeFixed(edgeBetween)) return;
+    // Find the node containing the triangle sharing an edge with node.triangle, but without point
+    //   newPoint
     const otherNode = this.rootNode.findNodeAcross(node.triangle, edgeBetween);
     if (otherNode) {
       const oppositePoint = otherNode.triangle.getPointNotOnEdge(edgeBetween);
       if (!isLegal(newPoint, edgeBetween, oppositePoint)) {
+        // If the edge is illegal, flip it by creating the two new triangles, and adding them as
+        //   children to the two old triangles
         const t1 = new Triangle(newPoint, oppositePoint, edgeBetween.p1);
         const t2 = new Triangle(newPoint, oppositePoint, edgeBetween.p2);
         const n1 = new TriangleTreeNode(t1);
@@ -241,7 +247,9 @@ export class TriangleGraph extends DrawableGraph {
         node.addChild(n2);
         otherNode.addChild(n1);
         otherNode.addChild(n2);
+        // Remove the old triangles, add the new ones from the graph
         this.updateGraph([node.triangle, otherNode.triangle], [t1, t2]);
+        // Recursively regalize resulting triangles
         this.legalizeEdgeNode(n1, newPoint);
         this.legalizeEdgeNode(n2, newPoint);
       }
@@ -270,14 +278,14 @@ export class TriangleGraph extends DrawableGraph {
 
     const intersectingNodes = this.rootNode.findNodesIntersectingEdge(e);
     const newTriangles = [];
-    const { upperPoints, lowerPoints, orderedNodes } = TriangleTreeNode.findUpperAndLowerPoints(
+    const { upperPoints, lowerPoints, orderedNodes } = findUpperAndLowerPoints(
       intersectingNodes,
       e,
     );
     TriangleTreeNode.triangulateRegion(upperPoints, orderedNodes, newTriangles);
     TriangleTreeNode.triangulateRegion(lowerPoints, orderedNodes, newTriangles);
     this.addFixedEdge(e);
-    this.updateGraph(_.map(intersectingNodes, n => n.triangle), newTriangles);
+    this.updateGraph(getTriangles(intersectingNodes), newTriangles);
   }
 
 
