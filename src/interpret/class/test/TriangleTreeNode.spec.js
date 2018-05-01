@@ -1,6 +1,6 @@
 import test from 'tape';
 import _ from 'lodash';
-import { TriangleTreeNode } from '../TriangleTreeNode';
+import { TriangleTreeNode, findUpperAndLowerPoints } from '../TriangleTreeNode';
 import { Edge } from '../Edge';
 import { Point } from '../Point';
 import { Triangle } from '../Triangle';
@@ -316,7 +316,7 @@ test('TriangleTreeNode.findNodesIntersectingEdge()', tester => {
 });
 
 
-test('TriangleTreeNode.findUpperAndLowerPoints()', tester => {
+test('findUpperAndLowerPoints()', tester => {
   tester.test('returns upper and lower points, and orderedNodes', t => {
     const node = new TriangleTreeNode(new Triangle(
       new Point(0, 0),
@@ -329,7 +329,7 @@ test('TriangleTreeNode.findUpperAndLowerPoints()', tester => {
     const e = new Edge(new Point(0, 0), new Point(6, 7));
     const intersectingNodes = node.findNodesIntersectingEdge(e);
 
-    const { upperPoints, lowerPoints, orderedNodes } = TriangleTreeNode.findUpperAndLowerPoints(
+    const { upperPoints, lowerPoints, orderedNodes } = findUpperAndLowerPoints(
       intersectingNodes,
       e,
     );
@@ -364,7 +364,7 @@ test('TriangleTreeNode.triangulateRegion()', tester => {
     t.is(node.findNodesWithEdge(e).length, 0); // this edge is not currently in the graph
 
     const intersectingNodes = node.findNodesIntersectingEdge(e);
-    const { upperPoints, lowerPoints, orderedNodes } = TriangleTreeNode.findUpperAndLowerPoints(
+    const { upperPoints, lowerPoints, orderedNodes } = findUpperAndLowerPoints(
       intersectingNodes,
       e,
     );
