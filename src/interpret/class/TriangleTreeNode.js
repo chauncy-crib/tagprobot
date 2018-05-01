@@ -40,6 +40,10 @@ export class TriangleTreeNode {
 
 
   /**
+   * Inserts a new point into the triangulation by splitting apart the triangle(s) that contained
+   *   the point. If the point lays directly inside a triangle, three new triangles are created
+   *   inside the containing triangle. If the point lays on an edge, then the edge is split in half,
+   *   and both triangles which have that edge are split in half (creating four new triangles).
    * @param {Point} p
    * @returns {{containingTriangles: Triangle[], newNodes: TriangleTreeNode[]}} the triangle(s) that
    *   contained the point, and the new nodes containing triangles created by splitting apart the
