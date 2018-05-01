@@ -44,8 +44,9 @@ function getPointsAlongPath(path, granularity = 40) {
 }
 
 
-export function chaseEnemyFC(me, goal, enemyFC, enemyShortestPath) {
+export function chaseEnemyFC(me, enemyFC) {
   // Runtime: O(M*CPTL^2) with visualizations on, O(M + S*CPTL^2) with visualizations off
+  const enemyShortestPath = [];
   _.forEach(
     funnelPolypoints(getShortestPolypointPath(
       { xp: enemyFC.x + BRP, yp: enemyFC.y + BRP },
@@ -62,74 +63,92 @@ export function chaseEnemyFC(me, goal, enemyFC, enemyShortestPath) {
     const enemyDist = pp.distance(new Point(enemyFC.x + BRP, enemyFC.y + BRP));
     return myDist < enemyDist;
   });
-  if (interceptionPolypoint) {
-    // Subtract PPTL/2 because in getAccelValues in bot.js we add them back
-    goal.xp = interceptionPolypoint.x;
-    goal.yp = interceptionPolypoint.y;
-  } else {
-    goal.xp = enemyFC.x + enemyFC.vx;
-    goal.yp = enemyFC.y + enemyFC.vy;
+  const goal = interceptionPolypoint ?
+    { xp: interceptionPolypoint.x, yp: interceptionPolypoint.y } :
+    { xp: enemyFC.x + enemyFC.vx, yp: enemyFC.y + enemyFC.vy };
+  return { goal, enemyShortestPath };
+}
+
+/**
+ * @param { Object } me
+ * @returns {{goal: {xp: number, yp: number}, enemyShortestPath: PolyPoint[]}} goal, our global
+ *   destination in pixels and enemyShortestPath, the polypoints that we predict our enemy to
+ *   follow
+ */
+function centerFlagFSM(me) {
+  // If the bot has the flag, go to the endzone
+  if (me.flag) {
+    const goal = amRed() ? findCachedTile('RED_ENDZONE') : findCachedTile('BLUE_ENDZONE');
+    const enemyShortestPath = [];
+    console.info('I have the flag. Seeking endzone!');
+    return { goal, enemyShortestPath };
   }
+  // If an enemy player in view has the flag, chase
+  const enemyFC = findEnemyFC();
+  if (enemyFC) {
+    const { goal, enemyShortestPath } = chaseEnemyFC(me, enemyFC);
+    console.info('I see an enemy with the flag. Chasing!');
+    return { goal, enemyShortestPath };
+  }
+  // If the enemy team has the flag, go to central flag station
+  if (enemyTeamHasFlag()) {
+    const goal = findCachedTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
+    const enemyShortestPath = [];
+    console.info('Enemy has the flag. Headed towards the central flag station');
+    return { goal, enemyShortestPath };
+  }
+  // If my team has the flag, go to our endzone
+  if (myTeamHasFlag()) {
+    const goal = amRed() ? findCachedTile('RED_ENDZONE') : findCachedTile('BLUE_ENDZONE');
+    const enemyShortestPath = [];
+    console.info('We have the flag. Headed towards our Endzone.');
+    return { goal, enemyShortestPath };
+  }
+  // Go to the central flag station in hopes of grabbing the flag
+  const goal = findCachedTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
+  const enemyShortestPath = [];
+  console.info('Nobody has the flag. Going to central flag station!');
+  return { goal, enemyShortestPath };
 }
 
 
 /**
- * The logic/flowchart to get where our goal is.
- *   Center Flag:
- *     If I have the flag, go to my endzone.
- *     If an enemy in view has the flag, chase.
- *     If the enemy team has the flag but I can't see them, go to their endzone.
- *     If we have the flag, go to our endzone.
- *     Else, go to the flag station.
- *   Two Flag:
- *     If I have the flag, go to my base
- *     If an enemy in view has the flage, chase.
- *     Else, go to the enemy base.
+ * @param { Object } me
+ * @returns {{goal: {xp: number, yp: number}, enemyShortestPath: PolyPoint[]}} goal, our global
+ *   destination in pixels and enemyShortestPath, the polypoints that we predict our enemy to
+ *   follow
+ */
+function twoFlagFSM(me) {
+  // If I have the flag, then go to the endzone in hopes of capping
+  if (me.flag) {
+    const goal = amRed() ? findCachedTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
+      findCachedTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
+    const enemyShortestPath = [];
+    console.info('I have the flag. Seeking endzone!');
+    return { goal, enemyShortestPath };
+  }
+  // If an enemy player in view has the flag, chase them in hopes of tagging
+  const enemyFC = findEnemyFC();
+  if (enemyFC) {
+    const { goal, enemyShortestPath } = chaseEnemyFC(me, enemyFC);
+    console.info('I see an enemy with the flag. Chasing!');
+    return { goal, enemyShortestPath };
+  }
+  // Go to the enemy flag station in hopes of spotting the enemy FC
+  const goal = amBlue() ? findCachedTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
+    findCachedTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
+  const enemyShortestPath = [];
+  console.info("I don't know what to do. Going to enemy base!");
+  return { goal, enemyShortestPath };
+}
+
+
+/**
  * @param { Object } me
  * @returns {{goal: {xp: number, yp: number}, enemyShortestPath: PolyPoint[]}} goal, our global
  *   destination in pixels and enemyShortestPath, the polypoints that we predict our enemy to
  *   follow
  */
 export function FSM(me) {
-  let goal = {};
-  const enemyShortestPath = [];
-
-  if (isCenterFlag()) { // in center flag game
-    if (me.flag) { // if the bot has the flag, go to the endzone
-      goal = amRed() ? findCachedTile('RED_ENDZONE') : findCachedTile('BLUE_ENDZONE');
-      console.info('I have the flag. Seeking endzone!');
-    } else {
-      const enemyFC = findEnemyFC();
-      if (enemyFC) { // if an enemy player in view has the flag, chase
-        chaseEnemyFC(me, goal, enemyFC, enemyShortestPath);
-        console.info('I see an enemy with the flag. Chasing!');
-      } else if (enemyTeamHasFlag()) {
-        goal = findCachedTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
-        console.info('Enemy has the flag. Headed towards the central flag station');
-      } else if (myTeamHasFlag()) {
-        goal = amRed() ? findCachedTile('RED_ENDZONE') : findCachedTile('BLUE_ENDZONE');
-        console.info('We have the flag. Headed towards our Endzone.');
-      } else {
-        goal = findCachedTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
-        console.info('Nobody has the flag. Going to central flag station!');
-      }
-    }
-  } else { // in two flag game
-    if (me.flag) {
-      goal = amRed() ? findCachedTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
-        findCachedTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
-      console.info('I have the flag. Seeking endzone!');
-    } else {
-      const enemyFC = findEnemyFC();
-      if (enemyFC) { // if an enemy player in view has the flag, chase
-        chaseEnemyFC(me, goal, enemyFC, enemyShortestPath);
-        console.info('I see an enemy with the flag. Chasing!');
-      } else {
-        goal = amBlue() ? findCachedTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
-          findCachedTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
-        console.info("I don't know what to do. Going to enemy base!");
-      }
-    }
-  }
-  return { goal, enemyShortestPath };
+  return isCenterFlag() ? centerFlagFSM(me) : twoFlagFSM(me);
 }
