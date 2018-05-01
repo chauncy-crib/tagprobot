@@ -59,12 +59,12 @@ export class TriangleGraph extends DrawableGraph {
   addFirstTriangle(t) {
     assert(this.numVertices() === 0, `addFirstTriangle called with ${this.numVertices()} vertices`);
     this.rootNode = new TriangleTreeNode(t);
-    this.addVerticesEdgesAndPolypoint(t);
+    this.addTriangle(t);
   }
 
 
   findContainingTriangles(p) {
-    return _.map(this.rootNode.findContainingNodes(p), n => n.triangle);
+    return this.rootNode.findContainingTriangles(p);
   }
 
 
@@ -87,7 +87,7 @@ export class TriangleGraph extends DrawableGraph {
 
   /**
    * Given a triangle, adds polypoints between it and all other triangles which share a non-fixed
-   * edge
+   *   edge
    */
   updatePolypoint(t) {
     const unfixedEdges = _.reject(t.getEdges(), e => this.isEdgeFixed(e));
@@ -103,9 +103,9 @@ export class TriangleGraph extends DrawableGraph {
 
   /**
    * Adds the edges and vertices from a triangle to the graph, if they do not exist. Adds the center
-   * of the triangle to the polypoint-graph
+   *   of the triangle to the polypoint-graph
    */
-  addVerticesEdgesAndPolypoint(t) {
+  addTriangle(t) {
     this.addEdgeAndVertices(new Edge(t.p1, t.p2));
     this.addEdgeAndVertices(new Edge(t.p1, t.p3));
     this.addEdgeAndVertices(new Edge(t.p2, t.p3));
@@ -117,9 +117,10 @@ export class TriangleGraph extends DrawableGraph {
    * Removes the edges of the triangle from the graph. Removes the polypoint from the polypoint
    * graph (and clears all edges going to it)
    */
-  removeEdgesAndPolypoint(t) {
-    if (this.polypoints.hasVertex(t.getCenter())) {
-      this.polypoints.removeVertex(t.getCenter());
+  removeTriangle(t) {
+    const tCenter = t.getCenter();
+    if (this.polypoints.hasVertex(tCenter)) {
+      this.polypoints.removeVertex(tCenter);
     }
     _.forEach(t.getEdges(), e => this.removeEdge(e));
   }
@@ -127,11 +128,11 @@ export class TriangleGraph extends DrawableGraph {
 
   /**
    * Removes the edges and polypoint for each triangle in trianglesToRemove, and adds edges,
-   * vertices, and polypoints for each triangle in trianglesToAdd.
+   *   vertices, and polypoints for each triangle in trianglesToAdd.
    */
   updateGraph(trianglesToRemove, trianglesToAdd) {
-    _.forEach(trianglesToRemove, t => this.removeEdgesAndPolypoint(t));
-    _.forEach(trianglesToAdd, t => this.addVerticesEdgesAndPolypoint(t));
+    _.forEach(trianglesToRemove, t => this.removeTriangle(t));
+    _.forEach(trianglesToAdd, t => this.addTriangle(t));
     _.forEach(trianglesToAdd, t => this.updatePolypoint(t));
   }
 
