@@ -5,9 +5,71 @@ import { Edge } from './Edge';
 import { isLegal } from '../graphToTriangulation';
 import { detD, detH, sortCounterClockwise } from '../utils';
 
+
 export function getTriangles(nodes) {
   return _.map(nodes, n => n.triangle);
 }
+
+
+/**
+ * @param {TriangleTreeNode[]} intersectingTriangles - array of nodes that intersect the edge
+ * @param {Edge} e
+ * @returns {{upperPoints: Point[], lowerPoints: Point[], orderedNodes: TriangleTreeNode[]}} the
+ *   ordered points of the upper and lower regions that share the edge, and the nodes containing
+ *   the points in order
+ */
+export function findUpperAndLowerPoints(intersectingNodes, e) {
+  let nodes = intersectingNodes;
+  // Keep track of the points in order in the regions above and below the edge
+  const upperPoints = [e.p1];
+  const lowerPoints = [e.p1];
+
+  const orderedNodes = Array(nodes.length);
+  let i = 0;
+
+  while (!_.isEmpty(nodes)) {
+    const lastUpperPoint = _.last(upperPoints);
+    const lastLowerPoint = _.last(lowerPoints);
+
+    // Find next triangle
+    const nextN = _.find(nodes, n => (
+      n.triangle.hasPoint(lastUpperPoint) && n.triangle.hasPoint(lastLowerPoint)
+    ));
+
+    assert(!_.isNil(nextN), 'Could not find node containing both last upper and last lower');
+
+    orderedNodes[i] = nextN;
+
+    // Add points to upperPoints and lowerPoints
+    if (upperPoints.length === 1) {
+      // This is the first triangle, add one point to upper polygon and the other to lower
+      const newPoints = _.reject(nextN.triangle.getPoints(), p => p.equals(lastUpperPoint));
+      upperPoints.push(newPoints[0]);
+      lowerPoints.push(newPoints[1]);
+    } else {
+      // Get the third point that's not in either pseudo-polygon
+      const newPoint = _.find(nextN.triangle.getPoints(), p => (
+        !p.equals(lastUpperPoint) && !p.equals(lastLowerPoint)
+      ));
+
+      if (newPoint.equals(e.p2)) {
+        // This is the last point, add it to both regions
+        upperPoints.push(newPoint);
+        lowerPoints.push(newPoint);
+      } else {
+        // Push point to either upper or lower region
+        if (!e.isBetweenPoints(newPoint, lastUpperPoint, false)) upperPoints.push(newPoint);
+        else lowerPoints.push(newPoint);
+      }
+    }
+
+    // Remove triangle and edges from graph and from triangles
+    nodes = _.reject(nodes, nextN);
+    i += 1;
+  }
+  return { upperPoints, lowerPoints, orderedNodes };
+}
+
 
 export class TriangleTreeNode {
   /**
@@ -16,7 +78,7 @@ export class TriangleTreeNode {
   constructor(triangle) {
     this.triangle = triangle;
     this.children = [];
-    this.mark = false;
+    this.mark = false; // keep track of which nodes have been visited in _findLeavesWithCondition()
   }
 
 
@@ -40,6 +102,10 @@ export class TriangleTreeNode {
 
 
   /**
+   * Inserts a new point into the triangulation by splitting apart the triangle(s) that contained
+   *   the point. If the point lays directly inside a triangle, three new triangles are created
+   *   inside the containing triangle. If the point lays on an edge, then the edge is split in half,
+   *   and both triangles which have that edge are split in half (creating four new triangles).
    * @param {Point} p
    * @returns {{containingTriangles: Triangle[], newNodes: TriangleTreeNode[]}} the triangle(s) that
    *   contained the point, and the new nodes containing triangles created by splitting apart the
@@ -93,12 +159,18 @@ export class TriangleTreeNode {
   findNodeAcross(t, edge) {
     const nodesWithEdge = this.findNodesWithEdge(edge);
     if (nodesWithEdge.length === 1) {
-      assert(nodesWithEdge[0].triangle.equals(t));
+      assert(
+        nodesWithEdge[0].triangle.equals(t),
+        `Only triangle with edge ${edge} was ${nodesWithEdge[0].triangle}`,
+      );
       return null;
     }
     assert(nodesWithEdge.length === 2, `Found ${nodesWithEdge.length} nodes with edge ${edge}`);
     if (nodesWithEdge[0].triangle.equals(t)) return nodesWithEdge[1];
-    assert(nodesWithEdge[1].triangle.equals(t));
+    assert(
+      nodesWithEdge[1].triangle.equals(t),
+      `${t} was not in nodesWithEdge`,
+    );
     return nodesWithEdge[0];
   }
 
@@ -116,6 +188,7 @@ export class TriangleTreeNode {
 
 
   /**
+   * Removes a vertex from the triangulation, and creates new delaunay-valid triangles its place
    * @param {Point} p
    * @param {Point[]} neighbors - the neighbors of p in the graph
    */
@@ -197,7 +270,7 @@ export class TriangleTreeNode {
    * @returns {TriangleTreeNode[]} all nodes with triangles where t.intersectsEdge(e) returns true
    */
   findNodesIntersectingEdge(e) {
-    return this.findNodesWithCondition(
+    return this.findLeavesWithCondition(
       // Parent condition: either the edge intersects the triangle, or one of the triangle's edges
       //   overlaps the input edge
       n => n.triangle.intersectsEdge(e) ||
@@ -209,120 +282,15 @@ export class TriangleTreeNode {
 
 
   /**
-   * @param {TriangleTreeNode[]} intersectingTriangles - array of nodes that intersect the edge
-   * @param {Edge} e
-   * @returns {{upperPoints: Point[], lowerPoints: Point[], orderedNodes: TriangleTreeNode[]}} the
-   *   ordered points of the upper and lower regions that share the edge, and the nodes containing
-   *   the points in order
+   * Given two functions, both of which take in a node and return a boolean, finds all leaf nodes
+   *   where leafCondition(leaf) returns true, and parentCondition(parent) returns true for all
+   *   parents, grandparents, etc. of the leaf node.
    */
-  static findUpperAndLowerPoints(intersectingNodes, e) {
-    let nodes = intersectingNodes;
-    // Keep track of the points in order in the regions above and below the edge
-    const upperPoints = [e.p1];
-    const lowerPoints = [e.p1];
-
-    const orderedNodes = Array(nodes.length);
-    let i = 0;
-
-    while (!_.isEmpty(nodes)) {
-      const lastUpperPoint = _.last(upperPoints);
-      const lastLowerPoint = _.last(lowerPoints);
-
-      // Find next triangle
-      const nextN = _.find(nodes, n => (
-        n.triangle.hasPoint(lastUpperPoint) && n.triangle.hasPoint(lastLowerPoint)
-      ));
-
-      assert(!_.isNil(nextN), 'Could not find node containing both last upper and last lower');
-
-      orderedNodes[i] = nextN;
-
-      // Add points to upperPoints and lowerPoints
-      if (upperPoints.length === 1) {
-        // This is the first triangle, add one point to upper polygon and the other to lower
-        const newPoints = _.reject(nextN.triangle.getPoints(), p => p.equals(lastUpperPoint));
-        upperPoints.push(newPoints[0]);
-        lowerPoints.push(newPoints[1]);
-      } else {
-        // Get the third point that's not in either pseudo-polygon
-        const newPoint = _.find(nextN.triangle.getPoints(), p => (
-          !p.equals(lastUpperPoint) && !p.equals(lastLowerPoint)
-        ));
-
-        if (newPoint.equals(e.p2)) {
-          // This is the last point, add it to both regions
-          upperPoints.push(newPoint);
-          lowerPoints.push(newPoint);
-        } else {
-          // Push point to either upper or lower region
-          if (!e.isBetweenPoints(newPoint, lastUpperPoint, false)) upperPoints.push(newPoint);
-          else lowerPoints.push(newPoint);
-        }
-      }
-
-      // Remove triangle and edges from graph and from triangles
-      nodes = _.reject(nodes, nextN);
-      i += 1;
-    }
-    return { upperPoints, lowerPoints, orderedNodes };
-  }
-
-
-  /**
-   * Recursively triangulates an un-triangulated region of points. Adds all new triangles as
-   *   children to every node in regNodes
-   * @param {Point[]} reg - the region defined by an array of points connected in a cycle
-   * @param {TriangleTreeNode[]} regNodes - a list of nodes containing triangles that span across
-   *   the region
-   * @param {Triangle[]} newTriangles - a list to store every new triangle the function creates in
-   */
-  static triangulateRegion(reg, regNodes, newTriangles) {
-    if (reg.length === 3) {
-      const newTriangle = new Triangle(reg[0], reg[1], reg[2]);
-      newTriangles.push(newTriangle);
-      const newNode = new TriangleTreeNode(newTriangle);
-      _.forEach(regNodes, n => n.addChild(newNode));
-    }
-    if (reg.length <= 3) return;
-    // Extract out the points on the edge
-    const e = new Edge(reg[0], _.last(reg));
-    // Slice off the first and last element to get the inner region
-    const innerReg = _.slice(reg, 1, -1);
-
-    // Find vertex c on the region that triangle [e1, e2, c] is delaunay-legal with all other
-    //   points in the region
-    const cIndex = _.findIndex(innerReg, p =>
-      // Must be delaunay-legal with respect to every other point
-      _.every(innerReg, other => isLegal(p, e, other) || p === other));
-
-    const newTriangle = new Triangle(e.p1, innerReg[cIndex], e.p2);
-    newTriangles.push(newTriangle);
-    const newNode = new TriangleTreeNode(newTriangle);
-    _.forEach(regNodes, n => n.addChild(newNode));
-
-    // Call this recursively on the two sub-regions split by this triangle
-    TriangleTreeNode.triangulateRegion(
-      _.concat(e.p1, _.slice(innerReg, 0, cIndex + 1)),
-      regNodes,
-      newTriangles,
-    );
-    TriangleTreeNode.triangulateRegion(
-      _.concat(_.slice(innerReg, cIndex, innerReg.length), e.p2),
-      regNodes,
-      newTriangles,
-    );
-  }
-
-  /**
-   * Given a two functions, both which take in a node and return a boolean, finds all leaf nodes
-   * where leafCondition(leaf) returns true, and parentCondition(parent) returns true for all
-   * parents, grandparents, etc. of the leaf node.
-   */
-  findNodesWithCondition(parentCondition, leafCondition) {
+  findLeavesWithCondition(parentCondition, leafCondition) {
     const leafCond = leafCondition || parentCondition;
     const nodes = [];
     const visited = [];
-    this._findNodesWithCondition(parentCondition, leafCond, nodes, visited);
+    this._findLeavesWithCondition(parentCondition, leafCond, nodes, visited);
     // Undo the markings
     _.forEach(visited, n => {
       n.mark = false;
@@ -330,16 +298,21 @@ export class TriangleTreeNode {
     return nodes;
   }
 
-  _findNodesWithCondition(parentCondition, leafCondition, nodes, visited) {
+
+  /**
+   * The private recursive function for findLeavesWithCondition. Not meant for outside use, as it
+   *   leaves marking on nodes, and the user is responsible for clearing markings from all nodes in
+   *   visited. If markings are not cleared, future function calls will have unexpected behavior.
+   */
+  _findLeavesWithCondition(parentCondition, leafCondition, nodes, visited) {
     if (this.mark) return;
-    // Mark the node so we don't visit it again
-    this.mark = true;
+    this.mark = true; // mark the node so we don't visit it again
     visited.push(this);
     if (!parentCondition(this)) return;
     if (this.isLeaf() && leafCondition(this)) nodes.push(this);
     _.forEach(
       this.children,
-      c => c._findNodesWithCondition(parentCondition, leafCondition, nodes, visited),
+      c => c._findLeavesWithCondition(parentCondition, leafCondition, nodes, visited),
     );
   }
 
@@ -358,7 +331,7 @@ export class TriangleTreeNode {
    * @returns {TriangleTreeNode[]}
    */
   findContainingNodes(p) {
-    return this.findNodesWithCondition(n => n.triangle.containsPoint(p));
+    return this.findLeavesWithCondition(n => n.triangle.containsPoint(p));
   }
 
 
@@ -383,6 +356,53 @@ export class TriangleTreeNode {
    * @returns {TriangleTreeNode[]} all leaf-nodes that are descendents of this node
    */
   findAllNodes() {
-    return this.findNodesWithCondition(() => true);
+    return this.findLeavesWithCondition(() => true);
   }
+}
+
+
+/**
+ * Recursively triangulates an un-triangulated region of points. Adds all new triangles as
+
+ *   children to every node in regNodes
+ * @param {Point[]} reg - the region defined by an array of points connected in a cycle
+ * @param {TriangleTreeNode[]} regNodes - a list of nodes containing triangles that span across
+ *   the region
+ * @param {Triangle[]} newTriangles - a list to store every new triangle the function creates in
+ */
+export function triangulateRegion(reg, regNodes, newTriangles) {
+  if (reg.length === 3) {
+    const newTriangle = new Triangle(reg[0], reg[1], reg[2]);
+    newTriangles.push(newTriangle);
+    const newNode = new TriangleTreeNode(newTriangle);
+    _.forEach(regNodes, n => n.addChild(newNode));
+  }
+  if (reg.length <= 3) return;
+  // Extract out the points on the edge
+  const e = new Edge(reg[0], _.last(reg));
+  // Slice off the first and last element to get the inner region
+  const innerReg = _.slice(reg, 1, -1);
+
+  // Find vertex c on the region that triangle [e1, e2, c] is delaunay-legal with all other
+  //   points in the region
+  const cIndex = _.findIndex(innerReg, p =>
+    // Must be delaunay-legal with respect to every other point
+    _.every(innerReg, other => isLegal(p, e, other) || p === other));
+
+  const newTriangle = new Triangle(e.p1, innerReg[cIndex], e.p2);
+  newTriangles.push(newTriangle);
+  const newNode = new TriangleTreeNode(newTriangle);
+  _.forEach(regNodes, n => n.addChild(newNode));
+
+  // Call this recursively on the two sub-regions split by this triangle
+  triangulateRegion(
+    _.concat(e.p1, _.slice(innerReg, 0, cIndex + 1)),
+    regNodes,
+    newTriangles,
+  );
+  triangulateRegion(
+    _.concat(_.slice(innerReg, cIndex, innerReg.length), e.p2),
+    regNodes,
+    newTriangles,
+  );
 }
