@@ -84,9 +84,11 @@ export class Triangle {
    *   the point unique to the other triangle
    */
   categorizePoints(other) {
-    const shared = _.intersectionBy(this.getPoints(), other.getPoints(), p => p.toString());
-    const myPoint = _.reject(this.getPoints(), p => _.some(shared, s => s.equals(p)))[0];
-    const otherPoint = _.reject(other.getPoints(), p => _.some(shared, s => s.equals(p)))[0];
+    const thisPoints = this.getPoints();
+    const otherPoints = other.getPoints();
+    const shared = _.intersectionBy(thisPoints, otherPoints, p => p.toString());
+    const myPoint = _.reject(thisPoints, p => _.some(shared, s => s.equals(p)))[0];
+    const otherPoint = _.reject(otherPoints, p => _.some(shared, s => s.equals(p)))[0];
     return { shared, myPoint, otherPoint };
   }
 

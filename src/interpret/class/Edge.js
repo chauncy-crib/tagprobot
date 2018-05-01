@@ -51,11 +51,12 @@ export class Edge {
    *   this edge or e's points lays on top of the other edge
    */
   overlapsEdge(e) {
-    if (!this.isCollinearWithEdge(e)) return false;
-    return e.p1.laysOnEdge(this) ||
-           e.p2.laysOnEdge(this) ||
-           this.p1.laysOnEdge(e) ||
-           this.p2.laysOnEdge(e);
+    return this.isCollinearWithEdge(e) && (
+      e.p1.laysOnEdge(this) ||
+      e.p2.laysOnEdge(this) ||
+      this.p1.laysOnEdge(e) ||
+      this.p2.laysOnEdge(e)
+    );
   }
 
 

@@ -350,6 +350,15 @@ export class TriangleTreeNode {
 
 
   /**
+   * @param {Point} p
+   * @returns {Triangle[]}
+   */
+  findContainingTriangles(p) {
+    return _.map(this.findContainingNodes(p), n => n.triangle);
+  }
+
+
+  /**
    * @returns {Triangle[]} all triangles in leaf-nodes that are descendents of this node
    */
   findAllTriangles() {
