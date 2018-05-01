@@ -5,6 +5,10 @@ import { Edge } from './Edge';
 import { isLegal } from '../graphToTriangulation';
 import { detD, detH, sortCounterClockwise } from '../utils';
 
+export function getTriangles(nodes) {
+  return _.map(nodes, n => n.triangle);
+}
+
 export class TriangleTreeNode {
   /**
    * @param {Triangle} triangle
@@ -125,7 +129,7 @@ export class TriangleTreeNode {
       N[nIdx],
       N[(nIdx + 1) % N.length],
     )));
-    const oldTriangles = _.map(surroundingNodes, n => n.triangle);
+    const oldTriangles = getTriangles(surroundingNodes);
     const newTriangles = [];
     while (nIndices.length > 3) {
       let ear = null;
@@ -176,6 +180,15 @@ export class TriangleTreeNode {
     const n1 = this.findContainingNodes(e.p1);
     const n2 = this.findContainingNodes(e.p2);
     return _.uniq(_.filter(n1.concat(n2), n => n.triangle.hasEdge(e)));
+  }
+
+
+  /**
+   * @param {Edge} e
+   * @returns {Triangle[]}
+   */
+  findTrianglesWithEdge(e) {
+    return getTriangles(this.findNodesWithEdge(e));
   }
 
 
@@ -354,7 +367,7 @@ export class TriangleTreeNode {
    * @returns {Triangle[]}
    */
   findContainingTriangles(p) {
-    return _.map(this.findContainingNodes(p), n => n.triangle);
+    return getTriangles(this.findContainingNodes(p));
   }
 
 
@@ -362,7 +375,7 @@ export class TriangleTreeNode {
    * @returns {Triangle[]} all triangles in leaf-nodes that are descendents of this node
    */
   findAllTriangles() {
-    return _.map(this.findAllNodes(), n => n.triangle);
+    return getTriangles(this.findAllNodes());
   }
 
 
