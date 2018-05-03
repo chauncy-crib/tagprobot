@@ -71,6 +71,37 @@ export function projectedState(xp, yp, vxp, vyp, keypress, timeStep, accMultX = 
 
 
 /**
+ * Given a starting location/velocity in pixels, the keys to press, the multipliers for each
+ * direction, and the total time and timestep, return the final position/velocity.
+ */
+export function runSimulation(xp, yp, vxp, vyp, keypress, accMultX, accMultY, time, dt = 0.01) {
+  let currX = xp;
+  let currY = yp;
+  let currVx = vxp;
+  let currVy = vyp;
+  let currTime = 0;
+  while (currTime < time) {
+    const nextState = projectedState(
+      currX,
+      currY,
+      currVx,
+      currVy,
+      keypress,
+      dt,
+      accMultX,
+      accMultY,
+    );
+    currX = nextState.xp;
+    currY = nextState.yp;
+    currVx = nextState.vxp;
+    currVy = nextState.vyp;
+    currTime += dt;
+  }
+  return { xp: currX, yp: currY, vxp: currVx, vyp: currVy };
+}
+
+
+/**
  * @param {number} pos - starting position in one coordinate
  * @param {number} vel - starting velocity in one direction
  * @param {number} targetPosition - target position, in one coordinate
@@ -86,15 +117,7 @@ export function binarySearchAcceleration(pos, vel, targetPosition, time, thresho
   const step = 0.01;
   while (hi - lo > threshold) {
     const mid = (hi + lo) / 2;
-    let t = 0;
-    let position = pos;
-    let speed = vel;
-    while (t < time) {
-      const nextState = projectedState(position, 0, speed, 0, { x: 'RIGHT' }, step, mid);
-      position = nextState.xp;
-      speed = nextState.vxp;
-      t += step;
-    }
+    const position = runSimulation(pos, 0, vel, 0, { x: 'RIGHT' }, mid, 0, time, step).xp;
     if (position > targetPosition) { // overshot the target position
       hi = mid;
     } else { // undershot the target position
