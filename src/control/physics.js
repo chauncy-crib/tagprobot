@@ -38,11 +38,13 @@ function nextVelocity(v, a, t) {
  * @param {(string|undefined)} keypress.x - either 'RIGHT', 'LEFT', or undefined
  * @param {(string|undefined)} keypress.y - either 'DOWN', 'UP', or undefined
  * @param {number} timeStep - seconds between current and projected state
- * @param {number} accelerationMultiplier - a multiplier to apply to the acceleration resulting from
- *   the keypress. Default to 1
+ * @param {number} accMultX - a multiplier to apply to the acceleration resulting from
+ *   the keypress in the x direction. Default to 1
+ * @param {number} accMultY - a multiplier to apply to the acceleration resulting from
+ *   the keypress in the y direction. Default to 1
  * @returns {{xp: number, yp: number, vxp: number, vyp: number}} the next state of the bot
  */
-export function projectedState(xp, yp, vxp, vyp, keypress, timeStep, accelerationMultiplier = 1) {
+export function projectedState(xp, yp, vxp, vyp, keypress, timeStep, accMultX = 1, accMultY = 1) {
   // Acceleration as a result of friction
   const dampingDecelX = -vxp * DAMPING_FACTOR;
   const dampingDecelY = -vyp * DAMPING_FACTOR;
@@ -50,10 +52,10 @@ export function projectedState(xp, yp, vxp, vyp, keypress, timeStep, acceleratio
   // Acceleration from keypress
   let keypressAccelX = 0;
   let keypressAccelY = 0;
-  if (keypress.x === 'RIGHT') keypressAccelX = ACCEL * accelerationMultiplier;
-  else if (keypress.x === 'LEFT') keypressAccelX = -ACCEL * accelerationMultiplier;
-  if (keypress.y === 'DOWN') keypressAccelY = ACCEL * accelerationMultiplier;
-  else if (keypress.y === 'UP') keypressAccelY = -ACCEL * accelerationMultiplier;
+  if (keypress.x === 'RIGHT') keypressAccelX = ACCEL * accMultX;
+  else if (keypress.x === 'LEFT') keypressAccelX = -ACCEL * accMultX;
+  if (keypress.y === 'DOWN') keypressAccelY = ACCEL * accMultY;
+  else if (keypress.y === 'UP') keypressAccelY = -ACCEL * accMultY;
 
   const netAccelX = keypressAccelX + dampingDecelX;
   const netAccelY = keypressAccelY + dampingDecelY;
