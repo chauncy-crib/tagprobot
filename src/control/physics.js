@@ -110,8 +110,9 @@ export function binarySearchAcceleration(pos, vel, targetPosition, time, thresho
  * @param {number} vyp - starting y velocity
  * @param {number} destXp - target x
  * @param {number} destYp - target y
- * @returns {{accX: number, accY: number}} The desired acceleration multipliers to reach the
- *   destination. The positive directions are down and right.
+ * @returns {{accX: number, accY: number, time: number}} The desired acceleration multipliers to
+ *   reach the destination, and the time in seconds required to do so. The positive directions are
+ *   down and right.
  */
 export function getDesiredAccelerationMultipliers(xp, yp, vxp, vyp, destXp, destYp) {
   const flipX = xp > destXp;
@@ -142,7 +143,7 @@ export function getDesiredAccelerationMultipliers(xp, yp, vxp, vyp, destXp, dest
 
   const overshotX = (currX - endX) > (currY - endY);
   const overshotY = (currX - endX) < (currY - endY);
-  const res = { accX: 1.0, accY: 1.0 };
+  const res = { accX: 1.0, accY: 1.0, time: currTime };
   // Binary search for the acceleration in the direction we reach more quickly in simulation
   if (overshotX) res.accX = binarySearchAcceleration(startX, startVx, endX, currTime);
   if (overshotY) res.accY = binarySearchAcceleration(startY, startVy, endY, currTime);
