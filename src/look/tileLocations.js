@@ -82,6 +82,22 @@ export function findCenterFlagStation() {
 
 
 /**
+ * @returns {{xp: number, yp: number}} the location of the ally endzone
+ */
+export function findAllyEndzone() {
+  return amBlue() ? findCachedTile('BLUE_ENDZONE') : findCachedTile('RED_ENDZONE');
+}
+
+
+/**
+ * @returns {{xp: number, yp: number}} the location of the enemy endzone
+ */
+export function findEnemyEndzone() {
+  return amBlue() ? findCachedTile('RED_ENDZONE') : findCachedTile('BLUE_ENDZONE');
+}
+
+
+/**
  * Returns the enemy FC object from the tagpro.players array, if in view
  * @returns {Object} the enemy FC object
  */
