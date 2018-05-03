@@ -142,16 +142,18 @@ export function isCenterFlag() {
 
 
 export function myTeamHasFlag() {
-  return amBlue()
-    ? tagpro.ui.yellowFlagTakenByBlue
-    : tagpro.ui.yellowFlagTakenByRed;
+  if (isCenterFlag()) {
+    return amBlue() ? tagpro.ui.yellowFlagTakenByBlue : tagpro.ui.yellowFlagTakenByRed;
+  }
+  return amBlue() ? tagpro.ui.redFlagTaken : tagpro.ui.blueFlagTaken;
 }
 
 
 export function enemyTeamHasFlag() {
-  return amBlue()
-    ? tagpro.ui.yellowFlagTakenByRed
-    : tagpro.ui.yellowFlagTakenByBlue;
+  if (isCenterFlag()) {
+    return amBlue() ? tagpro.ui.yellowFlagTakenByRed : tagpro.ui.yellowFlagTakenByBlue;
+  }
+  return amBlue() ? tagpro.ui.blueFlagTaken : tagpro.ui.redFlagTaken;
 }
 
 
