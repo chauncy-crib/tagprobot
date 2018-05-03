@@ -1,9 +1,10 @@
 import _ from 'lodash';
 
+import { assert } from '../global/utils';
 import { PPTL } from '../global/constants';
 import { tileLocations } from './setup';
 import { tileHasName } from './tileInfo';
-import { playerIsOnMyTeam } from './gameState';
+import { amBlue, playerIsOnMyTeam, isCenterFlag } from './gameState';
 
 
 /**
@@ -48,6 +49,35 @@ export function findCachedTile(tileNames) {
     }
   }
   return null;
+}
+
+
+/**
+ * @returns {{xp: number, yp: number}} the location of the ally flag station
+ */
+export function findAllyFlagStation() {
+  assert(!isCenterFlag(), 'tried to find ally flag station in a center flag game');
+  return amBlue() ? findCachedTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']) :
+    findCachedTile(['RED_FLAG', 'RED_FLAG_TAKEN']);
+}
+
+
+/**
+ * @returns {{xp: number, yp: number}} the location of the enemy flag station
+ */
+export function findEnemyFlagStation() {
+  assert(!isCenterFlag(), 'tried to find enemy flag station in a center flag game');
+  return amBlue() ? findCachedTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
+    findCachedTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
+}
+
+
+/**
+ * @returns {{xp: number, yp: number}} the location of the center flag station
+ */
+export function findCenterFlagStation() {
+  assert(isCenterFlag(), 'tried to find center flag station in a two flag game');
+  return findCachedTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
 }
 
 
