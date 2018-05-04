@@ -15,7 +15,7 @@ test('playerIsNearPoint', tester => {
   });
 
   tester.test('returns false if player not near point', t => {
-    const mockPlayer = { x: 401, y: 0 };
+    const mockPlayer = { x: 301, y: 0 };
     const point = new Point(0, 0);
 
     t.is(playerIsNearPoint(mockPlayer, point), false);
@@ -24,7 +24,7 @@ test('playerIsNearPoint', tester => {
   });
 
   tester.test('returns true if player near point', t => {
-    const mockPlayer = { x: 400, y: 0 };
+    const mockPlayer = { x: 300, y: 0 };
     const point = new Point(0, 0);
 
     t.is(playerIsNearPoint(mockPlayer, point), true);
