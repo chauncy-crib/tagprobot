@@ -34,7 +34,7 @@ export function centerOfMass(tileName) {
 /**
  * Assumes that the potential location of the tile has been stored by calling initLocations().
  *   Runtime: O(1)
- * @param {(number | number[])} tiles - either a number representing a tileType, or an array of
+ * @param {(number | number[])} tileNames - either a number representing a tileType, or an array of
  *   such numbers
  * @returns {Point} the position of the center of one of the specified tile types
  */
