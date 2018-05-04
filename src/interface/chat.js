@@ -3,13 +3,13 @@ import differenceInMilliseconds from 'date-fns/difference_in_milliseconds';
 
 import { assert, prefer } from '../global/utils';
 import { ROLES } from '../look/constants';
+import { idIsMine } from '../look/gameState';
 import {
   playerRoles,
-  idIsMine,
   getMyRole,
   isMyTurnToAssumeRole,
   assumeComplementaryRole,
-} from '../look/gameState';
+} from '../look/playerRoles';
 import { CHATS, KEY_WORDS } from './constants';
 
 

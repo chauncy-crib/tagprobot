@@ -2,7 +2,8 @@ import { assert } from '../global/utils';
 import { ROLES } from './constants';
 import { centerOfMass } from './tileLocations';
 import { tileIsOneOf } from './tileInfo';
-import { setMyRole, getNumTeammates, requestTeammateRoles } from './gameState';
+import { getNumTeammates } from './gameState';
+import { setMyRole, requestTeammateRoles } from './playerRoles';
 import { CHATS, KEY_WORDS } from '../interface/constants';
 import { sendMessageToChat } from '../interface/chat';
 
