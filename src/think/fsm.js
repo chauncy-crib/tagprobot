@@ -1,19 +1,32 @@
 import _ from 'lodash';
 
 import { BRP } from '../global/constants';
+import { ROLES } from '../look/constants';
 import {
-  amRed,
-  amBlue,
   getEnemyGoal,
   isCenterFlag,
   myTeamHasFlag,
   enemyTeamHasFlag,
 } from '../look/gameState';
-import { findCachedTile, findEnemyFC } from '../look/tileLocations';
-import { getShortestPolypointPath } from '../plan/astar';
+import {
+  findAllyFlagStation,
+  findEnemyFlagStation,
+  findCenterFlagStation,
+  findAllyEndzone,
+} from '../look/tileLocations';
+import {
+  findEnemyFC,
+  findEnemyRB,
+  playerIsNearPoint,
+  getEnemyPlayersNearAllyFlagStation,
+  getPlayerClosestToPoint,
+  getPGPPosition,
+} from '../look/playerLocations';
+import { getMyRole } from '../look/playerRoles';
 import { Point } from '../interpret/class/Point';
-import { funnelPolypoints } from '../plan/funnel';
 import { getDTGraph } from '../interpret/setup';
+import { getShortestPolypointPath } from '../plan/astar';
+import { funnelPolypoints } from '../plan/funnel';
 
 
 /**
@@ -44,12 +57,12 @@ function getPointsAlongPath(path, granularity = 40) {
 }
 
 
-export function chaseEnemyFC(me, enemyFC) {
+function chaseEnemy(me, enemy) {
   // Runtime: O(M*CPTL^2) with visualizations on, O(M + S*CPTL^2) with visualizations off
   const enemyShortestPath = [];
   _.forEach(
     funnelPolypoints(getShortestPolypointPath(
-      { xp: enemyFC.x + BRP, yp: enemyFC.y + BRP },
+      { xp: enemy.x + BRP, yp: enemy.y + BRP },
       getEnemyGoal(),
       getDTGraph(),
     ), getDTGraph()),
@@ -60,12 +73,12 @@ export function chaseEnemyFC(me, enemyFC) {
   const interceptionPolypoint = _.find(getPointsAlongPath(enemyShortestPath), polypoint => {
     const pp = new Point(polypoint.x, polypoint.y);
     const myDist = pp.distance(new Point(me.x + BRP, me.y + BRP));
-    const enemyDist = pp.distance(new Point(enemyFC.x + BRP, enemyFC.y + BRP));
+    const enemyDist = pp.distance(new Point(enemy.x + BRP, enemy.y + BRP));
     return myDist < enemyDist;
   });
   const goal = interceptionPolypoint ?
     { xp: interceptionPolypoint.x, yp: interceptionPolypoint.y } :
-    { xp: enemyFC.x + enemyFC.vx, yp: enemyFC.y + enemyFC.vy };
+    { xp: enemy.x + enemy.vx, yp: enemy.y + enemy.vy };
   return { goal, enemyShortestPath };
 }
 
@@ -78,36 +91,36 @@ export function chaseEnemyFC(me, enemyFC) {
 function centerFlagFSM(me) {
   // If the bot has the flag, go to the endzone
   if (me.flag) {
-    const goal = amRed() ? findCachedTile('RED_ENDZONE') : findCachedTile('BLUE_ENDZONE');
+    const goal = findAllyEndzone();
     const enemyShortestPath = [];
     console.info('I have the flag. Seeking endzone!');
     return { goal, enemyShortestPath };
   }
-  // If an enemy player in view has the flag, chase
+  // If we see an enemy player with the flag, chase
   const enemyFC = findEnemyFC();
   if (enemyFC) {
-    const { goal, enemyShortestPath } = chaseEnemyFC(me, enemyFC);
+    const { goal, enemyShortestPath } = chaseEnemy(me, enemyFC);
     console.info('I see an enemy with the flag. Chasing!');
     return { goal, enemyShortestPath };
   }
-  // If the enemy team has the flag, go to central flag station
+  // If the enemy team has the flag and we don't see them, go to center flag station
   if (enemyTeamHasFlag()) {
-    const goal = findCachedTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
+    const goal = findCenterFlagStation();
     const enemyShortestPath = [];
-    console.info('Enemy has the flag. Headed towards the central flag station');
+    console.info('Enemy has the flag. Headed towards the center flag station');
     return { goal, enemyShortestPath };
   }
   // If my team has the flag, go to our endzone
   if (myTeamHasFlag()) {
-    const goal = amRed() ? findCachedTile('RED_ENDZONE') : findCachedTile('BLUE_ENDZONE');
+    const goal = findAllyEndzone();
     const enemyShortestPath = [];
     console.info('We have the flag. Headed towards our Endzone.');
     return { goal, enemyShortestPath };
   }
-  // Go to the central flag station in hopes of grabbing the flag
-  const goal = findCachedTile(['YELLOW_FLAG', 'YELLOW_FLAG_TAKEN']);
+  // Go to the center flag station in hopes of grabbing the flag
+  const goal = findCenterFlagStation();
   const enemyShortestPath = [];
-  console.info('Nobody has the flag. Going to central flag station!');
+  console.info('Nobody has the flag. Going to center flag station!');
   return { goal, enemyShortestPath };
 }
 
@@ -119,26 +132,78 @@ function centerFlagFSM(me) {
  *   follow
  */
 function twoFlagFSM(me) {
-  // If I have the flag, then go to the endzone in hopes of capping
-  if (me.flag) {
-    const goal = amRed() ? findCachedTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
-      findCachedTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
+  const myRole = getMyRole();
+  if (myRole === ROLES.OFFENSE) {
+    // If I have the flag, then go back to my flag station in hopes of scoring
+    if (me.flag) {
+      const goal = findAllyFlagStation();
+      const enemyShortestPath = [];
+      console.info('I have the flag. Seeking ally flag station!');
+      return { goal, enemyShortestPath };
+    }
+    // If an enemy player in view has the flag, chase them in hopes of tagging
+    const enemyFC = findEnemyFC();
+    if (enemyFC) {
+      const { goal, enemyShortestPath } = chaseEnemy(me, enemyFC);
+      console.info('I see an enemy with the flag. Chasing!');
+      return { goal, enemyShortestPath };
+    }
+    // Go to the enemy flag station in hopes of spotting the enemy FC
+    const goal = findEnemyFlagStation();
     const enemyShortestPath = [];
-    console.info('I have the flag. Seeking endzone!');
+    console.info('I do not know what to do. Going to enemy base!');
     return { goal, enemyShortestPath };
   }
-  // If an enemy player in view has the flag, chase them in hopes of tagging
-  const enemyFC = findEnemyFC();
-  if (enemyFC) {
-    const { goal, enemyShortestPath } = chaseEnemyFC(me, enemyFC);
-    console.info('I see an enemy with the flag. Chasing!');
+  if (myRole === ROLES.DEFENSE) {
+    // If we see the enemy flag carrier, chase them
+    const enemyFC = findEnemyFC();
+    if (enemyFC) {
+      const { goal, enemyShortestPath } = chaseEnemy(me, enemyFC);
+      console.info('I see an enemy with the flag. Chasing!');
+      return { goal, enemyShortestPath };
+    }
+    // If the enemy team has the flag and we can't see them, go to enemy flag station
+    if (enemyTeamHasFlag()) {
+      const goal = findEnemyFlagStation();
+      const enemyShortestPath = [];
+      console.info('Enemy has the flag. Headed towards the center flag station!');
+      return { goal, enemyShortestPath };
+    }
+    // If we are not in our base, go to the ally flag station
+    const base = findAllyFlagStation();
+    if (!playerIsNearPoint(me, new Point(base.xp, base.yp))) {
+      const goal = base;
+      const enemyShortestPath = [];
+      console.info('I am too far from my flag station. Headed to ally flag station!');
+      return { goal, enemyShortestPath };
+    }
+    // If we see an enemy with rolling bomb, chase them
+    const enemyRB = findEnemyRB();
+    if (enemyRB) {
+      const { goal, enemyShortestPath } = chaseEnemy(me, enemyRB);
+      console.info('I see an enemy with rolling bomb. Chasing!');
+      return { goal, enemyShortestPath };
+    }
+    // If we see at least one enemy near our flag station, assume the post-grab pop position
+    const enemiesNearAllyFlagStation = getEnemyPlayersNearAllyFlagStation();
+    if (enemiesNearAllyFlagStation.length > 0) {
+      const enemyClosestToAllyFlagStation = getPlayerClosestToPoint(
+        enemiesNearAllyFlagStation,
+        new Point(base.x, base.y),
+      );
+      const goal = getPGPPosition(enemyClosestToAllyFlagStation);
+      const enemyShortestPath = [];
+      console.info('I see an enemy near my flag station. Assuming PGP position!');
+      return { goal, enemyShortestPath };
+    }
+    const goal = findAllyFlagStation();
+    const enemyShortestPath = [];
+    console.info('I do not know what to do. Going to ally flag station!');
     return { goal, enemyShortestPath };
   }
-  // Go to the enemy flag station in hopes of spotting the enemy FC
-  const goal = amBlue() ? findCachedTile(['RED_FLAG', 'RED_FLAG_TAKEN']) :
-    findCachedTile(['BLUE_FLAG', 'BLUE_FLAG_TAKEN']);
+  const goal = findAllyFlagStation();
   const enemyShortestPath = [];
-  console.info("I don't know what to do. Going to enemy base!");
+  console.info('My role is not defined. Going to ally flag station!');
   return { goal, enemyShortestPath };
 }
 
