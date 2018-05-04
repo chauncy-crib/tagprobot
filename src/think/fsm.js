@@ -15,8 +15,8 @@ import {
   findAllyEndzone,
 } from '../look/tileLocations';
 import {
-  findEnemyFC,
-  findEnemyRB,
+  getEnemyFC,
+  getEnemyRB,
   playerIsNearPoint,
   getEnemyPlayersNearAllyFlagStation,
   getPlayerClosestToPoint,
@@ -106,12 +106,12 @@ function centerFlagFSM(me) {
   // If the bot has the flag, go to the endzone
   if (me.flag) {
     const goal = findAllyEndzone();
-    const enemyShortestPath = [];
+    const enemyShortestPath = null;
     updateStateMessage('I have the flag. Seeking endzone!');
     return { goal, enemyShortestPath };
   }
   // If we see an enemy player with the flag, chase
-  const enemyFC = findEnemyFC();
+  const enemyFC = getEnemyFC();
   if (enemyFC) {
     const { goal, enemyShortestPath } = chaseEnemy(me, enemyFC);
     updateStateMessage('I see an enemy with the flag. Chasing!');
@@ -120,20 +120,20 @@ function centerFlagFSM(me) {
   // If the enemy team has the flag and we don't see them, go to center flag station
   if (enemyTeamHasFlag()) {
     const goal = findCenterFlagStation();
-    const enemyShortestPath = [];
+    const enemyShortestPath = null;
     updateStateMessage('Enemy has the flag. Headed towards the center flag station');
     return { goal, enemyShortestPath };
   }
   // If my team has the flag, go to our endzone
   if (myTeamHasFlag()) {
     const goal = findAllyEndzone();
-    const enemyShortestPath = [];
+    const enemyShortestPath = null;
     updateStateMessage('We have the flag. Headed towards our Endzone.');
     return { goal, enemyShortestPath };
   }
   // Go to the center flag station in hopes of grabbing the flag
   const goal = findCenterFlagStation();
-  const enemyShortestPath = [];
+  const enemyShortestPath = null;
   updateStateMessage('Nobody has the flag. Going to center flag station!');
   return { goal, enemyShortestPath };
 }
@@ -151,12 +151,12 @@ function twoFlagFSM(me) {
     // If I have the flag, then go back to my flag station in hopes of scoring
     if (me.flag) {
       const goal = findAllyFlagStation();
-      const enemyShortestPath = [];
+      const enemyShortestPath = null;
       updateStateMessage('I have the flag. Seeking ally flag station!');
       return { goal, enemyShortestPath };
     }
     // If an enemy player in view has the flag, chase them in hopes of tagging
-    const enemyFC = findEnemyFC();
+    const enemyFC = getEnemyFC();
     if (enemyFC) {
       const { goal, enemyShortestPath } = chaseEnemy(me, enemyFC);
       updateStateMessage('I see an enemy with the flag. Chasing!');
@@ -164,13 +164,13 @@ function twoFlagFSM(me) {
     }
     // Go to the enemy flag station in hopes of spotting the enemy FC
     const goal = findEnemyFlagStation();
-    const enemyShortestPath = [];
+    const enemyShortestPath = null;
     updateStateMessage('I do not know what to do. Going to enemy base!');
     return { goal, enemyShortestPath };
   }
   if (myRole === ROLES.DEFENSE) {
     // If we see the enemy flag carrier, chase them
-    const enemyFC = findEnemyFC();
+    const enemyFC = getEnemyFC();
     if (enemyFC) {
       const { goal, enemyShortestPath } = chaseEnemy(me, enemyFC);
       updateStateMessage('I see an enemy with the flag. Chasing!');
@@ -179,7 +179,7 @@ function twoFlagFSM(me) {
     // If the enemy team has the flag and we can't see them, go to enemy flag station
     if (enemyTeamHasFlag()) {
       const goal = findEnemyFlagStation();
-      const enemyShortestPath = [];
+      const enemyShortestPath = null;
       updateStateMessage('Enemy has the flag. Headed towards the center flag station!');
       return { goal, enemyShortestPath };
     }
@@ -187,12 +187,12 @@ function twoFlagFSM(me) {
     const base = findAllyFlagStation();
     if (!playerIsNearPoint(me, new Point(base.xp, base.yp))) {
       const goal = base;
-      const enemyShortestPath = [];
+      const enemyShortestPath = null;
       updateStateMessage('I am too far from my flag station. Headed to ally flag station!');
       return { goal, enemyShortestPath };
     }
     // If we see an enemy with rolling bomb, chase them
-    const enemyRB = findEnemyRB();
+    const enemyRB = getEnemyRB();
     if (enemyRB) {
       const { goal, enemyShortestPath } = chaseEnemy(me, enemyRB);
       updateStateMessage('I see an enemy with rolling bomb. Chasing!');
@@ -206,17 +206,17 @@ function twoFlagFSM(me) {
         new Point(base.x, base.y),
       );
       const goal = getPGPPosition(enemyClosestToAllyFlagStation);
-      const enemyShortestPath = [];
+      const enemyShortestPath = null;
       updateStateMessage('I see an enemy near my flag station. Assuming PGP position!');
       return { goal, enemyShortestPath };
     }
     const goal = findAllyFlagStation();
-    const enemyShortestPath = [];
+    const enemyShortestPath = null;
     updateStateMessage('I do not know what to do. Going to ally flag station!');
     return { goal, enemyShortestPath };
   }
   const goal = findAllyFlagStation();
-  const enemyShortestPath = [];
+  const enemyShortestPath = null;
   updateStateMessage('My role is not defined. Going to ally flag station!');
   return { goal, enemyShortestPath };
 }

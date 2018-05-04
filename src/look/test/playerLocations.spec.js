@@ -1,21 +1,31 @@
 import test from 'tape';
 
+import { BRP } from '../../global/constants';
 import { playerIsNearPoint } from '../playerLocations';
 import { Point } from '../../interpret/class/Point';
 
 
 test('playerIsNearPoint', tester => {
-  tester.test('returns false if player does not have x attribute', t => {
-    const mockPlayer = { y: 0 };
+  tester.test('throws an error if player does not have x attribute', t => {
+    const mockPlayer = { y: 0 - BRP }; // BRP offset to go from center to top-left
     const point = new Point(0, 0);
 
-    t.is(playerIsNearPoint(mockPlayer, point), false);
+    t.throws(() => { playerIsNearPoint(mockPlayer, point); });
+
+    t.end();
+  });
+
+  tester.test('throws an error if player does not have y attribute', t => {
+    const mockPlayer = { x: 0 - BRP }; // BRP offset to go from center to top-left
+    const point = new Point(0, 0);
+
+    t.throws(() => { playerIsNearPoint(mockPlayer, point); });
 
     t.end();
   });
 
   tester.test('returns false if player not near point', t => {
-    const mockPlayer = { x: 301, y: 0 };
+    const mockPlayer = { x: 301 - BRP, y: 0 - BRP }; // BRP offset to go from center to top-left
     const point = new Point(0, 0);
 
     t.is(playerIsNearPoint(mockPlayer, point), false);
@@ -24,10 +34,30 @@ test('playerIsNearPoint', tester => {
   });
 
   tester.test('returns true if player near point', t => {
-    const mockPlayer = { x: 300, y: 0 };
+    const mockPlayer = { x: 300 - BRP, y: 0 - BRP }; // BRP offset to go from center to top-left
     const point = new Point(0, 0);
 
     t.is(playerIsNearPoint(mockPlayer, point), true);
+
+    t.end();
+  });
+
+  tester.test('returns false if player not near point, with specified distance', t => {
+    const mockPlayer = { x: 2 - BRP, y: 0 - BRP }; // BRP offset to go from center to top-left
+    const point = new Point(0, 0);
+    const distance = 1;
+
+    t.is(playerIsNearPoint(mockPlayer, point, distance), false);
+
+    t.end();
+  });
+
+  tester.test('returns true if player near point, with specified distance', t => {
+    const mockPlayer = { x: 999 - BRP, y: 0 - BRP }; // BRP offset to go from center to top-left
+    const point = new Point(0, 0);
+    const distance = 1000;
+
+    t.is(playerIsNearPoint(mockPlayer, point, distance), true);
 
     t.end();
   });
