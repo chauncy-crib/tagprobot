@@ -34,7 +34,7 @@ export function centerOfMass(tileName) {
  * Returns the position xp and yp (in pixels) of the center of one of the specified tile
  *   types. Assumes that the potential location of the tile has been stored by calling
  *   initLocations(). Runtime: O(1)
- * @param {(number | number[])} tiles - either a number representing a tileType,
+ * @param {(number | number[])} tileNames - either a number representing a tileType,
  *   or an array of such numbers
  */
 export function findCachedTile(tileNames) {
