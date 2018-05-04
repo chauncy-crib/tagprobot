@@ -57,8 +57,7 @@ export function initLocations() {
  */
 export function setupRoleCommunication() {
   if (getNumTeammates() === 0) {
-    // setMyRole(ROLES.OFFENSE);
-    setMyRole(ROLES.DEFENSE);
+    setMyRole(ROLES.OFFENSE);
     sendMessageToChat(CHATS.TEAM, `${KEY_WORDS.INFORM.ROLE} ${ROLES.OFFENSE}`);
   } else {
     setMyRole(ROLES.NOT_DEFINED);
