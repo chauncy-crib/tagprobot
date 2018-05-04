@@ -4,7 +4,7 @@ import { assert } from '../global/utils';
 import { PPTL } from '../global/constants';
 import { tileLocations } from './setup';
 import { tileHasName } from './tileInfo';
-import { amBlue, playerIsOnMyTeam, isCenterFlag } from './gameState';
+import { amBlue, isCenterFlag } from './gameState';
 
 
 /**
@@ -94,18 +94,4 @@ export function findAllyEndzone() {
  */
 export function findEnemyEndzone() {
   return amBlue() ? findCachedTile('RED_ENDZONE') : findCachedTile('BLUE_ENDZONE');
-}
-
-
-/**
- * Returns the enemy FC object from the tagpro.players array, if in view
- * @returns {Object} the enemy FC object
- */
-export function findEnemyFC() {
-  return _.find(tagpro.players, player => (
-    !playerIsOnMyTeam(player) &&
-    player.flag &&
-    !player.dead &&
-    player.draw
-  ));
 }
