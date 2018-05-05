@@ -22,7 +22,7 @@ import {
   getEnemyPlayersNearAllyFlagStation,
   getPlayerClosestToPoint,
 } from '../look/playerLocations';
-import { getPGP } from '../plan/pgp';
+import { getPGPPosition } from '../plan/pgp';
 import { getMyRole } from '../look/playerRoles';
 import { Point } from '../interpret/class/Point';
 import { getDTGraph } from '../interpret/setup';
@@ -209,7 +209,7 @@ function twoFlagDefenseFSM(me) {
       enemiesNearAllyFlagStation,
       allyFlagStation,
     );
-    const goal = getPGP(enemyClosestToAllyFlagStation);
+    const goal = getPGPPosition(enemyClosestToAllyFlagStation);
     const enemyShortestPath = null;
     updateStateMessage('I see an enemy near my flag station. Assuming PGP position!');
     return { goal, enemyShortestPath };

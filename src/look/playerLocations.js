@@ -67,13 +67,3 @@ export function getEnemyPlayersNearAllyFlagStation() {
 export function getPlayerClosestToPoint(players, point) {
   return _.min(players, player => point.distance(getPlayerCenter(player)));
 }
-
-
-/**
- * Placeholder for the get post-grab pop position function
- * @returns {Point} the position to be in such that when the specified player
- *   grabs the flag, you will pop them as soon as their 0.25 seconds of invulnerability are over
- */
-export function getPGPPosition(player) { // eslint-disable-line
-  return findAllyFlagStation();
-}
