@@ -36,7 +36,7 @@ export function getEnemyRB() {
 /**
  * @returns {Point}
  */
-function getPlayerCenter(player) {
+export function getPlayerCenter(player) {
   assert(
     _.has(player, 'x') && _.has(player, 'y'),
     'tried to get the center of a player who does not have an x and y attribute',
@@ -51,11 +51,10 @@ export function playerIsNearPoint(player, point, threshold = 300) {
 
 
 export function getEnemyPlayersNearAllyFlagStation() {
-  const base = findAllyFlagStation();
-  const basePos = new Point(base.xp, base.yp);
+  const allyFlagStation = findAllyFlagStation();
   return _.filter(tagpro.players, player => (
     !playerIsOnMyTeam(player) &&
-    playerIsNearPoint(player, basePos)
+    playerIsNearPoint(player, allyFlagStation)
   ));
 }
 
@@ -72,7 +71,7 @@ export function getPlayerClosestToPoint(players, point) {
 
 /**
  * Placeholder for the get post-grab pop position function
- * @returns {{xp: number, yp: number}} the position to be in such that when the specified player
+ * @returns {Point} the position to be in such that when the specified player
  *   grabs the flag, you will pop them as soon as their 0.25 seconds of invulnerability are over
  */
 export function getPGPPosition(player) { // eslint-disable-line

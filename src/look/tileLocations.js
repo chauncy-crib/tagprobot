@@ -5,6 +5,7 @@ import { PPTL } from '../global/constants';
 import { tileLocations } from './setup';
 import { tileHasName } from './tileInfo';
 import { amBlue, isCenterFlag } from './gameState';
+import { Point } from '../interpret/class/Point';
 
 
 /**
@@ -31,11 +32,11 @@ export function centerOfMass(tileName) {
 
 
 /**
- * Returns the position xp and yp (in pixels) of the center of one of the specified tile
- *   types. Assumes that the potential location of the tile has been stored by calling
- *   initLocations(). Runtime: O(1)
- * @param {(number | number[])} tiles - either a number representing a tileType,
- *   or an array of such numbers
+ * Assumes that the potential location of the tile has been stored by calling initLocations().
+ *   Runtime: O(1)
+ * @param {(number | number[])} tiles - either a number representing a tileType, or an array of
+ *   such numbers
+ * @returns {Point} the position of the center of one of the specified tile types
  */
 export function findCachedTile(tileNames) {
   const tileNameArray = [].concat(tileNames);
@@ -44,7 +45,7 @@ export function findCachedTile(tileNames) {
     if (_.has(tileLocations, name)) {
       const { xt, yt } = tileLocations[name];
       if (tileHasName(tagpro.map[xt][yt], name)) {
-        return { xp: (xt * PPTL) + (PPTL / 2), yp: (yt * PPTL) + (PPTL / 2) };
+        return new Point((xt * PPTL) + (PPTL / 2), (yt * PPTL) + (PPTL / 2));
       }
     }
   }
@@ -53,7 +54,7 @@ export function findCachedTile(tileNames) {
 
 
 /**
- * @returns {{xp: number, yp: number}} the location of the ally flag station
+ * @returns {Point} the location of the ally flag station
  */
 export function findAllyFlagStation() {
   assert(!isCenterFlag(), 'tried to find ally flag station in a center flag game');
@@ -63,7 +64,7 @@ export function findAllyFlagStation() {
 
 
 /**
- * @returns {{xp: number, yp: number}} the location of the enemy flag station
+ * @returns {Point} the location of the enemy flag station
  */
 export function findEnemyFlagStation() {
   assert(!isCenterFlag(), 'tried to find enemy flag station in a center flag game');
@@ -73,7 +74,7 @@ export function findEnemyFlagStation() {
 
 
 /**
- * @returns {{xp: number, yp: number}} the location of the center flag station
+ * @returns {Point} the location of the center flag station
  */
 export function findCenterFlagStation() {
   assert(isCenterFlag(), 'tried to find center flag station in a two flag game');
@@ -82,7 +83,7 @@ export function findCenterFlagStation() {
 
 
 /**
- * @returns {{xp: number, yp: number}} the location of the ally endzone
+ * @returns {Point} the location of the ally endzone
  */
 export function findAllyEndzone() {
   return amBlue() ? findCachedTile('BLUE_ENDZONE') : findCachedTile('RED_ENDZONE');
@@ -90,7 +91,7 @@ export function findAllyEndzone() {
 
 
 /**
- * @returns {{xp: number, yp: number}} the location of the enemy endzone
+ * @returns {Point} the location of the enemy endzone
  */
 export function findEnemyEndzone() {
   return amBlue() ? findCachedTile('RED_ENDZONE') : findCachedTile('BLUE_ENDZONE');
