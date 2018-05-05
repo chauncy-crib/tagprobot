@@ -2,7 +2,6 @@ import _ from 'lodash';
 import FibonacciHeap from '@tyriar/fibonacci-heap';
 
 import { assert } from '../global/utils';
-import { Point } from '../interpret/class/Point';
 import { Polypoint } from '../interpret/class/Polypoint';
 import { PolypointState } from './class/PolypointState';
 
@@ -82,19 +81,19 @@ export function runAstar(startState, targetState, neighborParam) {
 
 
 /**
- * @param {Object} me - object with bot's position in pixels, xp and yp
- * @param {Object} target - object with target's position in pixels, xp and yp
+ * @param {Point} me - Point with bot's position in pixels, x and y
+ * @param {Point} target - Point with target's position in pixels, x and y
  * @param {TriangleGraph} triangleGraph - the triangulation graph to run Astar through
  * @returns {PolypointState[]} a list of states, starting from the startState to the targetState
  */
 export function getShortestPolypointPath(me, target, triangleGraph) {
-  assert(_.has(me, 'xp'), 'me does not have xp');
-  assert(_.has(me, 'yp'), 'me does not have yp');
-  assert(_.has(target, 'xp'), 'target does not have xp');
-  assert(_.has(target, 'yp'), 'target does not have yp');
+  assert(_.has(me, 'x'), 'me does not have x');
+  assert(_.has(me, 'y'), 'me does not have y');
+  assert(_.has(target, 'x'), 'target does not have x');
+  assert(_.has(target, 'y'), 'target does not have y');
 
-  const startTriangle = triangleGraph.findContainingTriangles(new Point(me.xp, me.yp))[0];
-  const endTriangle = triangleGraph.findContainingTriangles(new Point(target.xp, target.yp))[0];
+  const startTriangle = triangleGraph.findContainingTriangles(me)[0];
+  const endTriangle = triangleGraph.findContainingTriangles(target)[0];
   assert(startTriangle, 'Could not find triangle for starting point');
   assert(endTriangle, 'Could not find triangle for ending point');
   const startState = new PolypointState(startTriangle.getCenter());
@@ -105,8 +104,8 @@ export function getShortestPolypointPath(me, target, triangleGraph) {
 
   // Place the starting and final locations on the path, and remove the polypoint in the triangle we
   //   are currently in
-  const initialPositionState = new PolypointState(new Polypoint(me.xp, me.yp, startTriangle));
-  const targetPositionState = new PolypointState(new Polypoint(target.xp, target.yp, endTriangle));
+  const initialPositionState = new PolypointState(new Polypoint(me.x, me.y, startTriangle));
+  const targetPositionState = new PolypointState(new Polypoint(target.x, target.y, endTriangle));
   const fullPath = [initialPositionState].concat(_.slice(path, 1, -1)).concat(targetPositionState);
   return fullPath;
 }

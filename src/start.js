@@ -3,6 +3,7 @@ import { BRP } from './global/constants';
 import { setupClientVelocity, initLocations, setupRoleCommunication } from './look/setup';
 import { computeTileInfo } from './look/tileInfo';
 import { getMe, initMe, initIsCenterFlag } from './look/gameState';
+import { getPlayerCenter } from './look/playerLocations';
 import { getDTGraph, initInternalMap, initTilesToUpdate, initNavMesh } from './interpret/setup';
 import { logHelpMenu, onKeyDown, isAutonomousMode, isVisualMode, move } from './interface/keys';
 import { FSM } from './think/fsm';
@@ -23,15 +24,15 @@ window.onkeydown = onKeyDown;
  * @param {PolypointState[]} path - a list of states returned by getShortestPolypointPath()
  * @param {{x: number, y: number}} me - the object from tagpro.players, storing x and y pixel
  *   locations
- * @returns {{xp: number, yp: number}} the x and y location our local-controller should steer toward
+ * @returns {Point} the x and y location our local-controller should steer toward
  */
 function getTargetFromPath(path, me) {
-  const target = { xp: me.x + BRP, yp: me.y + BRP };
+  const target = getPlayerCenter(me);
   if (path) {
     const ppPathLength = path.length;
     assert(ppPathLength > 1, `Shortest path was length ${ppPathLength}`);
-    target.xp = path[1].point.x;
-    target.yp = path[1].point.y;
+    target.x = path[1].point.x;
+    target.y = path[1].point.y;
   } else {
     console.warn('Shortest path was null, using own location as target');
   }
@@ -55,7 +56,7 @@ function botLoop() {
   updateNavMesh(map);
 
   const polypointShortestPath = getShortestPolypointPath(
-    { xp: me.x + BRP, yp: me.y + BRP },
+    getPlayerCenter(me),
     goal,
     getDTGraph(),
   );
@@ -72,8 +73,8 @@ function botLoop() {
     me.y + BRP, // the y center of our ball, in pixels
     me.vx, // our x velocity
     me.vy, // our y velocity
-    target.xp, // the x we are seeking toward (pixels)
-    target.yp, // the y we are seeking toward (pixels)
+    target.x, // the x we are seeking toward (pixels)
+    target.y, // the y we are seeking toward (pixels)
   );
   if (isAutonomousMode()) move(accelValues);
 }

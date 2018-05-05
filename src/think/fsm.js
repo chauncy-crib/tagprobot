@@ -17,6 +17,7 @@ import {
 import {
   getEnemyFC,
   getEnemyRB,
+  getPlayerCenter,
   playerIsNearPoint,
   getEnemyPlayersNearAllyFlagStation,
   getPlayerClosestToPoint,
@@ -76,7 +77,7 @@ function chaseEnemy(me, enemy) {
   const enemyShortestPath = [];
   _.forEach(
     funnelPolypoints(getShortestPolypointPath(
-      { xp: enemy.x + BRP, yp: enemy.y + BRP },
+      getPlayerCenter(enemy),
       getEnemyGoal(),
       getDTGraph(),
     ), getDTGraph()),
@@ -91,16 +92,15 @@ function chaseEnemy(me, enemy) {
     return myDist < enemyDist;
   });
   const goal = interceptionPolypoint ?
-    { xp: interceptionPolypoint.x, yp: interceptionPolypoint.y } :
-    { xp: enemy.x + enemy.vx, yp: enemy.y + enemy.vy };
+    new Point(interceptionPolypoint.x, interceptionPolypoint.y) :
+    new Point(enemy.x + enemy.vx, enemy.y + enemy.vy);
   return { goal, enemyShortestPath };
 }
 
 /**
  * @param {Object} me
- * @returns {{goal: {xp: number, yp: number}, enemyShortestPath: PolyPoint[]}} goal, our global
- *   destination in pixels and enemyShortestPath, the polypoints that we predict our enemy to
- *   follow
+ * @returns {{goal: Point, enemyShortestPath: PolyPoint[]}} goal, our global destination in pixels
+ *   and enemyShortestPath, the polypoints that we predict our enemy to follow
  */
 function centerFlagFSM(me) {
   // If the bot has the flag, go to the endzone
@@ -141,9 +141,8 @@ function centerFlagFSM(me) {
 
 /**
  * @param {Object} me
- * @returns {{goal: {xp: number, yp: number}, enemyShortestPath: PolyPoint[]}} goal, our global
- *   destination in pixels and enemyShortestPath, the polypoints that we predict our enemy to
- *   follow
+ * @returns {{goal: Point, enemyShortestPath: PolyPoint[]}} goal, our global destination in pixels
+ *   and enemyShortestPath, the polypoints that we predict our enemy to follow
  */
 function twoFlagOffenseFSM(me) {
   // If I have the flag, then go back to my flag station in hopes of scoring
@@ -170,9 +169,8 @@ function twoFlagOffenseFSM(me) {
 
 /**
  * @param {Object} me
- * @returns {{goal: {xp: number, yp: number}, enemyShortestPath: PolyPoint[]}} goal, our global
- *   destination in pixels and enemyShortestPath, the polypoints that we predict our enemy to
- *   follow
+ * @returns {{goal: Point, enemyShortestPath: PolyPoint[]}} goal, our global destination in pixels
+ *   and enemyShortestPath, the polypoints that we predict our enemy to follow
  */
 function twoFlagDefenseFSM(me) {
   // If we see the enemy flag carrier, chase them
@@ -191,7 +189,7 @@ function twoFlagDefenseFSM(me) {
   }
   // If we are not near our flag station, go to the ally flag station
   const allyFlagStation = findAllyFlagStation();
-  if (!playerIsNearPoint(me, new Point(allyFlagStation.xp, allyFlagStation.yp))) {
+  if (!playerIsNearPoint(me, allyFlagStation)) {
     const goal = allyFlagStation;
     const enemyShortestPath = null;
     updateStateMessage('I am too far from my flag station. Headed to ally flag station!');
@@ -209,7 +207,7 @@ function twoFlagDefenseFSM(me) {
   if (enemiesNearAllyFlagStation.length > 0) {
     const enemyClosestToAllyFlagStation = getPlayerClosestToPoint(
       enemiesNearAllyFlagStation,
-      new Point(allyFlagStation.x, allyFlagStation.y),
+      allyFlagStation,
     );
     const goal = getPGPPosition(enemyClosestToAllyFlagStation);
     const enemyShortestPath = null;
@@ -225,9 +223,8 @@ function twoFlagDefenseFSM(me) {
 
 /**
  * @param {Object} me
- * @returns {{goal: {xp: number, yp: number}, enemyShortestPath: PolyPoint[]}} goal, our global
- *   destination in pixels and enemyShortestPath, the polypoints that we predict our enemy to
- *   follow
+ * @returns {{goal: Point, enemyShortestPath: PolyPoint[]}} goal, our global destination in pixels
+ *   and enemyShortestPath, the polypoints that we predict our enemy to follow
  */
 function twoFlagFSM(me) {
   const myRole = getMyRole();
@@ -242,9 +239,8 @@ function twoFlagFSM(me) {
 
 /**
  * @param {Object} me
- * @returns {{goal: {xp: number, yp: number}, enemyShortestPath: PolyPoint[]}} goal, our global
- *   destination in pixels and enemyShortestPath, the polypoints that we predict our enemy to
- *   follow
+ * @returns {{goal: Point, enemyShortestPath: PolyPoint[]}} goal, our global destination in pixels
+ *   and enemyShortestPath, the polypoints that we predict our enemy to follow
  */
 export function FSM(me) {
   return isCenterFlag() ? centerFlagFSM(me) : twoFlagFSM(me);
