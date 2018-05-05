@@ -38,10 +38,10 @@ function nextVelocity(v, a, t) {
  * @param {(string|undefined)} keypress.x - either 'RIGHT', 'LEFT', or undefined
  * @param {(string|undefined)} keypress.y - either 'DOWN', 'UP', or undefined
  * @param {number} timeStep - seconds between current and projected state
- * @param {number} accMultX - a multiplier to apply to the acceleration resulting from
- *   the keypress in the x direction. Default to 1
- * @param {number} accMultY - a multiplier to apply to the acceleration resulting from
- *   the keypress in the y direction. Default to 1
+ * @param {number} [accMultX=1] - a multiplier to apply to the acceleration resulting from
+ *   the keypress in the x direction.
+ * @param {number} [accMultY=1] - a multiplier to apply to the acceleration resulting from
+ *   the keypress in the y direction.
  * @returns {{xp: number, yp: number, vxp: number, vyp: number}} the next state of the bot
  */
 export function projectedState(xp, yp, vxp, vyp, keypress, timeStep, accMultX = 1, accMultY = 1) {
@@ -72,7 +72,7 @@ export function projectedState(xp, yp, vxp, vyp, keypress, timeStep, accMultX = 
 
 /**
  * Given a starting location/velocity in pixels, the keys to press, the multipliers for each
- * direction, and the total time and timestep, return the final position/velocity.
+ *   direction, and the total time and timestep, return the final position/velocity.
  */
 export function runSimulation(xp, yp, vxp, vyp, keypress, accMultX, accMultY, time, dt = 0.01) {
   let currX = xp;
