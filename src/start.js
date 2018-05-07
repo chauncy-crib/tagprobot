@@ -1,4 +1,4 @@
-import { assert, timeLog } from './global/utils';
+import { timeLog } from './global/utils';
 import { BRP } from './global/constants';
 import { setupClientVelocity, initLocations, setupRoleCommunication } from './look/setup';
 import { computeTileInfo } from './look/tileInfo';
@@ -13,31 +13,12 @@ import { updateNavMesh } from './interpret/graphToTriangulation';
 import { getShortestPolypointPath } from './plan/astar';
 import { drawEnemyPath, drawAllyPath } from './draw/triangulation';
 import { getDesiredAccelerationMultipliers } from './control/physics';
+import { getLocalGoalStateFromPath } from './control/lqr';
 import { funnelPolypoints } from './plan/funnel';
 
 
 // Run onKeyDown any time a key is pressed to parse user input
 window.onkeydown = onKeyDown;
-
-
-/**
- * @param {PolypointState[]} path - a list of states returned by getShortestPolypointPath()
- * @param {{x: number, y: number}} me - the object from tagpro.players, storing x and y pixel
- *   locations
- * @returns {Point} the x and y location our local-controller should steer toward
- */
-function getTargetFromPath(path, me) {
-  const target = getPlayerCenter(me);
-  if (path) {
-    const ppPathLength = path.length;
-    assert(ppPathLength > 1, `Shortest path was length ${ppPathLength}`);
-    target.x = path[1].point.x;
-    target.y = path[1].point.y;
-  } else {
-    console.warn('Shortest path was null, using own location as target');
-  }
-  return target;
-}
 
 
 /**
@@ -64,7 +45,7 @@ function botLoop() {
   const funnelledPath = funnelPolypoints(polypointShortestPath, getDTGraph());
   drawAllyPath(funnelledPath);
 
-  const target = getTargetFromPath(funnelledPath, me);
+  const localGoalState = getLocalGoalStateFromPath(funnelledPath, me);
 
   // The desired acceleration multipliers the bot should achieve with arrow key presses. Positive
   //   directions are down and right.
@@ -73,8 +54,8 @@ function botLoop() {
     me.y + BRP, // the y center of our ball, in pixels
     me.vx, // our x velocity
     me.vy, // our y velocity
-    target.x, // the x we are seeking toward (pixels)
-    target.y, // the y we are seeking toward (pixels)
+    localGoalState.x, // the x we are seeking toward (pixels)
+    localGoalState.y, // the y we are seeking toward (pixels)
   );
   if (isAutonomousMode()) move(accelValues);
 }
