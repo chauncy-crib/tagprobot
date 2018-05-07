@@ -1,14 +1,42 @@
 import _ from 'lodash';
 import math from 'mathjs';
 
+import { assert, boundValue } from '../global/utils';
+import { getPlayerCenter } from '../look/playerLocations';
+import { FPS, ACCEL, MAX_SPEED, DAMPING_FACTOR } from './constants';
 import { Matrix } from './class/Matrix';
-import { FPS, ACCEL, DAMPING_FACTOR } from './constants';
-import { boundValue } from '../global/utils';
 
 
 let currentGoalState;
 let currentKs;
 let currentTime;
+
+
+/**
+ * @param {PolypointState[]} path - a list of states returned by getShortestPolypointPath()
+ * @param {{x: number, y: number}} me - the object from tagpro.players, storing x and y pixel
+ *   locations
+ * @returns {{x: number, y: number, vx: number, vy: number}} the next goal state for our local
+ *   controller
+ */
+export function getLocalGoalStateFromPath(path, me) {
+  if (_.isNull(path)) {
+    console.warn('Shortest path was null, using own location and zero velocity as localGoalState');
+    const myCenter = getPlayerCenter(me);
+    return { x: myCenter.x, y: myCenter.y, vx: 0, vy: 0 };
+  }
+  const pathLength = path.length;
+  assert(pathLength > 1, `Shortest path was length ${pathLength}`);
+  if (pathLength === 2) {
+    const finalNode = path[1].point;
+    return { x: finalNode.x, y: finalNode.y, vx: 0, vy: 0 };
+  }
+  const nextNode = path[1].point;
+  const nextNextNode = path[2].point;
+  // Max velocity from nextNode to nextNextNode
+  const maxVel = nextNextNode.subtract(nextNode).scaleToMax(MAX_SPEED);
+  return { x: nextNode.x, y: nextNode.y, vx: maxVel.x, vy: maxVel.y };
+}
 
 
 /*

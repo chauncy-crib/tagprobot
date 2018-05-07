@@ -1,3 +1,6 @@
+import _ from 'lodash';
+
+
 /**
  * Represents an x, y location. Used as vertices to define polygons.
  */
@@ -34,6 +37,17 @@ export class Point {
   }
 
 
+  /**
+   * @returns {Point} where one of the two values is max and the ratios between x and y are the same
+   *   as the initial ratio between x and y. Can be thought of as scaling a vector until its largest
+   *   magnitude in one direction (x or y) is equal to max.
+   */
+  scaleToMax(max) {
+    const ratioToScaleBy = max / _.max([Math.abs(this.x), Math.abs(this.y)]);
+    return this.times(ratioToScaleBy);
+  }
+
+
   distance(other) {
     return Math.sqrt(this.distanceSquared(other));
   }
@@ -58,6 +72,7 @@ export class Point {
   copy() {
     return new Point(this.x, this.y);
   }
+
 
   /*
    * @param {Edge}
