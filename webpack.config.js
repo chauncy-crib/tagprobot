@@ -9,9 +9,9 @@ module.exports = function(env) {
       filename: 'bundle.js',
       path: path.resolve(__dirname, 'public')
     },
-
+    mode: 'development',
     module: {
-      loaders: [
+      rules: [
         // Eslint loader
         {
           // Make sure we lint before we transform code
