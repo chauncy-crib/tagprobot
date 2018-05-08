@@ -3,6 +3,7 @@ import math from 'mathjs';
 
 import { assert, boundValue } from '../global/utils';
 import { getPlayerCenter } from '../look/playerLocations';
+import { Point } from '../interpret/class/Point';
 import { FPS, ACCEL, MAX_SPEED, DAMPING_FACTOR } from './constants';
 import { Matrix } from './class/Matrix';
 
@@ -149,12 +150,29 @@ function recalculateKMatrices(goalState, T) {
 /**
  * @param {Matrix} initialState - state in the format [[x], [vx], [y], [vy]]
  * @param {Matrix} goalState - state in the format [[x], [vx], [y], [vy]]
- * @param {number} totalTime - seconds the bot will take to get to the goal
+ * @returns {number} the best guess for the number of seconds it will take to reach the goal state
+ */
+export function determineDeadline(initialState, goalState) {
+  const initialPoint = new Point(initialState.array[0][0], initialState.array[2][0]);
+  const goalPoint = new Point(goalState.array[0][0], goalState.array[2][0]);
+  const initialVelocity = new Point(initialState.array[1][0], initialState.array[3][0]);
+  const goalVelocity = new Point(goalState.array[1][0], goalState.array[3][0]);
+
+  const distance = initialPoint.distance(goalPoint);
+  const averageVelocity = (initialVelocity.magnitude() + goalVelocity.magnitude()) / 2;
+  const seconds = distance / averageVelocity;
+  return seconds;
+}
+
+
+/**
+ * @param {Matrix} initialState - state in the format [[x], [vx], [y], [vy]]
+ * @param {Matrix} goalState - state in the format [[x], [vx], [y], [vy]]
  * @returns {{accX: number, accY: number}} The desired acceleration multipliers to reach the
  *   destination. The positive directions are down and right.
  */
-export function getLQRAccelerationMultipliers(initialState, goalState, totalTime) {
-  const T = Math.floor(FPS * totalTime); // number of time steps
+export function getLQRAccelerationMultipliers(initialState, goalState) {
+  const T = Math.floor(FPS * determineDeadline(initialState, goalState)); // number of time steps
 
   if (!goalState.equals(currentGoalState) || currentTime >= T - 1) {
     // There is a new goal state or we've exceeded our goal time
