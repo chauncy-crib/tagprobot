@@ -24,7 +24,7 @@
   "homepage": "https://github.com/chauncy-crib/tagprobot#readme",
   "devDependencies": {
     "babel-cli": "^6.24.1",
-    "babel-core": "^6.25.0",
+    "babel-core": "^6.26.3",
     "babel-loader": "^7.1.1",
     "babel-plugin-lodash": "^3.2.11",
     "babel-plugin-rewire": "^1.1.0",
@@ -34,18 +34,18 @@
     "babel-tape-runner": "^2.0.1",
     "eslint": "^4.7.0",
     "eslint-config-airbnb-base": "^12.0.0",
-    "eslint-loader": "^1.9.0",
+    "eslint-loader": "^2.0.0",
     "eslint-plugin-import": "^2.7.0",
-    "sinon": "^3.2.1",
+    "sinon": "^5.0.7",
     "tap-difflet": "^0.7.0",
     "tap-webpack-plugin": "^2.0.0",
     "tape": "^4.7.0",
-    "webpack": "^3.6.0"
+    "webpack": "^4.8.1"
   },
   "dependencies": {
-    "@tyriar/fibonacci-heap": "^1.0.10",
+    "@tyriar/fibonacci-heap": "^2.0.7",
     "date-fns": "^1.28.5",
-    "lodash": "^4.17.4",
-    "mathjs": "^4.0.1"
+    "lodash": "^4.17.10",
+    "mathjs": "^4.2.2"
   }
 }
