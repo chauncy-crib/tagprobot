@@ -59,6 +59,11 @@ export class Point {
   }
 
 
+  magnitude() {
+    return Math.sqrt((this.x ** 2) + (this.y ** 2));
+  }
+
+
   dot(other) {
     return (this.x * other.x) + (this.y * other.y);
   }

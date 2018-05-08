@@ -2,7 +2,12 @@ import test from 'tape';
 import sinon from 'sinon';
 import _ from 'lodash';
 
-import { getLQRAccelerationMultipliers, dlqr, __RewireAPI__ as RewireAPI } from '../lqr';
+import {
+  getLQRAccelerationMultipliers,
+  dlqr,
+  determineDeadline,
+  __RewireAPI__ as RewireAPI,
+} from '../lqr';
 import { Matrix } from '../class/Matrix';
 import { isRoughly } from '../../global/utils';
 
@@ -12,16 +17,18 @@ test('getLQRAccelerationMultipliers', tester => {
     RewireAPI.__Rewire__('currentGoalState', null);
     RewireAPI.__Rewire__('currentKs', null);
     RewireAPI.__Rewire__('currentTime', null);
+    RewireAPI.__Rewire__('determineDeadline', () => 5);
     const x0 = new Matrix([[0], [0], [0], [-100]]);
     const goal = new Matrix([[100], [-50], [50], [-25]]);
 
-    const multipliers = getLQRAccelerationMultipliers(x0, goal, 5);
+    const multipliers = getLQRAccelerationMultipliers(x0, goal);
     t.true(isRoughly(multipliers.accX, 0.28));
     t.true(isRoughly(multipliers.accY, 0.44));
 
     RewireAPI.__ResetDependency__('currentGoalState');
     RewireAPI.__ResetDependency__('currentKs');
     RewireAPI.__ResetDependency__('currentTime');
+    RewireAPI.__ResetDependency__('determineDeadline');
     t.end();
   });
 
@@ -31,18 +38,20 @@ test('getLQRAccelerationMultipliers', tester => {
     RewireAPI.__Rewire__('currentKs', null);
     RewireAPI.__Rewire__('currentTime', null);
     RewireAPI.__Rewire__('dlqr', dlqrSpy);
+    RewireAPI.__Rewire__('determineDeadline', () => 0.1);
     const x0 = new Matrix([[0], [0], [0], [-100]]);
     const goal = new Matrix([[100], [-50], [50], [-25]]);
 
-    _.times(4, () => getLQRAccelerationMultipliers(x0, goal, 0.1));
+    _.times(4, () => getLQRAccelerationMultipliers(x0, goal));
     t.is(dlqrSpy.callCount, 1);
-    _.times(2, () => getLQRAccelerationMultipliers(x0, goal, 0.1));
+    _.times(2, () => getLQRAccelerationMultipliers(x0, goal));
     t.is(dlqrSpy.callCount, 2);
 
     RewireAPI.__ResetDependency__('currentGoalState');
     RewireAPI.__ResetDependency__('currentKs');
     RewireAPI.__ResetDependency__('currentTime');
     RewireAPI.__ResetDependency__('dlqr');
+    RewireAPI.__ResetDependency__('determineDeadline');
     t.end();
   });
 
@@ -52,19 +61,35 @@ test('getLQRAccelerationMultipliers', tester => {
     RewireAPI.__Rewire__('currentKs', null);
     RewireAPI.__Rewire__('currentTime', null);
     RewireAPI.__Rewire__('dlqr', dlqrSpy);
+    RewireAPI.__Rewire__('determineDeadline', () => 1);
     const x0 = new Matrix([[0], [0], [0], [-100]]);
     const goal = new Matrix([[100], [-50], [50], [-25]]);
     const newGoal = new Matrix([[200], [-50], [50], [-25]]);
 
-    _.times(2, () => getLQRAccelerationMultipliers(x0, goal, 1));
+    _.times(2, () => getLQRAccelerationMultipliers(x0, goal));
     t.is(dlqrSpy.callCount, 1);
-    _.times(2, () => getLQRAccelerationMultipliers(x0, newGoal, 1));
+    _.times(2, () => getLQRAccelerationMultipliers(x0, newGoal));
     t.is(dlqrSpy.callCount, 2);
 
     RewireAPI.__ResetDependency__('currentGoalState');
     RewireAPI.__ResetDependency__('currentKs');
     RewireAPI.__ResetDependency__('currentTime');
     RewireAPI.__ResetDependency__('dlqr');
+    RewireAPI.__ResetDependency__('determineDeadline');
+    t.end();
+  });
+});
+
+
+test('determineDeadline', tester => {
+  tester.test('uses average velocity to determind deadline', t => {
+    const x0 = new Matrix([[0], [0], [0], [0]]);
+    // Goal velocity is magnitude 5 px/s, and is 5 pixels away
+    const goal = new Matrix([[3], [3], [4], [4]]);
+
+    // Average velocity is 2.5, so it should take 2 seconds to reach goal
+    t.is(determineDeadline(x0, goal), 2);
+
     t.end();
   });
 });
