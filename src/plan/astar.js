@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import FibonacciHeap from '@tyriar/fibonacci-heap';
+import { FibonacciHeap } from '@tyriar/fibonacci-heap';
 
 import { assert } from '../global/utils';
 import { Polypoint } from '../interpret/class/Polypoint';
