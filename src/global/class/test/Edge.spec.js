@@ -2,7 +2,7 @@ import test from 'tape';
 
 import { Point } from '../Point';
 import { Edge } from '../Edge';
-import { isRoughly } from '../../../global/utils';
+import { isRoughly } from '../../utils';
 
 
 test('Edge.isBetweenPoints()', tester => {

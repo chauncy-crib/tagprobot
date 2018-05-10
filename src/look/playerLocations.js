@@ -4,7 +4,7 @@ import { assert } from '../global/utils';
 import { BRP } from '../global/constants';
 import { getEnemies } from './gameState';
 import { findAllyFlagStation } from './tileLocations';
-import { Point } from '../interpret/class/Point';
+import { Point } from '../global/class/Point';
 
 
 /**

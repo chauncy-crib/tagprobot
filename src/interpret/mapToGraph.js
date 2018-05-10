@@ -3,9 +3,9 @@ import _ from 'lodash';
 import { PPTL } from '../global/constants';
 import { assert } from '../global/utils';
 import { threePointsInLine } from './utils';
-import { Point } from './class/Point';
-import { Edge } from './class/Edge';
-import { Graph } from './class/Graph';
+import { Point } from '../global/class/Point';
+import { Edge } from '../global/class/Edge';
+import { Graph } from '../global/class/Graph';
 import { getTileProperty, tileIsOneOf, tileIsAngleWall } from '../look/tileInfo';
 import {
   wallOnLeft,

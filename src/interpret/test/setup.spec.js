@@ -1,8 +1,8 @@
 import test from 'tape';
 
 import { getDTGraph, delaunayTriangulation, __RewireAPI__ as SetupRewireAPI } from '../setup';
-import { Point } from '../class/Point';
-import { Edge } from '../class/Edge';
+import { Point } from '../../global/class/Point';
+import { Edge } from '../../global/class/Edge';
 import { TriangleGraph } from '../class/TriangleGraph';
 import { setupPixiAndTagpro, resetPixiAndTagpro } from '../../draw/class/test/DrawableGraph.spec';
 

@@ -3,7 +3,7 @@ import test from 'tape';
 import sinon from 'sinon';
 
 import { DrawableGraph } from '../DrawableGraph';
-import { Point } from '../../../interpret/class/Point';
+import { Point } from '../../../global/class/Point';
 
 
 /**
