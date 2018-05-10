@@ -17,7 +17,7 @@ import { COLORS, ALPHAS, THICKNESSES } from '../../draw/constants';
 const CLEARANCE = 27; // sqrt(BRP^2 + BRP^2) to have full clearance around a right-angle corner
 
 
-/*
+/**
  * Extend the Graph class to represent the delaunay triangles. Contains triangle objects in addition
  * to edges and vertices
  */
