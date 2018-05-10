@@ -28,6 +28,17 @@ export class Triangle {
 
 
   /**
+   * @param {Point} p
+   * @returns {number} the distance from p to the point along the triangle's edges which is closest
+   *   to it. 0 if the point is on/inside the triangle
+   */
+  distToPoint(p) {
+    if (this.containsPoint(p)) return 0;
+    return _.min(_.map(this.getEdges(), e => e.distToPoint(p)));
+  }
+
+
+  /**
    * @returns {Polypoint} the center point of the triangle
    */
   getCenter() {
