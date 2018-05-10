@@ -175,10 +175,12 @@ test('Edge.getProjectedPoint()', tester => {
 test('Edge.distToPoint()', tester => {
   tester.test('returns correct distance when point projection is on edge', t => {
     let e = new Edge(new Point(0, 0), new Point(10, 0));
+
     t.is(e.distToPoint(new Point(4, 5)), 5);
     t.is(e.distToPoint(new Point(5, 0)), 0);
 
     e = new Edge(new Point(0, 0), new Point(10, 10));
+
     t.true(isRoughly(e.distToPoint(new Point(4, 5)), 0.7071)); // should be 1/sqrt(2)
     t.true(isRoughly(e.distToPoint(new Point(1, 5)), 2.828)); // should be 4/sqrt(2)
 
