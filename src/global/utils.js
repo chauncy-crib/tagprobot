@@ -127,6 +127,14 @@ export function stopTiming(processName) {
 }
 
 
+export function time(func, args) {
+  startTiming(func.name);
+  const output = _.isUndefined(args) ? func() : func(...args);
+  stopTiming(func.name);
+  return output;
+}
+
+
 export function logTimingsReport() {
   let totalTime = 0;
   _.forEach(_.keys(timings), processName => {
