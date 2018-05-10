@@ -79,7 +79,7 @@ export class Point {
   }
 
 
-  /*
+  /**
    * @param {Edge}
    * @returns {boolean} - true if the given point is coincident with the input edge
    */

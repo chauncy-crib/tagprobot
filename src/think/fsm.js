@@ -39,7 +39,7 @@ let stateMessage = ''; // a short description of the bot's current state and nex
 function updateStateMessage(message) {
   if (message !== stateMessage) {
     stateMessage = message;
-    console.info(stateMessage);
+    console.log(stateMessage);
   }
 }
 
