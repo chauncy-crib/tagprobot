@@ -2,6 +2,7 @@ import test from 'tape';
 
 import { Point } from '../Point';
 import { Edge } from '../Edge';
+import { isRoughly } from '../../../global/utils';
 
 
 test('Edge.isBetweenPoints()', tester => {
@@ -124,6 +125,72 @@ test('Edge.overlapsEdge()', tester => {
     const e2 = new Edge(new Point(7, 4), new Point(8, 5));
 
     t.false(e1.overlapsEdge(e2));
+
+    t.end();
+  });
+});
+
+
+test('Edge.getProjectedPoint()', tester => {
+  tester.test('returns correct point when edge is horizontal', t => {
+    const e = new Edge(new Point(0, 0), new Point(10, 0));
+
+    t.true(e.getProjectedPoint(new Point(3, 0)).equals(new Point(3, 0)));
+    t.true(e.getProjectedPoint(new Point(3, 2)).equals(new Point(3, 0)));
+    t.true(e.getProjectedPoint(new Point(11, 5)).equals(new Point(11, 0)));
+
+    t.end();
+  });
+
+  tester.test('returns correct point when edge is vertical', t => {
+    const e = new Edge(new Point(0, 0), new Point(0, 10));
+
+    t.true(e.getProjectedPoint(new Point(0, 3)).equals(new Point(0, 3)));
+    t.true(e.getProjectedPoint(new Point(3, 3)).equals(new Point(0, 3)));
+
+    t.end();
+  });
+
+  tester.test('returns correct point when edge is 45 degrees', t => {
+    const e = new Edge(new Point(0, 0), new Point(10, 10));
+
+    t.true(e.getProjectedPoint(new Point(5, 5)).equals(new Point(5, 5)));
+    t.true(e.getProjectedPoint(new Point(2, 5)).equals(new Point(3.5, 3.5)));
+    t.true(e.getProjectedPoint(new Point(7, 2)).equals(new Point(4.5, 4.5)));
+
+    t.end();
+  });
+
+  tester.test('returns correct point when edge is 30 degrees', t => {
+    const e = new Edge(new Point(0, 0), new Point(20, 10));
+
+    t.true(e.getProjectedPoint(new Point(5, 5)).equals(new Point(6, 3)));
+    t.true(e.getProjectedPoint(new Point(9, 5)).equals(new Point(9.2, 4.6)));
+
+    t.end();
+  });
+});
+
+
+test('Edge.distToPoint()', tester => {
+  tester.test('returns correct distance when point projection is on edge', t => {
+    let e = new Edge(new Point(0, 0), new Point(10, 0));
+    t.is(e.distToPoint(new Point(4, 5)), 5);
+    t.is(e.distToPoint(new Point(5, 0)), 0);
+
+    e = new Edge(new Point(0, 0), new Point(10, 10));
+    t.true(isRoughly(e.distToPoint(new Point(4, 5)), 0.7071)); // should be 1/sqrt(2)
+    t.true(isRoughly(e.distToPoint(new Point(1, 5)), 2.828)); // should be 4/sqrt(2)
+
+    t.end();
+  });
+
+  tester.test('returns correct distance when point projection is not on edge', t => {
+    let e = new Edge(new Point(0, 0), new Point(10, 0));
+    t.true(isRoughly(e.distToPoint(new Point(15, 5)), 7.071)); // should be 7*sqrt(2)
+
+    e = new Edge(new Point(0, 0), new Point(10, 10));
+    t.true(isRoughly(e.distToPoint(new Point(12, 12)), 2.828)); // 2 * sqrt(2)
 
     t.end();
   });
