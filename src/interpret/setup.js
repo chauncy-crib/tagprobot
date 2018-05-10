@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
-import { assert, timeLog } from '../global/utils';
+import { assert } from '../global/utils';
+import { timeLog } from '../global/timing';
 import { getTileProperty } from '../look/tileInfo';
 import { Point } from './class/Point';
 import { Triangle } from './class/Triangle';
