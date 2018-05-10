@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
-import { assert } from '../../global/utils';
-import { detD, threePointsInLine } from '../utils';
+import { assert } from '../utils';
+import { detD, threePointsInLine } from '../../interpret/utils';
 
 
 export class Edge {

@@ -5,8 +5,8 @@ import { PPTL } from '../../global/constants';
 import { __RewireAPI__ as AroundRewireAPI } from '../../look/around';
 import { __RewireAPI__ as TileInfoRewireAPI } from '../../look/tileInfo';
 import { setupTiles, teardownTiles } from './setupTiles.spec';
-import { Point } from '../class/Point';
-import { Edge } from '../class/Edge';
+import { Point } from '../../global/class/Point';
+import { Edge } from '../../global/class/Edge';
 import {
   mapToEdgeTiles,
   graphFromTagproMap,

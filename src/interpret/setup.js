@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import { assert, timeLog } from '../global/utils';
 import { getTileProperty } from '../look/tileInfo';
-import { Point } from './class/Point';
+import { Point } from '../global/class/Point';
 import { Triangle } from './class/Triangle';
 import { TriangleGraph } from './class/TriangleGraph';
 import { unmergedGraphFromTagproMap, graphFromTagproMap } from './mapToGraph';

@@ -2,9 +2,9 @@ import _ from 'lodash';
 
 import { assert } from '../../global/utils';
 import { threePointsInLine } from '../utils';
-import { Point } from './Point';
+import { Point } from '../../global/class/Point';
 import { Polypoint } from './Polypoint';
-import { Edge } from './Edge';
+import { Edge } from '../../global/class/Edge';
 
 
 export class Triangle {

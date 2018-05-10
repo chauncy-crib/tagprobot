@@ -5,7 +5,7 @@ import { PPTL } from '../global/constants';
 import { tileLocations } from './setup';
 import { tileHasName } from './tileInfo';
 import { amBlue, isCenterFlag } from './gameState';
-import { Point } from '../interpret/class/Point';
+import { Point } from '../global/class/Point';
 
 
 /**

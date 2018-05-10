@@ -7,8 +7,8 @@ import {
   findUpperAndLowerPoints,
   triangulateRegion,
 } from './TriangleTreeNode';
-import { Point } from './Point';
-import { Edge } from './Edge';
+import { Point } from '../../global/class/Point';
+import { Edge } from '../../global/class/Edge';
 import { Triangle } from './Triangle';
 import { DrawableGraph } from '../../draw/class/DrawableGraph';
 import { isLegal } from '../graphToTriangulation';

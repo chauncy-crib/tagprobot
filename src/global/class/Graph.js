@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { assert } from '../../global/utils';
-import { Edge } from './Edge';
+import { Edge } from '../../global/class/Edge';
 
 
 /**

@@ -1,7 +1,7 @@
 import test from 'tape';
 
-import { Point } from '../Point';
-import { Edge } from '../Edge';
+import { Point } from '../../../global/class/Point';
+import { Edge } from '../../../global/class/Edge';
 
 
 test('Edge.isBetweenPoints()', tester => {

@@ -1,6 +1,6 @@
 import { findAllyFlagStation } from '../look/tileLocations';
 import { getDesiredAccelerationMultipliers, runSimulation } from '../control/physics';
-import { Point } from '../interpret/class/Point';
+import { Point } from '../global/class/Point';
 import { getPlayerCenter } from '../look/playerLocations';
 
 /**
