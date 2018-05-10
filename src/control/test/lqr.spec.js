@@ -18,8 +18,8 @@ test('getLQRAccelerationMultipliers', tester => {
     RewireAPI.__Rewire__('currentKs', null);
     RewireAPI.__Rewire__('currentTime', null);
     RewireAPI.__Rewire__('determineDeadline', () => 5);
-    const x0 = new Matrix([[0], [0], [0], [-100]]);
-    const goal = new Matrix([[100], [-50], [50], [-25]]);
+    const x0 = { x: 0, vx: 0, y: 0, vy: -100 };
+    const goal = { x: 100, vx: -50, y: 50, vy: -25 };
 
     const multipliers = getLQRAccelerationMultipliers(x0, goal);
     t.true(isRoughly(multipliers.accX, 0.28));
@@ -32,15 +32,15 @@ test('getLQRAccelerationMultipliers', tester => {
     t.end();
   });
 
-  tester.test('calls dlqr again if timestep exceeds the total time', t => {
+  tester.test('calls dlqr again if timestep exceeds the deadline', t => {
     const dlqrSpy = sinon.stub().callsFake(dlqr);
     RewireAPI.__Rewire__('currentGoalState', null);
     RewireAPI.__Rewire__('currentKs', null);
     RewireAPI.__Rewire__('currentTime', null);
     RewireAPI.__Rewire__('dlqr', dlqrSpy);
     RewireAPI.__Rewire__('determineDeadline', () => 0.1);
-    const x0 = new Matrix([[0], [0], [0], [-100]]);
-    const goal = new Matrix([[100], [-50], [50], [-25]]);
+    const x0 = { x: 0, vx: 0, y: 0, vy: -100 };
+    const goal = { x: 100, vx: -50, y: 50, vy: -25 };
 
     _.times(4, () => getLQRAccelerationMultipliers(x0, goal));
     t.is(dlqrSpy.callCount, 1);
@@ -62,9 +62,9 @@ test('getLQRAccelerationMultipliers', tester => {
     RewireAPI.__Rewire__('currentTime', null);
     RewireAPI.__Rewire__('dlqr', dlqrSpy);
     RewireAPI.__Rewire__('determineDeadline', () => 1);
-    const x0 = new Matrix([[0], [0], [0], [-100]]);
-    const goal = new Matrix([[100], [-50], [50], [-25]]);
-    const newGoal = new Matrix([[200], [-50], [50], [-25]]);
+    const x0 = { x: 0, vx: 0, y: 0, vy: -100 };
+    const goal = { x: 100, vx: -50, y: 50, vy: -25 };
+    const newGoal = { x: 200, vx: -50, y: 50, vy: -25 };
 
     _.times(2, () => getLQRAccelerationMultipliers(x0, goal));
     t.is(dlqrSpy.callCount, 1);
@@ -82,10 +82,10 @@ test('getLQRAccelerationMultipliers', tester => {
 
 
 test('determineDeadline', tester => {
-  tester.test('uses average velocity to determind deadline', t => {
-    const x0 = new Matrix([[0], [0], [0], [0]]);
+  tester.test('uses average velocity to determine deadline', t => {
+    const x0 = { x: 0, vx: 0, y: 0, vy: 0 };
     // Goal velocity is magnitude 5 px/s, and is 5 pixels away
-    const goal = new Matrix([[3], [3], [4], [4]]);
+    const goal = { x: 3, vx: 3, y: 4, vy: 4 };
 
     // Average velocity is 2.5, so it should take 2 seconds to reach goal
     t.is(determineDeadline(x0, goal), 2);
