@@ -1,4 +1,4 @@
-import { timeLog } from './global/utils';
+import { timeLog, startTiming, stopTiming, logTimingsReport } from './global/utils';
 import { BRP } from './global/constants';
 import { setupClientVelocity, initLocations, setupRoleCommunication } from './look/setup';
 import { computeTileInfo } from './look/tileInfo';
@@ -17,38 +17,58 @@ import { getLocalGoalStateFromPath } from './control/lqr';
 import { funnelPolypoints } from './plan/funnel';
 
 
-// Run onKeyDown any time a key is pressed to parse user input
-window.onkeydown = onKeyDown;
+window.onkeydown = onKeyDown; // run onKeyDown any time a key is pressed to parse user input
+let botLoopCount = 0; // keep track of how many times we have run botLoop()
 
 
 /**
  * The base loop for defining the bot's behavior.
  */
 function botLoop() {
+  startTiming('Dequeueing chat messages');
   dequeueChatMessages();
+  stopTiming('Dequeueing chat messages');
 
   // If we're not autonomous and not drawing, then don't run the bot
   if (!isAutonomousMode() && !isVisualMode()) return;
 
   const { map } = tagpro;
   const me = getMe();
+  startTiming('Running FSM');
   const { goal, enemyShortestPath } = FSM(me);
-  drawEnemyPath(enemyShortestPath);
-  updateNavMesh(map);
+  stopTiming('Running FSM');
 
+  startTiming('Drawing enemy path');
+  drawEnemyPath(enemyShortestPath);
+  stopTiming('Drawing enemy path');
+
+  startTiming('Updating navmesh');
+  updateNavMesh(map);
+  stopTiming('Updating navmesh');
+
+  startTiming('Getting shortest polypoint path');
   const polypointShortestPath = getShortestPolypointPath(
     getPlayerCenter(me),
     goal,
     getDTGraph(),
   );
+  stopTiming('Getting shortest polypoint path');
 
+  startTiming('Funnelling polypoint path');
   const funnelledPath = funnelPolypoints(polypointShortestPath, getDTGraph());
-  drawAllyPath(funnelledPath);
+  stopTiming('Funnelling polypoint path');
 
+  startTiming('Drawing ally path');
+  drawAllyPath(funnelledPath);
+  stopTiming('Drawing ally path');
+
+  startTiming('Getting local goal state');
   const localGoalState = getLocalGoalStateFromPath(funnelledPath, me);
+  stopTiming('Getting local goal state');
 
   // The desired acceleration multipliers the bot should achieve with arrow key presses. Positive
   //   directions are down and right.
+  startTiming('Getting desired acceleration multipliers');
   const accelValues = getDesiredAccelerationMultipliers(
     me.x + BRP, // the x center of our ball, in pixels
     me.y + BRP, // the y center of our ball, in pixels
@@ -57,7 +77,12 @@ function botLoop() {
     localGoalState.x, // the x we are seeking toward (pixels)
     localGoalState.y, // the y we are seeking toward (pixels)
   );
+  stopTiming('Getting desired acceleration multipliers');
+
   if (isAutonomousMode()) move(accelValues);
+
+  if (botLoopCount % 60 === 0) logTimingsReport();
+  botLoopCount += 1;
 }
 
 
