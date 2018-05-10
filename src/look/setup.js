@@ -51,7 +51,7 @@ export function initLocations() {
 }
 
 
-/*
+/**
  * If I am the only player on my team, set my role to offense. Otherwise, set my role to undefined
  *   and request the roles of my teammates.
  */

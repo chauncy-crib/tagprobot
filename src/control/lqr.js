@@ -39,7 +39,7 @@ export function getLocalGoalStateFromPath(path, me) {
 }
 
 
-/*
+/**
  * Run discrete linear quadratic regulator on the inputs to determine optimal K matrix for
  *   different deadlines from 0 to T
  * @param {Matrix} A - state difference equations
