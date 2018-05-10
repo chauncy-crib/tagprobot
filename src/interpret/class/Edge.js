@@ -36,13 +36,21 @@ export class Edge {
   }
 
 
+  /**
+   * @param {Point} p
+   * @returns {number} - the distance from p to the point the this edge closest to it
+   */
   distToPoint(p) {
     const projPoint = this.getProjectedPoint(p);
-    assert(this.isCollinearWithPoint(projPoint));
     if (projPoint.laysOnEdge(this)) return projPoint.distance(p);
     return Math.min(p.distance(this.p1), p.distance(this.p2));
   }
 
+  /**
+   * @param {Point} p
+   * @returns {Point} - a point, projPoint, which is collinear with this edge. The edge formed by
+   *   projPoint and p is normal to this edge.
+   */
   getProjectedPoint(p) {
     if (this.isCollinearWithPoint(p)) return p;
     const b = this.getSlope();
