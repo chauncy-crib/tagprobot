@@ -57,7 +57,7 @@ export function requestTeammateRoles() {
 }
 
 
-/*
+/**
  * @returns true if this bot is the lowest ID without an assigned role
  */
 export function isMyTurnToAssumeRole() {
