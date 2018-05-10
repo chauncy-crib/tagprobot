@@ -3,7 +3,7 @@ import math from 'mathjs';
 
 import { assert, boundValue } from '../global/utils';
 import { getPlayerCenter } from '../look/playerLocations';
-import { Point } from '../interpret/class/Point';
+import { Point } from '../global/class/Point';
 import { FPS, ACCEL, MAX_SPEED, DAMPING_FACTOR } from './constants';
 import { Matrix } from './class/Matrix';
 

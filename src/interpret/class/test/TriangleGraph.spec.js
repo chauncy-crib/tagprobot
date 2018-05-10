@@ -7,8 +7,8 @@ import {
   getDTGraph,
 } from '../../setup';
 import { isRoughly } from '../../../global/utils';
-import { Point } from '../Point';
-import { Edge } from '../Edge';
+import { Point } from '../../../global/class/Point';
+import { Edge } from '../../../global/class/Edge';
 import { Triangle } from '../Triangle';
 import { TriangleGraph, __RewireAPI__ as TriangleGraphRewireAPI } from '../TriangleGraph';
 import { updateUnmergedGraph, updateMergedGraph } from '../../mapToGraph';

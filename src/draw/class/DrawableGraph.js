@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { Graph } from '../../interpret/class/Graph';
+import { Graph } from '../../global/class/Graph';
 
 
 /**
