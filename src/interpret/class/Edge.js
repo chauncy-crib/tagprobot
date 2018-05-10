@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 import { assert } from '../../global/utils';
+import { Point } from './Point';
 import { detD, threePointsInLine } from '../utils';
 
 
@@ -32,6 +33,33 @@ export class Edge {
 
   toString() {
     return `p1: ${this.p1.toString()}, p2: ${this.p2.toString()}`;
+  }
+
+
+  /**
+   * @param {Point} p
+   * @returns {number} the distance from p to the closest point on this edge
+   */
+  distToPoint(p) {
+    const projPoint = this.getProjectedPoint(p);
+    assert(this.isCollinearWithPoint(projPoint));
+    if (projPoint.laysOnEdge(this)) return projPoint.distance(p);
+    return Math.min(p.distance(this.p1), p.distance(this.p2));
+  }
+
+  /**
+   * @param {Point} p
+   * @returns {Point} a point, projPoint, which is collinear with this edge. The edge formed by
+   *   projPoint and p is normal to this edge.
+   */
+  getProjectedPoint(p) {
+    if (this.isCollinearWithPoint(p)) return p;
+    const b = this.getSlope();
+    if (b === 0) return new Point(p.x, this.p1.y);
+    if (_.isNull(b)) return new Point(this.p1.x, p.y);
+    const projY = ((b * (((b * p.y) + p.x) - this.p2.x)) + this.p2.y) / (1 + (b * b));
+    const projX = (b * (p.y - projY)) + p.x;
+    return new Point(projX, projY);
   }
 
 
