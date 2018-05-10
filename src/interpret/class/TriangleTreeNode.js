@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { assert } from '../../global/utils';
 import { Triangle } from './Triangle';
-import { Edge } from './Edge';
+import { Edge } from '../../global/class/Edge';
 import { isLegal } from '../graphToTriangulation';
 import { detD, detH, sortCounterClockwise } from '../utils';
 

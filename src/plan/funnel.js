@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { assert } from '../global/utils';
-import { Edge } from '../interpret/class/Edge';
+import { Edge } from '../global/class/Edge';
 import { PolypointState } from './class/PolypointState';
 import { Triangle } from '../interpret/class/Triangle';
 

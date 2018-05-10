@@ -2,7 +2,7 @@ import test from 'tape';
 
 import { BRP } from '../../global/constants';
 import { playerIsNearPoint } from '../playerLocations';
-import { Point } from '../../interpret/class/Point';
+import { Point } from '../../global/class/Point';
 
 
 test('playerIsNearPoint', tester => {

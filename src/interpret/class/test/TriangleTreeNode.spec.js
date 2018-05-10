@@ -5,8 +5,8 @@ import {
   findUpperAndLowerPoints,
   triangulateRegion,
 } from '../TriangleTreeNode';
-import { Edge } from '../Edge';
-import { Point } from '../Point';
+import { Edge } from '../../../global/class/Edge';
+import { Point } from '../../../global/class/Point';
 import { Triangle } from '../Triangle';
 
 
