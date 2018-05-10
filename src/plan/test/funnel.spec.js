@@ -1,7 +1,7 @@
 import test from 'tape';
 import _ from 'lodash';
 
-import { Point } from '../../interpret/class/Point';
+import { Point } from '../../global/class/Point';
 import { Polypoint } from '../../interpret/class/Polypoint';
 import { Triangle } from '../../interpret/class/Triangle';
 import { PolypointState } from '../class/PolypointState';
