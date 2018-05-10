@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { playerIsOnMyTeam, getMe } from '../look/gameState';
+import { getMe, getEnemies } from '../look/gameState';
 import { getPlayerCenter } from '../look/playerLocations';
 
 /**
@@ -13,7 +13,7 @@ export function enemyAvoidanceCost(p) {
   const m = 0.1;
   const myLocation = getPlayerCenter(getMe());
   const distFromMe = p.t.distToPoint(myLocation);
-  return _.sumBy(_.reject(tagpro.players, player => playerIsOnMyTeam(player)), enemy => {
+  return _.sumBy(getEnemies(), enemy => {
     if (!_.has(enemy, 'x')) return 0;
     const enemyLocation = getPlayerCenter(enemy);
     const enemyDist = p.t.distToPoint(enemyLocation);

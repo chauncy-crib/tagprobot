@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import { assert } from '../global/utils';
 import { BRP } from '../global/constants';
-import { playerIsOnMyTeam } from './gameState';
+import { getEnemies } from './gameState';
 import { findAllyFlagStation } from './tileLocations';
 import { Point } from '../interpret/class/Point';
 
@@ -11,8 +11,7 @@ import { Point } from '../interpret/class/Point';
  * @returns {Object} the enemy flag carrier from tagpro.players, if in view
  */
 export function getEnemyFC() {
-  return _.find(tagpro.players, player => (
-    !playerIsOnMyTeam(player) &&
+  return _.find(getEnemies(), player => (
     player.flag &&
     !player.dead &&
     player.draw // if the player is visible in the client's view
@@ -24,8 +23,7 @@ export function getEnemyFC() {
  * @returns {Object} the enemy with rolling bomb from tagpro.players, if in view
  */
 export function getEnemyRB() {
-  return _.find(tagpro.players, player => (
-    !playerIsOnMyTeam(player) &&
+  return _.find(getEnemies(), player => (
     player.bomb &&
     !player.dead &&
     player.draw // if the player is visible in the client's view
@@ -52,10 +50,7 @@ export function playerIsNearPoint(player, point, threshold = 300) {
 
 export function getEnemyPlayersNearAllyFlagStation() {
   const allyFlagStation = findAllyFlagStation();
-  return _.filter(tagpro.players, player => (
-    !playerIsOnMyTeam(player) &&
-    playerIsNearPoint(player, allyFlagStation)
-  ));
+  return _.filter(getEnemies(), player => playerIsNearPoint(player, allyFlagStation));
 }
 
 

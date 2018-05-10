@@ -32,6 +32,13 @@ export function playerIsOnMyTeam(player) {
   return player.team === me.team;
 }
 
+/**
+ * @returns {Object} all enemy players
+ */
+export function getEnemies() {
+  return _.reject(tagpro.players, player => playerIsOnMyTeam(player));
+}
+
 
 export function idIsMine(id) {
   return id === getMe().id;
