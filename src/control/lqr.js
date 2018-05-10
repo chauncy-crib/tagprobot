@@ -10,7 +10,6 @@ import { Matrix } from './class/Matrix';
 
 let currentGoalState;
 let currentKs;
-let currentTime;
 
 
 /**
@@ -142,47 +141,62 @@ function recalculateKMatrices(goalState, T) {
   const R = new Matrix(math.diag([1, 1])); // control cost
 
   currentKs = dlqr(A, B, Q, F, R, goalState, T);
-  currentTime = 1;
   currentGoalState = goalState;
 }
 
 
 /**
- * @param {Matrix} initialState - state in the format [[x], [vx], [y], [vy]]
- * @param {Matrix} goalState - state in the format [[x], [vx], [y], [vy]]
- * @returns {number} the best guess for the number of seconds it will take to reach the goal state
+ * @param {{x: number, y: number, vx: number, vy: number}} initialState
+ * @param {{x: number, y: number, vx: number, vy: number}} goalState
+ * @returns {number} the best guess for the number of frames it will take to reach the goal state
  */
 export function determineDeadline(initialState, goalState) {
-  const initialPoint = new Point(initialState.array[0][0], initialState.array[2][0]);
-  const goalPoint = new Point(goalState.array[0][0], goalState.array[2][0]);
-  const initialVelocity = new Point(initialState.array[1][0], initialState.array[3][0]);
-  const goalVelocity = new Point(goalState.array[1][0], goalState.array[3][0]);
+  const initialPoint = new Point(initialState.x, initialState.y);
+  const goalPoint = new Point(goalState.x, goalState.y);
+  const initialVelocity = new Point(initialState.vx, initialState.vy);
+  const goalVelocity = new Point(goalState.vx, goalState.vy);
 
   const distance = initialPoint.distance(goalPoint);
-  const averageVelocity = (initialVelocity.magnitude() + goalVelocity.magnitude()) / 2;
-  const seconds = distance / averageVelocity;
-  return seconds;
+  let seconds = (distance / MAX_SPEED) +
+    (goalVelocity.subtract(initialVelocity).magnitude() / ACCEL);
+  if (seconds > 5) seconds = 5; // cap at 5 seconds for dlqr performance
+  return Math.floor(FPS * seconds);
 }
 
 
 /**
- * @param {Matrix} initialState - state in the format [[x], [vx], [y], [vy]]
- * @param {Matrix} goalState - state in the format [[x], [vx], [y], [vy]]
+ * @param {{x: number, y: number, vx: number, vy: number}} initialState
+ * @param {{x: number, y: number, vx: number, vy: number}} goalState
  * @returns {{accX: number, accY: number}} The desired acceleration multipliers to reach the
  *   destination. The positive directions are down and right.
  */
 export function getLQRAccelerationMultipliers(initialState, goalState) {
-  const T = Math.floor(FPS * determineDeadline(initialState, goalState)); // number of time steps
+  const iStateMatrix = new Matrix([
+    [initialState.x],
+    [initialState.vx],
+    [initialState.y],
+    [initialState.vy],
+  ]);
+  const gStateMatrix = new Matrix([
+    [goalState.x],
+    [goalState.vx],
+    [goalState.y],
+    [goalState.vy],
+  ]);
 
-  if (!goalState.equals(currentGoalState) || currentTime >= T - 1) {
-    // There is a new goal state or we've exceeded our goal time
-    recalculateKMatrices(goalState, T);
+  const deadline = determineDeadline(initialState, goalState);
+
+  if (!gStateMatrix.equals(currentGoalState)) {
+    // There is a new goal state
+    recalculateKMatrices(gStateMatrix, deadline);
   }
 
-  const x = initialState.subtract(goalState);
+  const maxDeadline = currentKs.shape()[0] - 1;
+  const KIndex = boundValue(maxDeadline - deadline, 1, maxDeadline);
+
+  const x = iStateMatrix.subtract(gStateMatrix);
   x.append([[1]]);
-  const u = currentKs.get(currentTime).scalarMultiply(-1).dot(x); // [[ax], [ay]]
-  currentTime += 1;
+  const u = currentKs.get(KIndex).scalarMultiply(-1).dot(x); // [[ax], [ay]]
 
   // Max acceleration at 1 or -1
   return {
