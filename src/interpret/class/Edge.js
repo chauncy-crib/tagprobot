@@ -42,7 +42,6 @@ export class Edge {
    */
   distToPoint(p) {
     const projPoint = this.getProjectedPoint(p);
-    assert(this.isCollinearWithPoint(projPoint));
     if (projPoint.laysOnEdge(this)) return projPoint.distance(p);
     return Math.min(p.distance(this.p1), p.distance(this.p2));
   }
