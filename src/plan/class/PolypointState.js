@@ -1,4 +1,6 @@
 import _ from 'lodash';
+import { enemyAvoidanceCost } from '../avoidance';
+import { getMe } from '../../look/gameState';
 
 import { State } from './State';
 
@@ -34,6 +36,8 @@ export class PolypointState extends State {
     // Assign g values of neighbors
     _.forEach(neighbors, n => {
       n.g = this.g + n.point.distance(this.point);
+      // If we have the flag, apply the avoidance-cost
+      if (getMe().flag) n.g += enemyAvoidanceCost(n.point);
       n.parent = this;
     });
     return neighbors;
