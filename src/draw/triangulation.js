@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { COLORS, ALPHAS, THICKNESSES } from './constants';
-import { getDTGraph } from '../interpret/setup';
+import { getDTGraph } from '../interpret/interpret';
 
 
 let allyPathGraphics = null; // PIXI Graphics for drawing the bot's polypoint path

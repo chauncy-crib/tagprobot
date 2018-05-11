@@ -5,10 +5,12 @@ import {
   internalMap,
   tilesToUpdate,
   tilesToUpdateValues,
+} from './setup';
+import {
   getUnmergedGraph,
   getMergedGraph,
   getDTGraph,
-} from './setup';
+} from './interpret';
 import {
   updateMergedGraph,
   updateUnmergedGraph,

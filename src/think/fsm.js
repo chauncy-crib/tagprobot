@@ -25,7 +25,7 @@ import {
 import { getPGPPosition } from '../plan/pgp';
 import { getMyRole } from '../look/playerRoles';
 import { Point } from '../global/class/Point';
-import { getDTGraph } from '../interpret/setup';
+import { getDTGraph } from '../interpret/interpret';
 import { getShortestPolypointPath } from '../plan/astar';
 import { funnelPolypoints } from '../plan/funnel';
 
