@@ -93,7 +93,9 @@ export function delaunayTriangulation(
  */
 export function initNavMesh(map) {
   dtGraph = new TriangleGraph();
+  timeLog('  Creating unmerged graph...');
   unmergedGraph = unmergedGraphFromTagproMap(map);
+  timeLog('  Creating merged graph...');
   mergedGraph = graphFromTagproMap(map, unmergedGraph);
   delaunayTriangulation(
     mergedGraph,
