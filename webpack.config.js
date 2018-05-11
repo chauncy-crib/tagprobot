@@ -1,13 +1,13 @@
-var path = require('path');
+const path = require('path');
 
-var APP_DIR = path.resolve(__dirname, 'src/');
+const APP_DIR = path.resolve(__dirname, 'src/');
 
-module.exports = function(env) {
+module.exports = function (env) {
   exports = {
-    entry: APP_DIR + '/start.js',
+    entry: `${APP_DIR}/start.js`,
     output: {
       filename: 'bundle.js',
-      path: path.resolve(__dirname, 'public')
+      path: path.resolve(__dirname, 'public'),
     },
     mode: 'development',
     module: {
@@ -15,7 +15,7 @@ module.exports = function(env) {
         // Eslint loader
         {
           // Make sure we lint before we transform code
-          enforce: "pre",
+          enforce: 'pre',
           // Only test js files
           test: [/\.js$/],
           // Only include files in the client directory (so we don't compile our node modules or server side code)
@@ -30,13 +30,13 @@ module.exports = function(env) {
           include: APP_DIR,
           loader: 'babel-loader',
           query: {
-            //use es6 syntax
+            // use es6 syntax
             presets: ['es2015'],
             // makes output more concise
             plugins: ['transform-runtime', 'lodash', 'rewire'],
-          }
-        }
-      ]
+          },
+        },
+      ],
     },
     resolve: {
       // Look for modules in node_modules directory for imports
@@ -45,8 +45,8 @@ module.exports = function(env) {
         'node_modules',
       ],
       // Resolve these file types
-      extensions: ['.js', '.jsx', 'css']
-    }
+      extensions: ['.js', '.jsx', 'css'],
+    },
   };
   return exports;
 };
