@@ -27,7 +27,7 @@ window.onkeydown = onKeyDown;
 function botLoop() {
   dequeueChatMessages();
 
-  // If we're not autonomous or drawing, then don't run the bot
+  // If we're not autonomous and not drawing, then don't run the bot
   if (!isAutonomousMode() && !isVisualMode()) return;
 
   const { map } = tagpro;
