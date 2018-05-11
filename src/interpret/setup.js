@@ -18,6 +18,15 @@ export const tilesToUpdateValues = []; // the values stored in those locations
 let dtGraph;
 let unmergedGraph;
 let mergedGraph;
+let mapName;
+let mapAuthor;
+
+export function setupMapCallback() {
+  tagpro.socket.on('map', mapData => {
+    mapName = mapData.info.name;
+    mapAuthor = mapData.info.author;
+  });
+}
 
 
 export function initInternalMap(map) {
