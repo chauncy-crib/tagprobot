@@ -1,6 +1,7 @@
 import test from 'tape';
 
-import { getDTGraph, delaunayTriangulation, __RewireAPI__ as SetupRewireAPI } from '../setup';
+import { delaunayTriangulation } from '../setup';
+import { getDTGraph, __RewireAPI__ as InterpretRewireAPI } from '../interpret';
 import { Point } from '../../global/class/Point';
 import { Edge } from '../../global/class/Edge';
 import { TriangleGraph } from '../class/TriangleGraph';
@@ -10,7 +11,7 @@ import { setupPixiAndTagpro, resetPixiAndTagpro } from '../../draw/class/test/Dr
 test('delaunayTriangulation()', tester => {
   tester.test('creates legal horizontal line', t => {
     setupPixiAndTagpro();
-    SetupRewireAPI.__Rewire__('dtGraph', new TriangleGraph());
+    InterpretRewireAPI.__Rewire__('dtGraph', new TriangleGraph());
 
     // Horizontal line between p1 and p4
     const p1 = new Point(0, 8);
@@ -41,14 +42,14 @@ test('delaunayTriangulation()', tester => {
     t.is(getDTGraph().polypoints.getEdges().length, 12);
 
     resetPixiAndTagpro();
-    SetupRewireAPI.__ResetDependency__('dtGraph');
+    InterpretRewireAPI.__ResetDependency__('dtGraph');
 
     t.end();
   });
 
   tester.test('overwrites horizontal line when vertical line is constrained', t => {
     setupPixiAndTagpro();
-    SetupRewireAPI.__Rewire__('dtGraph', new TriangleGraph());
+    InterpretRewireAPI.__Rewire__('dtGraph', new TriangleGraph());
 
     const p1 = new Point(0, 8);
     const p2 = new Point(19, 0);
@@ -78,14 +79,14 @@ test('delaunayTriangulation()', tester => {
     t.is(getDTGraph().polypoints.getEdges().length, 11);
 
     resetPixiAndTagpro();
-    SetupRewireAPI.__ResetDependency__('dtGraph');
+    InterpretRewireAPI.__ResetDependency__('dtGraph');
 
     t.end();
   });
 
   tester.test('creates legal vertical line', t => {
     setupPixiAndTagpro();
-    SetupRewireAPI.__Rewire__('dtGraph', new TriangleGraph());
+    InterpretRewireAPI.__Rewire__('dtGraph', new TriangleGraph());
 
     // Vertical line between p2 and p3
     const p1 = new Point(0, 8);
@@ -116,14 +117,14 @@ test('delaunayTriangulation()', tester => {
     t.is(getDTGraph().polypoints.getEdges().length, 12);
 
     resetPixiAndTagpro();
-    SetupRewireAPI.__ResetDependency__('dtGraph');
+    InterpretRewireAPI.__ResetDependency__('dtGraph');
 
     t.end();
   });
 
   tester.test('overwrites vertical line when horizontal line is constrained', t => {
     setupPixiAndTagpro();
-    SetupRewireAPI.__Rewire__('dtGraph', new TriangleGraph());
+    InterpretRewireAPI.__Rewire__('dtGraph', new TriangleGraph());
 
     // Vertical line between p2 and p3
     const p1 = new Point(0, 8);
@@ -154,14 +155,14 @@ test('delaunayTriangulation()', tester => {
     t.is(getDTGraph().polypoints.getEdges().length, 11);
 
     resetPixiAndTagpro();
-    SetupRewireAPI.__ResetDependency__('dtGraph');
+    InterpretRewireAPI.__ResetDependency__('dtGraph');
 
     t.end();
   });
 
   tester.test('works when point is on existing line', t => {
     setupPixiAndTagpro();
-    SetupRewireAPI.__Rewire__('dtGraph', new TriangleGraph());
+    InterpretRewireAPI.__Rewire__('dtGraph', new TriangleGraph());
 
     const p1 = new Point(0, 0);
     const p2 = new Point(0, 10);
@@ -182,14 +183,14 @@ test('delaunayTriangulation()', tester => {
     t.is(getDTGraph().numTriangles(), 9);
 
     resetPixiAndTagpro();
-    SetupRewireAPI.__ResetDependency__('dtGraph');
+    InterpretRewireAPI.__ResetDependency__('dtGraph');
 
     t.end();
   });
 
   tester.test('creates correct polypoints and polyedges', t => {
     setupPixiAndTagpro();
-    SetupRewireAPI.__Rewire__('dtGraph', new TriangleGraph());
+    InterpretRewireAPI.__Rewire__('dtGraph', new TriangleGraph());
 
     const p1 = new Point(0, 0);
     const p2 = new Point(0, 12);
@@ -218,7 +219,7 @@ test('delaunayTriangulation()', tester => {
     if (valid2) t.true(pp.isConnected(new Point(4, 4), new Point(8, 8)));
 
     resetPixiAndTagpro();
-    SetupRewireAPI.__ResetDependency__('dtGraph');
+    InterpretRewireAPI.__ResetDependency__('dtGraph');
 
     t.end();
   });

@@ -1,11 +1,11 @@
 import test from 'tape';
 
+import { initNavMesh } from '../../setup';
 import {
   getUnmergedGraph,
   getMergedGraph,
-  initNavMesh,
   getDTGraph,
-} from '../../setup';
+} from '../../interpret';
 import { isRoughly } from '../../../global/utils';
 import { Point } from '../../../global/class/Point';
 import { Edge } from '../../../global/class/Edge';
