@@ -4,7 +4,13 @@ import { setupClientVelocity, initLocations, setupRoleCommunication } from './lo
 import { computeTileInfo } from './look/tileInfo';
 import { getMe, initMe, initIsCenterFlag } from './look/gameState';
 import { getPlayerCenter } from './look/playerLocations';
-import { getDTGraph, initInternalMap, initTilesToUpdate, initNavMesh } from './interpret/setup';
+import {
+  getDTGraph,
+  initInternalMap,
+  initTilesToUpdate,
+  initNavMesh,
+  setupMapCallback,
+} from './interpret/setup';
 import { logHelpMenu, onKeyDown, isAutonomousMode, isVisualMode, move } from './interface/keys';
 import { FSM } from './think/fsm';
 import { dequeueChatMessages, setupChatCallback } from './interface/chat';
@@ -70,6 +76,13 @@ function loop() {
 }
 
 
+function setupSocketCallbacks() {
+  timeLog('Setting up socket callbacks...');
+  setupMapCallback();
+  setupChatCallback();
+}
+
+
 /**
  * This is the "entry point" for our bot. We run necessary initializations and setups, and then run
  *   our "botLoop" every time an animation frame is drawn
@@ -96,8 +109,6 @@ function start() {
   initUiUpdateFunction();
   timeLog('Turning on all drawings...');
   turnOnAllDrawings();
-  timeLog('Setting up chat callback...');
-  setupChatCallback();
   timeLog('Setting up role communication...');
   setupRoleCommunication();
   timeLog('Done.');
@@ -132,5 +143,6 @@ function waitForId(fn) {
  * for the playerId property to be assigned.
  */
 tagpro.ready(() => {
+  setupSocketCallbacks();
   waitForId(start);
 });
