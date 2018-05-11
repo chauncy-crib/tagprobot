@@ -4,12 +4,12 @@ import { computeTileInfo } from './look/tileInfo';
 import { getMe, initMe, initIsCenterFlag } from './look/gameState';
 import { getPlayerCenter } from './look/playerLocations';
 import {
-  getDTGraph,
   initInternalMap,
   initTilesToUpdate,
   initNavMesh,
   setupMapCallback,
 } from './interpret/setup';
+import { getDTGraph } from './interpret/interpret';
 import { logHelpMenu, onKeyDown, isAutonomousMode, isVisualMode, move } from './interface/keys';
 import { FSM } from './think/fsm';
 import { dequeueChatMessages, setupChatCallback } from './interface/chat';
