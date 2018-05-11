@@ -6,6 +6,16 @@ import { Point } from '../global/class/Point';
 import { Triangle } from './class/Triangle';
 import { TriangleGraph } from './class/TriangleGraph';
 import { unmergedGraphFromTagproMap, graphFromTagproMap } from './mapToGraph';
+import {
+  getDTGraph,
+  getMergedGraph,
+  getUnmergedGraph,
+  setDtGraph,
+  setUnmergedGraph,
+  setMergedGraph,
+  setMapName,
+  setMapAuthor,
+} from './interpret';
 
 
 export const internalMap = [];
@@ -14,16 +24,11 @@ export const internalMap = [];
 export const tilesToUpdate = [];
 export const tilesToUpdateValues = []; // the values stored in those locations
 
-let dtGraph;
-let unmergedGraph;
-let mergedGraph;
-let mapName;
-let mapAuthor;
 
 export function setupMapCallback() {
   tagpro.socket.on('map', mapData => {
-    mapName = mapData.info.name;
-    mapAuthor = mapData.info.author;
+    setMapName(mapData.info.name);
+    setMapAuthor(mapData.info.author);
   });
 }
 
@@ -68,6 +73,7 @@ export function delaunayTriangulation(
   dummyPoint2,
   dummyPoint3,
 ) {
+  const dtGraph = getDTGraph();
   const numVertices = dtGraph.getVertices().length;
   assert(numVertices === 0, `dtGraph had ${numVertices} vertices.`);
   const vertices = mapGraph.getVertices();
@@ -101,30 +107,15 @@ export function delaunayTriangulation(
  * @returns {Graph} graph of the triangulation of all the vertices
  */
 export function initNavMesh(map) {
-  dtGraph = new TriangleGraph();
+  setDtGraph(new TriangleGraph());
   timeLog('  Creating unmerged graph...');
-  unmergedGraph = unmergedGraphFromTagproMap(map);
+  setUnmergedGraph(unmergedGraphFromTagproMap(map));
   timeLog('  Creating merged graph...');
-  mergedGraph = graphFromTagproMap(map, unmergedGraph);
+  setMergedGraph(graphFromTagproMap(map, getUnmergedGraph()));
   delaunayTriangulation(
-    mergedGraph,
+    getMergedGraph(),
     new Point(-9999, -100),
     new Point(9999, -100),
     new Point(0, 9999),
   );
-}
-
-
-export function getMergedGraph() {
-  return mergedGraph;
-}
-
-
-export function getUnmergedGraph() {
-  return unmergedGraph;
-}
-
-
-export function getDTGraph() {
-  return dtGraph;
 }
