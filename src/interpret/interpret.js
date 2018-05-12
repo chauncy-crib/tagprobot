@@ -1,3 +1,5 @@
+import _ from 'lodash';
+import { assert } from '../global/utils';
 
 export const internalMap = [];
 
@@ -31,6 +33,24 @@ export function setMapName(n) {
 
 export function setMapAuthor(a) {
   mapAuthor = a;
+}
+
+
+export function setInternalMap(m) {
+  assert(_.isEmpty(internalMap), 'internalMap not empty when being set');
+  for (let i = 0; i < m.length; i++) internalMap.push(_.clone(m[i]));
+}
+
+
+export function setTilesToUpdate(t) {
+  assert(_.isEmpty(tilesToUpdate), 'tilesToUpdate not empty when being set');
+  _.forEach(t, xy => tilesToUpdate.push(xy));
+}
+
+
+export function setTilesToUpdateValues(t) {
+  assert(_.isEmpty(tilesToUpdateValues), 'tilesToUpdateValues not empty when being set');
+  _.forEach(t, v => tilesToUpdateValues.push(v));
 }
 
 
