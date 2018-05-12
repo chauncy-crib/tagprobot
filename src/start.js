@@ -18,13 +18,13 @@ import { funnelPolypoints } from './plan/funnel';
 
 
 window.onkeydown = onKeyDown; // run onKeyDown any time a key is pressed to parse user input
-let botLoopCount = 0; // keep track of how many times we have run botLoop()
+let loopCount = 0; // keep track of how many times we have run loop()
 
 
 /**
  * The base loop for defining the bot's behavior.
  */
-function botLoop() {
+function loop() {
   time(dequeueChatMessages);
 
   // If we're not autonomous and not drawing, then don't run the bot
@@ -61,23 +61,17 @@ function botLoop() {
 
   if (isAutonomousMode()) move(accelValues);
 
-  if (botLoopCount % TIMING_RUN_AVG_LEN === 0) logTimingsReport();
-  botLoopCount += 1;
-}
+  if (loopCount % TIMING_RUN_AVG_LEN === 0) logTimingsReport();
+  loopCount += 1;
 
-
-/**
- * Call this function every time a tagpro animation frame gets drawn
- */
-function loop() {
+  // Call this loop again the next frame
   requestAnimationFrame(loop);
-  botLoop();
 }
 
 
 /**
  * This is the "entry point" for our bot. We run necessary initializations and setups, and then run
- *   our "botLoop" every time an animation frame is drawn
+ *   our "loop"
  */
 function start() {
   // Setup
