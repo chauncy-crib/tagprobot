@@ -76,9 +76,27 @@ export class TriangleTreeNode {
    * @param {Triangle} triangle
    */
   constructor(triangle) {
+    super();
     this.triangle = triangle;
     this.children = [];
     this.mark = false; // keep track of which nodes have been visited in _findLeavesWithCondition()
+  }
+
+
+  toNonCirc() {
+    const o = {};
+    o.triangle = this.triangle;
+    o.children = _.map(this.children, n => n.toNonCirc());
+    o.mark = this.mark;
+    return o;
+  }
+
+
+  fromObject(o) {
+    this.triangle = (new Triangle()).fromObject(o.triangle);
+    this.mark = o.mark;
+    this.children = _.map(o.children, c => (new TriangleTreeNode()).fromObject(c));
+    return this;
   }
 
 

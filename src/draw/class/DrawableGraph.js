@@ -31,6 +31,17 @@ export class DrawableGraph extends Graph {
     this.drawingContainer = new PIXI.DisplayObjectContainer();
   }
 
+
+  fromObject(o) {
+    super.fromObject(o);
+    // this.drawingsOn = o.drawingsOn;
+    // this.vertexThickness = o.vertexThickness;
+    // this.vertexAlpha = o.vertexAlpha;
+    // this.vertexColor = o.vertexColor;
+    return this;
+  }
+
+
   turnOffDrawings() {
     if (this.drawingsOn) tagpro.renderer.layers.foreground.removeChild(this.drawingContainer);
     this.drawingsOn = false;

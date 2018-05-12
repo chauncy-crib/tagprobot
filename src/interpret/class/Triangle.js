@@ -5,17 +5,29 @@ import { threePointsInLine } from '../utils';
 import { Point } from '../../global/class/Point';
 import { Polypoint } from './Polypoint';
 import { Edge } from '../../global/class/Edge';
+import { Serializable } from '../../global/class/Serializable';
 
 
-export class Triangle {
+export class Triangle extends Serializable {
   constructor(p1, p2, p3, checkEmpty = true) {
-    assert(
-      !(checkEmpty && threePointsInLine(p1, p2, p3)),
-      'Tried to make a triangle with no area',
-    );
+    super();
+    if (p1 || p2 || p3) {
+      assert(
+        !(checkEmpty && threePointsInLine(p1, p2, p3)),
+        'Tried to make a triangle with no area',
+      );
+    }
     this.p1 = p1;
     this.p2 = p2;
     this.p3 = p3;
+  }
+
+
+  fromObject(o) {
+    this.p1 = (new Point()).fromObject(o.p1);
+    this.p2 = (new Point()).fromObject(o.p2);
+    this.p3 = (new Point()).fromObject(o.p3);
+    return this;
   }
 
 
