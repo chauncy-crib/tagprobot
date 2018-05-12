@@ -1,3 +1,5 @@
+import _ from 'lodash';
+import FileSaver from 'file-saver';
 import { TIMING_RUN_AVG_LEN, timeLog, time, logTimingsReport } from './global/timing';
 import { BRP } from './global/constants';
 import { setupClientVelocity, initLocations, setupRoleCommunication } from './look/setup';
@@ -10,7 +12,14 @@ import {
   initNavMesh,
   setupMapCallback,
 } from './interpret/setup';
-import { getDTGraph, getMapName, getMapAuthor } from './interpret/interpret';
+import {
+  getDTGraph,
+  getMapName,
+  getMapAuthor,
+  tilesToUpdate,
+  tilesToUpdateValues,
+  internalMap,
+} from './interpret/interpret';
 import { logHelpMenu, onKeyDown, isAutonomousMode, isVisualMode, move } from './interface/keys';
 import { FSM } from './think/fsm';
 import { dequeueChatMessages, setupChatCallback } from './interface/chat';
@@ -22,9 +31,25 @@ import { getDesiredAccelerationMultipliers } from './control/physics';
 import { getLocalGoalStateFromPath } from './control/lqr';
 import { funnelPolypoints } from './plan/funnel';
 
+import cache from '../cache.json';
+
 
 window.onkeydown = onKeyDown; // run onKeyDown any time a key is pressed to parse user input
 let loopCount = 0; // keep track of how many times we have run loop()
+
+
+function updateCache() {
+  const mapKey = `{${getMapAuthor()}.${getMapName()}}`;
+  if (!_.has(cache, mapKey)) {
+    const data = {};
+    data.tilesToUpdate = tilesToUpdate;
+    data.tilesToUpdateValues = tilesToUpdateValues;
+    data.internalMap = internalMap;
+    cache[mapKey] = data;
+    const blob = new Blob([JSON.stringify(cache)], { type: 'text/plain;charset=utf-8' });
+    FileSaver.saveAs(blob, 'cache.json');
+  }
+}
 
 
 /**
@@ -112,6 +137,7 @@ function start() {
   setupRoleCommunication();
   timeLog('Done.');
   logHelpMenu();
+  updateCache();
 
   // Run the bot
   loop();
