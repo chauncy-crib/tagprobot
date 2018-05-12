@@ -2,6 +2,7 @@ import _ from 'lodash';
 
 import { assert } from '../../global/utils';
 import { Edge } from '../../global/class/Edge';
+import { Point } from '../../global/class/Point';
 
 
 /**
@@ -12,6 +13,23 @@ export class Graph {
     this.adj = {}; // map from point string representation to list of adjacent points
     this.vertices = {}; // map from point string representation to actual point
     this.collinearEdges = {}; // map from slope to intercept to list of edges
+  }
+
+
+  fromObject(o) {
+    _.forOwn(o.adj, (adjList, pointStr) => {
+      this.adj[pointStr] = _.map(adjList, p => (new Point()).fromObject(p));
+    });
+    _.forOwn(o.vertices, (point, pointStr) => {
+      this.vertices[pointStr] = (new Point()).fromObject(point);
+    });
+    _.forOwn(o.collinearEdges, (interceptMap, slope) => {
+      this.collinearEdges[slope] = {};
+      _.forOwn(interceptMap, (edgeList, intercept) => {
+        this.collinearEdges[slope][intercept] = _.map(edgeList, e => (new Edge()).fromObject(e));
+      });
+    });
+    return this;
   }
 
   clear() {

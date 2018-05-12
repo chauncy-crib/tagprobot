@@ -89,10 +89,10 @@ function loop() {
  */
 function start() {
   timeLog('Tagpro id recieved.');
-  const startTime = time();
-  // Setup
   initMe();
   timeLog('Initialized me.');
+  loadCache();
+  const startTime = time();
   setupClientVelocity();
   timeLog('Set up client velocity.');
   computeTileInfo();
@@ -107,8 +107,8 @@ function start() {
     initTilesToUpdate(internalMap);
     timeLog('Initialized tiles to update.');
   }
-  initNavMesh(internalMap);
-  timeLog('Initialized nav mesh.');
+  initNavMesh(internalMap, !isCached());
+  if (!isCached()) timeLog('Initialized nav mesh.');
   initUiUpdateFunction();
   timeLog('Initialized UI update function.');
   turnOnAllDrawings();
@@ -147,7 +147,6 @@ function waitForId(fn) {
 function setupSocketCallbacks() {
   timeLog('Tagpro is ready.');
   onMapReady(() => {
-    loadCache();
     waitForId(start);
   });
   setupChatCallback();
