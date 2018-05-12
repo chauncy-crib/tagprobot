@@ -18,6 +18,9 @@ import {
   tilesToUpdate,
   tilesToUpdateValues,
   internalMap,
+  setInternalMap,
+  setTilesToUpdate,
+  setTilesToUpdateValues,
 } from './interpret/interpret';
 import { logHelpMenu, onKeyDown, isAutonomousMode, isVisualMode, move } from './interface/keys';
 import { FSM } from './think/fsm';
@@ -36,17 +39,34 @@ window.onkeydown = onKeyDown; // run onKeyDown any time a key is pressed to pars
 let loopCount = 0; // keep track of how many times we have run loop()
 
 
+function mapKey() {
+  return `${getMapAuthor()}.${getMapName()}`;
+}
+
+
 function updateCache() {
-  const mapKey = `{${getMapAuthor()}.${getMapName()}}`;
-  if (!_.has(cache, mapKey)) {
+  if (!_.has(cache, mapKey())) {
     const data = {};
     data.tilesToUpdate = tilesToUpdate;
     data.tilesToUpdateValues = tilesToUpdateValues;
     data.internalMap = internalMap;
-    cache[mapKey] = data;
-    const blob = new Blob([JSON.stringify(cache)], { type: 'text/plain;charset=utf-8' });
+    cache[mapKey()] = data;
+    const blob = new Blob([JSON.stringify(cache)]);
     FileSaver.saveAs(blob, 'cache.json');
   }
+}
+
+
+function loadCache() {
+  if (_.has(cache, mapKey())) {
+    timeLog('Loading cache...');
+    const data = cache[mapKey()];
+    setTilesToUpdate(data.tilesToUpdate);
+    setTilesToUpdateValues(data.tilesToUpdateValues);
+    setInternalMap(data.internalMap);
+    return true;
+  }
+  return false;
 }
 
 
@@ -109,6 +129,7 @@ function setupSocketCallbacks() {
  */
 function start() {
   // Setup
+  const cached = loadCache();
   timeLog('Initializing me...');
   initMe();
   timeLog('Setting up client velocity...');
@@ -119,12 +140,14 @@ function start() {
   initLocations();
   timeLog('Initializing isCenterFlag()...');
   initIsCenterFlag();
-  timeLog('Initializing internal map...');
-  initInternalMap(tagpro.map);
-  timeLog('Initializing tiles to update...');
-  initTilesToUpdate(tagpro.map);
+  if (!cached) {
+    timeLog('Initializing internal map...');
+    initInternalMap(tagpro.map);
+    timeLog('Initializing tiles to update...');
+    initTilesToUpdate(internalMap);
+  }
   timeLog('Initializing nav mesh...');
-  initNavMesh(tagpro.map);
+  initNavMesh(internalMap);
   timeLog('Initializing UI update function...');
   initUiUpdateFunction();
   timeLog('Turning on all drawings...');
