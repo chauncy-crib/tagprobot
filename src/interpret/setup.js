@@ -22,10 +22,11 @@ import {
 } from './interpret';
 
 
-export function setupMapCallback() {
+export function setupMapCallback(fn) {
   tagpro.socket.on('map', mapData => {
     setMapName(mapData.info.name);
     setMapAuthor(mapData.info.author);
+    fn();
   });
 }
 
