@@ -16,12 +16,16 @@ import {
   getDTGraph,
   getMapName,
   getMapAuthor,
+  getUnmergedGraph,
+  getMergedGraph,
   tilesToUpdate,
   tilesToUpdateValues,
   internalMap,
   setInternalMap,
   setTilesToUpdate,
   setTilesToUpdateValues,
+  setMergedGraph,
+  setUnmergedGraph,
 } from './interpret/interpret';
 import { logHelpMenu, onKeyDown, isAutonomousMode, isVisualMode, move } from './interface/keys';
 import { FSM } from './think/fsm';
@@ -33,6 +37,7 @@ import { drawEnemyPath, drawAllyPath } from './draw/triangulation';
 import { getDesiredAccelerationMultipliers } from './control/physics';
 import { getLocalGoalStateFromPath } from './control/lqr';
 import { funnelPolypoints } from './plan/funnel';
+import { Graph } from './global/class/Graph';
 
 import cache from '../cache.json';
 
@@ -52,6 +57,8 @@ function updateCache() {
     data.tilesToUpdate = tilesToUpdate;
     data.tilesToUpdateValues = tilesToUpdateValues;
     data.internalMap = internalMap;
+    data.unmergedGraph = getUnmergedGraph();
+    data.mergedGraph = getMergedGraph();
     cache[mapKey()] = data;
     const blob = new Blob([JSON.stringify(cache)]);
     FileSaver.saveAs(blob, 'cache.json');
@@ -66,6 +73,8 @@ function loadCache() {
     setTilesToUpdate(data.tilesToUpdate);
     setTilesToUpdateValues(data.tilesToUpdateValues);
     setInternalMap(data.internalMap);
+    setUnmergedGraph((new Graph()).fromObject(data.unmergedGraph));
+    setMergedGraph((new Graph()).fromObject(data.mergedGraph));
     return true;
   }
   return false;
@@ -152,7 +161,7 @@ function start() {
     initTilesToUpdate(internalMap);
   }
   timeLog('Initializing nav mesh...');
-  initNavMesh(internalMap);
+  initNavMesh(internalMap, !cached);
   timeLog('Initializing UI update function...');
   initUiUpdateFunction();
   timeLog('Turning on all drawings...');

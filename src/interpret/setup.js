@@ -102,12 +102,14 @@ export function delaunayTriangulation(
  * @param {num} map - array of all vertices
  * @returns {Graph} graph of the triangulation of all the vertices
  */
-export function initNavMesh(map) {
+export function initNavMesh(map, calcGraphs = true) {
   setDtGraph(new TriangleGraph());
-  timeLog('  Creating unmerged graph...');
-  setUnmergedGraph(unmergedGraphFromTagproMap(map));
-  timeLog('  Creating merged graph...');
-  setMergedGraph(graphFromTagproMap(map, getUnmergedGraph()));
+  if (calcGraphs) {
+    timeLog('  Creating unmerged graph...');
+    setUnmergedGraph(unmergedGraphFromTagproMap(map));
+    timeLog('  Creating merged graph...');
+    setMergedGraph(graphFromTagproMap(map, getUnmergedGraph()));
+  }
   delaunayTriangulation(
     getMergedGraph(),
     new Point(-9999, -100),

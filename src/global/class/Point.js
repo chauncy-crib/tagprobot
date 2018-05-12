@@ -1,13 +1,23 @@
 import _ from 'lodash';
 
+import { Serializable } from './Serializable';
+
 
 /**
  * Represents an x, y location. Used as vertices to define polygons.
  */
-export class Point {
+export class Point extends Serializable {
   constructor(x, y) {
+    super();
     this.x = x;
     this.y = y;
+  }
+
+
+  fromObject(o) {
+    this.x = o.x;
+    this.y = o.y;
+    return this;
   }
 
 

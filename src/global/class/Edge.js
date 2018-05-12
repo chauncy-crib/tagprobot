@@ -1,23 +1,32 @@
 import _ from 'lodash';
 
 import { Point } from './Point';
+import { Serializable } from './Serializable';
 import { assert } from '../utils';
 import { detD, threePointsInLine } from '../../interpret/utils';
 
 
-export class Edge {
+export class Edge extends Serializable {
   /**
    * Store p1 as the left-most point, unless they have the same x, in which case store p1 as the
    *   top-most point.
    */
   constructor(p1, p2) {
-    if (p1.x > p2.x || (p1.x === p2.x && p1.y > p2.y)) {
+    super();
+    if ((p1 && p2) && (p1.x > p2.x || (p1.x === p2.x && p1.y > p2.y))) {
       this.p1 = p2;
       this.p2 = p1;
       return;
     }
     this.p1 = p1;
     this.p2 = p2;
+  }
+
+
+  fromObject(o) {
+    this.p1 = (new Point()).fromObject(o.p1);
+    this.p2 = (new Point()).fromObject(o.p2);
+    return this;
   }
 
 
