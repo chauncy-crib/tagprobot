@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import FileSaver from 'file-saver';
+import CircularJSON from 'circular-json';
 
 import { cache, getMapKey } from './cache';
 import {
@@ -20,7 +21,8 @@ export function updateCache() {
     data.unmergedGraph = getUnmergedGraph();
     data.mergedGraph = getMergedGraph();
     cache[getMapKey()] = data;
-    const blob = new Blob([JSON.stringify(cache)]);
+    const noCirc = CircularJSON.parse(CircularJSON.stringify(cache));
+    const blob = new Blob([JSON.stringify(noCirc)]);
     FileSaver.saveAs(blob, 'cache.json');
   }
 }
