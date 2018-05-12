@@ -2,14 +2,12 @@ import { assert } from '../global/utils';
 import { getTileProperty } from '../look/tileInfo';
 import { detH, sortCounterClockwise } from './utils';
 import {
-  internalMap,
-  tilesToUpdate,
-  tilesToUpdateValues,
-} from './setup';
-import {
   getUnmergedGraph,
   getMergedGraph,
   getDTGraph,
+  internalMap,
+  tilesToUpdate,
+  tilesToUpdateValues,
 } from './interpret';
 import {
   updateMergedGraph,
