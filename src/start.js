@@ -135,7 +135,6 @@ function loop() {
  *   our "botLoop" every time an animation frame is drawn
  */
 function start() {
-  console.log(cached);
   const stateTime = Date.now();
   // Setup
   timeLog('Initializing me...');
