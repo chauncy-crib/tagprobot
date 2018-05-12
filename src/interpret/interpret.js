@@ -19,17 +19,21 @@ export function setDtGraph(d) {
   dtGraph = d;
 }
 
+
 export function setUnmergedGraph(g) {
   unmergedGraph = g;
 }
+
 
 export function setMergedGraph(g) {
   mergedGraph = g;
 }
 
+
 export function setMapName(n) {
   mapName = n;
 }
+
 
 export function setMapAuthor(a) {
   mapAuthor = a;
@@ -72,6 +76,7 @@ export function getDTGraph() {
 export function getMapName() {
   return mapName;
 }
+
 
 export function getMapAuthor() {
   return mapAuthor;

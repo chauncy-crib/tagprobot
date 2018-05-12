@@ -122,7 +122,6 @@ function loop() {
  *   our "loop"
  */
 function start() {
-  console.log(cached);
   const stateTime = Date.now();
   // Setup
   timeLog('Initializing me...');
