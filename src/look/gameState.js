@@ -28,6 +28,11 @@ export function amRed() {
 }
 
 
+export function getColor() {
+  return amRed() ? 'RED' : 'BLUE';
+}
+
+
 export function playerIsOnMyTeam(player) {
   return player.team === me.team;
 }

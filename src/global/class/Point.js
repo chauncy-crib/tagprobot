@@ -11,6 +11,13 @@ export class Point {
   }
 
 
+  fromObject(o) {
+    this.x = o.x;
+    this.y = o.y;
+    return this;
+  }
+
+
   equals(other) {
     return this.x === other.x && this.y === other.y;
   }

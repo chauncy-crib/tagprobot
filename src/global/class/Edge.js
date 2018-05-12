@@ -11,13 +11,20 @@ export class Edge {
    *   top-most point.
    */
   constructor(p1, p2) {
-    if (p1.x > p2.x || (p1.x === p2.x && p1.y > p2.y)) {
+    if ((p1 && p2) && (p1.x > p2.x || (p1.x === p2.x && p1.y > p2.y))) {
       this.p1 = p2;
       this.p2 = p1;
       return;
     }
     this.p1 = p1;
     this.p2 = p2;
+  }
+
+
+  fromObject(o) {
+    this.p1 = (new Point()).fromObject(o.p1);
+    this.p2 = (new Point()).fromObject(o.p2);
+    return this;
   }
 
 

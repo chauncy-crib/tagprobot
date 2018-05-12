@@ -2,18 +2,16 @@ import math from 'mathjs';
 import _ from 'lodash';
 
 import { assert } from '../../global/utils';
-import { Serializable } from '../../global/class/Serializable';
 
 
 /**
  * A wrapper around 1D, 2D, and 3D javascript arrays which supports matrix math operations
  */
-export class Matrix extends Serializable {
+export class Matrix {
   /**
    * @param {number|number[]|number[][]|number[][][]} [array=[]] - an array of arrays of numbers
    */
   constructor(array = []) {
-    super();
     if (_.isNumber(array)) array = [array];
     assert(_.isArray(array), 'input to Matrix is not an array');
     this.array = array;

@@ -30,11 +30,15 @@ import { getLocalGoalStateFromPath, getLQRAccelerationMultipliers } from './cont
 import { funnelPolypoints } from './plan/funnel';
 import { isCached } from './cache/cache';
 import { updateCache } from './cache/save';
-import { loadCache } from './cache/load';
+import { loadCache } from './cache/load'; // keep track of how many times we have run loop()
 
 
 window.onkeydown = onKeyDown; // run onKeyDown any time a key is pressed to parse user input
-let loopCount = 0; // keep track of how many times we have run loop()
+let loopCount = 0;
+
+
+// Run onKeyDown any time a key is pressed to parse user input
+window.onkeydown = onKeyDown;
 
 
 /**
@@ -89,10 +93,10 @@ function loop() {
  */
 function start() {
   timeLog('Tagpro id recieved.');
-  const startTime = time();
-  // Setup
   initMe();
   timeLog('Initialized me.');
+  loadCache();
+  const startTime = time();
   setupClientVelocity();
   timeLog('Set up client velocity.');
   computeTileInfo();
@@ -107,8 +111,8 @@ function start() {
     initTilesToUpdate(internalMap);
     timeLog('Initialized tiles to update.');
   }
-  initNavMesh(internalMap);
-  timeLog('Initialized nav mesh.');
+  initNavMesh(internalMap, !isCached());
+  if (!isCached()) timeLog('Initialized nav mesh.');
   initUiUpdateFunction();
   timeLog('Initialized UI update function.');
   turnOnAllDrawings();
@@ -147,7 +151,6 @@ function waitForId(fn) {
 function setupSocketCallbacks() {
   timeLog('Tagpro is ready.');
   onMapReady(() => {
-    loadCache();
     waitForId(start);
   });
   setupChatCallback();

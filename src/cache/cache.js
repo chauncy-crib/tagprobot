@@ -4,6 +4,7 @@ import {
   getMapName,
   getMapAuthor,
 } from '../interpret/interpret';
+import { getColor } from '../look/gameState';
 
 export const cache = _cache;
 
@@ -22,5 +23,5 @@ export function isCached() {
 
 
 export function getMapKey() {
-  return `${getMapAuthor()}.${getMapName()}`;
+  return `${getMapAuthor()}.${getMapName()}.${getColor()}`;
 }
