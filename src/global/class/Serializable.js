@@ -2,15 +2,15 @@ import { assert } from '../../global/utils';
 
 
 /**
- * A class representing an object which can be serialized/deserialized to/from a file. Assuming Cat
- *   extends Serializable, and has some method Cat.meow(), an example:
+ * A class representing an object which can be serialized/deserialized to/from a JSON object.
+ *   Assuming Cat extends Serializable, and has some method Cat.meow(), an example:
  *
  *     const timmy = new Cat("timmy");
  *     timmy.meow();
  *     // Save timmy
- *     timmy.serialize('timmy.json');
+ *     const s = JSON.stringify(timmy);
  *     // Some code later
- *     const cat = (new Cat()).deserialize('timmy.json');
+ *     const cat = (new Cat()).fromObject(JSON.parse(s));
  *     cat.meow() // should work
  *     console.log(cat) // should print "timmy"
  */
@@ -22,21 +22,11 @@ export class Serializable {
   }
 
   /**
-   * @param {string} filename - the file to serialize this object to
+   * This function deserializes the input object into this object, assigning all data from the
+   *   object to this object's fields.
+   * @param {Object} obj - an object return by JSON.parse()
    */
-  serialize(filename) { //
-    assert(false, 'Method not implemented');
-  }
-
-
-  /**
-   * This function deserializes the string into this object, assigning all data from the file to
-   *   this object's fields.
-   * @param {string} filename - a file containing a string produced by calling serialize() on an
-   *   object of this class
-   * @returns {Serializable} an object of this class (should simply return this)
-   */
-  deserialize(filename) {
+  fromObject(obj) {
     assert(false, 'Method not implemented');
     return this;
   }
