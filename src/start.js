@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import FileSaver from 'file-saver';
-import { TIMING_RUN_AVG_LEN, timeLog, time, logTimingsReport } from './global/timing';
+import { TIMING_RUN_AVG_LEN, timeLog, time, logTimingsReport, secondsSince } from './global/timing';
 import { BRP } from './global/constants';
 import { setupClientVelocity, initLocations, setupRoleCommunication } from './look/setup';
 import { computeTileInfo } from './look/tileInfo';
@@ -37,6 +37,8 @@ import { funnelPolypoints } from './plan/funnel';
 import cache from '../cache.json';
 
 
+let cached = false;
+
 window.onkeydown = onKeyDown; // run onKeyDown any time a key is pressed to parse user input
 let loopCount = 0; // keep track of how many times we have run loop()
 
@@ -59,16 +61,18 @@ function updateCache() {
 }
 
 
-function loadCache() {
+export function loadCache() {
   if (_.has(cache, mapKey())) {
     timeLog('Loading cache...');
     const data = cache[mapKey()];
     setTilesToUpdate(data.tilesToUpdate);
     setTilesToUpdateValues(data.tilesToUpdateValues);
     setInternalMap(data.internalMap);
-    return true;
+    cached = true;
+  } else {
+    cached = false;
   }
-  return false;
+  timeLog('Finished loading cache...');
 }
 
 
@@ -120,20 +124,14 @@ function loop() {
 }
 
 
-function setupSocketCallbacks() {
-  timeLog('Setting up socket callbacks...');
-  setupMapCallback();
-  setupChatCallback();
-}
-
-
 /**
  * This is the "entry point" for our bot. We run necessary initializations and setups, and then run
  *   our "loop"
  */
 function start() {
+  console.log(cached);
+  const stateTime = Date.now();
   // Setup
-  const cached = loadCache();
   timeLog('Initializing me...');
   initMe();
   timeLog('Setting up client velocity...');
@@ -161,6 +159,8 @@ function start() {
   timeLog('Done.');
   logHelpMenu();
   updateCache();
+  const totalTime = secondsSince(stateTime);
+  console.debug(`Startup script time: ${totalTime}`);
 
   // Run the bot
   loop();
@@ -186,11 +186,20 @@ function waitForId(fn) {
 }
 
 
+function setupSocketCallbacks() {
+  timeLog('Setting up socket callbacks...');
+  setupMapCallback(() => {
+    loadCache();
+    waitForId(start);
+  });
+  setupChatCallback();
+}
+
+
 /**
  * Initialize the start script when tagpro is ready, and additionally wait
  * for the playerId property to be assigned.
  */
 tagpro.ready(() => {
   setupSocketCallbacks();
-  waitForId(start);
 });
