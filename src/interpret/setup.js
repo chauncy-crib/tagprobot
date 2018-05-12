@@ -16,14 +16,10 @@ import {
   setMergedGraph,
   setMapName,
   setMapAuthor,
+  internalMap,
+  tilesToUpdate,
+  tilesToUpdateValues,
 } from './interpret';
-
-
-export const internalMap = [];
-
-// A list of x, y pairs, which are the locations in the map that might change
-export const tilesToUpdate = [];
-export const tilesToUpdateValues = []; // the values stored in those locations
 
 
 export function setupMapCallback() {

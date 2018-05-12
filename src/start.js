@@ -10,7 +10,7 @@ import {
   initNavMesh,
   setupMapCallback,
 } from './interpret/setup';
-import { getDTGraph } from './interpret/interpret';
+import { getDTGraph, getMapName, getMapAuthor } from './interpret/interpret';
 import { logHelpMenu, onKeyDown, isAutonomousMode, isVisualMode, move } from './interface/keys';
 import { FSM } from './think/fsm';
 import { dequeueChatMessages, setupChatCallback } from './interface/chat';
