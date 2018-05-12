@@ -120,7 +120,7 @@ function recalculateKMatrices(goalState, T) {
 }
 
 
-module.exports = function worker(self) {
+export default function worker(self) {
   self.addEventListener('message', ev => {
     if (loading) return;
 
@@ -132,4 +132,4 @@ module.exports = function worker(self) {
       loading = false;
     }
   });
-};
+}
