@@ -16,7 +16,7 @@ export const TIMING_RUN_AVG_LEN = 180; // number of samples to hold on to when c
  * @param {number} millisTime - a time in milliseconds
  * @returns {string} the number of seconds since millisTime with 3 decimal places
  */
-function secondsSince(millisTime) {
+export function secondsSince(millisTime) {
   return (Date.now() - millisTime) / 1000;
 }
 
