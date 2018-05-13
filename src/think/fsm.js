@@ -80,7 +80,7 @@ function chaseEnemy(me, enemy) {
       getPlayerCenter(enemy),
       getEnemyGoal(),
       getDTGraph(),
-    ), getDTGraph()),
+    ).shortestPath, getDTGraph()),
     polypoint => enemyShortestPath.push(polypoint),
   );
 
@@ -91,116 +91,116 @@ function chaseEnemy(me, enemy) {
     const enemyDist = pp.distance(new Point(enemy.x + BRP, enemy.y + BRP));
     return myDist < enemyDist;
   });
-  const goal = interceptionPolypoint ?
+  const globalGoal = interceptionPolypoint ?
     new Point(interceptionPolypoint.x, interceptionPolypoint.y) :
     new Point(enemy.x + enemy.vx, enemy.y + enemy.vy);
-  return { goal, enemyShortestPath };
+  return { globalGoal, enemyShortestPath };
 }
 
 /**
  * @param {Object} me
- * @returns {{goal: Point, enemyShortestPath: PolyPoint[]}} goal, our global destination in pixels
- *   and enemyShortestPath, the polypoints that we predict our enemy to follow
+ * @returns {{globalGoal: Point, enemyShortestPath: PolyPoint[]}} globalGoal, our global destination
+ *   in pixels and enemyShortestPath, the polypoints that we predict our enemy to follow
  */
 function centerFlagFSM(me) {
   // If the bot has the flag, go to the endzone
   if (me.flag) {
-    const goal = findAllyEndzone();
+    const globalGoal = findAllyEndzone();
     const enemyShortestPath = null;
     updateStateMessage('I have the flag. Seeking endzone!');
-    return { goal, enemyShortestPath };
+    return { globalGoal, enemyShortestPath };
   }
   // If we see an enemy player with the flag, chase
   const enemyFC = getEnemyFC();
   if (enemyFC) {
-    const { goal, enemyShortestPath } = chaseEnemy(me, enemyFC);
+    const { globalGoal, enemyShortestPath } = chaseEnemy(me, enemyFC);
     updateStateMessage('I see an enemy with the flag. Chasing!');
-    return { goal, enemyShortestPath };
+    return { globalGoal, enemyShortestPath };
   }
   // If the enemy team has the flag and we don't see them, go to center flag station
   if (enemyTeamHasFlag()) {
-    const goal = findCenterFlagStation();
+    const globalGoal = findCenterFlagStation();
     const enemyShortestPath = null;
     updateStateMessage('Enemy has the flag. Headed towards the center flag station');
-    return { goal, enemyShortestPath };
+    return { globalGoal, enemyShortestPath };
   }
   // If my team has the flag, go to our endzone
   if (myTeamHasFlag()) {
-    const goal = findAllyEndzone();
+    const globalGoal = findAllyEndzone();
     const enemyShortestPath = null;
     updateStateMessage('We have the flag. Headed towards our Endzone.');
-    return { goal, enemyShortestPath };
+    return { globalGoal, enemyShortestPath };
   }
   // Go to the center flag station in hopes of grabbing the flag
-  const goal = findCenterFlagStation();
+  const globalGoal = findCenterFlagStation();
   const enemyShortestPath = null;
   updateStateMessage('Nobody has the flag. Going to center flag station!');
-  return { goal, enemyShortestPath };
+  return { globalGoal, enemyShortestPath };
 }
 
 
 /**
  * @param {Object} me
- * @returns {{goal: Point, enemyShortestPath: PolyPoint[]}} goal, our global destination in pixels
- *   and enemyShortestPath, the polypoints that we predict our enemy to follow
+ * @returns {{globalGoal: Point, enemyShortestPath: PolyPoint[]}} globalGoal, our global destination
+ *   in pixels and enemyShortestPath, the polypoints that we predict our enemy to follow
  */
 function twoFlagOffenseFSM(me) {
   // If I have the flag, then go back to my flag station in hopes of scoring
   if (me.flag) {
-    const goal = findAllyFlagStation();
+    const globalGoal = findAllyFlagStation();
     const enemyShortestPath = null;
     updateStateMessage('I have the flag. Seeking ally flag station!');
-    return { goal, enemyShortestPath };
+    return { globalGoal, enemyShortestPath };
   }
   // If an enemy player in view has the flag, chase them in hopes of tagging
   const enemyFC = getEnemyFC();
   if (enemyFC) {
-    const { goal, enemyShortestPath } = chaseEnemy(me, enemyFC);
+    const { globalGoal, enemyShortestPath } = chaseEnemy(me, enemyFC);
     updateStateMessage('I see an enemy with the flag. Chasing!');
-    return { goal, enemyShortestPath };
+    return { globalGoal, enemyShortestPath };
   }
   // Go to the enemy flag station in hopes of spotting the enemy FC
-  const goal = findEnemyFlagStation();
+  const globalGoal = findEnemyFlagStation();
   const enemyShortestPath = null;
   updateStateMessage('I do not know what to do. Going to enemy base!');
-  return { goal, enemyShortestPath };
+  return { globalGoal, enemyShortestPath };
 }
 
 
 /**
  * @param {Object} me
- * @returns {{goal: Point, enemyShortestPath: PolyPoint[]}} goal, our global destination in pixels
- *   and enemyShortestPath, the polypoints that we predict our enemy to follow
+ * @returns {{globalGoal: Point, enemyShortestPath: PolyPoint[]}} globalGoal, our global destination
+ *   in pixels and enemyShortestPath, the polypoints that we predict our enemy to follow
  */
 function twoFlagDefenseFSM(me) {
   // If we see the enemy flag carrier, chase them
   const enemyFC = getEnemyFC();
   if (enemyFC) {
-    const { goal, enemyShortestPath } = chaseEnemy(me, enemyFC);
+    const { globalGoal, enemyShortestPath } = chaseEnemy(me, enemyFC);
     updateStateMessage('I see an enemy with the flag. Chasing!');
-    return { goal, enemyShortestPath };
+    return { globalGoal, enemyShortestPath };
   }
   // If the enemy team has the flag and we can't see them, go to enemy flag station
   if (enemyTeamHasFlag()) {
-    const goal = findEnemyFlagStation();
+    const globalGoal = findEnemyFlagStation();
     const enemyShortestPath = null;
     updateStateMessage('Enemy has the flag. Headed towards the enemy flag station!');
-    return { goal, enemyShortestPath };
+    return { globalGoal, enemyShortestPath };
   }
   // If we are not near our flag station, go to the ally flag station
   const allyFlagStation = findAllyFlagStation();
   if (!playerIsNearPoint(me, allyFlagStation)) {
-    const goal = allyFlagStation;
+    const globalGoal = allyFlagStation;
     const enemyShortestPath = null;
     updateStateMessage('I am too far from my flag station. Headed to ally flag station!');
-    return { goal, enemyShortestPath };
+    return { globalGoal, enemyShortestPath };
   }
   // If we see an enemy with rolling bomb, chase them
   const enemyRB = getEnemyRB();
   if (enemyRB) {
-    const { goal, enemyShortestPath } = chaseEnemy(me, enemyRB);
+    const { globalGoal, enemyShortestPath } = chaseEnemy(me, enemyRB);
     updateStateMessage('I see an enemy with rolling bomb. Chasing!');
-    return { goal, enemyShortestPath };
+    return { globalGoal, enemyShortestPath };
   }
   // If we see at least one enemy near our flag station, assume the post-grab pop position
   const enemiesNearAllyFlagStation = getEnemyPlayersNearAllyFlagStation();
@@ -209,38 +209,38 @@ function twoFlagDefenseFSM(me) {
       enemiesNearAllyFlagStation,
       allyFlagStation,
     );
-    const goal = getPGPPosition(enemyClosestToAllyFlagStation);
+    const globalGoal = getPGPPosition(enemyClosestToAllyFlagStation);
     const enemyShortestPath = null;
     updateStateMessage('I see an enemy near my flag station. Assuming PGP position!');
-    return { goal, enemyShortestPath };
+    return { globalGoal, enemyShortestPath };
   }
-  const goal = findAllyFlagStation();
+  const globalGoal = findAllyFlagStation();
   const enemyShortestPath = null;
   updateStateMessage('I do not know what to do. Going to ally flag station!');
-  return { goal, enemyShortestPath };
+  return { globalGoal, enemyShortestPath };
 }
 
 
 /**
  * @param {Object} me
- * @returns {{goal: Point, enemyShortestPath: PolyPoint[]}} goal, our global destination in pixels
- *   and enemyShortestPath, the polypoints that we predict our enemy to follow
+ * @returns {{globalGoal: Point, enemyShortestPath: PolyPoint[]}} globalGoal, our global destination
+ *   in pixels and enemyShortestPath, the polypoints that we predict our enemy to follow
  */
 function twoFlagFSM(me) {
   const myRole = getMyRole();
   if (myRole === ROLES.OFFENSE) return twoFlagOffenseFSM(me);
   if (myRole === ROLES.DEFENSE) return twoFlagDefenseFSM(me);
-  const goal = findAllyFlagStation();
+  const globalGoal = findAllyFlagStation();
   const enemyShortestPath = null;
   updateStateMessage('My role is not defined. Going to ally flag station!');
-  return { goal, enemyShortestPath };
+  return { globalGoal, enemyShortestPath };
 }
 
 
 /**
  * @param {Object} me
- * @returns {{goal: Point, enemyShortestPath: PolyPoint[]}} goal, our global destination in pixels
- *   and enemyShortestPath, the polypoints that we predict our enemy to follow
+ * @returns {{globalGoal: Point, enemyShortestPath: PolyPoint[]}} globalGoal, our global destination
+ *   in pixels and enemyShortestPath, the polypoints that we predict our enemy to follow
  */
 export function FSM(me) {
   return isCenterFlag() ? centerFlagFSM(me) : twoFlagFSM(me);

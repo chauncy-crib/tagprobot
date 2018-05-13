@@ -84,7 +84,8 @@ export function runAstar(startState, targetState, neighborParam) {
  * @param {Point} me - Point with bot's position in pixels, x and y
  * @param {Point} target - Point with target's position in pixels, x and y
  * @param {TriangleGraph} triangleGraph - the triangulation graph to run Astar through
- * @returns {PolypointState[]} a list of states, starting from the startState to the targetState
+ * @returns {shortestPath: PolypointState[], pathCost: number} a list of states, starting from the
+ *   startState to the targetState, and the cost of the path
  */
 export function getShortestPolypointPath(me, target, triangleGraph) {
   assert(_.has(me, 'x'), 'me does not have x');
@@ -100,12 +101,12 @@ export function getShortestPolypointPath(me, target, triangleGraph) {
   const targetState = new PolypointState(endTriangle.getCenter());
   const path = runAstar(startState, targetState, triangleGraph.polypoints);
 
-  if (_.isNull(path)) return null; // if there was no path, return null
+  if (_.isNull(path)) return { shortestPath: null, pathCost: null };
 
   // Place the starting and final locations on the path, and remove the polypoint in the triangle we
   //   are currently in
   const initialPositionState = new PolypointState(new Polypoint(me.x, me.y, startTriangle));
   const targetPositionState = new PolypointState(new Polypoint(target.x, target.y, endTriangle));
   const fullPath = [initialPositionState].concat(_.slice(path, 1, -1)).concat(targetPositionState);
-  return fullPath;
+  return { shortestPath: fullPath, pathCost: _.last(path).g };
 }
