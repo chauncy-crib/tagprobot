@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import FileSaver from 'file-saver';
+import { stringify } from 'flatted/esm';
 
 import { cache, getMapKey } from './cache';
 import {
@@ -20,7 +21,7 @@ export function updateCache() {
     data.unmergedGraph = getUnmergedGraph();
     data.mergedGraph = getMergedGraph();
     cache[getMapKey()] = data;
-    const blob = new Blob([JSON.stringify(cache)]);
-    FileSaver.saveAs(blob, 'cache.json');
+    const blob = new Blob([stringify(cache)]);
+    FileSaver.saveAs(blob, 'cache.txt');
   }
 }
