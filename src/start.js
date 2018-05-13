@@ -13,7 +13,7 @@ import {
   initInternalMap,
   initTilesToUpdate,
   initNavMesh,
-  setupMapCallback,
+  onMapReady,
 } from './interpret/setup';
 import {
   getDTGraph,
@@ -86,7 +86,7 @@ function loop() {
  */
 function start() {
   timeLog('Tagpro id recieved.');
-  const stateTime = time();
+  const startTime = time();
   // Setup
   initMe();
   timeLog('Initialized me.');
@@ -115,7 +115,7 @@ function start() {
   logHelpMenu();
   timeLog('Help menu logged.');
   updateCache();
-  timeLog('Startup script time.', stateTime);
+  timeLog('Startup script time.', startTime);
 
   // Run the bot
   loop();
@@ -143,7 +143,7 @@ function waitForId(fn) {
 
 function setupSocketCallbacks() {
   timeLog('Tagpro is ready.');
-  setupMapCallback(() => {
+  onMapReady(() => {
     loadCache();
     waitForId(start);
   });
@@ -155,6 +155,4 @@ function setupSocketCallbacks() {
  * Initialize the start script when tagpro is ready, and additionally wait
  * for the playerId property to be assigned.
  */
-tagpro.ready(() => {
-  setupSocketCallbacks();
-});
+tagpro.ready(setupSocketCallbacks);
