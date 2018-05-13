@@ -1,5 +1,3 @@
-import _ from 'lodash';
-import FileSaver from 'file-saver';
 import {
   TIMING_RUN_AVG_LEN,
   time,
@@ -19,14 +17,7 @@ import {
 } from './interpret/setup';
 import {
   getDTGraph,
-  getMapName,
-  getMapAuthor,
-  tilesToUpdate,
-  tilesToUpdateValues,
   internalMap,
-  setInternalMap,
-  setTilesToUpdate,
-  setTilesToUpdateValues,
 } from './interpret/interpret';
 import { logHelpMenu, onKeyDown, isAutonomousMode, isVisualMode, move } from './interface/keys';
 import { FSM } from './think/fsm';
@@ -37,46 +28,13 @@ import { getShortestPolypointPath } from './plan/astar';
 import { drawEnemyPath, drawAllyPath } from './draw/triangulation';
 import { getLocalGoalStateFromPath, getLQRAccelerationMultipliers } from './control/lqr';
 import { funnelPolypoints } from './plan/funnel';
+import { isCached } from './cache/cache';
+import { updateCache } from './cache/save';
+import { loadCache } from './cache/load';
 
-import cache from './cache/cache.json';
-
-
-let cached = false;
 
 window.onkeydown = onKeyDown; // run onKeyDown any time a key is pressed to parse user input
 let loopCount = 0; // keep track of how many times we have run loop()
-
-
-function mapKey() {
-  return `${getMapAuthor()}.${getMapName()}`;
-}
-
-
-function updateCache() {
-  if (!_.has(cache, mapKey())) {
-    const data = {};
-    data.tilesToUpdate = tilesToUpdate;
-    data.tilesToUpdateValues = tilesToUpdateValues;
-    data.internalMap = internalMap;
-    cache[mapKey()] = data;
-    const blob = new Blob([JSON.stringify(cache)]);
-    FileSaver.saveAs(blob, 'cache.json');
-  }
-}
-
-
-export function loadCache() {
-  if (_.has(cache, mapKey())) {
-    const data = cache[mapKey()];
-    setTilesToUpdate(data.tilesToUpdate);
-    setTilesToUpdateValues(data.tilesToUpdateValues);
-    setInternalMap(data.internalMap);
-    cached = true;
-    timeLog('Loaded cache.');
-  } else {
-    cached = false;
-  }
-}
 
 
 /**
@@ -143,7 +101,7 @@ function start() {
   timeLog('Initialized locations.');
   initIsCenterFlag();
   timeLog('Initialized isCenterFlag().');
-  if (!cached) {
+  if (!isCached()) {
     initInternalMap(tagpro.map);
     timeLog('Initialized internal map.');
     initTilesToUpdate(internalMap);
