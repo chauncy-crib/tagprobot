@@ -1,5 +1,6 @@
+import { toggleTriangulationVis, togglePolypointVis } from './triangulation';
+import { togglePathVis } from './path';
 import { centerKeyPressesVis, toggleKeyPressVis } from './keys';
-import { toggleTriangulationVis, togglePolypointVis, togglePathVis } from './triangulation';
 
 
 /**

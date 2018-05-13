@@ -1,10 +1,7 @@
 import { clearSprites, turnOnAllDrawings } from '../draw/draw';
+import { toggleTriangulationVis, togglePolypointVis } from '../draw/triangulation';
+import { togglePathVis } from '../draw/path';
 import { drawKeyPresses, toggleKeyPressVis } from '../draw/keys';
-import {
-  toggleTriangulationVis,
-  togglePolypointVis,
-  togglePathVis,
-} from '../draw/triangulation';
 
 
 export const currKeyPresses = { x: null, y: null }; // the current state of the keys being pressed

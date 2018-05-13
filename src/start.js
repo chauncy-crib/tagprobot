@@ -18,18 +18,15 @@ import {
   initNavMesh,
   onMapReady,
 } from './interpret/setup';
-import {
-  getDTGraph,
-  internalMap,
-} from './interpret/interpret';
+import { getDTGraph, internalMap } from './interpret/interpret';
 import { logHelpMenu, onKeyDown, isAutonomousMode, isVisualMode, move } from './interface/keys';
 import { FSM } from './think/fsm';
 import { dequeueChatMessages, setupChatCallback } from './interface/chat';
 import { turnOnAllDrawings, initUiUpdateFunction } from './draw/draw';
+import { drawEnemyPath, drawAllyPath } from './draw/path';
 import { updateNavMesh } from './interpret/graphToTriangulation';
 import { VALUE_OF_CAP } from './plan/constants';
 import { getShortestPolypointPath } from './plan/astar';
-import { drawEnemyPath, drawAllyPath } from './draw/triangulation';
 import { getLocalGoalStateFromPath, getLQRAccelerationMultipliers } from './control/lqr';
 import { funnelPolypoints } from './plan/funnel';
 import { isCached } from './cache/cache';
