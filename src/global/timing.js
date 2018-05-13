@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { assert } from './utils';
 
 
-const startTime = Date.now(); // time when script started, in milliseconds
+let startTime = Date.now(); // time when script started, in milliseconds
 /**
  * Stores timing information for calculating computational time of processes
  *   {{string} processName: {start: {number|undefined}, times: {number[]}}}
@@ -12,20 +12,31 @@ const timings = {};
 export const TIMING_RUN_AVG_LEN = 180; // number of samples to hold on to when calculating timing
 
 
+export function time() {
+  return Date.now();
+}
+
+
 /**
  * @param {number} millisTime - a time in milliseconds
  * @returns {string} the number of seconds since millisTime with 3 decimal places
  */
 export function secondsSince(millisTime) {
-  return (Date.now() - millisTime) / 1000;
+  return (time() - millisTime) / 1000;
+}
+
+
+export function resetStartTime() {
+  startTime = time();
 }
 
 
 /**
  * Sends a time stamped message to the info stream of the console
  */
-export function timeLog(message) {
-  console.debug(`${secondsSince(startTime).toFixed(3)}: ${message}`);
+export function timeLog(message, baseTime = startTime) {
+  console.debug(`${secondsSince(baseTime).toFixed(3)}: ${message}`);
+  resetStartTime();
 }
 
 
@@ -40,7 +51,7 @@ function startTiming(processName) {
     _.isNull(timing.start),
     `tried to start timing a process that was already being timed: ${processName}`,
   );
-  timing.start = Date.now();
+  timing.start = time();
 }
 
 
@@ -70,7 +81,7 @@ function stopTiming(processName) {
  * @param {[]} args - the arguments to pass to func
  * @returns - the return from calling func with args
  */
-export function time(func, args = []) {
+export function timeFunc(func, args = []) {
   startTiming(func.name);
   const output = func(...args);
   stopTiming(func.name);
@@ -84,7 +95,7 @@ export function logTimingsReport() {
     timing.time = _.mean(timing.times);
     totalTime += timing.time;
   });
-  console.debug(`Mean per-frame time report: total(${totalTime.toFixed(6)})`);
+  console.debug(`Mean per-loop time report: avg(${totalTime.toFixed(6)})`);
   _.forEach(_.sortBy(_.keys(timings), processName => -timings[processName].time), processName => {
     const name = processName.padEnd(34);
     const { time: avgTime, times } = timings[processName];
