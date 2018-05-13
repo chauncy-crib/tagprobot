@@ -50,6 +50,5 @@ export function clearSprites() {
 export function turnOnAllDrawings() {
   toggleKeyPressVis(true);
   toggleTriangulationVis(true);
-  togglePolypointVis(true);
   togglePathVis(true);
 }
