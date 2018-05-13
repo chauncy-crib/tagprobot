@@ -1,6 +1,12 @@
 import _ from 'lodash';
 import FileSaver from 'file-saver';
-import { TIMING_RUN_AVG_LEN, timeLog, time, logTimingsReport, secondsSince } from './global/timing';
+import {
+  TIMING_RUN_AVG_LEN,
+  time,
+  timeLog,
+  timeFunc,
+  logTimingsReport,
+} from './global/timing';
 import { setupClientVelocity, initLocations, setupRoleCommunication } from './look/setup';
 import { computeTileInfo } from './look/tileInfo';
 import { getMe, initMe, initIsCenterFlag } from './look/gameState';
@@ -32,7 +38,7 @@ import { drawEnemyPath, drawAllyPath } from './draw/triangulation';
 import { getLocalGoalStateFromPath, getLQRAccelerationMultipliers } from './control/lqr';
 import { funnelPolypoints } from './plan/funnel';
 
-import cache from '../src/cache/cache.json';
+import cache from './cache/cache.json';
 
 
 let cached = false;
@@ -61,16 +67,15 @@ function updateCache() {
 
 export function loadCache() {
   if (_.has(cache, mapKey())) {
-    timeLog('Loading cache...');
     const data = cache[mapKey()];
     setTilesToUpdate(data.tilesToUpdate);
     setTilesToUpdateValues(data.tilesToUpdateValues);
     setInternalMap(data.internalMap);
     cached = true;
+    timeLog('Loaded cache.');
   } else {
     cached = false;
   }
-  timeLog('Finished loading cache...');
 }
 
 
@@ -78,7 +83,7 @@ export function loadCache() {
  * The base loop for defining the bot's behavior.
  */
 function loop() {
-  time(dequeueChatMessages);
+  timeFunc(dequeueChatMessages);
 
   // If we're not autonomous and not drawing, then don't run the bot
   if (!isAutonomousMode() && !isVisualMode()) return;
@@ -86,26 +91,26 @@ function loop() {
   const { map } = tagpro;
   const me = getMe();
   const myCenter = getPlayerCenter(me);
-  const { goal, enemyShortestPath } = time(FSM, [me]);
+  const { goal, enemyShortestPath } = timeFunc(FSM, [me]);
 
-  time(drawEnemyPath, [enemyShortestPath]);
-  time(updateNavMesh, [map]);
+  timeFunc(drawEnemyPath, [enemyShortestPath]);
+  timeFunc(updateNavMesh, [map]);
 
-  const polypointShortestPath = time(getShortestPolypointPath, [
+  const polypointShortestPath = timeFunc(getShortestPolypointPath, [
     myCenter,
     goal,
     getDTGraph(),
   ]);
 
-  const funnelledPath = time(funnelPolypoints, [polypointShortestPath, getDTGraph()]);
-  time(drawAllyPath, [funnelledPath]);
+  const funnelledPath = timeFunc(funnelPolypoints, [polypointShortestPath, getDTGraph()]);
+  timeFunc(drawAllyPath, [funnelledPath]);
 
-  const localGoalState = time(getLocalGoalStateFromPath, [funnelledPath, me]);
+  const localGoalState = timeFunc(getLocalGoalStateFromPath, [funnelledPath, me]);
 
   // The desired acceleration multipliers the bot should achieve with arrow key presses. Positive
   //   directions are down and right.
   const myCurrState = { x: myCenter.x, y: myCenter.y, vx: me.vx || 0, vy: me.vy || 0 };
-  const accelValues = time(getLQRAccelerationMultipliers, [myCurrState, localGoalState]);
+  const accelValues = timeFunc(getLQRAccelerationMultipliers, [myCurrState, localGoalState]);
 
   if (isAutonomousMode()) move(accelValues);
 
@@ -122,37 +127,37 @@ function loop() {
  *   our "loop"
  */
 function start() {
-  const stateTime = Date.now();
+  timeLog('Tagpro id recieved.');
+  const stateTime = time();
   // Setup
-  timeLog('Initializing me...');
   initMe();
-  timeLog('Setting up client velocity...');
+  timeLog('Initialized me.');
   setupClientVelocity();
-  timeLog('Computing tile info...');
+  timeLog('Set up client velocity.');
   computeTileInfo();
-  timeLog('Initializing locations...');
+  timeLog('Computed tile info.');
   initLocations();
-  timeLog('Initializing isCenterFlag()...');
+  timeLog('Initialized locations.');
   initIsCenterFlag();
+  timeLog('Initialized isCenterFlag().');
   if (!cached) {
-    timeLog('Initializing internal map...');
     initInternalMap(tagpro.map);
-    timeLog('Initializing tiles to update...');
+    timeLog('Initialized internal map.');
     initTilesToUpdate(internalMap);
+    timeLog('Initialized tiles to update.');
   }
-  timeLog('Initializing nav mesh...');
   initNavMesh(internalMap);
-  timeLog('Initializing UI update function...');
+  timeLog('Initialized nav mesh.');
   initUiUpdateFunction();
-  timeLog('Turning on all drawings...');
+  timeLog('Initialized UI update function.');
   turnOnAllDrawings();
-  timeLog('Setting up role communication...');
+  timeLog('Turned on all drawings.');
   setupRoleCommunication();
-  timeLog('Done.');
+  timeLog('Set up role communication.');
   logHelpMenu();
+  timeLog('Help menu logged.');
   updateCache();
-  const totalTime = secondsSince(stateTime);
-  console.debug(`Startup script time: ${totalTime}`);
+  timeLog('Startup script time.', stateTime);
 
   // Run the bot
   loop();
@@ -179,7 +184,7 @@ function waitForId(fn) {
 
 
 function setupSocketCallbacks() {
-  timeLog('Setting up socket callbacks...');
+  timeLog('Tagpro is ready.');
   setupMapCallback(() => {
     loadCache();
     waitForId(start);
