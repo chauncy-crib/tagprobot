@@ -7,16 +7,16 @@ import { Point } from '../../global/class/Point';
 
 
 export class PolypointState extends State {
-  constructor(point = new Point()) {
+  constructor(point) {
     super(null, null);
     this.point = point;
-    this.key = point.toString();
+    if (point) this.key = point.toString();
   }
 
 
   fromObject(o) {
     this.point = (new Point()).fromObject(o.point);
-    this.key = this.point.toString();
+    this.key = o.key;
     return this;
   }
 
