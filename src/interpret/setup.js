@@ -22,7 +22,7 @@ import {
 } from './interpret';
 
 
-export function setupMapCallback(fn) {
+export function onMapReady(fn) {
   tagpro.socket.on('map', mapData => {
     timeLog('Map info recieved.');
     setMapName(mapData.info.name);
