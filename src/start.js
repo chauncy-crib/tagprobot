@@ -32,7 +32,7 @@ import { getShortestPolypointPath } from './plan/astar';
 import { drawEnemyPath, drawAllyPath } from './draw/triangulation';
 import { getLocalGoalStateFromPath } from './control/lqr';
 import { getLQRAccelerationMultipliers } from './control/lqr.master';
-import { funnelPolypoints } from './plan/funnel';
+import { funnelMyPolypoints } from './plan/funnel.master';
 import { isCached } from './cache/cache';
 import { updateCache } from './cache/save';
 import { loadCache } from './cache/load';
@@ -77,7 +77,7 @@ function loop() {
   }
 
 
-  const funnelledPath = timeFunc(funnelPolypoints, [shortestPath, getDTGraph()]);
+  const funnelledPath = timeFunc(funnelMyPolypoints, [shortestPath, getDTGraph()]);
   timeFunc(drawAllyPath, [funnelledPath]);
 
   const localGoalState = timeFunc(getLocalGoalStateFromPath, [funnelledPath, me]);

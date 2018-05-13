@@ -19,7 +19,7 @@ const messageQueue = []; // {chat: string, message: string}[]
 
 /**
  * Enqueues the message in the message queue to be chatted when appropriate.
- * @chat {'ALL'|'TEAM'} chat - the chat channel to send the message to
+ * @param {'ALL'|'TEAM'} chat - the chat channel to send the message to
  * @param {string} message - the message to chat
  */
 export function sendMessageToChat(chat, message) {
