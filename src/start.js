@@ -32,7 +32,7 @@ import { drawEnemyPath, drawAllyPath } from './draw/triangulation';
 import { getLocalGoalStateFromPath, getLQRAccelerationMultipliers } from './control/lqr';
 import { funnelPolypoints } from './plan/funnel';
 
-import cache from '../cache.json';
+import cache from '../src/cache/cache.json';
 
 
 let cached = false;
