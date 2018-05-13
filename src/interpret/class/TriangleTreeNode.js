@@ -76,19 +76,9 @@ export class TriangleTreeNode {
    * @param {Triangle} triangle
    */
   constructor(triangle) {
-    super();
     this.triangle = triangle;
     this.children = [];
     this.mark = false; // keep track of which nodes have been visited in _findLeavesWithCondition()
-  }
-
-
-  toNonCirc() {
-    const o = {};
-    o.triangle = this.triangle;
-    o.children = _.map(this.children, n => n.toNonCirc());
-    o.mark = this.mark;
-    return o;
   }
 
 
@@ -111,6 +101,7 @@ export class TriangleTreeNode {
    */
   addChild(child) {
     this.children.push(child);
+    // this.nonCirc.children.push(child.nonCirc);
   }
 
 

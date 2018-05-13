@@ -16,6 +16,15 @@ export class Graph {
   }
 
 
+  // toNonCirc() {
+  //   const o = {};
+  //   o.adj = this.adj;
+  //   o.vertices = this.vertices;
+  //   o.collinearEdges = this.collinearEdges;
+  //   return o;
+  // }
+
+
   fromObject(o) {
     _.forOwn(o.adj, (adjList, pointStr) => {
       this.adj[pointStr] = _.map(adjList, p => (new Point()).fromObject(p));

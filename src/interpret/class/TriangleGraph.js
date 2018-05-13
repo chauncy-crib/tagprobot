@@ -65,6 +65,19 @@ export class TriangleGraph extends DrawableGraph {
   }
 
 
+  // toNonCirc() {
+  //   // console.log('super.toNonCirc');
+  //   // const o = super.toNonCirc();
+  //   const o = {};
+  //   console.log('rootNode.toNonCirc');
+  //   o.rootNode = this.rootNode.toNonCirc();
+  //   // console.log('polypoints.toNonCirc');
+  //   // o.polypoints = this.polypoints.toNonCirc();
+  //   // o.fixedAdj = this.fixedAdj;
+  //   return o;
+  // }
+
+
   initDataStructures() {
     this.rootNode = null;
     this.fixedAdj = {};

@@ -42,6 +42,12 @@ export class DrawableGraph extends Graph {
   }
 
 
+  // toNonCirc() {
+  //   const o = super.toNonCirc();
+  //   return o;
+  // }
+
+
   turnOffDrawings() {
     if (this.drawingsOn) tagpro.renderer.layers.foreground.removeChild(this.drawingContainer);
     this.drawingsOn = false;
@@ -82,6 +88,11 @@ export class DrawableGraph extends Graph {
     vertexDrawing.lineStyle(this.vertexThickness, this.vertexColor, this.vertexAlpha);
     vertexDrawing.drawCircle(vertex.x, vertex.y, this.vertexThickness);
     this.addDrawing(vertexDrawing, vertex);
+  }
+
+  addAllDrawings() {
+    _.forEach(this.getVertices(), v => this.addVertexDrawing(v));
+    _.forEach(this.getEdges(), e => this.addEdgeDrawing(e));
   }
 
   addEdgeDrawing(e) {

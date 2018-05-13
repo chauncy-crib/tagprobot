@@ -5,12 +5,10 @@ import { threePointsInLine } from '../utils';
 import { Point } from '../../global/class/Point';
 import { Polypoint } from './Polypoint';
 import { Edge } from '../../global/class/Edge';
-import { Serializable } from '../../global/class/Serializable';
 
 
-export class Triangle extends Serializable {
+export class Triangle {
   constructor(p1, p2, p3, checkEmpty = true) {
-    super();
     if (p1 || p2 || p3) {
       assert(
         !(checkEmpty && threePointsInLine(p1, p2, p3)),
