@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { assert } from './utils';
 
 
-let startTime = Date.now(); // time when script started, in milliseconds
+let lastTimeLogTime = Date.now(); // the last time timeLog() was called, in milliseconds
 /**
  * Stores timing information for calculating computational time of processes
  *   {{string} processName: {start: {number|undefined}, times: {number[]}}}
@@ -27,14 +27,14 @@ export function secondsSince(millisTime) {
 
 
 export function resetStartTime() {
-  startTime = time();
+  lastTimeLogTime = time();
 }
 
 
 /**
  * Sends a time stamped message to the info stream of the console
  */
-export function timeLog(message, baseTime = startTime) {
+export function timeLog(message, baseTime = lastTimeLogTime) {
   console.debug(`${secondsSince(baseTime).toFixed(3)}: ${message}`);
   resetStartTime();
 }
