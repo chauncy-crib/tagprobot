@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { assert } from './utils';
 
 
+let loopCount = 0; // keep track of how many times we have run loop()
 let lastTimeLogTime = Date.now(); // the last time timeLog() was called, in milliseconds
 /**
  * Stores timing information for calculating computational time of processes
@@ -10,6 +11,16 @@ let lastTimeLogTime = Date.now(); // the last time timeLog() was called, in mill
  */
 const timings = {};
 export const TIMING_RUN_AVG_LEN = 180; // number of samples to hold on to when calculating timing
+
+
+export function getLoopCount() {
+  return loopCount;
+}
+
+
+export function incrementLoopCount() {
+  loopCount += 1;
+}
 
 
 export function time() {
@@ -66,11 +77,13 @@ function stopTiming(processName) {
     `tried to stop timing a process that is not being timed: ${processName}`,
   );
   const timing = timings[processName];
-  _.defaults(timing, { times: [] });
-  if (timing.times.length === TIMING_RUN_AVG_LEN) {
-    timing.times.shift();
+  _.defaults(timing, { times: {} });
+  const { times } = timing;
+  _.defaults(times, { [loopCount]: 0.0 });
+  if (times.length === TIMING_RUN_AVG_LEN) {
+    delete times[_.min(_.keys(times))];
   }
-  timing.times.push(secondsSince(timing.start));
+  times[loopCount] += secondsSince(timing.start);
   timing.start = null;
 }
 
@@ -92,14 +105,16 @@ export function timeFunc(func, args = []) {
 export function logTimingsReport() {
   let totalTime = 0;
   _.forEach(timings, timing => {
-    timing.time = _.mean(timing.times);
+    timing.time = _.mean(_.values(timing.times));
     totalTime += timing.time;
   });
   console.debug(`Mean per-loop time report: avg(${totalTime.toFixed(6)})`);
   _.forEach(_.sortBy(_.keys(timings), processName => -timings[processName].time), processName => {
-    const name = processName.padEnd(34);
     const { time: avgTime, times } = timings[processName];
-    console.debug(`  ${name}: avg(${avgTime.toFixed(6)}), max(${_.max(times).toFixed(6)})`);
-    timings[processName].times = [];
+    const name = processName.padEnd(34);
+    const avg = avgTime.toFixed(6);
+    const max = _.max(_.values(times)).toFixed(6);
+    console.debug(`  ${name}: avg(${avg}), max(${max})`);
+    timings[processName].times = {};
   });
 }
