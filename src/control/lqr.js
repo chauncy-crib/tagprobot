@@ -2,8 +2,9 @@ import _ from 'lodash';
 import math from 'mathjs';
 
 import { assert, boundValue } from '../global/utils';
-import { getPlayerCenter } from '../look/playerLocations';
 import { Point } from '../global/class/Point';
+import { Vector } from '../global/class/Vector';
+import { getPlayerCenter } from '../look/playerLocations';
 import { FPS, ACCEL, MAX_SPEED, DAMPING_FACTOR } from './constants';
 import { Matrix } from './class/Matrix';
 
@@ -29,8 +30,9 @@ export function getLocalGoalStateFromPath(path, me) {
   }
   const nextNode = path[1].point;
   const nextNextNode = path[2].point;
+  const nodeDiff = nextNextNode.subtract(nextNode);
   // Max velocity from nextNode to nextNextNode
-  const maxVel = nextNextNode.subtract(nextNode).scaleToMax(MAX_SPEED);
+  const maxVel = new Vector(nodeDiff.x, nodeDiff.y).scaleToMax(MAX_SPEED);
   return { x: nextNode.x, y: nextNode.y, vx: maxVel.x, vy: maxVel.y };
 }
 
@@ -197,7 +199,7 @@ export function getMultipliersFromKs(initialState, goalState, Ks, deadline) {
   const uRelative = u.scalarMultiply(1 / ACCEL);
 
   // Scale to max acceleration at 1 or -1
-  const accVector = new Point(
+  const accVector = new Vector(
     uRelative.getValue(0, 0),
     uRelative.getValue(1, 0),
   ).scaleToMax(1);
