@@ -1,4 +1,6 @@
 import {
+  getLoopCount,
+  incrementLoopCount,
   TIMING_RUN_AVG_LEN,
   time,
   timeLog,
@@ -7,8 +9,9 @@ import {
 } from './global/timing';
 import { setupClientVelocity, initLocations, setupRoleCommunication } from './look/setup';
 import { computeTileInfo } from './look/tileInfo';
-import { getMe, initMe, initIsCenterFlag } from './look/gameState';
+import { getMe, initMe, initIsCenterFlag, isCenterFlag } from './look/gameState';
 import { getPlayerCenter } from './look/playerLocations';
+import { findEnemyEndZone, findEnemyFlagStation } from './look/tileLocations';
 import {
   initInternalMap,
   initTilesToUpdate,
@@ -24,6 +27,7 @@ import { FSM } from './think/fsm';
 import { dequeueChatMessages, setupChatCallback } from './interface/chat';
 import { turnOnAllDrawings, initUiUpdateFunction } from './draw/draw';
 import { updateNavMesh } from './interpret/graphToTriangulation';
+import { VALUE_OF_CAP } from './plan/constants';
 import { getShortestPolypointPath } from './plan/astar';
 import { drawEnemyPath, drawAllyPath } from './draw/triangulation';
 import { getLocalGoalStateFromPath, getLQRAccelerationMultipliers } from './control/lqr';
@@ -34,7 +38,6 @@ import { loadCache } from './cache/load';
 
 
 window.onkeydown = onKeyDown; // run onKeyDown any time a key is pressed to parse user input
-let loopCount = 0; // keep track of how many times we have run loop()
 
 
 /**
@@ -52,18 +55,28 @@ function loop() {
   const { map } = tagpro;
   const me = getMe();
   const myCenter = getPlayerCenter(me);
-  const { goal, enemyShortestPath } = timeFunc(FSM, [me]);
+  const { globalGoal, enemyShortestPath } = timeFunc(FSM, [me]);
 
   timeFunc(drawEnemyPath, [enemyShortestPath]);
   timeFunc(updateNavMesh, [map]);
 
-  const polypointShortestPath = timeFunc(getShortestPolypointPath, [
+  const pathResult = timeFunc(getShortestPolypointPath, [
     myCenter,
-    goal,
+    globalGoal,
     getDTGraph(),
   ]);
+  let { shortestPath } = pathResult;
+  const { pathCost } = pathResult;
+  if (pathCost > VALUE_OF_CAP) {
+    shortestPath = timeFunc(getShortestPolypointPath, [
+      myCenter,
+      isCenterFlag() ? findEnemyEndZone() : findEnemyFlagStation(),
+      getDTGraph(),
+    ]).shortestPath;
+  }
 
-  const funnelledPath = timeFunc(funnelPolypoints, [polypointShortestPath, getDTGraph()]);
+
+  const funnelledPath = timeFunc(funnelPolypoints, [shortestPath, getDTGraph()]);
   timeFunc(drawAllyPath, [funnelledPath]);
 
   const localGoalState = timeFunc(getLocalGoalStateFromPath, [funnelledPath, me]);
@@ -75,8 +88,8 @@ function loop() {
 
   if (isAutonomousMode()) move(accelValues);
 
-  if (loopCount % TIMING_RUN_AVG_LEN === 0) logTimingsReport();
-  loopCount += 1;
+  if (getLoopCount() % TIMING_RUN_AVG_LEN === 0) logTimingsReport();
+  incrementLoopCount();
 
   // Call this loop again the next frame
   requestAnimationFrame(loop);
