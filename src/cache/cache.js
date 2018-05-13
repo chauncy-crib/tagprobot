@@ -1,12 +1,12 @@
-import _cache from '../../data/cache.json';
-
+import { parse } from 'flatted/esm';
+import _cache from '../../data/cache.txt';
 import {
   getMapName,
   getMapAuthor,
 } from '../interpret/interpret';
 import { getMyColor } from '../look/gameState';
 
-export const cache = _cache;
+export const cache = parse(_cache);
 
 
 let cached = false;
