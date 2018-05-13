@@ -24,6 +24,7 @@ import {
 
 export function setupMapCallback(fn) {
   tagpro.socket.on('map', mapData => {
+    timeLog('Map info recieved.');
     setMapName(mapData.info.name);
     setMapAuthor(mapData.info.author);
     fn();
@@ -87,16 +88,16 @@ export function delaunayTriangulation(
       `Dummy triangle did not contain point at ${v.x}, ${v.y}`,
     );
   });
-  timeLog('  Adding vertices...');
   _.forEach(shuffledVertices, vertex => {
     dtGraph.delaunayAddVertex(vertex);
   });
+  timeLog('  Added vertices.');
 
-  timeLog('  Adding constrained edges...');
   const shuffledEdges = _.shuffle(mapGraph.getEdges());
   _.forEach(shuffledEdges, e => {
     dtGraph.delaunayAddConstraintEdge(e);
   });
+  timeLog('  Added constrained edges.');
 }
 
 
@@ -106,10 +107,10 @@ export function delaunayTriangulation(
  */
 export function initNavMesh(map) {
   setDtGraph(new TriangleGraph());
-  timeLog('  Creating unmerged graph...');
   setUnmergedGraph(unmergedGraphFromTagproMap(map));
-  timeLog('  Creating merged graph...');
+  timeLog('  Created unmerged graph.');
   setMergedGraph(graphFromTagproMap(map, getUnmergedGraph()));
+  timeLog('  Created merged graph.');
   delaunayTriangulation(
     getMergedGraph(),
     new Point(-9999, -100),
