@@ -58,7 +58,10 @@ export function determineDeadline(initialState, goalState) {
 
   const distance = initialPoint.distance(goalPoint);
   const seconds = (distance / MAX_SPEED);
-  return Math.floor(FPS * seconds);
+
+  // Floor deadline at two, because we use our deadline to define T, which has to have at least two
+  //   timesteps
+  return Math.max(Math.floor(FPS * seconds), 2);
 }
 
 
@@ -90,7 +93,12 @@ export function getLQRAccelerationMultipliers(initialState, goalState) {
     currentGoalState = gStateMatrix;
   }
 
-  if (!currentKs) return { accX: 0, accY: 0 };
+  // Calculated a weird K matrix, and should recalculate
+  if (!currentKs || currentKs.shape()[0] <= 1) {
+    lqrWorker.postMessage({ text: 'RECALCULATE_K_MATRICES', goalState, deadline });
+    currentGoalState = gStateMatrix;
+    return { accX: 0, accY: 0 };
+  }
 
   const maxDeadline = currentKs.shape()[0] - 1;
   const KIndex = boundValue(maxDeadline - deadline, 1, maxDeadline);
