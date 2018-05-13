@@ -28,6 +28,10 @@ export class Matrix extends Serializable {
     return _.inRange(index, 0, this.array.length);
   }
 
+  getValue(row, column) {
+    return this.array[row][column];
+  }
+
   get(index) {
     assert(this.isValidIndex(index), `Matrix.get called with index out of bounds: ${index}`);
     return new Matrix(this.array[index]);

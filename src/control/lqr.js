@@ -106,10 +106,13 @@ export function getLQRAccelerationMultipliers(initialState, goalState) {
   const x = iStateMatrix.subtract(gStateMatrix);
   x.append([[1]]);
   const u = currentKs.get(KIndex).scalarMultiply(-1).dot(x); // [[ax], [ay]]
+  const uRelative = u.scalarMultiply(1 / ACCEL);
 
-  // Max acceleration at 1 or -1
-  return {
-    accX: boundValue(u.array[0][0] / ACCEL, -1, 1),
-    accY: boundValue(u.array[1][0] / ACCEL, -1, 1),
-  };
+  // Scale to max acceleration at 1 or -1
+  const accVector = new Point(
+    uRelative.getValue(0, 0),
+    uRelative.getValue(1, 0),
+  ).scaleToMax(1);
+
+  return { accX: accVector.x, accY: accVector.y };
 }
