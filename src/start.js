@@ -26,7 +26,10 @@ function loop() {
   time(dequeueChatMessages);
 
   // If we're not autonomous and not drawing, then don't run the bot
-  if (!isAutonomousMode() && !isVisualMode()) return;
+  if (!isAutonomousMode() && !isVisualMode()) {
+    requestAnimationFrame(loop);
+    return;
+  }
 
   const { map } = tagpro;
   const me = getMe();
