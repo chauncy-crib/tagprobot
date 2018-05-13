@@ -8,13 +8,20 @@ export class Point {
   constructor(x, y) {
     this.x = x;
     this.y = y;
+    this.clearancePoint = null;
   }
 
 
   fromObject(o) {
     this.x = o.x;
     this.y = o.y;
+    this.clearancePoint = o.clearancePoint ? (new Point().fromObject(o.clearancePoint)) : null;
     return this;
+  }
+
+
+  setClearancePoint(p) {
+    this.clearancePoint = p;
   }
 
 

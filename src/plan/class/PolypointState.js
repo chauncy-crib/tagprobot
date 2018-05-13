@@ -1,16 +1,25 @@
 import _ from 'lodash';
+
 import { enemyAvoidanceCost } from '../avoidance';
 import { getMe } from '../../look/gameState';
-
 import { State } from './State';
+import { Point } from '../../global/class/Point';
 
 
 export class PolypointState extends State {
-  constructor(point) {
+  constructor(point = new Point()) {
     super(null, null);
     this.point = point;
     this.key = point.toString();
   }
+
+
+  fromObject(o) {
+    this.point = (new Point()).fromObject(o.point);
+    this.key = this.point.toString();
+    return this;
+  }
+
 
   /**
    * @param {PolypointState} targetState - the PolypointState object we are calculating the
@@ -21,9 +30,11 @@ export class PolypointState extends State {
     return this.point.distance(targetState.point);
   }
 
+
   equals(state) {
     return this.point.equals(state.point);
   }
+
 
   /**
    * @param {Graph} polypoints
