@@ -106,7 +106,7 @@ function recalculateKMatrices(goalState, T) {
   ]);
 
   const Q = new Matrix(math.diag([0, 0, 0, 0])); // intermediate state cost
-  const F = new Matrix(math.diag([1000, 1000, 1000, 1000])); // terminal state cost
+  const F = new Matrix(math.diag([6000, 2000, 6000, 2000])); // terminal state cost
   const R = new Matrix(math.diag([1, 1])); // control cost
 
   const gStateMatrix = new Matrix([
