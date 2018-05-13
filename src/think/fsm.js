@@ -27,7 +27,7 @@ import { getMyRole } from '../look/playerRoles';
 import { Point } from '../global/class/Point';
 import { getDTGraph } from '../interpret/interpret';
 import { getShortestPolypointPath } from '../plan/astar';
-import { funnelPolypoints } from '../plan/funnel';
+import { funnelPolypoints } from '../plan/funnel.master';
 
 
 let stateMessage = ''; // a short description of the bot's current state and next action
@@ -80,9 +80,13 @@ function chaseEnemy(me, enemy) {
       getPlayerCenter(enemy),
       getEnemyGoal(),
       getDTGraph(),
-    ).shortestPath, getDTGraph()),
+    ).shortestPath, getDTGraph(), 'ENEMY'),
     polypoint => enemyShortestPath.push(polypoint),
   );
+
+  if (_.isEmpty(enemyShortestPath)) {
+    return { globalGoal: findAllyFlagStation(), enemyShortestPath: null };
+  }
 
   // Set goal as the interception point
   const interceptionPolypoint = _.find(getPointsAlongPath(enemyShortestPath), polypoint => {
