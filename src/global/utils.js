@@ -76,3 +76,14 @@ export function determinant(matrix) {
   }
   return sum;
 }
+
+
+/**
+ * @param {number} val - radians to be wrapped between -PI and PI
+ * @returns {number} val wrapped to be -PI < val <= PI
+ */
+export function wrapRadians(val) {
+  while (val <= -Math.PI) val += 2 * Math.PI;
+  while (val > Math.PI) val -= 2 * Math.PI;
+  return val;
+}

@@ -1,6 +1,6 @@
 import test from 'tape';
 
-import { assert, assertGridInBounds, determinant } from '../utils';
+import { assert, assertGridInBounds, determinant, wrapRadians } from '../utils';
 
 
 test('assert: does not throw errors with condition=true', t => {
@@ -80,4 +80,47 @@ test('determinant returns correct value for a 4x4', t => {
   ]), -84);
 
   t.end();
+});
+
+
+test('wrapRadians()', tester => {
+  tester.test('wraps correctly when -PI < val < PI', t => {
+    const rads = 1;
+
+    t.is(wrapRadians(rads), rads);
+
+    t.end();
+  });
+
+  tester.test('wraps correctly when PI < val < 3PI', t => {
+    const rads = 5;
+
+    t.is(wrapRadians(rads), rads - (2 * Math.PI));
+
+    t.end();
+  });
+
+  tester.test('wraps correctly when 3PI < val < 5PI', t => {
+    const rads = 10;
+
+    t.is(wrapRadians(rads), rads - (4 * Math.PI));
+
+    t.end();
+  });
+
+  tester.test('wraps correctly when -3PI < val < -PI', t => {
+    const rads = -4;
+
+    t.is(wrapRadians(rads), rads + (2 * Math.PI));
+
+    t.end();
+  });
+
+  tester.test('wraps to PI when val == -PI', t => {
+    const rads = -Math.PI;
+
+    t.is(wrapRadians(rads), Math.PI);
+
+    t.end();
+  });
 });
