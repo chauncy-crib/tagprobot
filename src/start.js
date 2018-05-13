@@ -7,6 +7,9 @@ import {
   timeFunc,
   logTimingsReport,
 } from './global/timing';
+import { isCached } from './cache/cache';
+import { updateCache } from './cache/save';
+import { loadCache } from './cache/load';
 import { setupClientVelocity, initLocations, setupRoleCommunication } from './look/setup';
 import { computeTileInfo } from './look/tileInfo';
 import { getMe, initMe, initIsCenterFlag, isCenterFlag } from './look/gameState';
@@ -18,24 +21,18 @@ import {
   initNavMesh,
   onMapReady,
 } from './interpret/setup';
-import {
-  getDTGraph,
-  internalMap,
-} from './interpret/interpret';
+import { getDTGraph, internalMap } from './interpret/interpret';
 import { logHelpMenu, onKeyDown, isAutonomousMode, isVisualMode, move } from './interface/keys';
 import { FSM } from './think/fsm';
-import { dequeueChatMessages, setupChatCallback } from './interface/chat';
-import { turnOnAllDrawings, initUiUpdateFunction } from './draw/draw';
 import { updateNavMesh } from './interpret/graphToTriangulation';
 import { VALUE_OF_CAP } from './plan/constants';
+import { funnelMyPolypoints } from './plan/funnel.master';
 import { getShortestPolypointPath } from './plan/astar';
-import { drawEnemyPath, drawAllyPath } from './draw/triangulation';
 import { getLocalGoalStateFromPath } from './control/lqr';
 import { getLQRAccelerationMultipliers } from './control/lqr.master';
-import { funnelMyPolypoints } from './plan/funnel.master';
-import { isCached } from './cache/cache';
-import { updateCache } from './cache/save';
-import { loadCache } from './cache/load';
+import { dequeueChatMessages, setupChatCallback } from './interface/chat';
+import { turnOnAllDrawings, initUiUpdateFunction } from './draw/draw';
+import { drawEnemyPath, drawAllyPath } from './draw/path';
 
 
 window.onkeydown = onKeyDown; // run onKeyDown any time a key is pressed to parse user input
