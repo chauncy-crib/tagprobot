@@ -1,4 +1,4 @@
-import _cache from './cache.json';
+import _cache from '../../data/cache.json';
 
 import {
   getMapName,
