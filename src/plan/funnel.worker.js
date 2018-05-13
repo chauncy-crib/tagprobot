@@ -56,7 +56,7 @@ function getStartFunnelIndex([leftPoints, rightPoints], ballLocation, path) {
  * @returns {PolypointState[]} a list of states, starting from the startState to the targetState
  *   that are funnelled to be as straight as possible
  */
-function funnelPolypoints(path, allPortalPoints) {
+export function funnelPolypointsFromPortals(path, allPortalPoints) {
   const [leftPoints, rightPoints] = allPortalPoints;
 
   const funnelledPath = [path[0]];
@@ -138,7 +138,7 @@ export default function worker(self) {
         _.map(pointArray, pointObj => ((new Point()).fromObject(pointObj)))
       ));
 
-      const funnelledPath = funnelPolypoints(path, allPortalPoints);
+      const funnelledPath = funnelPolypointsFromPortals(path, allPortalPoints);
       self.postMessage({ text: 'DONE', funnelledPath: JSON.stringify(funnelledPath) });
     }
   });
