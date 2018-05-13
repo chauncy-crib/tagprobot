@@ -23,6 +23,10 @@ module.exports = () => {
           include: APP_DIR,
           loader: 'eslint-loader',
         },
+        {
+          test: /\.txt$/,
+          use: 'raw-loader',
+        },
         // Babel javascript loader, convert js files to es5 javascript
         {
           // Only test js files
