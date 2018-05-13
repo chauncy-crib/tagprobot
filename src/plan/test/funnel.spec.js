@@ -5,17 +5,15 @@ import { Point } from '../../global/class/Point';
 import { Polypoint } from '../../interpret/class/Polypoint';
 import { Triangle } from '../../interpret/class/Triangle';
 import { PolypointState } from '../class/PolypointState';
-import {
-  funnelPolypoints,
-  __RewireAPI__ as FunnelRewireAPI,
-} from '../funnel';
+import { funnelPolypointsFromPortals } from '../funnel.worker';
+import { getPortals } from '../portals';
 import { backwardsFunnelPath, backwardsFunnelGetClearancePoint } from './backwardsFunnelData';
 
 
 const mockGetClearancePoint = cornerPoint => cornerPoint.copy();
 
 
-test('funnelPolypoints()', tester => {
+test('funnelPolypointsFromPortals()', tester => {
   tester.test('stretches around a corner to the top', t => {
     const mockTriangleGraph = { getClearancePoint: mockGetClearancePoint };
     const FP = [
@@ -45,10 +43,10 @@ test('funnelPolypoints()', tester => {
       new PolypointState(new Polypoint(293, 65, new Triangle(FP[9], FP[10], new Point(403, 118)))),
     ];
 
-    const funnelledPoints = funnelPolypoints(path, mockTriangleGraph).map(state => state.point);
+    const portals = getPortals(path, mockTriangleGraph);
+    const funnelledPoints = funnelPolypointsFromPortals(path, portals).map(state => state.point);
     t.same(funnelledPoints.join('_'), [path[0].point, FP[3], FP[7], path[10].point].join('_'));
 
-    FunnelRewireAPI.__ResetDependency__('getClearancePoint');
     t.end();
   });
 
@@ -82,13 +80,13 @@ test('funnelPolypoints()', tester => {
       new PolypointState(new Polypoint(293, 201, new Triangle(FP[9], FP[10], new Point(403, 118)))),
     ];
 
-    const funnelledPoints = funnelPolypoints(path, mockTriangleGraph).map(state => state.point);
+    const portals = getPortals(path, mockTriangleGraph);
+    const funnelledPoints = funnelPolypointsFromPortals(path, portals).map(state => state.point);
     t.same(
       funnelledPoints.join('_'),
       [path[0].point, FP[3], FP[8], FP[10], path[10].point].join('_'),
     );
 
-    FunnelRewireAPI.__ResetDependency__('getClearancePoint');
     t.end();
   });
 
@@ -120,18 +118,19 @@ test('funnelPolypoints()', tester => {
       new PolypointState(new Polypoint(880, 880, triangles[9])),
     ];
 
-    const funnelledPoints = funnelPolypoints(path, mockTriangleGraph).map(state => state.point);
+    const portals = getPortals(path, mockTriangleGraph);
+    const funnelledPoints = funnelPolypointsFromPortals(path, portals).map(state => state.point);
     t.same(
       funnelledPoints.join('_'),
       [path[0].point, triangles[1].p3, triangles[3].p3, path[9].point].join('_'),
     );
 
-    FunnelRewireAPI.__ResetDependency__('getClearancePoint');
     t.end();
   });
 
 
   tester.test('funnels properly with only two states in path', t => {
+    const mockTriangleGraph = { getClearancePoint: mockGetClearancePoint };
     const triangles = [
       new Triangle(new Point(760, 560), new Point(840, 600), new Point(800, 480)),
       new Triangle(new Point(800, 480), new Point(960, 640), new Point(840, 600)),
@@ -141,7 +140,8 @@ test('funnelPolypoints()', tester => {
       new PolypointState(new Polypoint(900, 600, triangles[1])),
     ];
 
-    const funnelledPoints = funnelPolypoints(path).map(state => state.point);
+    const portals = getPortals(path, mockTriangleGraph);
+    const funnelledPoints = funnelPolypointsFromPortals(path, portals).map(state => state.point);
     t.same(funnelledPoints, [path[0].point, path[1].point]);
 
     t.end();
@@ -150,7 +150,8 @@ test('funnelPolypoints()', tester => {
 
   tester.test('funnels properly in stradle edge case', t => {
     const mockTriangleGraph = { getClearancePoint: backwardsFunnelGetClearancePoint };
-    const funnelledPoints = funnelPolypoints(backwardsFunnelPath, mockTriangleGraph)
+    const portals = getPortals(backwardsFunnelPath, mockTriangleGraph);
+    const funnelledPoints = funnelPolypointsFromPortals(backwardsFunnelPath, portals)
       .map(state => state.point);
     t.same(
       funnelledPoints.join('_'),
