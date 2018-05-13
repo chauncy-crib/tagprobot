@@ -1,5 +1,4 @@
 import { TIMING_RUN_AVG_LEN, timeLog, time, logTimingsReport } from './global/timing';
-import { BRP } from './global/constants';
 import { setupClientVelocity, initLocations, setupRoleCommunication } from './look/setup';
 import { computeTileInfo } from './look/tileInfo';
 import { getMe, initMe, initIsCenterFlag } from './look/gameState';
@@ -12,8 +11,7 @@ import { turnOnAllDrawings, initUiUpdateFunction } from './draw/draw';
 import { updateNavMesh } from './interpret/graphToTriangulation';
 import { getShortestPolypointPath } from './plan/astar';
 import { drawEnemyPath, drawAllyPath } from './draw/triangulation';
-import { getDesiredAccelerationMultipliers } from './control/physics';
-import { getLocalGoalStateFromPath } from './control/lqr';
+import { getLocalGoalStateFromPath, getLQRAccelerationMultipliers } from './control/lqr';
 import { funnelPolypoints } from './plan/funnel';
 
 
@@ -32,13 +30,14 @@ function loop() {
 
   const { map } = tagpro;
   const me = getMe();
+  const myCenter = getPlayerCenter(me);
   const { goal, enemyShortestPath } = time(FSM, [me]);
 
   time(drawEnemyPath, [enemyShortestPath]);
   time(updateNavMesh, [map]);
 
   const polypointShortestPath = time(getShortestPolypointPath, [
-    getPlayerCenter(me),
+    myCenter,
     goal,
     getDTGraph(),
   ]);
@@ -50,14 +49,8 @@ function loop() {
 
   // The desired acceleration multipliers the bot should achieve with arrow key presses. Positive
   //   directions are down and right.
-  const accelValues = time(getDesiredAccelerationMultipliers, [
-    me.x + BRP, // the x center of our ball, in pixels
-    me.y + BRP, // the y center of our ball, in pixels
-    me.vx, // our x velocity
-    me.vy, // our y velocity
-    localGoalState.x, // the x we are seeking toward (pixels)
-    localGoalState.y, // the y we are seeking toward (pixels)
-  ]);
+  const myCurrState = { x: myCenter.x, y: myCenter.y, vx: me.vx || 0, vy: me.vy || 0 };
+  const accelValues = time(getLQRAccelerationMultipliers, [myCurrState, localGoalState]);
 
   if (isAutonomousMode()) move(accelValues);
 
