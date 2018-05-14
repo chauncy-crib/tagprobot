@@ -103,17 +103,14 @@ export function delaunayTriangulation(
 
 /**
  * @param {number[][]} map - the tagpro map
- * @param {boolean} [calcGraphs=true] - true if we need to calculated the merged/unmerged graphs
  * @returns {Graph} graph of the triangulation of all the vertices
  */
-export function initNavMesh(map, calcGraphs = true) {
+export function initNavMesh(map) {
   setDtGraph(new TriangleGraph());
-  if (calcGraphs) {
-    setUnmergedGraph(unmergedGraphFromTagproMap(map));
-    timeLog('  Created unmerged graph.');
-    setMergedGraph(graphFromTagproMap(map, getUnmergedGraph()));
-    timeLog('  Created merged graph.');
-  }
+  setUnmergedGraph(unmergedGraphFromTagproMap(map));
+  timeLog('  Created unmerged graph.');
+  setMergedGraph(graphFromTagproMap(map, getUnmergedGraph()));
+  timeLog('  Created merged graph.');
   delaunayTriangulation(
     getMergedGraph(),
     new Point(-9999, -100),

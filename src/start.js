@@ -119,8 +119,8 @@ function start() {
     timeLog('Initialized internal map.');
     initTilesToUpdate(internalMap);
     timeLog('Initialized tiles to update.');
+    initNavMesh(internalMap);
   }
-  initNavMesh(internalMap, !isCached());
   initUiUpdateFunction();
   timeLog('Initialized UI update function.');
   turnOnAllDrawings();
