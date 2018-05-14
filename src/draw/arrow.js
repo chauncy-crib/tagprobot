@@ -2,6 +2,9 @@ import { Point } from '../global/class/Point';
 import { Vector } from '../global/class/Vector';
 
 
+export const VISUAL_ARROW_SCALING = 1 / 5; // factor to scale an arrow by before displaying it
+
+
 /**
  * @param {number} x - x position of the base of the arrow shaft
  * @param {number} y - y position of the base of the arrow shaft
@@ -23,6 +26,10 @@ export function getArrowHead(x, y, dx, dy, width = 10, length = 10) {
 
 
 export function drawArrow(graphics, thickness, color, alpha, x, y, dx, dy) {
+  // Scale down arrow lengths by a constant
+  dx *= VISUAL_ARROW_SCALING;
+  dy *= VISUAL_ARROW_SCALING;
+
   graphics.lineStyle(thickness, color, alpha);
   graphics.beginFill(color, alpha);
   graphics.drawCircle(x, y, 4);
