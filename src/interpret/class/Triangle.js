@@ -9,10 +9,12 @@ import { Edge } from '../../global/class/Edge';
 
 export class Triangle {
   constructor(p1, p2, p3, checkEmpty = true) {
-    assert(
-      !(checkEmpty && threePointsInLine(p1, p2, p3)),
-      'Tried to make a triangle with no area',
-    );
+    if (p1 || p2 || p3) {
+      assert(
+        !(checkEmpty && threePointsInLine(p1, p2, p3)),
+        'Tried to make a triangle with no area',
+      );
+    }
     this.p1 = p1;
     this.p2 = p2;
     this.p3 = p3;
