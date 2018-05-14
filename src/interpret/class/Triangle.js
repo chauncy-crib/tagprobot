@@ -40,6 +40,14 @@ export class Triangle {
   }
 
 
+  fromObject(o) {
+    this.p1 = (new Point()).fromObject(o.p1);
+    this.p2 = (new Point()).fromObject(o.p2);
+    this.p3 = (new Point()).fromObject(o.p3);
+    return this;
+  }
+
+
   /**
    * @returns {Polypoint} the center point of the triangle
    */
