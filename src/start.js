@@ -33,7 +33,7 @@ import { drawEnemyPath, drawAllyPath } from './draw/triangulation';
 import { getLocalGoalStateFromPath } from './control/lqr';
 import { getLQRAccelerationMultipliers } from './control/lqr.master';
 import { funnelMyPolypoints } from './plan/funnel.master';
-import { isCached } from './cache/cache';
+import { mapInCache } from './cache/cache';
 import { updateCache } from './cache/save';
 import { loadCache } from './cache/load';
 
@@ -103,10 +103,10 @@ function loop() {
  */
 function start() {
   timeLog('Tagpro id recieved.');
+  const startTime = time();
   initMe();
   timeLog('Initialized me.');
   loadCache();
-  const startTime = time();
   setupClientVelocity();
   timeLog('Set up client velocity.');
   computeTileInfo();
@@ -115,13 +115,13 @@ function start() {
   timeLog('Initialized locations.');
   initIsCenterFlag();
   timeLog('Initialized isCenterFlag().');
-  if (!isCached()) {
+  if (!mapInCache()) {
     initInternalMap(tagpro.map);
     timeLog('Initialized internal map.');
     initTilesToUpdate(internalMap);
     timeLog('Initialized tiles to update.');
+    initNavMesh(internalMap);
   }
-  initNavMesh(internalMap, !isCached());
   initUiUpdateFunction();
   timeLog('Initialized UI update function.');
   turnOnAllDrawings();

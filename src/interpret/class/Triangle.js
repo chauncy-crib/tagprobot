@@ -5,6 +5,7 @@ import { threePointsInLine } from '../utils';
 import { Point } from '../../global/class/Point';
 import { Polypoint } from './Polypoint';
 import { Edge } from '../../global/class/Edge';
+import { deserializePoint } from '../../cache/point';
 
 
 export class Triangle {
@@ -41,9 +42,9 @@ export class Triangle {
 
 
   fromObject(o) {
-    this.p1 = (new Point()).fromObject(o.p1);
-    this.p2 = (new Point()).fromObject(o.p2);
-    this.p3 = (new Point()).fromObject(o.p3);
+    this.p1 = deserializePoint(o.p1);
+    this.p2 = deserializePoint(o.p2);
+    this.p3 = deserializePoint(o.p3);
     return this;
   }
 

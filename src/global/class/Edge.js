@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { Point } from './Point';
 import { assert } from '../utils';
 import { detD, threePointsInLine } from '../../interpret/utils';
+import { deserializePoint } from '../../cache/point';
 
 
 export class Edge {
@@ -22,8 +23,8 @@ export class Edge {
 
 
   fromObject(o) {
-    this.p1 = (new Point()).fromObject(o.p1);
-    this.p2 = (new Point()).fromObject(o.p2);
+    this.p1 = deserializePoint(o.p1);
+    this.p2 = deserializePoint(o.p2);
     return this;
   }
 
