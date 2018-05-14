@@ -44,6 +44,7 @@ export function getPlayerCenter(player) {
 
 
 export function playerIsNearPoint(player, point, threshold = 300) {
+  if (!_.has(player, 'x') || !_.has(player, 'y')) return false;
   return point.distance(getPlayerCenter(player)) <= threshold;
 }
 
