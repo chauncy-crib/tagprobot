@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import work from 'webworkify-webpack';
 
-import { Matrix } from './class/Matrix';
 import { determineDeadline, getMultipliersFromKs } from './lqr';
+import { deserializeMatrix } from '../cache/classes';
 
 
 const lqrWorker = work(require.resolve('./lqr.worker.js'));
@@ -12,7 +12,7 @@ let currentKs;
 
 lqrWorker.addEventListener('message', ev => {
   if (ev.data.text === 'DONE') {
-    currentKs = (new Matrix()).fromObject(JSON.parse(ev.data.Ks));
+    currentKs = deserializeMatrix(JSON.parse(ev.data.Ks));
   }
 });
 

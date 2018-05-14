@@ -1,7 +1,8 @@
 import { Point } from '../global/class/Point';
+import { Edge } from '../global/class/Edge';
 import { Polypoint } from '../interpret/class/Polypoint';
 import { Triangle } from '../interpret/class/Triangle';
-import { Edge } from '../global/class/Edge';
+import { Matrix } from '../control/class/Matrix';
 
 
 export function deserializePoint(o) {
@@ -12,4 +13,9 @@ export function deserializePoint(o) {
 
 export function deserializeEdge(o) {
   return new Edge().fromObject(o);
+}
+
+
+export function deserializeMatrix(o) {
+  return new Matrix().fromObject(o);
 }
