@@ -95,6 +95,7 @@ function getStartFunnelIndex([leftPoints, rightPoints], ballLocation, path) {
       startingIndex += 1;
       leftFunnelEdge = new Edge(ballLocation, leftPoints[startingIndex].clearancePoint);
       rightFunnelEdge = new Edge(ballLocation, rightPoints[startingIndex].clearancePoint);
+      if (startingIndex + 1 >= path.length) break;
     }
   }
 
@@ -178,5 +179,13 @@ export function funnelPolypointsFromPortals(path, allPortalPoints) {
 
   // Add the target point
   funnelledPath.push(_.last(path));
+
+  // If the last two points in the path are the same, pop off the last point
+  if (
+    funnelledPath.length > 2 &&
+    _.last(funnelledPath).point.equals(_.nth(funnelledPath, -2).point)
+  ) {
+    funnelledPath.pop();
+  }
   return funnelledPath;
 }
