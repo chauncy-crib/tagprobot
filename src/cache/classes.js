@@ -8,8 +8,8 @@ import { Matrix } from '../control/class/Matrix';
 import { PolypointState } from '../plan/class/PolypointState';
 
 
-export function deserializePoint(o) {
-  if (o.t) return new Polypoint(o.x, o.y, new Triangle().fromObject(o.t));
+export function deserializePoint(o, makePolypoint = true) {
+  if (o.t && makePolypoint) return new Polypoint(o.x, o.y, new Triangle().fromObject(o.t));
   return new Point().fromObject(o);
 }
 
