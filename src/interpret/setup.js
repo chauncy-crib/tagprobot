@@ -91,13 +91,13 @@ export function delaunayTriangulation(
   _.forEach(shuffledVertices, vertex => {
     dtGraph.delaunayAddVertex(vertex);
   });
-  timeLog('  Added vertices.');
+  timeLog('Added triangulation vertices.');
 
   const shuffledEdges = _.shuffle(mapGraph.getEdges());
   _.forEach(shuffledEdges, e => {
     dtGraph.delaunayAddConstraintEdge(e);
   });
-  timeLog('  Added constrained edges.');
+  timeLog('Added triangulation constrained edges.');
 }
 
 
