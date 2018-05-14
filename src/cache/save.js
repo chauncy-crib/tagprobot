@@ -9,6 +9,7 @@ import {
   internalMap,
   getUnmergedGraph,
   getMergedGraph,
+  getDTGraph,
 } from '../interpret/interpret';
 
 
@@ -20,6 +21,7 @@ export function updateCache() {
     data.internalMap = internalMap;
     data.unmergedGraph = getUnmergedGraph();
     data.mergedGraph = getMergedGraph();
+    data.dtGraph = getDTGraph();
     cache[getMapKey()] = data;
     const blob = new Blob([stringify(cache)]);
     FileSaver.saveAs(blob, 'cache.txt');

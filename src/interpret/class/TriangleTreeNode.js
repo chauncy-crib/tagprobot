@@ -87,6 +87,24 @@ export class TriangleTreeNode {
   }
 
 
+  /**
+   * @param {TriangleTreeNode[]} createdNodes - an array of TriangleTreeNodes already created by
+   *   fromObject(), where each node is at createdNodes[node.id]
+   */
+  fromObject(o, createdNodes) {
+    this.triangle = (new Triangle()).fromObject(o.triangle);
+    this.mark = o.mark;
+    this.id = o.id;
+    this.children = _.map(o.children, c => {
+      const childId = c.id;
+      if (createdNodes[childId]) return createdNodes[childId];
+      return (new TriangleTreeNode()).fromObject(c, createdNodes);
+    });
+    createdNodes[this.id] = this;
+    return this;
+  }
+
+
   toString() {
     return `t: ${this.triangle}, c1: ${this.children[0]}, c2: ${this.children[1]}, ` +
       `c3: ${this.children[2]}`;
