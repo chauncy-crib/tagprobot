@@ -14,6 +14,7 @@ export class Point {
   fromObject(o) {
     this.x = o.x;
     this.y = o.y;
+    if (o.clearancePoint) this.clearancePoint = new Point().fromObject(o.clearancePoint);
     return this;
   }
 

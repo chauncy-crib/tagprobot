@@ -45,6 +45,27 @@ export class TriangleGraph extends DrawableGraph {
   }
 
 
+  fromObject(o) {
+    super.fromObject(o);
+    this.polypoints = (new DrawableGraph(
+      THICKNESSES.triangulation,
+      ALPHAS.polypoints.vertex,
+      COLORS.polypoints.edge,
+      () => ({
+        color: COLORS.polypoints.edge,
+        alpha: ALPHAS.polypoints.edge,
+        thickness: THICKNESSES.triangulation,
+      }),
+    )).fromObject(o.polypoints);
+    // TODO
+    this.rootNode = (new TriangleTreeNode()).fromObject(o.rootNode, []);
+    _.forOwn(o.fixedAdj, (adjList, pointStr) => {
+      this.fixedAdj[pointStr] = _.map(adjList, p => (new Point()).fromObject(p));
+    });
+    return this;
+  }
+
+
   initDataStructures() {
     this.rootNode = null;
     this.fixedAdj = {};
