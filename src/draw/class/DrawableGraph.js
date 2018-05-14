@@ -38,6 +38,12 @@ export class DrawableGraph extends Graph {
   }
 
 
+  addAllDrawings() {
+    _.forEach(this.getVertices(), v => this.addVertexDrawing(v));
+    _.forEach(this.getEdges(), e => this.addEdgeDrawing(e));
+  }
+
+
   turnOffDrawings() {
     if (this.drawingsOn) tagpro.renderer.layers.foreground.removeChild(this.drawingContainer);
     this.drawingsOn = false;
