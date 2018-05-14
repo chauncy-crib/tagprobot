@@ -1,3 +1,9 @@
+export const THICKNESSES = {
+  path: 38,
+  triangulation: 4,
+  localGoal: 4,
+};
+
 export const COLORS = {
   path: {
     ally: 0x00ff00, // bright green
@@ -12,10 +18,11 @@ export const COLORS = {
   polypoints: {
     edge: 0x006600, // dark green
   },
+  localGoal: 0x000000, // black
 };
 
 export const ALPHAS = {
-  path: 0.5,
+  path: 0.50,
   keys: {
     on: 0.75,
     off: 0.20,
@@ -29,9 +36,5 @@ export const ALPHAS = {
     edge: 0.20,
     vertex: 0.20,
   },
-};
-
-export const THICKNESSES = {
-  path: 38,
-  triangulation: 4,
+  localGoal: 0.50,
 };
