@@ -31,21 +31,25 @@ export class DrawableGraph extends Graph {
     this.drawingContainer = new PIXI.DisplayObjectContainer();
   }
 
+
   turnOffDrawings() {
     if (this.drawingsOn) tagpro.renderer.layers.foreground.removeChild(this.drawingContainer);
     this.drawingsOn = false;
   }
+
 
   turnOnDrawings() {
     if (!this.drawingsOn) tagpro.renderer.layers.foreground.addChild(this.drawingContainer);
     this.drawingsOn = true;
   }
 
+
   addDrawing(drawing, object) {
     this.drawingContainer.addChildAt(drawing, this.indexToGraphObject.length);
     this.drawingIndices[object] = this.indexToGraphObject.length;
     this.indexToGraphObject.push(object);
   }
+
 
   removeDrawing(object) {
     // The index where the drawing we're removing is
@@ -66,12 +70,14 @@ export class DrawableGraph extends Graph {
     delete this.drawingIndices[object];
   }
 
+
   addVertexDrawing(vertex) {
     const vertexDrawing = new PIXI.Graphics();
     vertexDrawing.lineStyle(this.vertexThickness, this.vertexColor, this.vertexAlpha);
     vertexDrawing.drawCircle(vertex.x, vertex.y, this.vertexThickness);
     this.addDrawing(vertexDrawing, vertex);
   }
+
 
   addEdgeDrawing(e) {
     const edgeDrawing = new PIXI.Graphics();
@@ -81,11 +87,13 @@ export class DrawableGraph extends Graph {
     this.addDrawing(edgeDrawing, e);
   }
 
+
   addVertex(point) {
     if (!super.addVertex(point)) return false;
     this.addVertexDrawing(point);
     return true;
   }
+
 
   removeVertex(vertex) {
     if (!super.removeVertex(vertex)) return false;
@@ -93,11 +101,13 @@ export class DrawableGraph extends Graph {
     return true;
   }
 
+
   addEdge(edge) {
     if (!super.addEdge(edge)) return false;
     this.addEdgeDrawing(edge);
     return true;
   }
+
 
   removeEdge(edge) {
     if (!super.removeEdge(edge)) return false;
