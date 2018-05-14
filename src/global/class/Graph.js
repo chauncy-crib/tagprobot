@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import { assert } from '../../global/utils';
 import { Edge } from '../../global/class/Edge';
-import { deserializePoint } from '../../cache/point';
+import { deserializePoint, deserializeEdge } from '../../cache/classes';
 
 
 /**
@@ -26,7 +26,7 @@ export class Graph {
     _.forOwn(o.collinearEdges, (interceptMap, slope) => {
       this.collinearEdges[slope] = {};
       _.forOwn(interceptMap, (edgeList, intercept) => {
-        this.collinearEdges[slope][intercept] = _.map(edgeList, e => (new Edge()).fromObject(e));
+        this.collinearEdges[slope][intercept] = _.map(edgeList, e => deserializeEdge(e));
       });
     });
     return this;

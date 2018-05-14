@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { Point } from './Point';
 import { assert } from '../utils';
 import { detD, threePointsInLine } from '../../interpret/utils';
-import { deserializePoint } from '../../cache/point';
+import { deserializePoint } from '../../cache/classes';
 
 
 export class Edge {

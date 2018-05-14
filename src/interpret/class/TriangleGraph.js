@@ -13,7 +13,7 @@ import { Triangle } from './Triangle';
 import { DrawableGraph } from '../../draw/class/DrawableGraph';
 import { isLegal } from '../graphToTriangulation';
 import { COLORS, ALPHAS, THICKNESSES } from '../../draw/constants';
-import { deserializePoint } from '../../cache/point';
+import { deserializePoint } from '../../cache/classes';
 
 
 const CLEARANCE = 27; // sqrt(BRP^2 + BRP^2) to have full clearance around a right-angle corner

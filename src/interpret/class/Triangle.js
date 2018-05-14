@@ -5,7 +5,7 @@ import { threePointsInLine } from '../utils';
 import { Point } from '../../global/class/Point';
 import { Polypoint } from './Polypoint';
 import { Edge } from '../../global/class/Edge';
-import { deserializePoint } from '../../cache/point';
+import { deserializePoint } from '../../cache/classes';
 
 
 export class Triangle {
