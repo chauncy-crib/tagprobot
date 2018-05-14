@@ -5,7 +5,7 @@ import { COLORS, ALPHAS, THICKNESSES } from './constants';
 
 let allyPathGraphics = null; // PIXI Graphics for drawing the bot's polypoint path
 let enemyPathGraphics = null; // PIXI Graphics for drawing the enemy polypoint path
-let pathsOn = false;
+let pathsOn = false; // whether or not the paths are currently being drawn
 
 
 /**

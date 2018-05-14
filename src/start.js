@@ -33,6 +33,7 @@ import { getLQRAccelerationMultipliers } from './control/lqr.master';
 import { dequeueChatMessages, setupChatCallback } from './interface/chat';
 import { turnOnAllDrawings, initUiUpdateFunction } from './draw/draw';
 import { drawEnemyPath, drawAllyPath } from './draw/path';
+import { drawLocalGoal } from './draw/localGoal';
 
 
 window.onkeydown = onKeyDown; // run onKeyDown any time a key is pressed to parse user input
@@ -78,6 +79,7 @@ function loop() {
   timeFunc(drawAllyPath, [funnelledPath]);
 
   const localGoalState = timeFunc(getLocalGoalStateFromPath, [funnelledPath, me]);
+  timeFunc(drawLocalGoal, [localGoalState]);
 
   // The desired acceleration multipliers the bot should achieve with arrow key presses. Positive
   //   directions are down and right.
