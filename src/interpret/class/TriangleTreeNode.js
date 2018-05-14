@@ -4,6 +4,7 @@ import { Triangle } from './Triangle';
 import { Edge } from '../../global/class/Edge';
 import { isLegal } from '../graphToTriangulation';
 import { detD, detH, sortCounterClockwise } from '../utils';
+import { deserializeTriangle } from '../../cache/classes';
 
 
 let counter = 0;
@@ -92,7 +93,7 @@ export class TriangleTreeNode {
    *   fromObject(), where each node is at createdNodes[node.id]
    */
   fromObject(o, createdNodes) {
-    this.triangle = (new Triangle()).fromObject(o.triangle);
+    this.triangle = deserializeTriangle(o.triangle);
     this.mark = o.mark;
     this.id = o.id;
     this.children = _.map(o.children, c => {

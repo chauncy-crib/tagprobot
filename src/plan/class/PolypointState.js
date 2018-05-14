@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { enemyAvoidanceCost } from '../avoidance';
 import { getMe } from '../../look/gameState';
 import { State } from './State';
-import { Point } from '../../global/class/Point';
+import { deserializePoint } from '../../cache/classes';
 
 
 export class PolypointState extends State {
@@ -15,7 +15,7 @@ export class PolypointState extends State {
 
 
   fromObject(o) {
-    this.point = (new Point()).fromObject(o.point);
+    this.point = deserializePoint(o.point);
     this.key = o.key;
     return this;
   }

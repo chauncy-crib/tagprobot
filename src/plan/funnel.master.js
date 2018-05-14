@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import work from 'webworkify-webpack';
 
-import { PolypointState } from './class/PolypointState';
 import { getPortals } from './funnel';
+import { deserializePolypointState } from '../cache/classes';
 
 
 const funnelWorker = work(require.resolve('./funnel.worker.js'));
@@ -18,7 +18,7 @@ funnelWorker.addEventListener('message', ev => {
   const { data } = ev;
   if (data.text === 'DONE') {
     const funnelledPath = _.map(JSON.parse(data.funnelledPath), stateObj => (
-      (new PolypointState()).fromObject(stateObj)
+      deserializePolypointState(stateObj)
     ));
     const { key } = data;
     storedFunnelledPaths[key] = funnelledPath;
