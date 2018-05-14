@@ -6,20 +6,20 @@ import { Point } from '../../global/class/Point';
 
 
 test('playerIsNearPoint', tester => {
-  tester.test('throws an error if player does not have x attribute', t => {
+  tester.test('returns false if player does not have x attribute', t => {
     const mockPlayer = { y: 0 - BRP }; // BRP offset to go from center to top-left
     const point = new Point(0, 0);
 
-    t.throws(() => { playerIsNearPoint(mockPlayer, point); });
+    t.false(playerIsNearPoint(mockPlayer, point));
 
     t.end();
   });
 
-  tester.test('throws an error if player does not have y attribute', t => {
+  tester.test('returns false if player does not have y attribute', t => {
     const mockPlayer = { x: 0 - BRP }; // BRP offset to go from center to top-left
     const point = new Point(0, 0);
 
-    t.throws(() => { playerIsNearPoint(mockPlayer, point); });
+    t.false(playerIsNearPoint(mockPlayer, point));
 
     t.end();
   });
