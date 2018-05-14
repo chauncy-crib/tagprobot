@@ -24,6 +24,7 @@ import { FSM } from './think/fsm';
 import { dequeueChatMessages, setupChatCallback } from './interface/chat';
 import { turnOnAllDrawings, initUiUpdateFunction } from './draw/draw';
 import { drawEnemyPath, drawAllyPath } from './draw/path';
+import { drawLocalGoal } from './draw/localGoal';
 import { updateNavMesh } from './interpret/graphToTriangulation';
 import { VALUE_OF_CAP } from './plan/constants';
 import { getShortestPolypointPath } from './plan/astar';
@@ -77,6 +78,7 @@ function loop() {
   timeFunc(drawAllyPath, [funnelledPath]);
 
   const localGoalState = timeFunc(getLocalGoalStateFromPath, [funnelledPath, me]);
+  timeFunc(drawLocalGoal, [localGoalState]);
 
   // The desired acceleration multipliers the bot should achieve with arrow key presses. Positive
   //   directions are down and right.
