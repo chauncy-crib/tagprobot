@@ -6,6 +6,9 @@ import { isLegal } from '../graphToTriangulation';
 import { detD, detH, sortCounterClockwise } from '../utils';
 
 
+let counter = 0;
+
+
 export function getTriangles(nodes) {
   return _.map(nodes, n => n.triangle);
 }
@@ -79,6 +82,8 @@ export class TriangleTreeNode {
     this.triangle = triangle;
     this.children = [];
     this.mark = false; // keep track of which nodes have been visited in _findLeavesWithCondition()
+    this.id = counter;
+    counter += 1;
   }
 
 
