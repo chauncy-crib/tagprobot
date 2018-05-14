@@ -21,7 +21,7 @@ export class Vector {
    * @returns {number|null} the slope of the vector, null if x is zero
    */
   slope() {
-    assert(!this.magnitude() === 0, 'Cannot calculate the slope of a vector with zero magnitude');
+    assert(this.magnitude() !== 0, 'Cannot calculate the slope of a vector with zero magnitude');
     if (this.x === 0) return null;
     if (this.y === 0) return 0; // return an unsigned 0
     return this.y / this.x;

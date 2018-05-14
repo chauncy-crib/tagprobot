@@ -21,8 +21,8 @@ export function drawLocalGoal(localGoal) {
     ALPHAS.localGoal,
     x,
     y,
-    vx / 5,
-    vy / 5,
+    vx,
+    vy,
   );
 }
 
