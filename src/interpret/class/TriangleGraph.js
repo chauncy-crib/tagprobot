@@ -13,6 +13,8 @@ import { Triangle } from './Triangle';
 import { DrawableGraph } from '../../draw/class/DrawableGraph';
 import { isLegal } from '../graphToTriangulation';
 import { COLORS, ALPHAS, THICKNESSES } from '../../draw/constants';
+import { deserializePoint } from '../../cache/point';
+
 
 const CLEARANCE = 27; // sqrt(BRP^2 + BRP^2) to have full clearance around a right-angle corner
 
@@ -42,6 +44,26 @@ export class TriangleGraph extends DrawableGraph {
       ),
     );
     this.initDataStructures();
+  }
+
+
+  fromObject(o) {
+    super.fromObject(o);
+    this.polypoints = (new DrawableGraph(
+      THICKNESSES.triangulation,
+      ALPHAS.polypoints.vertex,
+      COLORS.polypoints.edge,
+      () => ({
+        color: COLORS.polypoints.edge,
+        alpha: ALPHAS.polypoints.edge,
+        thickness: THICKNESSES.triangulation,
+      }),
+    )).fromObject(o.polypoints);
+    this.rootNode = (new TriangleTreeNode()).fromObject(o.rootNode, []);
+    _.forOwn(o.fixedAdj, (adjList, pointStr) => {
+      this.fixedAdj[pointStr] = _.map(adjList, p => deserializePoint(p));
+    });
+    return this;
   }
 
 
