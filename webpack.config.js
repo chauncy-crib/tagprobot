@@ -18,8 +18,7 @@ module.exports = () => {
           enforce: 'pre',
           // Only test js files
           test: [/\.js$/],
-          // Only include files in the client directory (so we don't compile our node modules or
-          // server side code)
+          // Only include files in the client directory (so we don't compile our node modules)
           include: APP_DIR,
           loader: 'eslint-loader',
         },
@@ -31,8 +30,7 @@ module.exports = () => {
         {
           // Only test js files
           test: [/\.js$/],
-          // Only include files in the src/ directory (so we don't compile our node modules or
-          // server side code)
+          // Only include files in the src/ directory (so we don't compile our node modules)
           include: APP_DIR,
           loader: 'babel-loader',
           query: {
