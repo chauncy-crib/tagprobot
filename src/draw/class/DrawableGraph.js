@@ -32,6 +32,12 @@ export class DrawableGraph extends Graph {
   }
 
 
+  fromObject(o) {
+    super.fromObject(o);
+    return this;
+  }
+
+
   turnOffDrawings() {
     if (this.drawingsOn) tagpro.renderer.layers.foreground.removeChild(this.drawingContainer);
     this.drawingsOn = false;
