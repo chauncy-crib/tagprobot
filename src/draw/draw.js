@@ -1,6 +1,7 @@
 import { toggleTriangulationVis, togglePolypointVis } from './triangulation';
 import { togglePathVis } from './path';
 import { centerKeyPressesVis, toggleKeyPressVis } from './keys';
+import { toggleLocalGoalVis } from './localGoal';
 
 
 /**
@@ -41,15 +42,17 @@ export function initUiUpdateFunction() {
 
 
 export function clearSprites() {
-  toggleKeyPressVis(false);
   toggleTriangulationVis(false);
   togglePolypointVis(false);
   togglePathVis(false);
+  toggleLocalGoalVis(false);
+  toggleKeyPressVis(false);
 }
 
 
 export function turnOnAllDrawings() {
-  toggleKeyPressVis(true);
   toggleTriangulationVis(true);
   togglePathVis(true);
+  toggleLocalGoalVis(true);
+  toggleKeyPressVis(true);
 }
