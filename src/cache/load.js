@@ -7,8 +7,11 @@ import {
   setInternalMap,
   setUnmergedGraph,
   setMergedGraph,
+  setDtGraph,
+  getDTGraph,
 } from '../interpret/interpret';
 import { Graph } from '../global/class/Graph';
+import { TriangleGraph } from '../interpret/class/TriangleGraph';
 import { timeLog } from '../global/timing';
 
 export function loadCache() {
@@ -19,6 +22,9 @@ export function loadCache() {
     setInternalMap(data.internalMap);
     setUnmergedGraph((new Graph()).fromObject(data.unmergedGraph));
     setMergedGraph((new Graph()).fromObject(data.mergedGraph));
+    setDtGraph((new TriangleGraph()).fromObject(data.dtGraph));
+    getDTGraph().addAllDrawings();
+    getDTGraph().polypoints.addAllDrawings();
     setCached(true);
     timeLog('Loaded cache.');
   } else {
