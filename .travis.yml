@@ -3,7 +3,7 @@ matrix:
   include:
     - language: node_js
       node_js:
-        - node
+        - "10.15.3"
       script:
         - npm run lint
         - npm run test:raw
