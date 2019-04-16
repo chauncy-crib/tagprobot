@@ -52,7 +52,8 @@ _.each(chauncy, c => { discussions[c] = 0; });
 _.each(_(review.discussions)
   .map('participants')
   .flatten()
-  .filter({ resolved: false })
+  // these are the dispositions we consider "resolved". All other dispositions are unresolved
+  .filter(d => !_.includes(['informing', 'discussing', 'satisfied', 'following'], d.disposition))
   .value(),
   d => { discussions[d.username] += 1; });
 
